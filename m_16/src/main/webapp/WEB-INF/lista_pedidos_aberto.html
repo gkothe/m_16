@@ -1,0 +1,278 @@
+﻿
+<html>
+
+<script type="text/javascript" src="JavaScript/lista_pedidos_aberto.js"></script>
+
+
+<div class="x_title">
+
+
+	<div class="row">
+		<div class="col-xs-12 col-md-12 col-lg-12">
+			<div class="form-group">
+				<label style="font-size: 30px" for="">Pedidos em aberto</label>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="x_content">
+
+	<div style="width: 95%; height: 100%"
+		class="container bs-docs-container">
+
+
+
+
+
+		<!-- PEDIDOS EM ABERTO --------------------------------------------------------------------------------------------------------------------------------------->
+
+
+		<br>
+		<div class="row">
+
+			<div class="col-xs-1 col-sm-1 col-md-1 col-lg-1 filtros"
+				align="right">
+				<label for=""> Número</label>
+			</div>
+			<div class="col-xs-3 col-sm-3 col-md-4 col-lg-4">
+
+				<input id="num_pedido_aberto" style="width: 100%"
+					class="form-control" type="text" maxlength="100" value=""
+					name="num_pedido_aberto">
+			</div>
+
+			<div class="col-xs-1 col-sm-1 col-md-2 col-lg-2 filtros"
+				align="right">
+				<label for="">Periodo - Inicial</label>
+			</div>
+			<div class="col-xs-2 col-sm-2 col-md-3 col-lg-3" align="left">
+
+				<div class="input-group">
+					<input placeholder="DD/MM/AAAA" type="text"
+						class="form-control data" id="data_pedido_ini" /> <span
+						class="input-group-addon glyphicon glyphicon-calendar"> </span>
+				</div>
+
+			</div>
+
+			<div class="col-xs-2 col-sm-2 col-md-2 col-lg-2" align="left">
+
+				<div class="input-group">
+
+					<input type="text" class="form-control hora"
+						placeholder="Hora 00:00" id="data_pedido_ini_hora" />
+				</div>
+
+			</div>
+
+		</div>
+
+
+		<div class="row rowpad">
+
+			<div class="col-xs-1 col-sm-1 col-md-1 col-lg-1 filtros"
+				align="right">
+				<label for=""> Produto</label>
+			</div>
+			<div class="col-xs-3 col-sm-3 col-md-4 col-lg-4">
+
+				<div class="input-group" style="width: 100%">
+
+					<input id="id_produto" placeholder="Cód." style="width: 25%"
+						class="form-control" type="text" maxlength="100" value=""
+						name="id_produto"> <input id="desc_produto"
+						style="width: 75%" class="form-control" placeholder="Descrição"
+						type="text" maxlength="" value="" name="desc_produto">
+				</div>
+			</div>
+
+
+			<div class="col-xs-1 col-sm-1 col-md-2 col-lg-2 filtros"
+				align="right">
+				<label for="">Periodo - Final</label>
+			</div>
+			<div class="col-xs-2 col-sm-2 col-md-3 col-lg-3" align="left">
+
+				<div class="input-group">
+					<input type="text" class="form-control data"
+						placeholder="DD/MM/AAAA" id="data_pedido_fim" /> <span
+						class="input-group-addon glyphicon glyphicon-calendar"> </span>
+				</div>
+
+			</div>
+
+			<div class="col-xs-2 col-sm-2 col-md-2 col-lg-2" align="left">
+
+				<div class="input-group">
+
+					<input type="text" class="form-control hora"
+						id="data_pedido_fim_hora" placeholder="Hora 00:00" />
+				</div>
+
+			</div>
+
+		</div>
+
+
+		<div class="row rowpad">
+
+
+			<div class="col-xs-1 col-sm-1 col-md-1 col-lg-1 filtros"
+				align="right">
+				<label for=""> Bairro</label>
+			</div>
+			<div class="col-xs-3 col-sm-3 col-md-4	 col-lg-4">
+				<select id="cod_bairro_aberto" class="form-control"
+					style="width: 100%" name="cod_bairro_aberto">
+
+				</select>
+
+			</div>
+
+
+
+
+
+			<div class="col-xs-1 col-sm-1 col-md-2 col-lg-2 filtros"
+				align="right">
+				<label for="">Valor - De</label>
+			</div>
+
+			<div class="col-xs-2 col-sm-2 col-md-2 col-lg-2 " align="left">
+
+
+				<input type="text" class="form-control " id="val_ini_aberto" />
+
+
+
+			</div>
+			<div class="col-xs-1 col-sm-1 col-md-1 col-lg-1 filtros "
+				align="right">
+
+				<label for="">Até</label>
+			</div>
+
+			<div class="col-xs-2 col-sm-2 col-md-2 col-lg-2 " align="left">
+
+				<div class="input-group">
+					<input type="text" class="form-control " id="val_fim_aberto" />
+				</div>
+			</div>
+
+
+		</div>
+
+
+
+		<div class="row rowpad">
+
+
+			<div class="col-xs-1 col-sm-1 col-md-1 col-lg-1 filtros"
+				align="right">
+				<label for=""> Situação</label>
+			</div>
+			<div class="col-xs-4 col-sm-4 col-md-4	 col-lg-4">
+				<select id="flag_situacao" class="form-control" style="width: 100%"
+					name="flag_situacao">
+					<option value="">Todos</option>
+					<option value="A">Aberto</option>
+					<option value="E">Em envio</option>
+
+				</select>
+
+			</div>
+
+		</div>
+
+
+		<br>
+		<div class="row">
+
+
+
+
+			<div class="col-xs-12 col-md-12 col-lg-12" align="center">
+				<button class="btn btn-primary " type="button"
+					id="btn_filtros_limpar">Limpar Filtros</button>
+				<button class="btn btn-primary " type="button"
+					id="btn_filtrar_aberto">Filtrar</button>
+
+			</div>
+
+
+
+		</div>
+
+
+		<br>
+		<div class="row">
+			<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+				<label for="">Listagem de pedidos em aberto</label>
+
+			</div>
+		</div>
+
+		<br>
+
+		<div class="row">
+			<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+				<table id="table_pedidos_abertos" data-toggle="table"
+					data-height="300" data-locale="pt-BR" class="table_boots"
+					data-minimum-count-columns="1" data-reorderable-columns="false"
+					data-pagination="true" data-page-list="[4,10,25,50,100]"
+					data-page-size="4" data-pagination-first-text="Primeiro"
+					data-pagination-pre-text="Anterior"
+					data-pagination-next-text="Próximo"
+					data-pagination-last-text="Último" data-sort-name="FLAG_STATUS"
+					'data-sort-order="asc">
+					<thead class="header">
+						<tr>
+							<th data-visible="false" data-field="ID_PEDIDO"></th>
+							<th data-field="NUM_PED" data-width="7%" data-sortable="true"
+								data-align="center">Número</th>
+							<th data-field="DESCPROD" data-width="30%"
+								data-formatter="qtdProdFormatter" data-align="left">Produto</th>
+							<th data-field="data_formatada" data-width="20%"
+								data-sortable="true" data-align="center">Data</th>
+							<th data-field="DESC_BAIRRO" data-width="15%"
+								data-sortable="true" data-align="center">Bairro</th>
+							<th data-field="VAL_TOTALPROD" data-width="15%"
+								data-align="right" data-formatter="valorFormater"
+								data-sortable="true">Valor</th>
+							<th data-field="FLAG_STATUS" data-formatter="statusFormater"
+								data-width="10%" data-sortable="true" data-align="center">Situação</th>
+							<th data-sortable="false" data-width="10%" data-align="center"
+								data-formatter="btnFormater">Opções</th>
+						</tr>
+					</thead>
+					<tbody>
+					</tbody>
+				</table>
+			</div>
+
+		</div>
+		<!--fim PEDIDOS EM ABERTO --------------------------------------------------------------------------------------------------------------------------------------->
+
+
+
+
+
+
+
+
+
+
+
+
+
+		<br> <input id="sys_formatador" type="hidden">
+
+	</div>
+</div>
+</html>
+
+
+
+
+
