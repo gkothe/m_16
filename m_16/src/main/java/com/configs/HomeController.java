@@ -34,6 +34,7 @@ import org.json.simple.JSONValue;
 import org.json.simple.parser.JSONParser;
 
 import com.ajax.Home_ajax;
+import com.ajax.Pedidos_ajax;
 
 /**
  * @author Virtuallis MÃ³dulo responsÃ¡vel pelas tarefas
@@ -41,7 +42,7 @@ import com.ajax.Home_ajax;
 @SuppressWarnings("unchecked")
 @WebServlet(urlPatterns = { "/home" })
 public class HomeController extends javax.servlet.http.HttpServlet {
-	Connection conn;
+;
 	private final SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) {
@@ -117,7 +118,7 @@ public class HomeController extends javax.servlet.http.HttpServlet {
 		request.setCharacterEncoding("UTF-8");
 
 		int coddistr = Integer.parseInt(request.getSession(false).getAttribute("coddis").toString());
-		
+		Connection conn = null;
 		JSONObject objRetorno = new JSONObject();
 
 		try {
@@ -129,8 +130,19 @@ public class HomeController extends javax.servlet.http.HttpServlet {
 				Home_ajax.checkPedidos(request, response,conn,coddistr);
 			}else if (cmd.equalsIgnoreCase("getLogo")) {
 				Home_ajax.getLogo(request, response,conn,coddistr);
+			}else if (cmd.equalsIgnoreCase("loadMotivos")) {
+				Home_ajax.loadMotivos(request, response, conn, coddistr);
+			}else if (cmd.equalsIgnoreCase("carregaPedidosAbertos")) {
+				Pedidos_ajax.carregaPedidosAbertos(request, response, conn, coddistr);
+			}else if (cmd.equalsIgnoreCase("carregaBairros")) {
+				Pedidos_ajax.carregaBairros(request, response, conn, coddistr);
+			}else if (cmd.equalsIgnoreCase("carregaPedido")) {
+				Pedidos_ajax.carregaPedido(request, response, conn, coddistr);
 			}
 			
+			
+			
+						
 
 			conn.commit();
 		} catch (Exception ex) {

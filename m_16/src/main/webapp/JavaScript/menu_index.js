@@ -180,7 +180,7 @@ if(menu == "s"){
 		$table.bootstrapTable('resetView');
 	});
 
-	//loadMotivos();
+	loadMotivos();
 
 	$('#msg_nao_vizu').blink({
 		delay : 400
@@ -323,7 +323,7 @@ function loadMotivos() {
 
 	$.ajax({
 		type : 'POST',
-		url : "php/sys_lista_abertos_ajax.php",
+		url : "home?ac=ajax",
 		data : {
 			cmd : "loadMotivos",
 
@@ -374,7 +374,7 @@ function visualizarPedido(id) {
 
 	$.ajax({
 		type : 'POST',
-		url : "php/sys_lista_abertos_ajax.php",
+		url : "home?ac=ajax",
 		data : {
 			cmd : "carregaPedido",
 			id : id

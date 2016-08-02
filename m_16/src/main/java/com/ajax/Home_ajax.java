@@ -60,8 +60,8 @@ public class Home_ajax {
 				pedidos.put("valor", rs.getString("VAL_TOTALPROD"));
 				pedidos.put("id_pedido", rs.getString("id_pedido"));
 
-				Date date_pedido = rs.getDate("DATA_PEDIDO");
-				Date agora = rs.getDate("agora");
+				Date date_pedido = rs.getTimestamp("DATA_PEDIDO");
+				Date agora = rs.getTimestamp("agora");
 				String texto_minutos = "";
 				// double time =
 
@@ -123,6 +123,40 @@ public class Home_ajax {
 		out.print(objRetorno.toJSONString());
 
 	}
+	
+	
+	
+	
+	public static void loadMotivos(HttpServletRequest request, HttpServletResponse response, Connection conn, int coddistr) throws Exception {
+
+		PrintWriter out = response.getWriter();
+
+		JSONArray objRetorno = new JSONArray();
+
+		String sql = "select * from  motivos_recusa order by DESC_MOTIVO";
+
+		PreparedStatement st = conn.prepareStatement(sql);
+		ResultSet rs = st.executeQuery();
+
+		while (rs.next()) {
+			
+			JSONObject obj = new JSONObject();
+			obj.put("COD_MOTIVO", rs.getString("COD_MOTIVO"));
+			obj.put("DESC_MOTIVO", rs.getString("DESC_MOTIVO"));
+			
+			objRetorno.add(obj);
+		}
+
+	
+		out.print(objRetorno.toJSONString());
+
+	}
+	
+	
+	
+	
+	
+	
 
 	public static void main(String[] args) {
 

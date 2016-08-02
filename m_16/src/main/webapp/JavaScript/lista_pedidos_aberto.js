@@ -136,7 +136,7 @@ function carregaBairros() {
 
 	$.ajax({
 		type : "POST",
-		url : "php/sys_lista_abertos_ajax.php",
+		url : "home?ac=ajax",
 		dataType : "json",
 		async : true,
 		data : {
@@ -189,7 +189,7 @@ function loadAbertos(blockui) {
 
 	$.ajax({
 		type : "POST",
-		url : "php/sys_lista_abertos_ajax.php",
+		url : "home?ac=ajax",
 		dataType : "json",
 		async : true,
 		data : {
