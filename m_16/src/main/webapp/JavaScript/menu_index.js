@@ -454,7 +454,7 @@ function finalizarPedido() {
 
 		$.ajax({
 			type : "POST",
-			url : "php/sys_lista_abertos_ajax.php",
+			url : "home?ac=ajax",
 			dataType : "json",
 			async : true,
 			data : {
@@ -525,7 +525,7 @@ function responderPedido() {
 			var motivos_json = JSON.stringify(motivos);
 			$.ajax({
 				type : "POST",
-				url : "php/sys_lista_abertos_ajax.php",
+				url : "home?ac=ajax",
 				dataType : "json",
 				async : true,
 				data : {

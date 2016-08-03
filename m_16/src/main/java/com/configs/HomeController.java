@@ -42,7 +42,7 @@ import com.ajax.Pedidos_ajax;
 @SuppressWarnings("unchecked")
 @WebServlet(urlPatterns = { "/home" })
 public class HomeController extends javax.servlet.http.HttpServlet {
-;
+	;
 	private final SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) {
@@ -74,11 +74,11 @@ public class HomeController extends javax.servlet.http.HttpServlet {
 
 			if (strTipo.equalsIgnoreCase("listaped")) {
 				listaped(request, response);
-			}else if (strTipo.equalsIgnoreCase("listapedfechado")) {
+			} else if (strTipo.equalsIgnoreCase("listapedfechado")) {
 				listapedfechado(request, response);
-			}else if (strTipo.equalsIgnoreCase("listaprod")) {
+			} else if (strTipo.equalsIgnoreCase("listaprod")) {
 				listaprod(request, response);
-			}else if (strTipo.equalsIgnoreCase("listaconfigemp")) {
+			} else if (strTipo.equalsIgnoreCase("listaconfigemp")) {
 				listaconfigemp(request, response);
 			} else if (strTipo.equalsIgnoreCase("home")) {
 				home(request, response);
@@ -127,30 +127,29 @@ public class HomeController extends javax.servlet.http.HttpServlet {
 			String cmd = request.getParameter("cmd");
 
 			if (cmd.equalsIgnoreCase("checkPedidos")) {
-				Home_ajax.checkPedidos(request, response,conn,coddistr);
-			}else if (cmd.equalsIgnoreCase("getLogo")) {
-				Home_ajax.getLogo(request, response,conn,coddistr);
-			}else if (cmd.equalsIgnoreCase("loadMotivos")) {
+				Home_ajax.checkPedidos(request, response, conn, coddistr);
+			} else if (cmd.equalsIgnoreCase("getLogo")) {
+				Home_ajax.getLogo(request, response, conn, coddistr);
+			} else if (cmd.equalsIgnoreCase("loadMotivos")) {
 				Home_ajax.loadMotivos(request, response, conn, coddistr);
-			}else if (cmd.equalsIgnoreCase("carregaPedidosAbertos")) {
+			} else if (cmd.equalsIgnoreCase("carregaPedidosAbertos")) {
 				Pedidos_ajax.carregaPedidosAbertos(request, response, conn, coddistr);
-			}else if (cmd.equalsIgnoreCase("carregaBairros")) {
+			} else if (cmd.equalsIgnoreCase("carregaBairros")) {
 				Pedidos_ajax.carregaBairros(request, response, conn, coddistr);
-			}else if (cmd.equalsIgnoreCase("carregaPedido")) {
+			} else if (cmd.equalsIgnoreCase("carregaPedido")) {
 				Pedidos_ajax.carregaPedido(request, response, conn, coddistr);
+			} else if (cmd.equalsIgnoreCase("finalizandoPedido")) {
+				Pedidos_ajax.finalizandoPedido(request, response, conn, coddistr);
+			} else if (cmd.equalsIgnoreCase("responderPedido")) {
+				Pedidos_ajax.responderPedido(request, response, conn, coddistr);
 			}
-			
-			
-			
-						
 
 			conn.commit();
 		} catch (Exception ex) {
-			objRetorno.put("SITUACAO", "ERRO");
 			if (ex.getMessage() == null || ex.getMessage().equals("")) {
-				objRetorno.put("msg", "Erro, por favor entrar em contato com suporte.");
+				objRetorno.put("erro", "Erro, por favor entrar em contato com suporte.");
 			} else {
-				objRetorno.put("msg", ex.getMessage());
+				objRetorno.put("erro", ex.getMessage());
 			}
 
 			ex.printStackTrace();
@@ -167,11 +166,6 @@ public class HomeController extends javax.servlet.http.HttpServlet {
 		}
 	}
 
-
-	
-	
-	
-	
 	private void listapedfechado(HttpServletRequest request, HttpServletResponse response) throws Exception {
 		try {
 			request.getRequestDispatcher("/WEB-INF/lista_pedidos_historico.html").forward(request, response);
@@ -181,7 +175,7 @@ public class HomeController extends javax.servlet.http.HttpServlet {
 		} finally {
 		}
 	}
-	
+
 	private void listaprod(HttpServletRequest request, HttpServletResponse response) throws Exception {
 		try {
 			request.getRequestDispatcher("/WEB-INF/produtos_distribuidora.html").forward(request, response);
@@ -191,7 +185,7 @@ public class HomeController extends javax.servlet.http.HttpServlet {
 		} finally {
 		}
 	}
-	
+
 	private void listaconfigemp(HttpServletRequest request, HttpServletResponse response) throws Exception {
 		try {
 			request.getRequestDispatcher("/WEB-INF/config_empresa.html").forward(request, response);
@@ -201,7 +195,7 @@ public class HomeController extends javax.servlet.http.HttpServlet {
 		} finally {
 		}
 	}
-	
+
 	private void listaped(HttpServletRequest request, HttpServletResponse response) throws Exception {
 		try {
 			request.getRequestDispatcher("/WEB-INF/lista_pedidos_aberto.html").forward(request, response);
@@ -211,7 +205,7 @@ public class HomeController extends javax.servlet.http.HttpServlet {
 		} finally {
 		}
 	}
-	
+
 	private void home(HttpServletRequest request, HttpServletResponse response) throws Exception {
 		try {
 			request.getRequestDispatcher("/WEB-INF/home.jsp").forward(request, response);

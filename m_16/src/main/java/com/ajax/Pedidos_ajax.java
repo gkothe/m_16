@@ -14,8 +14,11 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 
 public class Pedidos_ajax {
+
+	public static int horas_fim_pedido = 6;
 
 	public static void carregaBairros(HttpServletRequest request, HttpServletResponse response, Connection conn, int coddistr) throws Exception {
 		JSONArray retorno = new JSONArray();
@@ -232,23 +235,168 @@ public class Pedidos_ajax {
 
 				st2 = conn.prepareStatement("SELECT DESC_NOME, DESC_TELEFONE,DESC_ENDERECO, desc_bairro from usuario inner join bairros on bairros.cod_bairro = usuario.cod_bairro  where ID_usuario = ?");
 				st2.setInt(1, (user));
-				rs2 = st.executeQuery();
+				rs2 = st2.executeQuery();
 
 				while (rs2.next()) {
 
-					objRetorno.put("DESC_NOME", rs.getString("DESC_NOME") );
-					objRetorno.put("DESC_TELEFONE", rs.getString("DESC_TELEFONE"));
-					objRetorno.put("DESC_ENDERECO", rs.getString("DESC_ENDERECO"));
-					objRetorno.put("desc_bairro",rs.getString("desc_bairro") );
-					objRetorno.put("m_tempo_entrega", rs.getTime("TEMPO_ESTIMADO_ENTREGA") );
+					objRetorno.put("DESC_NOME", rs2.getString("DESC_NOME"));
+					objRetorno.put("DESC_TELEFONE", rs2.getString("DESC_TELEFONE"));
+					objRetorno.put("DESC_ENDERECO", rs2.getString("DESC_ENDERECO"));
+					objRetorno.put("desc_bairro", rs2.getString("desc_bairro"));
+					objRetorno.put("m_tempo_entrega", new SimpleDateFormat("HH:mm").format(rs.getTimestamp("TEMPO_ESTIMADO_ENTREGA")));
 					objRetorno.put("m_data_resposta", new SimpleDateFormat("dd/MM/yyyy HH:mm").format(rs.getTimestamp("DATA_PEDIDO_RESPOSTA")));
-					
-					
+
+					Calendar data6 = Calendar.getInstance();
+					data6.setTime(rs.getTimestamp("DATA_PEDIDO_RESPOSTA"));
+					data6.add(Calendar.HOUR_OF_DAY, horas_fim_pedido);
+
+					if (data6.getTime().before(new Date())) {
+						objRetorno.put("darok", true);
+
+					}
+
 				}
 
 			}
 
 		}
+
+		out.print(objRetorno.toJSONString());
+
+	}
+
+	public static void finalizandoPedido(HttpServletRequest request, HttpServletResponse response, Connection conn, int coddistr) throws Exception {
+
+		PrintWriter out = response.getWriter();
+		JSONObject objRetorno = new JSONObject();
+
+		String id_pedido = request.getParameter("id_pedido") == null ? "" : request.getParameter("id_pedido"); //
+
+		String sql = " select * from  pedido where id_pedido = ? and ID_DISTRIBUIDORA = ? and flag_status = 'E'  ";
+
+		PreparedStatement st = conn.prepareStatement(sql);
+		st.setInt(1, Integer.parseInt(id_pedido));
+		st.setInt(2, coddistr);
+		ResultSet rs = st.executeQuery();
+		if (!rs.next()) {
+			throw new Exception("Pedido inválido! Entre em contato com o suporte");
+		} else {
+
+			Calendar data6 = Calendar.getInstance();
+			data6.setTime(rs.getTimestamp("DATA_PEDIDO_RESPOSTA"));
+			data6.add(Calendar.HOUR_OF_DAY, horas_fim_pedido);
+
+			if (data6.getTime().after(new Date())) {
+				throw new Exception("A hora atual deve exceder em " + horas_fim_pedido + "h a data de resposta para o pedido ser finalizado manualmente.");
+			}
+
+			sql = " update  pedido  set flag_status = 'O' where id_pedido = ? and ID_DISTRIBUIDORA = ? and flag_status = 'E' ";
+			st = conn.prepareStatement(sql);
+			st.setInt(1, Integer.parseInt(id_pedido));
+			st.setInt(2, coddistr);
+ 			st.executeUpdate();
+
+		}
+
+		objRetorno.put("msg", "ok");
+
+		out.print(objRetorno.toJSONString());
+
+	}
+
+	public static void responderPedido(HttpServletRequest request, HttpServletResponse response, Connection conn, int coddistr) throws Exception {
+
+		PrintWriter out = response.getWriter();
+		JSONObject objRetorno = new JSONObject();
+
+		String id_pedido = request.getParameter("id") == null ? "" : request.getParameter("id"); //
+		String motivos_json = request.getParameter("motivos_json") == null ? "" : request.getParameter("motivos_json");
+		String hora_entrega = request.getParameter("hora_entrega") == null ? "" : request.getParameter("hora_entrega");
+		String min_entrega = request.getParameter("min_entrega") == null ? "" : request.getParameter("min_entrega");
+		String resposta = request.getParameter("resposta") == null ? "" : request.getParameter("resposta");
+
+		if(hora_entrega.equalsIgnoreCase("")){
+			hora_entrega = "0";	
+		}
+		
+		if(min_entrega.equalsIgnoreCase("")){
+			min_entrega = "0";	
+		}
+		
+		String sql = " 	select * from pedido  where ID_DISTRIBUIDORA = ? and id_pedido = ? and flag_status = 'A'  ";
+
+		PreparedStatement st = conn.prepareStatement(sql);
+		st.setInt(1, coddistr);
+		st.setInt(2, Integer.parseInt(id_pedido));
+		ResultSet rs = st.executeQuery();
+
+		if (!rs.next()) {
+			throw new Exception("Pedido inválido, contate o suporte.");
+		} else {
+
+			if (resposta.equalsIgnoreCase("A")) {
+				
+				if (hora_entrega == "0" && min_entrega == "0") {
+					throw new Exception("Você deve preencher o(s) campo(s) de tempo estimado para poder responder o pedido.");
+				}
+				
+				if(!Utilitario.isNumeric(hora_entrega) || !Utilitario.isNumeric(min_entrega)){
+					throw new Exception("Você deve preencher o(s) campo(s) de tempo estimado corretamente poder responder o pedido.");
+				}
+				
+				
+				// fazer whatever tem q fazer e setar o pedido para E  //TODO pagamento acho
+				String tempoentrega = hora_entrega + ":" + min_entrega;
+				sql = "update  pedido  set flag_status = 'E', `TEMPO_ESTIMADO_ENTREGA` =  ? , `DATA_PEDIDO_RESPOSTA` = NOW()  where ID_DISTRIBUIDORA = ? and id_pedido = ? and flag_status = 'A' ";
+				st = conn.prepareStatement(sql);
+				st.setString(1, tempoentrega);
+				st.setInt(2, coddistr);
+				st.setInt(3, Integer.parseInt(id_pedido));
+				st.executeUpdate();
+				
+				
+				objRetorno.put("msg", "ok");
+
+			} else if (resposta.equalsIgnoreCase("R")) {
+				
+				JSONArray motivos = (JSONArray)new JSONParser().parse(motivos_json);
+				
+				if(motivos.size()==0){
+					throw new Exception ( "Você deve escolher pelo menos um motivo para recusar o pedido." );
+				}
+				
+				sql = "update  pedido  set flag_status = 'R', DATA_PEDIDO_RESPOSTA = NOW() where ID_DISTRIBUIDORA = ? and id_pedido = ? and flag_status = 'A' ";
+				st = conn.prepareStatement(sql);
+				st.setInt(1, coddistr);
+				st.setInt(2, Integer.parseInt(id_pedido));
+				st.executeUpdate();
+				
+				int codmotivo =0;
+				for (int i = 0; i < motivos.size(); i++) {
+					
+					try {
+						codmotivo = Integer.parseInt( motivos.get(i).toString());	
+					} catch (Exception e) {
+						throw new Exception("Erro no processamento dos 'motivos'. Entre em contato com suporte. ");
+					}
+					
+					
+					sql = "INSERT INTO pedido_motivos_recusa (`ID_PEDIDO`, `COD_MOTIVO`) VALUES (?, ?) ";
+					st = conn.prepareStatement(sql);
+					st.setInt(1, Integer.parseInt(id_pedido));
+					st.setInt(2, codmotivo);
+					st.executeUpdate();
+					
+				}
+				
+				objRetorno.put("msg", "ok");
+
+			}else{
+				throw new Exception ( "Resposta inválida, contate o suporte." );
+			}
+		}
+
+		objRetorno.put("msg", "ok");
 
 		out.print(objRetorno.toJSONString());
 
