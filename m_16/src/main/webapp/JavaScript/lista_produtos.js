@@ -113,7 +113,7 @@ function editarProduto(id_produto) {
 
 	$.ajax({
 		type : "POST",
-		url : "php/sys_lista_produtos_ajax.php",
+		url : "home?ac=ajax",
 		dataType : "json",
 		async : true,
 		data : {
@@ -176,7 +176,7 @@ function salvarProduto(id_produto) {
 
 	$.ajax({
 		type : "POST",
-		url : "php/sys_lista_produtos_ajax.php",
+		url : "home?ac=ajax",
 		dataType : "json",
 		async : true,
 		data : {
@@ -219,7 +219,7 @@ function loadProdutos() {
 
 	$.ajax({
 		type : "POST",
-		url : "php/sys_lista_produtos_ajax.php",
+		url : "home?ac=ajax",
 		dataType : "json",
 		async : true,
 		data : {

@@ -34,6 +34,7 @@ import org.json.simple.JSONValue;
 import org.json.simple.parser.JSONParser;
 
 import com.ajax.Home_ajax;
+import com.ajax.Parametros_ajax;
 import com.ajax.Pedidos_ajax;
 
 /**
@@ -148,7 +149,16 @@ public class HomeController extends javax.servlet.http.HttpServlet {
 				Pedidos_ajax.finalizandoPedido(request, response, conn, coddistr);
 			} else if (cmd.equalsIgnoreCase("responderPedido")) {
 				Pedidos_ajax.responderPedido(request, response, conn, coddistr);
+			} else if (cmd.equalsIgnoreCase("carregaProdutos")) {
+				Parametros_ajax.carregaProdutos(request, response, conn, coddistr);
+			} else if (cmd.equalsIgnoreCase("salvar_prod")) {
+				Parametros_ajax.salvarProd(request, response, conn, coddistr);
+			}else if (cmd.equalsIgnoreCase("loadProduto")) {
+				Parametros_ajax.loadProduto(request, response, conn, coddistr);
 			}
+			
+			
+			
 			
 			conn.commit();
 		} catch (Exception ex) {

@@ -48,7 +48,7 @@ function showHelp(){
 	
 }
 
-function trocaPag(pag,php){
+function trocaPag(pag,jsp){
 
 	var link = $(pag).attr('linkmenu');
 	var men = "";
@@ -273,8 +273,8 @@ function checarPedidos() {
 
 				}
 
-				html = ("<li> <div class=\"text-center\"> <a  href=\"home.php?link=lista_pedidos_aberto&php=N\"  > <strong>Ver todos pedidos</strong> <i class=\"fa fa-angle-right\"></i> </a> </div> </li>");
-
+				html = ("<li> <div class=\"text-center\"> <a  href=\"home?link=listaped&jsp=N&m=m\"  > <strong>Ver todos pedidos</strong> <i class=\"fa fa-angle-right\"></i> </a> </div> </li>");
+  
 				$("#menu_notification").html($("#menu_notification").html() + html);
 
 				$(".not_numerico").autoNumeric('init', numerico);

@@ -4,7 +4,6 @@
 <html lang="pt-br">
 <head>
 <meta charset="utf-8" />
-<title>Login</title>
 <meta content="width=device-width, initial-scale=1.0" name="viewport" />
 
 <title>Nameless! |</title>
@@ -184,7 +183,7 @@ input:focus {
 
 								<div style="cursor: pointer; display: none;" id="msg_holder">
 									<a onclick="trocaPag(this,'N');"
-										linkmenu="lista_pedidos_aberto"><span
+										linkmenu="listaped"><span
 										class="label label-danger aviso_pedido" id="msg_nao_vizu"
 										style="font-size: 195%;">Você tem pedidos não
 											respondidos! </span></a>
