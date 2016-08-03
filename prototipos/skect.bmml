@@ -1,0 +1,215 @@
+<mockup version="1.0" skin="sketch" fontFace="Balsamiq Sans" measuredW="2169" measuredH="990" mockupW="2146" mockupH="984">
+  <controls>
+    <control controlID="0" controlTypeID="com.balsamiq.mockups::iPhone" x="208" y="35" w="814" h="955" measuredW="282" measuredH="510" zOrder="0" locked="false" isInGroup="-1"/>
+    <control controlID="1" controlTypeID="com.balsamiq.mockups::DataGrid" x="431" y="308" w="382" h="374" measuredW="350" measuredH="113" zOrder="1" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>Produto%5Cr%20%5Ev%2C%20Distribuidora%20%5Ev%2C%20Valor%20%5Ev%2C%20Op%E7%F5es%20%0AKaiser%20Lata%20375ml%2C%20Machado%20%2C%20R%24%205.00%2C%0ASkol%20Lata%20375ml%2C%20Machado%20%2C%20R%24%204.50%2C%0ASkol%20Lata%20375ml%2C%20DiFesta%20%2C%20R%24%204.00%2C%0A%7B65L%2C%200R%2C%2035%2C%200C%7D</text>
+      </controlProperties>
+    </control>
+    <control controlID="2" controlTypeID="com.balsamiq.mockups::Button" x="759" y="331" w="45" h="23" measuredW="33" measuredH="27" zOrder="2" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>+</text>
+      </controlProperties>
+    </control>
+    <control controlID="3" controlTypeID="com.balsamiq.mockups::Tooltip" x="788" y="293" w="-1" h="-1" measuredW="163" measuredH="33" zOrder="4" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>Adicionar%20ao%20carrinho</text>
+        <tooltipDirection>SW</tooltipDirection>
+      </controlProperties>
+    </control>
+    <control controlID="4" controlTypeID="com.balsamiq.mockups::Button" x="759" y="358" w="45" h="23" measuredW="33" measuredH="27" zOrder="3" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>+</text>
+      </controlProperties>
+    </control>
+    <control controlID="9" controlTypeID="com.balsamiq.mockups::Button" x="404" y="222" w="55" h="27" measuredW="55" measuredH="27" zOrder="5" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>Menu%20</text>
+      </controlProperties>
+    </control>
+    <control controlID="11" controlTypeID="com.balsamiq.mockups::TextInput" x="552" y="271" w="252" h="-1" measuredW="79" measuredH="27" zOrder="6" locked="false" isInGroup="-1"/>
+    <control controlID="12" controlTypeID="com.balsamiq.mockups::Label" x="431" y="274" w="115" h="21" measuredW="104" measuredH="21" zOrder="7" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>Pesquisa%20produto</text>
+      </controlProperties>
+    </control>
+    <control controlID="14" controlTypeID="com.balsamiq.mockups::Label" x="431" y="661" w="382" h="21" measuredW="100" measuredH="21" zOrder="8" locked="false" isInGroup="-1">
+      <controlProperties>
+        <color>0</color>
+        <text>Total%20no%20carrinho</text>
+      </controlProperties>
+    </control>
+    <control controlID="15" controlTypeID="com.balsamiq.mockups::Label" x="675" y="657" w="76" h="21" measuredW="61" measuredH="21" zOrder="9" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>R%24%2057.00</text>
+      </controlProperties>
+    </control>
+    <control controlID="16" controlTypeID="com.balsamiq.mockups::StickyNote" x="23" y="107" w="309" h="854" measuredW="109" measuredH="123" zOrder="10" locked="false" isInGroup="-1">
+      <controlProperties>
+        <size>14</size>
+        <text>Tela%20de%20pesquisa%0A%20%0ABot%E3o%20do%20menu%20%E9%20aquele%20classico%20com%203%20linhas%0APesquisa%20-%20Depois%20de%20uns%20segundos%20da%20ultima%20letra%20digitada%2C%20dispara%20a%20consulta.%20Ou%20seja%2C%20quando%20o%20cara%20para%20de%20digita.%20Ou%20da%20pra%20botar%20um%20botao%20ao%20lado%2C%20de%20%22Pesquisar%22.%0A%20%0ASe%20o%20item%20for%20diferente%20da%20distribuidora%20no%20carrinho%2C%20o%20botao%20fica%20desabilitado%20%28aqele%20cinza%20meio%20escuro%29%20com%20a%20tooltip%20que%20tem%20na%20imagem.%0A%20%0A%20%0ALocaliza%E7%E3o%20do%20nome%20do%20logo%20do%20aplicativo%20-%20n%E3o%20tenho%20ctz%20onde%20%20fica%20melhor%2C%20dar%20uma%20olhada%20em%20outros%20aplicativos%20e%20ver%20como%20%E9%20o%20layout.%20Botao%20do%20menu%20deve%20ficar%20abaixo%20disso%20ou%20do%20lado%20esquerdo%3F%20CONVERSAR%0A%20%0A%20%0AProduto%20tem%20autocomplete%0A%20%0A%20%0AValores%20sempre%20a%20direita%2C%20Nome%20das%20colunas%20sempre%20centralizados%0A%20</text>
+      </controlProperties>
+    </control>
+    <control controlID="17" controlTypeID="com.balsamiq.mockups::Button" x="759" y="658" w="54" h="23" measuredW="45" measuredH="27" zOrder="11" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>Car</text>
+      </controlProperties>
+    </control>
+    <control controlID="18" controlTypeID="com.balsamiq.mockups::Tooltip" x="773" y="619" w="289" h="51" measuredW="273" measuredH="0" zOrder="12" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>Ir%20para%20o%20carrinho%20%28botao%20com%20simbolo%20do%20carrinho%2C%20vai%20para%20a%20tela%20de%20pagamento%29</text>
+        <tooltipDirection>SW</tooltipDirection>
+      </controlProperties>
+    </control>
+    <control controlID="19" controlTypeID="com.balsamiq.mockups::Label" x="431" y="697" w="382" h="77" measuredW="416" measuredH="41" zOrder="13" locked="false" isInGroup="-1">
+      <controlProperties>
+        <size>32</size>
+        <text>POSSIVEIS%20PROPAGANDAS</text>
+      </controlProperties>
+    </control>
+    <control controlID="21" controlTypeID="com.balsamiq.mockups::iPhone" x="1355" y="6" w="814" h="955" measuredW="282" measuredH="510" zOrder="14" locked="false" isInGroup="-1"/>
+    <control controlID="22" controlTypeID="com.balsamiq.mockups::StickyNote" x="1164" y="85" w="309" h="854" measuredW="109" measuredH="123" zOrder="15" locked="false" isInGroup="-1">
+      <controlProperties>
+        <size>14</size>
+        <text>Tela%20de%20add%20ao%20carrinho%0A%20%0A%20%0ADevemos%20ter%20o%20botao%20de%20menu%20aqui%3F%20Nao%20ter%20evita%20de%20sair%20acidentalmente%20e%20ele%20se%20perder%20mentalmente%20na%20compra.%20Obriga%20o%20usuario%20a%20clicar%20em%20um%20dos%203%20bot%E7%F5es%20da%20tela.%20CONVERSAR%0A%20%0AAo%20clicar%20no%20%22+%22%2C%20%22-%22%20ou%20digitar%20no%20campo%20qtidade%2C%20mudar%20automaticamente%20o%20valor%20total%20e%20o%20valor%20do%20carrinho%0A%20%0A%20%0AOs%20textos%20dos%20bot%F5es%20podem%20ser%20melhorados%2C%20aberto%20a%20sugest%F5es.%20CONVERSAR%0A%20%0AEnquanto%20o%20valor%20total%20do%20carrinho%20nao%20atingir%20o%20val%20minimo%2C%20manter%20ele%20em%20vermelho%0A%20</text>
+      </controlProperties>
+    </control>
+    <control controlID="24" controlTypeID="com.balsamiq.mockups::Canvas" x="431" y="697" w="382" h="92" measuredW="100" measuredH="70" zOrder="16" locked="false" isInGroup="-1">
+      <controlProperties>
+        <backgroundAlpha>0</backgroundAlpha>
+        <borderStyle>square</borderStyle>
+      </controlProperties>
+    </control>
+    <control controlID="25" controlTypeID="com.balsamiq.mockups::Label" x="1575" y="271" w="361" h="21" measuredW="172" measuredH="21" zOrder="17" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>Produto%3A%20Kaiser%20Lata%20375%20ML</text>
+      </controlProperties>
+    </control>
+    <control controlID="26" controlTypeID="com.balsamiq.mockups::Label" x="1575" y="295" w="361" h="21" measuredW="135" measuredH="21" zOrder="18" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>Valor%20Unit%E1rio%3A%20R%24%205%2C00</text>
+      </controlProperties>
+    </control>
+    <control controlID="27" controlTypeID="com.balsamiq.mockups::Label" x="1575" y="330" w="70" h="21" measuredW="73" measuredH="21" zOrder="19" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>Quantiade%3A%20</text>
+      </controlProperties>
+    </control>
+    <control controlID="28" controlTypeID="com.balsamiq.mockups::TextInput" x="1645" y="327" w="111" h="-1" measuredW="22" measuredH="27" zOrder="20" locked="false" isInGroup="-1">
+      <controlProperties>
+        <align>right</align>
+        <text>6</text>
+      </controlProperties>
+    </control>
+    <control controlID="29" controlTypeID="com.balsamiq.mockups::Button" x="1765" y="327" w="-1" h="-1" measuredW="33" measuredH="27" zOrder="21" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>+</text>
+      </controlProperties>
+    </control>
+    <control controlID="31" controlTypeID="com.balsamiq.mockups::Button" x="1804" y="327" w="-1" h="-1" measuredW="29" measuredH="27" zOrder="22" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>-</text>
+      </controlProperties>
+    </control>
+    <control controlID="32" controlTypeID="com.balsamiq.mockups::Label" x="1575" y="359" w="361" h="21" measuredW="130" measuredH="21" zOrder="23" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>Valor%20Total%3A%20R%24%2030%2C00</text>
+      </controlProperties>
+    </control>
+    <control controlID="33" controlTypeID="com.balsamiq.mockups::Label" x="1575" y="382" w="361" h="21" measuredW="170" measuredH="21" zOrder="24" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>Valor%20do%20Carrinho%20%3A%20R%24%2087%2C00</text>
+      </controlProperties>
+    </control>
+    <control controlID="34" controlTypeID="com.balsamiq.mockups::Button" x="1854" y="437" w="97" h="34" measuredW="71" measuredH="27" zOrder="25" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>Finalizar</text>
+      </controlProperties>
+    </control>
+    <control controlID="35" controlTypeID="com.balsamiq.mockups::Image" x="1854" y="308" w="97" h="117" measuredW="77" measuredH="79" zOrder="26" locked="false" isInGroup="-1"/>
+    <control controlID="36" controlTypeID="com.balsamiq.mockups::Tooltip" x="1916" y="326" w="222" h="33" measuredW="217" measuredH="0" zOrder="27" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>Sugest%E3o%3A%20Imagem%20do%20produto</text>
+        <tooltipDirection>SW</tooltipDirection>
+      </controlProperties>
+    </control>
+    <control controlID="37" controlTypeID="com.balsamiq.mockups::Button" x="1686" y="437" w="153" h="34" measuredW="144" measuredH="27" zOrder="28" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>Continuar%20comprando</text>
+      </controlProperties>
+    </control>
+    <control controlID="38" controlTypeID="com.balsamiq.mockups::Button" x="1575" y="437" w="96" h="34" measuredW="75" measuredH="27" zOrder="29" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>Cancelar</text>
+      </controlProperties>
+    </control>
+    <control controlID="39" controlTypeID="com.balsamiq.mockups::Tooltip" x="1519" y="467" w="116" h="137" measuredW="115" measuredH="0" zOrder="30" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>Cancela%20a%20compra%20do%20item%20e%20volta%20para%20tela%20de%20pesquisa</text>
+        <tooltipDirection>NE</tooltipDirection>
+      </controlProperties>
+    </control>
+    <control controlID="40" controlTypeID="com.balsamiq.mockups::Tooltip" x="1678" y="460" w="111" h="186" measuredW="114" measuredH="0" zOrder="31" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>Adiciona%20o%20item%20ao%20carrinho%20e%20volta%20para%20a%20tela%20de%20pesquisa%20filtrando%20por%20itens%20da%20mesma%20distribu%EDdora</text>
+        <tooltipDirection>NE</tooltipDirection>
+      </controlProperties>
+    </control>
+    <control controlID="41" controlTypeID="com.balsamiq.mockups::Tooltip" x="1825" y="460" w="111" h="90" measuredW="119" measuredH="0" zOrder="32" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>Proceder%20para%20efetuar%20o%20pagamento</text>
+        <tooltipDirection>NE</tooltipDirection>
+      </controlProperties>
+    </control>
+    <control controlID="42" controlTypeID="com.balsamiq.mockups::Label" x="1575" y="407" w="361" h="21" measuredW="219" measuredH="21" zOrder="33" locked="false" isInGroup="-1">
+      <controlProperties>
+        <color>13576743</color>
+        <text>Valor%20minimo%20de%20entrega%20%3A%20R%24%20100%2C00</text>
+      </controlProperties>
+    </control>
+    <control controlID="43" controlTypeID="com.balsamiq.mockups::Button" x="758" y="393" w="45" h="23" measuredW="33" measuredH="27" zOrder="34" locked="false" isInGroup="-1">
+      <controlProperties>
+        <color>10066329</color>
+        <text>+</text>
+      </controlProperties>
+    </control>
+    <control controlID="44" controlTypeID="com.balsamiq.mockups::Label" x="1575" y="244" w="361" h="21" measuredW="132" measuredH="21" zOrder="35" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>Distribuidora%3A%20Machado</text>
+      </controlProperties>
+    </control>
+    <control controlID="45" controlTypeID="com.balsamiq.mockups::Image" x="1854" y="237" w="97" h="41" measuredW="77" measuredH="79" zOrder="36" locked="false" isInGroup="-1"/>
+    <control controlID="46" controlTypeID="com.balsamiq.mockups::Tooltip" x="1916" y="232" w="222" h="33" measuredW="224" measuredH="0" zOrder="37" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>Sugest%E3o%3A%20Logo%20da%20distribuidora</text>
+        <tooltipDirection>SW</tooltipDirection>
+      </controlProperties>
+    </control>
+    <control controlID="47" controlTypeID="com.balsamiq.mockups::Tooltip" x="779" y="401" w="171" h="140" measuredW="171" measuredH="0" zOrder="38" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>Voc%EA%20n%E3o%20pode%20adicionar%20este%20item%20ao%20carrino%2C%20porque%20ele%20pertence%20a%20uma%20distribuidora%20diferente%20da%20compra%20em%20andamento.%20</text>
+        <tooltipDirection>NW</tooltipDirection>
+      </controlProperties>
+    </control>
+    <control controlID="49" controlTypeID="com.balsamiq.mockups::Label" x="1620" y="196" w="346" h="21" measuredW="147" measuredH="21" zOrder="39" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>%22nome/logo%20do%20aplicativo%22</text>
+      </controlProperties>
+    </control>
+    <control controlID="50" controlTypeID="com.balsamiq.mockups::Canvas" x="1620" y="198" w="346" h="28" measuredW="100" measuredH="70" zOrder="40" locked="false" isInGroup="-1">
+      <controlProperties>
+        <backgroundAlpha>0</backgroundAlpha>
+      </controlProperties>
+    </control>
+    <control controlID="51" controlTypeID="com.balsamiq.mockups::Canvas" x="468" y="221" w="351" h="28" measuredW="100" measuredH="70" zOrder="41" locked="false" isInGroup="-1">
+      <controlProperties>
+        <backgroundAlpha>0</backgroundAlpha>
+      </controlProperties>
+    </control>
+    <control controlID="53" controlTypeID="com.balsamiq.mockups::Label" x="474" y="225" w="345" h="21" measuredW="147" measuredH="21" zOrder="42" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>%22nome/logo%20do%20aplicativo%22</text>
+      </controlProperties>
+    </control>
+  </controls>
+</mockup>
