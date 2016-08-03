@@ -118,15 +118,11 @@ public class Home_ajax {
 			objRetorno.put("desc_nome", rs.getString("DESC_NOME_ABREV"));
 		}
 
-		
 		objRetorno.put("nome_img", "images/logos/logo_" + coddistr + ".jpg");
 		out.print(objRetorno.toJSONString());
 
 	}
-	
-	
-	
-	
+
 	public static void loadMotivos(HttpServletRequest request, HttpServletResponse response, Connection conn, int coddistr) throws Exception {
 
 		PrintWriter out = response.getWriter();
@@ -139,24 +135,99 @@ public class Home_ajax {
 		ResultSet rs = st.executeQuery();
 
 		while (rs.next()) {
-			
+
 			JSONObject obj = new JSONObject();
 			obj.put("COD_MOTIVO", rs.getString("COD_MOTIVO"));
 			obj.put("DESC_MOTIVO", rs.getString("DESC_MOTIVO"));
-			
+
 			objRetorno.add(obj);
 		}
 
-	
 		out.print(objRetorno.toJSONString());
 
 	}
-	
-	
-	
-	
-	
-	
+
+	public static void autoComplete(HttpServletRequest request, HttpServletResponse response, Connection conn, int coddistr) throws Exception {
+
+		PrintWriter out = response.getWriter();
+
+		String cmd = request.getParameter("cmd") == null ? "" : request.getParameter("cmd");
+		org.json.simple.JSONArray objRetornoArray = new org.json.simple.JSONArray();
+		org.json.simple.JSONObject objValor = new org.json.simple.JSONObject();
+		if (cmd.equalsIgnoreCase("autocomplete")) {
+
+			String campo = request.getParameter("campo") == null ? "" : request.getParameter("campo");
+			String q = request.getParameter("q") == null ? "" : request.getParameter("q");
+		
+			
+			if (campo.equals("id_produto")) {
+
+				String sql = "select produtos.id_prod, produtos.desc_prod from produtos_distribuidora inner join produtos on produtos_distribuidora.id_prod =  produtos.id_prod where id_distribuidora = ? and produtos_distribuidora.flag_ativo = 'S' and produtos.FLAG_ATIVO = 'S' and produtos_distribuidora.id_prod = ? limit 10";
+
+				PreparedStatement st = conn.prepareStatement(sql);
+				st.setInt(1, coddistr);
+				st.setString(2, q);
+				ResultSet rs = st.executeQuery();
+				if (rs.next()) {
+					objValor.put("descr", rs.getString("desc_prod"));
+				}
+
+				out.print(objValor.toJSONString());
+			} else if (campo.equals("desc_produto")) {
+
+				String sql = "select produtos.id_prod as id, produtos.desc_prod as descr from produtos_distribuidora inner join produtos on produtos_distribuidora.id_prod =  produtos.id_prod where id_distribuidora = ? and produtos_distribuidora.flag_ativo = 'S' and produtos.FLAG_ATIVO = 'S' and produtos.desc_prod like  ? limit 10";
+
+				PreparedStatement st = conn.prepareStatement(sql);
+				st.setInt(1, coddistr);
+				st.setString(2, "%"+q+"%");
+				ResultSet rs = st.executeQuery();
+				while (rs.next()) {
+					objValor = new org.json.simple.JSONObject();
+					objValor.put("descr", rs.getString("descr"));
+					objValor.put("id", rs.getString("id"));  
+					objRetornoArray.add(objValor);
+				}
+				out.print(objRetornoArray.toJSONString());
+				
+			} else if (campo.equals("id_produto_listagem")) {
+				// em relação ao autocomplete do 'id_produto' e do 'desc_produto' muda o join, a distribuidora vai na ligação.
+                // considerando os ativos do distribuidora e do sistema, caso precisar separar os flags, tem q mandar algum parametro extra.
+				
+				String sql = "select produtos.id_prod, desc_prod  from produtos  left join produtos_distribuidora on produtos.id_prod = produtos_distribuidora.id_prod	 and ID_DISTRIBUIDORA = ? where (produtos.flag_ativo = 'S') and  produtos_distribuidora.id_prod = ? order by desc_prod asc limit 10";
+
+				PreparedStatement st = conn.prepareStatement(sql);
+				st.setInt(1, coddistr);
+				st.setString(2, q);
+				ResultSet rs = st.executeQuery();
+				if (rs.next()) {
+					objValor.put("descr", rs.getString("desc_prod"));
+				}
+
+				out.print(objValor.toJSONString());
+				
+
+			} else if (campo.equals("desc_produto_listagem")) {
+				// em relação ao autocomplete do 'id_produto' e do 'desc_produto' muda o join, a distribuidora vai na ligação.
+                // considerando os ativos do distribuidora e do sistema, caso precisar separar os flags, tem q mandar algum parametro extra.
+				
+				String sql = "select produtos.id_prod as id, desc_prod as descr from produtos  left join produtos_distribuidora on produtos.id_prod = produtos_distribuidora.id_prod	 and ID_DISTRIBUIDORA = ? where (produtos.flag_ativo = 'S') and  produtos.desc_prod like  ? order by desc_prod asc  limit 10";
+
+				PreparedStatement st = conn.prepareStatement(sql);
+				st.setInt(1, coddistr);
+				st.setString(2, "%"+q+"%");
+				ResultSet rs = st.executeQuery();
+				while (rs.next()) {
+					objValor = new org.json.simple.JSONObject();
+					objValor.put("descr", rs.getString("descr"));
+					objValor.put("id", rs.getString("id"));  
+					objRetornoArray.add(objValor);
+				}
+				out.print(objRetornoArray.toJSONString());
+				
+			}
+		}
+
+	}
 
 	public static void main(String[] args) {
 

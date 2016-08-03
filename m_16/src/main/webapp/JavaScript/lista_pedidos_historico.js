@@ -122,7 +122,7 @@ function carregaBairros() {
 
 	$.ajax({
 		type : "POST",
-		url : "php/sys_lista_abertos_ajax.php",
+		url : "home?ac=ajax",
 		dataType : "json",
 		async : true,
 		data : {
@@ -156,9 +156,9 @@ function visualizarPedidoHistorico(id) {
 
 	$.ajax({
 		type : 'POST',
-		url : "php/sys_lista_historico_ajax.php",
+		url : "home?ac=ajax",
 		data : {
-			cmd : "carregaPedido",
+			cmd : "carregaPedido_fechado",
 			id : id
 
 		},
@@ -273,7 +273,7 @@ function loadhistoricos() {
 
 	$.ajax({
 		type : "POST",
-		url : "php/sys_lista_historico_ajax.php",
+		url : "home?ac=ajax",
 		dataType : "json",
 		async : true,
 		data : {

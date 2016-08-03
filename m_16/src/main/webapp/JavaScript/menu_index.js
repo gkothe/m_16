@@ -376,7 +376,7 @@ function visualizarPedido(id) {
 		type : 'POST',
 		url : "home?ac=ajax",
 		data : {
-			cmd : "carregaPedido",
+			cmd : "carregaPedido_AbertoEnvio",
 			id : id
 
 		},
@@ -596,7 +596,7 @@ function setAutocomplete(cod, descr) {
 	$('#' + descr).autocomplete({
 		source : function(request, response) {
 			$.ajax({
-				url : "php/sys_autocomplete.php?cmd=autocomplete",
+				url : "home?ac=ajax",
 				dataType : "json",
 				type : 'POST',
 				data : {
@@ -672,7 +672,7 @@ function setAutocomplete(cod, descr) {
 		if ($("#" + cod).val()) {
 			$.ajax({
 				type : 'POST',
-				url : "php/sys_autocomplete.php?cmd=autocomplete",
+				url : "home?ac=ajax",
 				data : param,
 				async : true,
 				dataType : 'json',
@@ -710,7 +710,7 @@ function setAutocomplete(cod, descr) {
 		];
 
 		$.ajax({
-			url : "php/sys_autocomplete.php?cmd=autocomplete",
+			url : "home?ac=ajax",
 			type : 'POST',
 			dataType : "json",
 			data : param,

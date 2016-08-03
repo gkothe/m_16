@@ -132,18 +132,24 @@ public class HomeController extends javax.servlet.http.HttpServlet {
 				Home_ajax.getLogo(request, response, conn, coddistr);
 			} else if (cmd.equalsIgnoreCase("loadMotivos")) {
 				Home_ajax.loadMotivos(request, response, conn, coddistr);
+			} else if (cmd.equalsIgnoreCase("autocomplete")) {
+				Home_ajax.autoComplete(request, response, conn, coddistr);
 			} else if (cmd.equalsIgnoreCase("carregaPedidosAbertos")) {
 				Pedidos_ajax.carregaPedidosAbertos(request, response, conn, coddistr);
+			} else if (cmd.equalsIgnoreCase("carregaPedidoshistoricos")) {
+				Pedidos_ajax.carregaPedidoshistoricos(request, response, conn, coddistr);
 			} else if (cmd.equalsIgnoreCase("carregaBairros")) {
 				Pedidos_ajax.carregaBairros(request, response, conn, coddistr);
-			} else if (cmd.equalsIgnoreCase("carregaPedido")) {
-				Pedidos_ajax.carregaPedido(request, response, conn, coddistr);
+			} else if (cmd.equalsIgnoreCase("carregaPedido_AbertoEnvio")) {
+				Pedidos_ajax.carregaPedido_AbertoEnvio(request, response, conn, coddistr);
+			} else if (cmd.equalsIgnoreCase("carregaPedido_fechado")) {
+				Pedidos_ajax.carregaPedido_fechado(request, response, conn, coddistr);
 			} else if (cmd.equalsIgnoreCase("finalizandoPedido")) {
 				Pedidos_ajax.finalizandoPedido(request, response, conn, coddistr);
 			} else if (cmd.equalsIgnoreCase("responderPedido")) {
 				Pedidos_ajax.responderPedido(request, response, conn, coddistr);
 			}
-
+			
 			conn.commit();
 		} catch (Exception ex) {
 			if (ex.getMessage() == null || ex.getMessage().equals("")) {

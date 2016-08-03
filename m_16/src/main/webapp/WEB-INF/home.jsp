@@ -128,12 +128,7 @@ input:focus {
 										class="fa fa-edit clickmenu2"></i> Relatórios <span
 										class="fa fa-chevron-down clickmenu"></span></a>
 									<ul class="nav child_menu">
-										<li><a href="form.html">General Form</a></li>
-										<li><a href="form_advanced.html">Advanced Components</a></li>
-										<li><a href="form_validation.html">Form Validation</a></li>
-										<li><a href="form_wizards.html">Form Wizard</a></li>
-										<li><a href="form_upload.html">Form Upload</a></li>
-										<li><a href="form_buttons.html">Form Buttons</a></li>
+										<li><a href="form.html">The void is here</a></li>
 									</ul></li>
 
 							</ul>
@@ -235,7 +230,7 @@ input:focus {
 								<span aria-hidden="true">×</span>
 							</button>
 							<h4 class="modal-title" id="">
-								<label style="font-size: 20px; color: black" id="m_lbl_titulo">Ajuda/Informações
+								<label style="font-size: 20px; color: black" id="">Ajuda/Informações
 									do ChamaTrago!</label>
 							</h4>
 						</div>
