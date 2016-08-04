@@ -83,6 +83,9 @@ public class HomeController extends javax.servlet.http.HttpServlet {
 				listaconfigemp(request, response);
 			} else if (strTipo.equalsIgnoreCase("home")) {
 				home(request, response);
+			}else if (strTipo.equalsIgnoreCase("logout")) {
+				request.getSession().invalidate();
+				request.getRequestDispatcher("/sys").forward(request, response);
 			} else if (strTipo.equalsIgnoreCase("ajax")) {
 				ajax(request, response);
 			}
@@ -155,7 +158,23 @@ public class HomeController extends javax.servlet.http.HttpServlet {
 				Parametros_ajax.salvarProd(request, response, conn, coddistr);
 			}else if (cmd.equalsIgnoreCase("loadProduto")) {
 				Parametros_ajax.loadProduto(request, response, conn, coddistr);
+			}else if (cmd.equalsIgnoreCase("loadCidade")) {
+				Parametros_ajax.loadCidade(request, response, conn, coddistr);
+			}else if (cmd.equalsIgnoreCase("loadBairrosParam")) {
+				Parametros_ajax.loadBairrosParam(request, response, conn, coddistr);
+			}else if (cmd.equalsIgnoreCase("loadDiasSemana")) {
+				Parametros_ajax.loadDiasSemana(request, response, conn, coddistr);
+			}else if (cmd.equalsIgnoreCase("loadDadosEmp")) {
+				Parametros_ajax.loadDadosEmp(request, response, conn, coddistr);
+			}else if (cmd.equalsIgnoreCase("salvarConfigsEmp")) {
+				Parametros_ajax.salvarConfigsEmp(request, response, conn, coddistr);
 			}
+			
+			
+			
+			
+			
+			
 			
 			
 			

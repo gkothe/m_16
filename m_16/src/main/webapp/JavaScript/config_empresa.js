@@ -230,7 +230,7 @@ function carregaBairros() {
 
 	$.ajax({
 		type : "POST",
-		url : "php/sys_config_empresa_ajax.php",
+		url : "home?ac=ajax",
 		dataType : "json",
 		async : true,
 		data : {
@@ -297,11 +297,11 @@ function salvarTela() {
 
 	$.ajax({
 		type : "POST",
-		url : "php/sys_config_empresa_ajax.php",
+		url : "home?ac=ajax",
 		dataType : "json",
 		async : true,
 		data : {
-			cmd : 'salvarConfigs',
+			cmd : 'salvarConfigsEmp',
 			desc_razaosocial : desc_razaosocial,
 			desc_fantasia : desc_fantasia,
 			cod_cidade : cod_cidade,
@@ -445,11 +445,11 @@ function loadCidade() {
 
 	$.ajax({
 		type : "POST",
-		url : "php/sys_config_empresa_ajax.php",
+		url : "home?ac=ajax",
 		dataType : "json",
 		async : true,
 		data : {
-			cmd : 'loadMunicipio'
+			cmd : 'loadCidade'
 		},
 		success : function(data) {
 
@@ -482,7 +482,7 @@ function loadBairrosParam() {
 
 	$.ajax({
 		type : "POST",
-		url : "php/sys_config_empresa_ajax.php",
+		url : "home?ac=ajax",
 		dataType : "json",
 		async : true,
 		data : {
@@ -514,11 +514,11 @@ function loadDados() {
 
 	$.ajax({
 		type : "POST",
-		url : "php/sys_config_empresa_ajax.php",
+		url : "home?ac=ajax",
 		dataType : "json",
 		async : true,
 		data : {
-			cmd : 'loadDados'
+			cmd : 'loadDadosEmp'
 		},
 		success : function(data) {
 
@@ -641,7 +641,7 @@ function loadDiasSemana() {
 
 	$.ajax({
 		type : 'POST',
-		url : "php/sys_config_empresa_ajax.php",
+		url : "home?ac=ajax",
 		data : {
 			cmd : "loadDiasSemana",
 

@@ -163,7 +163,7 @@ input:focus {
 									<li><a href="javascript:showHelp();"><i
 											class="fa fa-question pull-right"></i>Ajuda/Informações
 											gerais</a></li>
-									<li><a href="logout.php"><i
+									<li><a href="home?ac=logout"><i
 											class="fa fa-sign-out pull-right"></i> Sair</a></li>
 								</ul></li>
 
