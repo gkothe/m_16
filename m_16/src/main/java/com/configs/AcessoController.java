@@ -20,6 +20,7 @@ public class AcessoController implements SysController {
 
 	public void processaRequisicoes(HttpServletRequest request, HttpServletResponse response) {
 
+	//	System.out.println("----------entro acesso");
 		session = request.getSession(false);
 
 		String erroLogin = null;
@@ -87,11 +88,10 @@ public class AcessoController implements SysController {
 					session.setAttribute("coddis", rs.getInt("ID_DISTRIBUIDORA"));
 					
 
-					String url = request.getContextPath() +  "/" + "home?ac=home";
 
-					String urlWithSessionID = response.encodeRedirectURL(url);
-					response.sendRedirect(urlWithSessionID);
-
+					request.getRequestDispatcher("home?ac=home").forward(request, response);
+					
+					
 				} else {
 					throw new Exception("Usuário e/ou senha inválidos.");
 				}

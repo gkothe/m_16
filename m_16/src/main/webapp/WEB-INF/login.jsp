@@ -37,7 +37,7 @@ body {
 <body>
 	<div align="center">
 		<div class="loginBox">
-			<form action="sys" method="post">
+			<form action="" method="post">
 				<br> <br> <br>
 				<div class="container">
 					<input type="hidden" name="acao" id="acao" value="log">
@@ -113,7 +113,7 @@ body {
 
 							<div class="form-group">
 								<label for="desc_mail">Preencha o seu e-mail cadastrado
-									abaixo:</label> <input type="text" maxlength="20"
+									abaixo:</label> <input type="text" 
 									class="form-control warn-change" id="r_desc_mail" />
 							</div>
 

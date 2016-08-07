@@ -20,7 +20,7 @@ import com.ajax.Pedidos_ajax;
 import com.ajax.Utilitario;
 
 @SuppressWarnings("serial")
-@WebServlet(urlPatterns = { "/sys" })
+@WebServlet(urlPatterns = { "" })
 public class MainController extends javax.servlet.http.HttpServlet {
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) {
@@ -35,6 +35,17 @@ public class MainController extends javax.servlet.http.HttpServlet {
 
 		try {
 
+		/*	System.out.println("----------entro main");
+			
+			Map map = request.getParameterMap();
+			for (Iterator iterator = map.keySet().iterator(); iterator.hasNext();) {
+				      String type = (String) iterator.next();
+				      System.out.println(type +" : " +request.getParameter(type));
+		     }
+			*/
+			
+			
+			
 			SysController controller = null;
 
 			String identAcao = request.getParameter("acao") == null ? "" : request.getParameter("acao").toString().trim();
@@ -44,8 +55,7 @@ public class MainController extends javax.servlet.http.HttpServlet {
 				if (controller != null) {
 					controller.processaRequisicoes(request, response);
 				}
-			}
-			if (identAcao.toLowerCase().equalsIgnoreCase("senha_email")) {
+			} else if (identAcao.toLowerCase().equalsIgnoreCase("senha_email")) {
 				recuperaSenha(request, response);
 			} else if (request.getSession().getAttribute("username") == null) {
 				request.getSession().invalidate();
@@ -84,10 +94,10 @@ public class MainController extends javax.servlet.http.HttpServlet {
 			if (!rs.next()) {
 				throw new Exception("Não foi encontrado nenhuma empresa com o  email informado.");
 			} else {
-				Utilitario.sendEmail(rs.getString("desc_mail"), "Suas informações de login são <br> \n Usuário: "+rs.getString("desc_login")+"<br>Senha: "+ rs.getString("desc_senha"), "Recuperação de senha");
+				Utilitario.sendEmail(rs.getString("desc_mail"), "Suas informações de login são <br> \n Usuário: " + rs.getString("desc_login") + "<br>Senha: " + rs.getString("desc_senha"), "Recuperação de senha");
 			}
-			objRetorno.put("msg","ok");
-			
+			objRetorno.put("msg", "ok");
+
 			out.print(objRetorno.toJSONString());
 		} catch (Exception ex) {
 			if (ex.getMessage() == null || ex.getMessage().equals("")) {

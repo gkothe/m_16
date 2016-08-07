@@ -53,43 +53,51 @@ public class HomeController extends javax.servlet.http.HttpServlet {
 
 	public void processaRequisicoes(HttpServletRequest request, HttpServletResponse response) {
 
+		/*System.out.println("--------entro home");
+		Map map = request.getParameterMap();
+		for (Iterator iterator = map.keySet().iterator(); iterator.hasNext();) {
+			      String type = (String) iterator.next();
+			      System.out.println(type +" : " +request.getParameter(type));
+	     }
+		*/
+		
 		try {
 
 			if (request.getSession().getAttribute("username") == null) {
 				request.getSession().invalidate();
-				request.getRequestDispatcher("/sys").forward(request, response);
-			}
-		} catch (Exception e) {
-		}
+				request.getRequestDispatcher("").forward(request, response);
+			} else {
 
-		String strTipo = request.getParameter("ac");
-		if (strTipo == null) {
-			strTipo = "home";
-		}
+				String strTipo = request.getParameter("ac");
+				if (strTipo == null) {
+					strTipo = "home";
+				}
 
-		try {
-			request.setCharacterEncoding("UTF-8");
+				request.setCharacterEncoding("UTF-8");
 
-			if (strTipo.equalsIgnoreCase("listaped")) {
-				listaped(request, response);
-			} else if (strTipo.equalsIgnoreCase("listapedfechado")) {
-				listapedfechado(request, response);
-			} else if (strTipo.equalsIgnoreCase("listaprod")) {
-				listaprod(request, response);
-			} else if (strTipo.equalsIgnoreCase("listaconfigemp")) {
-				listaconfigemp(request, response);
-			} else if (strTipo.equalsIgnoreCase("home")) {
-				home(request, response);
-			}else if (strTipo.equalsIgnoreCase("logout")) {
-				request.getSession().invalidate();
-				request.getRequestDispatcher("/sys").forward(request, response);
-			} else if (strTipo.equalsIgnoreCase("ajax")) {
-				ajax(request, response);
+				if (strTipo.equalsIgnoreCase("listaped")) {
+					listaped(request, response);
+				} else if (strTipo.equalsIgnoreCase("listapedfechado")) {
+					listapedfechado(request, response);
+				} else if (strTipo.equalsIgnoreCase("listaprod")) {
+					listaprod(request, response);
+				} else if (strTipo.equalsIgnoreCase("listaconfigemp")) {
+					listaconfigemp(request, response);
+				} else if (strTipo.equalsIgnoreCase("home")) {
+					home(request, response);
+				} else if (strTipo.equalsIgnoreCase("logout")) {
+					request.getSession().invalidate();
+					response.sendRedirect(request.getContextPath() + "/");
+					//request.getRequestDispatcher("").forward(request, response);
+					return;
+				} else if (strTipo.equalsIgnoreCase("ajax")) {
+					ajax(request, response);
+				}
 			}
 		} catch (Exception ex) {
 			ex.printStackTrace();
 			try {
-				exibeErro(request, response, ex);
+				// exibeErro(request, response, ex);
 			} catch (Exception e) {
 			}
 		}
@@ -100,7 +108,7 @@ public class HomeController extends javax.servlet.http.HttpServlet {
 
 			request.setAttribute("msg_erro", ex.getMessage());
 			request.setAttribute("link", "/WEB-INF/jspnp/erro.jsp");
-			request.getRequestDispatcher("/WEB-INF/jspnp/home.jsp").forward(request, response);
+
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw e;
@@ -153,29 +161,20 @@ public class HomeController extends javax.servlet.http.HttpServlet {
 				Parametros_ajax.carregaProdutos(request, response, conn, coddistr);
 			} else if (cmd.equalsIgnoreCase("salvar_prod")) {
 				Parametros_ajax.salvarProd(request, response, conn, coddistr);
-			}else if (cmd.equalsIgnoreCase("loadProduto")) {
+			} else if (cmd.equalsIgnoreCase("loadProduto")) {
 				Parametros_ajax.loadProduto(request, response, conn, coddistr);
-			}else if (cmd.equalsIgnoreCase("loadCidade")) {
+			} else if (cmd.equalsIgnoreCase("loadCidade")) {
 				Parametros_ajax.loadCidade(request, response, conn, coddistr);
-			}else if (cmd.equalsIgnoreCase("loadBairrosParam")) {
+			} else if (cmd.equalsIgnoreCase("loadBairrosParam")) {
 				Parametros_ajax.loadBairrosParam(request, response, conn, coddistr);
-			}else if (cmd.equalsIgnoreCase("loadDiasSemana")) {
+			} else if (cmd.equalsIgnoreCase("loadDiasSemana")) {
 				Parametros_ajax.loadDiasSemana(request, response, conn, coddistr);
-			}else if (cmd.equalsIgnoreCase("loadDadosEmp")) {
+			} else if (cmd.equalsIgnoreCase("loadDadosEmp")) {
 				Parametros_ajax.loadDadosEmp(request, response, conn, coddistr);
-			}else if (cmd.equalsIgnoreCase("salvarConfigsEmp")) {
+			} else if (cmd.equalsIgnoreCase("salvarConfigsEmp")) {
 				Parametros_ajax.salvarConfigsEmp(request, response, conn, coddistr);
 			}
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
+
 			conn.commit();
 		} catch (Exception ex) {
 			if (ex.getMessage() == null || ex.getMessage().equals("")) {
