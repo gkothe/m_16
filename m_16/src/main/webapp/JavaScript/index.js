@@ -31,9 +31,9 @@ function sendEmail() {
 	
 	$.ajax({
 		type : 'POST',
-		url : "php/sys_index_ajax.php",
+		url : "sys?acao=senha_email",
 		data : {
-			cmd : "sendEmail",
+			acao : "senha_email",
 			email : email
 		},
 		async : true,

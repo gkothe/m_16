@@ -37,9 +37,6 @@ import com.ajax.Home_ajax;
 import com.ajax.Parametros_ajax;
 import com.ajax.Pedidos_ajax;
 
-/**
- * @author Virtuallis MÃ³dulo responsÃ¡vel pelas tarefas
- */
 @SuppressWarnings("unchecked")
 @WebServlet(urlPatterns = { "/home" })
 public class HomeController extends javax.servlet.http.HttpServlet {
