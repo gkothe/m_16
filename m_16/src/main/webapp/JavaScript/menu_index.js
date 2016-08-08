@@ -30,58 +30,50 @@ var delay = (function() {
 	};
 })();
 
-function resizedivs(){
-	$("#main_cont").css("height",$(window).height()-60)
-	$("#mainpage").css("height",$(window).height()-130)
+function resizedivs() {
+	$("#main_cont").css("height", $(window).height() - 60)
+	$("#mainpage").css("height", $(window).height() - 130)
 }
-$( window ).resize(function() {
+$(window).resize(function() {
 	resizedivs();
-	
-	});
 
+});
 
+function showHelp() {
 
-function showHelp(){
-	
 	$("#modal_ajuda").modal("show");
-	
-	
+
 }
 
-function trocaPag(pag,jsp){
+function trocaPag(pag, jsp) {
 
 	var link = $(pag).attr('linkmenu');
 	var men = "";
-	  if ($BODY.hasClass('nav-md')) {
-		  men = "m"
-	  }else{
-		  men = "s"  
-	  }
-	
-	document.location.href = "home?link="+link+"&jsp="+jsp+"&m="+men;
+	if ($BODY.hasClass('nav-md')) {
+		men = "m"
+	} else {
+		men = "s"
+	}
+
+	document.location.href = "home?link=" + link + "&jsp=" + jsp + "&m=" + men;
 }
 
 var active_menu;
 $(document).ready(function() {
-	
-	
-	$('#mainpage').load('home?ac='+url);
-	
-	
-	$("[linkmenu="+url+"]").parent().addClass("current-page");
-	$("[linkmenu="+url+"]").parent().parent().css("display","block");
-	$("[linkmenu="+url+"]").parent().parent().parent().addClass("active");
-	
-	
-if(menu == "s"){
-	$('#menu_toggle').click();
-}
-	
+
+	$('#mainpage').load('home?ac=' + url);
+
+	$("[linkmenu=" + url + "]").parent().addClass("current-page");
+	$("[linkmenu=" + url + "]").parent().parent().css("display", "block");
+	$("[linkmenu=" + url + "]").parent().parent().parent().addClass("active");
+
+	if (menu == "s") {
+		$('#menu_toggle').click();
+	}
+
 	checarPedidos();
 	loadLogoEmpresa();
-	
-	
-	
+
 	$(".clickmenu").click(function() {
 		if (active_menu != undefined) {
 			active_menu.removeClass("active").removeClass("active-sm");
@@ -188,8 +180,7 @@ if(menu == "s"){
 	window.setInterval(function() {
 		checarPedidos();
 	}, 5000);
-	
-	
+
 	resizedivs();
 
 });
@@ -225,13 +216,10 @@ function loadLogoEmpresa() {
 		async : true,
 		dataType : 'json',
 		success : function(data) {
-			
+
 			$("#lbl_descfanta").html(data.desc_nome);
 			$("#lbl_logomenu").attr("src", data.nome_img);
-			
-			
-			
-			
+
 		},
 		error : function(data) {
 			alert(data.responseText);
@@ -251,10 +239,13 @@ function checarPedidos() {
 		async : true,
 		dataType : 'json',
 		success : function(data) {
+			
 			$("#menu_notification").html("");
 			$("#h_qtd_pedz").html("");
 
-			if (data.tem == "true") {
+			if (data.errologin != undefined) {
+			    window.location.href="" ;
+			} else if (data.tem == "true") {
 
 				$("#msg_holder").show();
 
@@ -274,7 +265,7 @@ function checarPedidos() {
 				}
 
 				html = ("<li> <div class=\"text-center\"> <a  href=\"home?link=listaped&jsp=N&m=m\"  > <strong>Ver todos pedidos</strong> <i class=\"fa fa-angle-right\"></i> </a> </div> </li>");
-  
+
 				$("#menu_notification").html($("#menu_notification").html() + html);
 
 				$(".not_numerico").autoNumeric('init', numerico);
@@ -465,8 +456,7 @@ function finalizarPedido() {
 			success : function(data) {
 
 				if (data.msg == 'ok') {
-						alert("Pedido finalizado!");
-					
+					alert("Pedido finalizado!");
 
 					checarPedidos();
 
@@ -478,7 +468,6 @@ function finalizarPedido() {
 
 					$('#modal_pedido').modal('hide');
 					limpaModal();
-					
 
 				} else if (data.erro != undefined) {
 					alert(data.erro);

@@ -35,21 +35,17 @@ public class MainController extends javax.servlet.http.HttpServlet {
 
 		try {
 
-		/*	System.out.println("----------entro main");
-			
+			System.out.println("----------entro main");
+
 			Map map = request.getParameterMap();
 			for (Iterator iterator = map.keySet().iterator(); iterator.hasNext();) {
-				      String type = (String) iterator.next();
-				      System.out.println(type +" : " +request.getParameter(type));
-		     }
-			*/
-			
-			
-			
+				String type = (String) iterator.next();
+				System.out.println(type + " : " + request.getParameter(type));
+			}
+
 			SysController controller = null;
 
 			String identAcao = request.getParameter("acao") == null ? "" : request.getParameter("acao").toString().trim();
-
 			if (identAcao.toLowerCase().equalsIgnoreCase("log")) {
 				controller = new AcessoController();
 				if (controller != null) {

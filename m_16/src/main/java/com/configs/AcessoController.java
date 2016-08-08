@@ -20,7 +20,7 @@ public class AcessoController implements SysController {
 
 	public void processaRequisicoes(HttpServletRequest request, HttpServletResponse response) {
 
-	//	System.out.println("----------entro acesso");
+		System.out.println("----------entro acesso");
 		session = request.getSession(false);
 
 		String erroLogin = null;
@@ -102,13 +102,11 @@ public class AcessoController implements SysController {
 
 		} catch (Exception e) {
 			e.printStackTrace();
-			String enderecoInvalido = (String) request.getAttribute("endereco_invalido");
-			enderecoInvalido = enderecoInvalido == null ? "false" : enderecoInvalido;
-			if (!enderecoInvalido.equals("true")) {
-				request.setAttribute("endereco_invalido", "true");
-				request.setAttribute("errologin", e.getMessage());
-				request.getRequestDispatcher("/login.jsp").forward(request, response);
-			}
+
+			request.setAttribute("errologin", e.getMessage());
+			//response.sendRedirect(request.getContextPath() + "/");
+			request.getSession().invalidate();
+			request.getRequestDispatcher("/WEB-INF/login.jsp").forward(request, response);
 
 			if (request.getSession(false) != null) {
 				request.getSession(false).invalidate();
@@ -123,11 +121,5 @@ public class AcessoController implements SysController {
 		}
 	}
 
-	/**
-	 * @author Virtuallis Define na sessao os dados usados na criacao de uma
-	 *         conexao a base de dados Este metodo grava as informaçõs que será
-	 *         usadas ao executar DBSettings.getConnexao(request), que faz a
-	 *         conexao com o banco de dados
-	 */
 
 }

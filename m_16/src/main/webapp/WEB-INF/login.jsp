@@ -32,7 +32,11 @@ body {
 </style>
 </head>
 <%
-	String error = request.getParameter("error");
+String error ="";
+if(request.getAttribute("errologin")!=null){
+	error = request.getAttribute("errologin").toString();
+}
+	
 %>
 <body>
 	<div align="center">
@@ -129,7 +133,7 @@ body {
 							<div class="col-xs-8 col-sm-8 col-md-8 col-lg-8 "></div>
 							<div class="col-xs-2 col-sm-2 col-md-2 col-lg-2 " align="right">
 								<button type="button" id="btn_envia_email"
-									class="btn btn-primary">Mandar</button>
+									class="btn btn-primary">Enviar</button>
 							</div>
 
 						</div>

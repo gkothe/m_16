@@ -53,27 +53,30 @@ public class HomeController extends javax.servlet.http.HttpServlet {
 
 	public void processaRequisicoes(HttpServletRequest request, HttpServletResponse response) {
 
-		/*System.out.println("--------entro home");
+		System.out.println("--------entro home");
 		Map map = request.getParameterMap();
 		for (Iterator iterator = map.keySet().iterator(); iterator.hasNext();) {
-			      String type = (String) iterator.next();
-			      System.out.println(type +" : " +request.getParameter(type));
-	     }
-		*/
-		
+			String type = (String) iterator.next();
+			System.out.println(type + " : " + request.getParameter(type));
+		}
+
 		try {
 
+			String strTipo = request.getParameter("ac");
+			if (strTipo == null) {
+				strTipo = "home";
+			}
+			request.setCharacterEncoding("UTF-8");
+
 			if (request.getSession().getAttribute("username") == null) {
-				request.getSession().invalidate();
-				request.getRequestDispatcher("").forward(request, response);
-			} else {
-
-				String strTipo = request.getParameter("ac");
-				if (strTipo == null) {
-					strTipo = "home";
+				// request.getRequestDispatcher("").forward(request, response);
+				if (strTipo.equalsIgnoreCase("ajax")) {
+					ajaxErro(request, response);
+				} else {
+					request.getSession().invalidate();
+					response.sendRedirect(request.getContextPath() + "/");
 				}
-
-				request.setCharacterEncoding("UTF-8");
+			} else {
 
 				if (strTipo.equalsIgnoreCase("listaped")) {
 					listaped(request, response);
@@ -88,7 +91,8 @@ public class HomeController extends javax.servlet.http.HttpServlet {
 				} else if (strTipo.equalsIgnoreCase("logout")) {
 					request.getSession().invalidate();
 					response.sendRedirect(request.getContextPath() + "/");
-					//request.getRequestDispatcher("").forward(request, response);
+					// request.getRequestDispatcher("").forward(request,
+					// response);
 					return;
 				} else if (strTipo.equalsIgnoreCase("ajax")) {
 					ajax(request, response);
@@ -103,16 +107,26 @@ public class HomeController extends javax.servlet.http.HttpServlet {
 		}
 	}
 
-	private void exibeErro(HttpServletRequest request, HttpServletResponse response, Exception ex) throws Exception {
+	private void ajaxErro(HttpServletRequest request, HttpServletResponse response) throws Exception {
+		PrintWriter out = response.getWriter();
+
+		response.setContentType("text/x-json; charset=UTF-8");
+		response.setDateHeader("Expires", 0);
+		response.setDateHeader("Last-Modified", new java.util.Date().getTime());
+		response.setHeader("Cache-Control", "no-cache, must-revalidate");
+		response.setHeader("Pragma", "no-cache");
+		request.setCharacterEncoding("UTF-8");
+
+		JSONObject objRetorno = new JSONObject();
+
 		try {
+			objRetorno.put("errologin", "Por favor realize o login novamente!");
+			out.print(objRetorno.toJSONString());
+		} catch (Exception ex) {
 
-			request.setAttribute("msg_erro", ex.getMessage());
-			request.setAttribute("link", "/WEB-INF/jspnp/erro.jsp");
+			ex.printStackTrace();
+			out.print(objRetorno.toJSONString());
 
-		} catch (Exception e) {
-			e.printStackTrace();
-			throw e;
-		} finally {
 		}
 	}
 

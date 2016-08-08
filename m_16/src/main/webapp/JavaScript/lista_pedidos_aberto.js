@@ -208,6 +208,10 @@ function loadAbertos(blockui) {
 		},
 		success : function(data) {
 
+			if (data.errologin != undefined) {
+			    window.location.href="" ;
+			}
+			
 			$('#table_pedidos_abertos').bootstrapTable('load', data);
 			$('#table_pedidos_abertos').bootstrapTable('resetView');
 			$('[data-toggle="tooltip"]').tooltip();
