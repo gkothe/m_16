@@ -86,7 +86,7 @@ public class Mercadopago extends HttpServlet {
 		try {
 			
 			MP mp = new MP("TEST-3928083096731492-072914-2aa78c35c6f210a6322c4acf9abe4d14__LD_LC__-222772872");
-			String token ="";//50526f1b791fc9b0cefc0c4a6c7908cc
+			String token ="50526f1b791fc9b0cefc0c4a6c7908cc";//50526f1b791fc9b0cefc0c4a6c7908cc
 			String email = "test_user_19653727@testuser.com";
 			String paymentMethodId = "visa";
 
