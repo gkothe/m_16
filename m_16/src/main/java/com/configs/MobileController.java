@@ -113,9 +113,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 		if (rs.next()) {
 			objRetorno.put("msg", "ok");
 			MobileController mob = new MobileController();
-			objRetorno.put("token", mob.criaToken(user, pass, 604800000));
-			objRetorno.put("token2", mob.criaToken(user, pass, 604800000));
-			// mob.parseJWT(mob.criaToken(user, pass, 604800000));
+			objRetorno.put("token", mob.criaToken(user, pass, 604800000));//1 semana ou 1 mes, nao lembro
 
 		} else {
 			objRetorno.put("erro", "Login inválido!");
@@ -169,10 +167,9 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 		return builder.compact();
 	}
 
-	private void parseJWT(HttpServletRequest request, HttpServletResponse response, Connection conn, String jwt) throws Exception {
+	private String parseJWT(HttpServletRequest request, HttpServletResponse response, Connection conn, String jwt) throws Exception {
 
 		try {
-			System.out.println(jwt);
 			Claims claims = Jwts.parser().setSigningKey(DatatypeConverter.parseBase64Binary(key)).parseClaimsJws(jwt.replaceFirst("\\.", "")).getBody();
 			String user = claims.getId();
 			String pass = claims.getSubject();
@@ -184,7 +181,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 			st.setString(2, pass);
 			ResultSet rs = st.executeQuery();
 			if (rs.next()) {
-				return;
+				return rs.getString("id_usuario");
 			} else {
 				throw new Exception("Dados de acesso invalido");
 			}
@@ -219,15 +216,25 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 
 			if (cmd.equalsIgnoreCase("login")) {
 				loginMobile(request, response, conn);
+			} else if (cmd.equalsIgnoreCase("inserir_user")) {
+
 			} else {
-				parseJWT(request, response, conn, request.getHeader("X-Auth-Token"));
+				String cod_usuario = parseJWT(request, response, conn, request.getHeader("X-Auth-Token"));
 
 				if (cmd.equalsIgnoreCase("teste")) {
 					getalgo(request, response, conn);
-				} else if (cmd.equalsIgnoreCase("")) {
-
+				} else if (cmd.equalsIgnoreCase("update_user")) {
+					updateUser(request, response, conn, cod_usuario);
+				} else if (cmd.equalsIgnoreCase("carrega_user")) {
+					carregaUser(request, response, conn, cod_usuario);
+				} else if (cmd.equalsIgnoreCase("carrega_bairros")) {
+					carregaBairros(request, response, conn, cod_usuario);
+				} else if (cmd.equalsIgnoreCase("save_user")) {
+					updateUser(request, response, conn, cod_usuario);
 				}
-
+			
+					
+				
 			}
 
 			conn.commit();
@@ -264,6 +271,214 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 
 	}
 
+	public static void inserirUser(HttpServletRequest request, HttpServletResponse response, Connection conn) throws Exception {
+
+		PrintWriter out = response.getWriter();
+
+		JSONObject objRetorno = new JSONObject();
+		String desc_usuario = request.getParameter("c_desc_usuario") == null ? "" : request.getParameter("c_desc_usuario");
+		String desc_senha = request.getParameter("c_desc_senha") == null ? "" : request.getParameter("c_desc_senha");
+		String desc_senha_conf = request.getParameter("c_desc_senha_conf") == null ? "" : request.getParameter("c_desc_senha_conf");
+		String desc_email = request.getParameter("c_desc_email") == null ? "" : request.getParameter("c_desc_email");
+		String desc_nome = request.getParameter("c_desc_nome") == null ? "" : request.getParameter("c_desc_nome");
+		String desc_telefone = request.getParameter("c_desc_telefone") == null ? "" : request.getParameter("c_desc_telefone");
+		String cod_cidade = request.getParameter("c_cod_cidade") == null ? "" : request.getParameter("c_cod_cidade");
+
+		String cod_bairro = request.getParameter("c_cod_bairro") == "" ? null : request.getParameter("c_cod_bairro");
+		String desc_endereco = request.getParameter("c_desc_endereco") == null ? "" : request.getParameter("c_desc_endereco");
+
+		if (desc_usuario .equalsIgnoreCase("")) {
+			throw new Exception("Você deve preencher o campo de usuário.");
+		}
+
+		if (desc_senha .equalsIgnoreCase("")) {
+			throw new Exception("Você deve preencher o campo de senha.");
+		}
+
+		if (desc_email .equalsIgnoreCase("")) {
+			throw new Exception("Você deve preencher o campo de email.");
+		}
+
+		if (desc_senha .equalsIgnoreCase( desc_senha_conf)) {
+			throw new Exception("Erro. As senhas são diferentes.");
+		}
+
+		PreparedStatement st = conn.prepareStatement("SELECT 1 from  usuario where  Binary desc_user = ? ");
+		st.setString(1, desc_usuario);
+		ResultSet rs = st.executeQuery();
+
+		if (rs.next()) {
+			throw new Exception("Nome de usuário ja existente!");
+		}
+
+		st = conn.prepareStatement("SELECT 1 from  usuario where  Binary desc_email =  ? ");
+		st.setString(1, desc_email);
+		rs = st.executeQuery();
+
+		if (rs.next()) {
+			throw new Exception("Email já cadastrado!");
+		}
+
+		st = conn.prepareStatement("SELECT 1 from  cidade where   COD_CIDADE = ? ");
+		st.setInt(1, Integer.parseInt(cod_cidade));
+
+		rs = st.executeQuery();
+
+		if (!rs.next()) {
+			throw new Exception("Cidade inválida!");
+		}
+
+		String sql = "INSERT INTO usuario ( `DESC_NOME`, `DESC_TELEFONE`, `COD_BAIRRO`, `COD_CIDADE`, `DESC_ENDERECO`, `DESC_USER`, `DESC_SENHA`, `DESC_EMAIL`) VALUES (?,?,?,?,?,?,?,?)";
+		st = conn.prepareStatement(sql);
+		st.setString(1, desc_nome);
+		st.setString(2, desc_telefone);
+		st.setInt(3, Integer.parseInt(cod_bairro));
+		st.setInt(4, Integer.parseInt(cod_cidade));
+		st.setString(5, desc_endereco);
+		st.setString(6, desc_usuario);
+		st.setString(7, desc_senha);
+		st.setString(8, desc_email);
+		st.executeUpdate();
+
+		objRetorno.put("msg", "ok");
+
+		out.print(objRetorno.toJSONString());
+
+	}
+
+	public static void updateUser(HttpServletRequest request, HttpServletResponse response, Connection conn, String cod_usuario) throws Exception {
+
+		PrintWriter out = response.getWriter();
+		JSONObject objRetorno = new JSONObject();
+		if (cod_usuario .equalsIgnoreCase("") || cod_usuario == null || cod_usuario.equalsIgnoreCase("0")) {
+			throw new Exception("Usuário inválido.");
+		} else {
+
+			String desc_senha = request.getParameter("c_password") == null ? "" : request.getParameter("c_password");
+			String desc_senha_conf = request.getParameter("c_desc_senha_conf") == null ? "" : request.getParameter("c_desc_senha_conf");
+			String desc_email = request.getParameter("c_email") == null ? "" : request.getParameter("c_email");
+			String desc_nome = request.getParameter("c_nome") == null ? "" : request.getParameter("c_nome");
+			String desc_telefone = request.getParameter("c_telefone") == null ? "" : request.getParameter("c_telefone");
+			String cod_cidade = request.getParameter("c_cidade") == null ? "" : request.getParameter("c_cidade");
+			String cod_bairro = request.getParameter("c_bairro") == "" ? null : request.getParameter("c_bairro");
+			String desc_endereco = request.getParameter("c_endereco") == null ? "" : request.getParameter("c_endereco");
+			String desc_cartao = request.getParameter("c_numcartao") == null ? "" : request.getParameter("c_numcartao");
+
+			if (desc_senha.equalsIgnoreCase("")) {
+				throw new Exception("Você deve preencher o campo de senha.");
+			}
+
+			if (desc_email. equalsIgnoreCase( "")) {
+				throw new Exception("Você deve preencher o campo de email.");
+			}
+
+			if (!desc_senha .equalsIgnoreCase(desc_senha_conf)) {
+				throw new Exception("Erro. As senhas são diferentes.");
+			}
+
+			PreparedStatement st = conn.prepareStatement("SELECT 1 from  usuario where  Binary desc_email = ? and id_usuario != ?  ");
+			st.setString(1, desc_email);
+			st.setInt(2, Integer.parseInt(cod_usuario));
+			ResultSet rs = st.executeQuery();
+			if (rs.next()) {
+				throw new Exception("Email já cadastrado!.");
+			}
+
+			st = conn.prepareStatement("SELECT 1 from  cidade where   COD_CIDADE = ?   ");
+			st.setInt(1, Integer.parseInt(cod_cidade));
+			rs = st.executeQuery();
+			if (!rs.next()) {
+				throw new Exception("Cidade inválida!");
+			}
+
+			String sql = " UPDATE usuario SET `DESC_NOME` = ?, `DESC_TELEFONE` = ?, `COD_BAIRRO` = ?, `COD_CIDADE` = ?, `DESC_ENDERECO` = ?, `DESC_SENHA` = ?, `DESC_EMAIL` = ? , desc_cartao = ? WHERE `ID_USUARIO` = ? ";
+			st = conn.prepareStatement(sql);
+			st.setString(1, desc_nome);
+			st.setString(2, desc_telefone);
+			st.setInt(3, Integer.parseInt(cod_bairro));
+			st.setInt(4, Integer.parseInt(cod_cidade));
+			st.setString(5, desc_endereco);
+			st.setString(6, desc_senha);
+			st.setString(7, desc_email);
+			st.setString(8, desc_cartao);
+			st.setInt(9, Integer.parseInt(cod_usuario));
+			st.executeUpdate();
+
+			objRetorno.put("msg", "ok");
+
+		}
+
+		out.print(objRetorno.toJSONString());
+
+	}
+
+	public static void carregaUser(HttpServletRequest request, HttpServletResponse response, Connection conn, String cod_usuario) throws Exception {
+
+		PrintWriter out = response.getWriter();
+		JSONObject objRetorno = new JSONObject();
+		if (cod_usuario. equalsIgnoreCase("") || cod_usuario == null || cod_usuario.equalsIgnoreCase("0")) {
+			throw new Exception("Usuário inválido.");
+		} else {
+
+			PreparedStatement st = conn.prepareStatement(" select * from usuario  where `ID_USUARIO` = ?  ");
+			st.setInt(1, Integer.parseInt(cod_usuario));
+			ResultSet rs = st.executeQuery();
+			if (rs.next()) {
+				
+				objRetorno.put("ID_USUARIO", rs.getString("ID_USUARIO"));
+				objRetorno.put("DESC_NOME", rs.getString("DESC_NOME"));
+				objRetorno.put("DESC_TELEFONE", rs.getString("DESC_TELEFONE"));
+				objRetorno.put("COD_BAIRRO", rs.getString("COD_BAIRRO"));
+				objRetorno.put("COD_CIDADE", rs.getString("COD_CIDADE"));
+				objRetorno.put("DESC_ENDERECO", rs.getString("DESC_ENDERECO"));
+				objRetorno.put("DESC_USER", rs.getString("DESC_USER"));
+				objRetorno.put("DESC_SENHA", rs.getString("DESC_SENHA"));
+				objRetorno.put("DESC_EMAIL", rs.getString("DESC_EMAIL"));
+				objRetorno.put("ID_CIDADE", rs.getString("ID_CIDADE"));
+				objRetorno.put("DESC_CARTAO", rs.getString("DESC_CARTAO"));
+				
+			}
+
+			objRetorno.put("msg", "ok");
+
+		}
+
+		out.print(objRetorno.toJSONString());
+
+	}
+
+	
+	public static void carregaBairros(HttpServletRequest request, HttpServletResponse response, Connection conn, String cod_usuario) throws Exception {
+		JSONArray retorno = new JSONArray();
+		PrintWriter out = response.getWriter();
+
+		String sql = "SELECT cod_cidade from  usuario where id_usuario  = ? ";
+		PreparedStatement st = conn.prepareStatement(sql);
+		st.setInt(1, Integer.parseInt(cod_usuario));
+		ResultSet rs = st.executeQuery();
+		int codcidade = 0;
+		while (rs.next()) {
+
+			codcidade = rs.getInt("cod_cidade");
+		}
+
+		st = conn.prepareStatement("SELECT cod_bairro, desc_bairro from bairros where cod_cidade  = ? order by desc_bairro asc");
+		st.setInt(1, codcidade);
+		rs = st.executeQuery();
+
+		while (rs.next()) {
+			JSONObject bairro = new JSONObject();
+			bairro.put("cod_bairro", rs.getString("cod_bairro"));
+			bairro.put("desc_bairro", rs.getString("desc_bairro"));
+
+			retorno.add(bairro);
+		}
+
+		out.print(retorno.toJSONString());
+	}
+
+	
+	
 	public static void main(String[] args) {
 		try {
 
