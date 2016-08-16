@@ -37,6 +37,7 @@ import org.json.simple.parser.JSONParser;
 import com.ajax.Home_ajax;
 import com.ajax.Parametros_ajax;
 import com.ajax.Pedidos_ajax;
+import com.mercadopago.MP;
 
 import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
@@ -113,7 +114,13 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 		if (rs.next()) {
 			objRetorno.put("msg", "ok");
 			MobileController mob = new MobileController();
-			objRetorno.put("token", mob.criaToken(user, pass, 604800000));//1 semana ou 1 mes, nao lembro
+			objRetorno.put("token", mob.criaToken(user, pass, 604800000));// 1
+																			// semana
+																			// ou
+																			// 1
+																			// mes,
+																			// nao
+																			// lembro
 
 		} else {
 			objRetorno.put("erro", "Login inválido!");
@@ -229,11 +236,13 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 					carregaUser(request, response, conn, cod_usuario);
 				} else if (cmd.equalsIgnoreCase("carrega_bairros")) {
 					carregaBairros(request, response, conn, cod_usuario);
-				} else if (cmd.equalsIgnoreCase("save_user")) {
-					updateUser(request, response, conn, cod_usuario);
-				}
-			
-					
+				} else if (cmd.equalsIgnoreCase("inserir_user")) {
+					inserirUser(request, response, conn);
+				} else if (cmd.equalsIgnoreCase("doOrder")) {
+					payment(request, response, conn);
+				} else if (cmd.equalsIgnoreCase("carregaProdutos")) {
+					carregaProdutos(request, response, conn,cod_usuario);
+				} 
 				
 			}
 
@@ -259,7 +268,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 		}
 	}
 
-	public static void getalgo(HttpServletRequest request, HttpServletResponse response, Connection conn) throws Exception {
+	private static void getalgo(HttpServletRequest request, HttpServletResponse response, Connection conn) throws Exception {
 
 		PrintWriter out = response.getWriter();
 
@@ -271,7 +280,28 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 
 	}
 
-	public static void inserirUser(HttpServletRequest request, HttpServletResponse response, Connection conn) throws Exception {
+	private static void payment(HttpServletRequest request, HttpServletResponse response, Connection conn) throws Exception {
+
+		PrintWriter out = response.getWriter();
+
+		JSONObject objRetorno = new JSONObject();
+
+		MP mp = new MP("TEST-3928083096731492-072914-2aa78c35c6f210a6322c4acf9abe4d14__LD_LC__-222772872");
+
+		String token = request.getParameter("token");
+		String email = request.getParameter("email");
+		String paymentMethodId = request.getParameter("paymentMethodId");
+
+		org.codehaus.jettison.json.JSONObject payment = mp.post("/v1/payments", "{" + "'transaction_amount': 100," + "'token': " + token + "," + "'description': 'Title of what you are paying for'," + "'installments': 1," + "'payment_method_id': '" + paymentMethodId + "'," + "'payer': {" + "'email': '" + email + "'" + "}" + "}");
+
+		System.out.println(payment);
+
+		objRetorno.put("msg", "ok");
+		out.print(objRetorno.toJSONString());
+
+	}
+
+	private static void inserirUser(HttpServletRequest request, HttpServletResponse response, Connection conn) throws Exception {
 
 		PrintWriter out = response.getWriter();
 
@@ -287,19 +317,19 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 		String cod_bairro = request.getParameter("c_cod_bairro") == "" ? null : request.getParameter("c_cod_bairro");
 		String desc_endereco = request.getParameter("c_desc_endereco") == null ? "" : request.getParameter("c_desc_endereco");
 
-		if (desc_usuario .equalsIgnoreCase("")) {
+		if (desc_usuario.equalsIgnoreCase("")) {
 			throw new Exception("Você deve preencher o campo de usuário.");
 		}
 
-		if (desc_senha .equalsIgnoreCase("")) {
+		if (desc_senha.equalsIgnoreCase("")) {
 			throw new Exception("Você deve preencher o campo de senha.");
 		}
 
-		if (desc_email .equalsIgnoreCase("")) {
+		if (desc_email.equalsIgnoreCase("")) {
 			throw new Exception("Você deve preencher o campo de email.");
 		}
 
-		if (desc_senha .equalsIgnoreCase( desc_senha_conf)) {
+		if (desc_senha.equalsIgnoreCase(desc_senha_conf)) {
 			throw new Exception("Erro. As senhas são diferentes.");
 		}
 
@@ -346,11 +376,11 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 
 	}
 
-	public static void updateUser(HttpServletRequest request, HttpServletResponse response, Connection conn, String cod_usuario) throws Exception {
+	private static void updateUser(HttpServletRequest request, HttpServletResponse response, Connection conn, String cod_usuario) throws Exception {
 
 		PrintWriter out = response.getWriter();
 		JSONObject objRetorno = new JSONObject();
-		if (cod_usuario .equalsIgnoreCase("") || cod_usuario == null || cod_usuario.equalsIgnoreCase("0")) {
+		if (cod_usuario.equalsIgnoreCase("") || cod_usuario == null || cod_usuario.equalsIgnoreCase("0")) {
 			throw new Exception("Usuário inválido.");
 		} else {
 
@@ -368,11 +398,11 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 				throw new Exception("Você deve preencher o campo de senha.");
 			}
 
-			if (desc_email. equalsIgnoreCase( "")) {
+			if (desc_email.equalsIgnoreCase("")) {
 				throw new Exception("Você deve preencher o campo de email.");
 			}
 
-			if (!desc_senha .equalsIgnoreCase(desc_senha_conf)) {
+			if (!desc_senha.equalsIgnoreCase(desc_senha_conf)) {
 				throw new Exception("Erro. As senhas são diferentes.");
 			}
 
@@ -412,11 +442,11 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 
 	}
 
-	public static void carregaUser(HttpServletRequest request, HttpServletResponse response, Connection conn, String cod_usuario) throws Exception {
+	private static void carregaUser(HttpServletRequest request, HttpServletResponse response, Connection conn, String cod_usuario) throws Exception {
 
 		PrintWriter out = response.getWriter();
 		JSONObject objRetorno = new JSONObject();
-		if (cod_usuario. equalsIgnoreCase("") || cod_usuario == null || cod_usuario.equalsIgnoreCase("0")) {
+		if (cod_usuario.equalsIgnoreCase("") || cod_usuario == null || cod_usuario.equalsIgnoreCase("0")) {
 			throw new Exception("Usuário inválido.");
 		} else {
 
@@ -424,7 +454,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 			st.setInt(1, Integer.parseInt(cod_usuario));
 			ResultSet rs = st.executeQuery();
 			if (rs.next()) {
-				
+
 				objRetorno.put("ID_USUARIO", rs.getString("ID_USUARIO"));
 				objRetorno.put("DESC_NOME", rs.getString("DESC_NOME"));
 				objRetorno.put("DESC_TELEFONE", rs.getString("DESC_TELEFONE"));
@@ -436,7 +466,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 				objRetorno.put("DESC_EMAIL", rs.getString("DESC_EMAIL"));
 				objRetorno.put("ID_CIDADE", rs.getString("ID_CIDADE"));
 				objRetorno.put("DESC_CARTAO", rs.getString("DESC_CARTAO"));
-				
+
 			}
 
 			objRetorno.put("msg", "ok");
@@ -447,8 +477,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 
 	}
 
-	
-	public static void carregaBairros(HttpServletRequest request, HttpServletResponse response, Connection conn, String cod_usuario) throws Exception {
+	private static void carregaBairros(HttpServletRequest request, HttpServletResponse response, Connection conn, String cod_usuario) throws Exception {
 		JSONArray retorno = new JSONArray();
 		PrintWriter out = response.getWriter();
 
@@ -477,16 +506,85 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 		out.print(retorno.toJSONString());
 	}
 
-	
-	
+	private static void carregaProdutos(HttpServletRequest request, HttpServletResponse response, Connection conn, String cod_usuario) throws Exception {
+		
+		JSONArray retorno = new JSONArray();
+		PrintWriter out = response.getWriter();
+
+		String cod_bairro = request.getParameter("cod_bairro") == null ? "" : request.getParameter("cod_bairro");
+		String cod_cidade = request.getParameter("cod_cidade") == null ? "" : request.getParameter("cod_cidade");//acho que nao vai precisar
+		String distribuidora = request.getParameter("distribuidora") == null ? "" : request.getParameter("distribuidora"); // pesquisar a partir de produtos no carrinho ou algo do tipo //TODO
+		String desc_pesquisa = request.getParameter("desc_pesquisa") == null ? "" : request.getParameter("desc_pesquisa");
+
+		StringBuffer sql = new StringBuffer();
+		sql.append("select ");
+		sql.append("produtos.ID_PROD, ");
+		sql.append("DESC_PROD, ");
+		sql.append("DESC_ABREVIADO, ");
+		sql.append("produtos_distribuidora.VAL_PROD, ");
+		sql.append("distribuidora.ID_DISTRIBUIDORA, ");
+		sql.append("DESC_NOME_ABREV ");
+		sql.append(" from produtos ");
+		sql.append("inner join produtos_distribuidora ");
+		sql.append("on produtos_distribuidora.id_prod = produtos.id_prod ");
+		sql.append("inner join distribuidora ");
+		sql.append("on produtos_distribuidora.ID_DISTRIBUIDORA = distribuidora.ID_DISTRIBUIDORA ");
+		sql.append("inner join distribuidora_bairro_entrega ");
+		sql.append("on distribuidora_bairro_entrega.ID_DISTRIBUIDORA = distribuidora.ID_DISTRIBUIDORA ");
+		sql.append("inner join distribuidora_horario_dia_entre ");
+		sql.append("on distribuidora_horario_dia_entre.ID_DISTR_BAIRRO   = distribuidora_bairro_entrega.ID_DISTR_BAIRRO");
+		sql.append("where produtos_distribuidora.FLAG_ATIVO = 'S' and distribuidora.FLAG_ATIVO_MASTER ='S' and distribuidora.FLAG_ATIVO='S' and cod_bairro = ? and desc_prod  like ? and cod_dia = ? and ? between horario_ini and horario_fim");
+
+		// cod_bairro = ?
+		// desc_prod like ?
+		// and cod_dia = ?
+		// and ? between horario_ini and horario_fim"
+
+		if (!distribuidora.equalsIgnoreCase("")) {
+			sql.append(" and id_distribuidora = " + distribuidora);
+		}
+
+		Calendar cal = Calendar.getInstance();
+		SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
+		
+		PreparedStatement st = conn.prepareStatement(sql.toString());
+		st.setInt(1, Integer.parseInt(cod_bairro));
+		st.setString(2, "%" + desc_pesquisa + "%");
+		// de acordo com o que ta no banco de dados, se for 1 vai ser domingo (codigo 7 no banco), resto é o dia menos 1.
+		st.setInt(3, new GregorianCalendar().get(Calendar.DAY_OF_WEEK) == 1 ? 7 : new GregorianCalendar().get(Calendar.DAY_OF_WEEK) - 1);
+		st.setString(4, sdf.format(cal.getTime()));
+		if (!distribuidora.equalsIgnoreCase("")) {
+			st.setInt(5, Integer.parseInt(distribuidora));
+		}
+
+		ResultSet rs = st.executeQuery();
+		JSONArray prods = new JSONArray();
+		while (rs.next()) {
+			JSONObject prod = new  JSONObject();
+			prod.put("ID_PROD",rs.getString("ID_PROD"));
+			prod.put("DESC_PROD",rs.getString("DESC_PROD"));
+			prod.put("DESC_ABREVIADO",rs.getString("DESC_ABREVIADO"));//abreviado do produto
+			prod.put("VAL_PROD",rs.getString("VAL_PROD"));// TODO trazer formatado se nao conseguir tratar no front end.
+			prod.put("ID_DISTRIBUIDORA",rs.getString("ID_DISTRIBUIDORA"));
+			prod.put("DESC_NOME_ABREV",rs.getString("DESC_NOME_ABREV"));///abreviado da distribuidora
+			
+			prods.add(prod);
+		}
+
+
+		out.print(retorno.toJSONString());
+	}
+
 	public static void main(String[] args) {
 		try {
 
-			SecretKey secretKey = KeyGenerator.getInstance("AES").generateKey();
-			// get base64 encoded version of the key
-			String encodedKey = Base64.getEncoder().encodeToString(secretKey.getEncoded());
+			/*
+			 * SecretKey secretKey = KeyGenerator.getInstance("AES").generateKey(); // get base64 encoded version of the key String encodedKey = Base64.getEncoder().encodeToString(secretKey.getEncoded());
+			 * 
+			 * System.out.println(encodedKey);
+			 */
 
-			System.out.println(encodedKey);
+			System.out.println(new GregorianCalendar().get(Calendar.DAY_OF_WEEK));
 
 		} catch (Exception e) {
 			// TODO: handle exception
