@@ -43,6 +43,22 @@ public class Utilitario {
 		mailService.send();
 
 	}
+	
+	
+	public static String returnStatusPedidoFlag(String flag) {
+		
+		if(flag.equalsIgnoreCase("E")){
+			return "Em envio";
+		} else  if(flag.equalsIgnoreCase("R")){
+			return "Recusado";
+		} else if(flag.equalsIgnoreCase("O")){
+			return "Finalizado";
+		} else  if(flag.equalsIgnoreCase("A")){
+			return "Aberto";
+		}
+		
+		return "";
+	}
 
 	public static int retornaIdinsert(String tabela, String coluna, Connection conn) throws Exception {
 		String varname1 = "";

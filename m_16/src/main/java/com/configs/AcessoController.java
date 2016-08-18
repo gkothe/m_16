@@ -20,7 +20,6 @@ public class AcessoController implements SysController {
 
 	public void processaRequisicoes(HttpServletRequest request, HttpServletResponse response) {
 
-		System.out.println("----------entro acesso");
 		session = request.getSession(false);
 
 		String erroLogin = null;
