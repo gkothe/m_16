@@ -7,7 +7,7 @@ import java.sql.SQLException;
 public class Conexao {
 
 	   public final static String url = "jdbc:mysql://localhost:3306/";
-	   public final static   String dbName = "bebidas_novo?characterEncoding=UTF-8";
+	   public final static   String dbName = "bebidas_v2?characterEncoding=UTF-8";
 	   public final static   String driver = "com.mysql.jdbc.Driver";
 	   public final static String userName = "root";
 	   public final static String password = "root";
