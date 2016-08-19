@@ -1,6 +1,6 @@
 -- MySQL dump 10.13  Distrib 5.7.9, for Win64 (x86_64)
 --
--- Host: localhost    Database: bebidas_novo
+-- Host: localhost    Database: bebidas_v2
 -- ------------------------------------------------------
 -- Server version	5.6.31-log
 
@@ -16,12 +16,12 @@
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 --
--- Current Database: `bebidas_novo`
+-- Current Database: `bebidas_v2`
 --
 
-CREATE DATABASE /*!32312 IF NOT EXISTS*/ `bebidas_novo` /*!40100 DEFAULT CHARACTER SET utf8 */;
+CREATE DATABASE /*!32312 IF NOT EXISTS*/ `bebidas_v2` /*!40100 DEFAULT CHARACTER SET utf8 */;
 
-USE `bebidas_novo`;
+USE `bebidas_v2`;
 
 --
 -- Table structure for table `autocomplete`
@@ -72,6 +72,63 @@ LOCK TABLES `bairros` WRITE;
 /*!40000 ALTER TABLE `bairros` DISABLE KEYS */;
 INSERT INTO `bairros` (`COD_BAIRRO`, `COD_CIDADE`, `DESC_BAIRRO`) VALUES (1,1,'Várzea'),(2,1,'Universitário'),(3,1,'Senai'),(4,1,'Schulz'),(5,1,'São João'),(6,1,'Santuário'),(7,1,'Santo Inácio'),(8,1,'Santo Antônio'),(9,1,'Santa Vitória'),(10,1,'Renascença'),(11,1,'Rauber'),(12,1,'Progresso'),(13,1,'Pedreira'),(14,1,'Monte Verde'),(15,1,'Margarida'),(16,1,'Linha Santa Cruz'),(17,1,'João Alves'),(18,1,'Jardim Europa'),(19,1,'Independência'),(20,1,'Higienópolis'),(21,1,'Goiás'),(22,1,'Germânia'),(23,1,'Faxinal Menino Deus'),(24,1,'Esmeralda'),(25,1,'Dona Carlota'),(26,1,'Distrito Industrial'),(27,1,'Country'),(28,1,'Centro'),(29,1,'Castelo Branco'),(30,1,'Bonfim'),(31,1,'Bom Jesus'),(32,1,'Belvedere'),(33,1,'Avenida'),(34,1,'Arroio Grande'),(35,1,'Ana Nery'),(36,1,'Aliança');
 /*!40000 ALTER TABLE `bairros` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `carrinho`
+--
+
+DROP TABLE IF EXISTS `carrinho`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `carrinho` (
+  `ID_CARRINHO` bigint(20) NOT NULL,
+  `ID_USUARIO` bigint(20) DEFAULT NULL,
+  `COD_BAIRRO` int(11) DEFAULT NULL,
+  `DATA_CRIACAO` datetime DEFAULT NULL,
+  PRIMARY KEY (`ID_CARRINHO`),
+  KEY `FK_REFERENCE_22` (`ID_USUARIO`),
+  KEY `FK_REFERENCE_25` (`COD_BAIRRO`),
+  CONSTRAINT `FK_REFERENCE_22` FOREIGN KEY (`ID_USUARIO`) REFERENCES `usuario` (`ID_USUARIO`),
+  CONSTRAINT `FK_REFERENCE_25` FOREIGN KEY (`COD_BAIRRO`) REFERENCES `bairros` (`COD_BAIRRO`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `carrinho`
+--
+
+LOCK TABLES `carrinho` WRITE;
+/*!40000 ALTER TABLE `carrinho` DISABLE KEYS */;
+/*!40000 ALTER TABLE `carrinho` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `carrinho_item`
+--
+
+DROP TABLE IF EXISTS `carrinho_item`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `carrinho_item` (
+  `ID_CARRINHO` bigint(20) NOT NULL,
+  `SEQ_ITEM` int(11) NOT NULL,
+  `ID_PROD_DIST` int(11) DEFAULT NULL,
+  `QTD` int(11) DEFAULT NULL,
+  PRIMARY KEY (`ID_CARRINHO`,`SEQ_ITEM`),
+  KEY `FK_REFERENCE_24` (`ID_PROD_DIST`),
+  CONSTRAINT `FK_REFERENCE_23` FOREIGN KEY (`ID_CARRINHO`) REFERENCES `carrinho` (`ID_CARRINHO`),
+  CONSTRAINT `FK_REFERENCE_24` FOREIGN KEY (`ID_PROD_DIST`) REFERENCES `produtos_distribuidora` (`ID_PROD_DIST`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `carrinho_item`
+--
+
+LOCK TABLES `carrinho_item` WRITE;
+/*!40000 ALTER TABLE `carrinho_item` DISABLE KEYS */;
+/*!40000 ALTER TABLE `carrinho_item` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -158,7 +215,7 @@ CREATE TABLE `distribuidora` (
 
 LOCK TABLES `distribuidora` WRITE;
 /*!40000 ALTER TABLE `distribuidora` DISABLE KEYS */;
-INSERT INTO `distribuidora` (`ID_DISTRIBUIDORA`, `COD_CIDADE`, `DESC_RAZAO_SOCIAL`, `DESC_NOME_ABREV`, `VAL_ENTREGA_MIN`, `DESC_TELEFONE`, `DESC_ENDERECO`, `NUM_ENDEREC`, `DESC_COMPLEMENTO`, `VAL_TELE_ENTREGA`, `FLAG_CUSTOM`, `FLAG_ATIVO`, `DESC_LOGIN`, `DESC_SENHA`, `FLAG_ATIVO_MASTER`, `DESC_MAIL`) VALUES (1,1,'Distribuidora Bêbados de Cair LTDA','Bêbeados de Cair',30.00,'051-999-8888','Rua Fundo da Garrafa','667','Fundos',5.00,'N','S','b','b','S','g.kothe@hotmail.com'),(2,1,'Distribuidora Ela Robou meu Caminhão LTDA','Roubou meu Caminhão',25.00,'051-883821234','Rua Sem o caminhão','143','Na árvore',6.50,'N','S','a','a','S',NULL);
+INSERT INTO `distribuidora` (`ID_DISTRIBUIDORA`, `COD_CIDADE`, `DESC_RAZAO_SOCIAL`, `DESC_NOME_ABREV`, `VAL_ENTREGA_MIN`, `DESC_TELEFONE`, `DESC_ENDERECO`, `NUM_ENDEREC`, `DESC_COMPLEMENTO`, `VAL_TELE_ENTREGA`, `FLAG_CUSTOM`, `FLAG_ATIVO`, `DESC_LOGIN`, `DESC_SENHA`, `FLAG_ATIVO_MASTER`, `DESC_MAIL`) VALUES (1,1,'Distribuidora Bêbados de Cair LTDA','Bêbeados de Cair',35.00,'051-999-8888','Rua Fundo da Garrafa','667','Fundos',5.00,'N','S','b','b','S','g.kothe@hotmail.com'),(2,1,'Distribuidora Ela Robou meu Caminhão LTDA','Roubou meu Caminhão',25.00,'051-883821234','Rua Sem o caminhão','143','Na árvore',6.50,'N','S','a','a','S',NULL);
 /*!40000 ALTER TABLE `distribuidora` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -180,7 +237,7 @@ CREATE TABLE `distribuidora_bairro_entrega` (
   KEY `FK_REFERENCE_4` (`ID_DISTRIBUIDORA`),
   CONSTRAINT `FK_REFERENCE_3` FOREIGN KEY (`COD_BAIRRO`) REFERENCES `bairros` (`COD_BAIRRO`),
   CONSTRAINT `FK_REFERENCE_4` FOREIGN KEY (`ID_DISTRIBUIDORA`) REFERENCES `distribuidora` (`ID_DISTRIBUIDORA`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -189,6 +246,7 @@ CREATE TABLE `distribuidora_bairro_entrega` (
 
 LOCK TABLES `distribuidora_bairro_entrega` WRITE;
 /*!40000 ALTER TABLE `distribuidora_bairro_entrega` DISABLE KEYS */;
+INSERT INTO `distribuidora_bairro_entrega` (`ID_DISTR_BAIRRO`, `COD_BAIRRO`, `ID_DISTRIBUIDORA`, `VAL_TELE_ENTREGA`, `FLAG_TELEBAIRRO`) VALUES (1,21,1,5.00,'N'),(2,33,1,3.00,'S');
 /*!40000 ALTER TABLE `distribuidora_bairro_entrega` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -211,7 +269,7 @@ CREATE TABLE `distribuidora_horario_dia_entre` (
   KEY `FK_REFERENCE_8` (`COD_DIA`),
   CONSTRAINT `FK_REFERENCE_20` FOREIGN KEY (`ID_DISTR_BAIRRO`) REFERENCES `distribuidora_bairro_entrega` (`ID_DISTR_BAIRRO`),
   CONSTRAINT `FK_REFERENCE_8` FOREIGN KEY (`COD_DIA`) REFERENCES `dias_semana` (`COD_DIA`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -220,6 +278,7 @@ CREATE TABLE `distribuidora_horario_dia_entre` (
 
 LOCK TABLES `distribuidora_horario_dia_entre` WRITE;
 /*!40000 ALTER TABLE `distribuidora_horario_dia_entre` DISABLE KEYS */;
+INSERT INTO `distribuidora_horario_dia_entre` (`ID_HORARIO`, `ID_DISTRIBUIDORA`, `COD_DIA`, `ID_DISTR_BAIRRO`, `HORARIO_INI`, `HORARIO_FIM`) VALUES (1,1,1,1,'05:00:00','08:00:00'),(2,1,1,2,'05:00:00','16:00:00'),(3,1,1,2,'17:00:00','19:00:00'),(4,1,2,2,'03:00:00','05:00:00');
 /*!40000 ALTER TABLE `distribuidora_horario_dia_entre` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -284,7 +343,7 @@ CREATE TABLE `pedido` (
 
 LOCK TABLES `pedido` WRITE;
 /*!40000 ALTER TABLE `pedido` DISABLE KEYS */;
-INSERT INTO `pedido` (`ID_PEDIDO`, `ID_DISTRIBUIDORA`, `ID_USUARIO`, `DATA_PEDIDO`, `FLAG_STATUS`, `VAL_TOTALPROD`, `VAL_ENTREGA`, `DATA_PEDIDO_RESPOSTA`, `NUM_PED`, `COD_BAIRRO`, `DESC_ENDERECO_ENTREGA`, `NUM_TELEFONECONTATO_CLIENTE`, `TEMPO_ESTIMADO_ENTREGA`) VALUES (1,1,1,'2016-08-02 13:10:00','R',49.00,5.00,'2016-08-03 11:39:17',1,2,'Treta','9999','01:00:00'),(2,1,1,'2016-05-06 16:35:00','A',85.00,5.00,'2016-08-03 10:54:12',2,2,'Treta2','999999934','01:00:00');
+INSERT INTO `pedido` (`ID_PEDIDO`, `ID_DISTRIBUIDORA`, `ID_USUARIO`, `DATA_PEDIDO`, `FLAG_STATUS`, `VAL_TOTALPROD`, `VAL_ENTREGA`, `DATA_PEDIDO_RESPOSTA`, `NUM_PED`, `COD_BAIRRO`, `DESC_ENDERECO_ENTREGA`, `NUM_TELEFONECONTATO_CLIENTE`, `TEMPO_ESTIMADO_ENTREGA`) VALUES (1,1,1,'2016-08-02 13:10:00','A',49.00,5.00,'2016-08-18 20:50:03',1,2,'Treta','9999','01:00:00'),(2,1,1,'2016-05-06 16:35:00','R',85.00,5.00,'2016-08-18 20:50:14',2,2,'Treta2','999999934','02:06:00');
 /*!40000 ALTER TABLE `pedido` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -307,7 +366,7 @@ CREATE TABLE `pedido_item` (
   KEY `FK_REFERENCE_16` (`ID_PROD`),
   CONSTRAINT `FK_REFERENCE_14` FOREIGN KEY (`ID_PEDIDO`) REFERENCES `pedido` (`ID_PEDIDO`),
   CONSTRAINT `FK_REFERENCE_16` FOREIGN KEY (`ID_PROD`) REFERENCES `produtos` (`ID_PROD`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -316,7 +375,7 @@ CREATE TABLE `pedido_item` (
 
 LOCK TABLES `pedido_item` WRITE;
 /*!40000 ALTER TABLE `pedido_item` DISABLE KEYS */;
-INSERT INTO `pedido_item` (`ID_PEDIDO_ITEM`, `ID_PEDIDO`, `SEQ_ITEM`, `VAL_UNIT`, `ID_PROD`, `QTD_PROD`) VALUES (1,1,1,3.50,1,14),(2,2,1,3.50,1,14),(3,2,2,4.00,2,7);
+INSERT INTO `pedido_item` (`ID_PEDIDO_ITEM`, `ID_PEDIDO`, `SEQ_ITEM`, `VAL_UNIT`, `ID_PROD`, `QTD_PROD`) VALUES (2,1,1,3.50,1,14),(3,2,1,3.50,1,14),(4,2,2,4.00,2,7);
 /*!40000 ALTER TABLE `pedido_item` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -336,7 +395,7 @@ CREATE TABLE `pedido_motivos_recusa` (
   KEY `FK_REFERENCE_19` (`ID_PEDIDO`),
   CONSTRAINT `FK_REFERENCE_18` FOREIGN KEY (`COD_MOTIVO`) REFERENCES `motivos_recusa` (`COD_MOTIVO`),
   CONSTRAINT `FK_REFERENCE_19` FOREIGN KEY (`ID_PEDIDO`) REFERENCES `pedido` (`ID_PEDIDO`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -345,7 +404,7 @@ CREATE TABLE `pedido_motivos_recusa` (
 
 LOCK TABLES `pedido_motivos_recusa` WRITE;
 /*!40000 ALTER TABLE `pedido_motivos_recusa` DISABLE KEYS */;
-INSERT INTO `pedido_motivos_recusa` (`ID_PEDIDO_MOTIVO_RECUSA`, `ID_PEDIDO`, `COD_MOTIVO`) VALUES (1,1,4),(2,1,6);
+INSERT INTO `pedido_motivos_recusa` (`ID_PEDIDO_MOTIVO_RECUSA`, `ID_PEDIDO`, `COD_MOTIVO`) VALUES (1,2,3);
 /*!40000 ALTER TABLE `pedido_motivos_recusa` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -393,7 +452,7 @@ CREATE TABLE `produtos_distribuidora` (
   KEY `FK_REFERENCE_2` (`ID_DISTRIBUIDORA`),
   CONSTRAINT `FK_REFERENCE_1` FOREIGN KEY (`ID_PROD`) REFERENCES `produtos` (`ID_PROD`),
   CONSTRAINT `FK_REFERENCE_2` FOREIGN KEY (`ID_DISTRIBUIDORA`) REFERENCES `distribuidora` (`ID_DISTRIBUIDORA`)
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -402,7 +461,7 @@ CREATE TABLE `produtos_distribuidora` (
 
 LOCK TABLES `produtos_distribuidora` WRITE;
 /*!40000 ALTER TABLE `produtos_distribuidora` DISABLE KEYS */;
-INSERT INTO `produtos_distribuidora` (`ID_PROD_DIST`, `ID_PROD`, `ID_DISTRIBUIDORA`, `VAL_PROD`, `FLAG_ATIVO`) VALUES (1,1,1,3.50,'S'),(2,2,1,4.00,'S'),(3,7,1,6.00,'N'),(4,1,2,3.00,'S'),(5,3,2,7.00,'S'),(6,5,2,6.00,'N');
+INSERT INTO `produtos_distribuidora` (`ID_PROD_DIST`, `ID_PROD`, `ID_DISTRIBUIDORA`, `VAL_PROD`, `FLAG_ATIVO`) VALUES (1,1,1,3.50,'S'),(2,2,1,4.00,'S'),(3,7,1,6.00,'N'),(4,1,2,3.00,'S'),(5,3,2,7.00,'S'),(6,5,2,6.00,'N'),(7,3,1,2.00,'S'),(8,5,1,6.00,'N');
 /*!40000 ALTER TABLE `produtos_distribuidora` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -417,14 +476,20 @@ CREATE TABLE `usuario` (
   `ID_USUARIO` bigint(20) NOT NULL AUTO_INCREMENT,
   `DESC_NOME` text,
   `DESC_TELEFONE` varchar(50) DEFAULT NULL,
-  `COD_BAIRRO` int(11) DEFAULT NULL,
-  `COD_CIDADE` int(11) DEFAULT NULL,
-  `DESC_ENDERECO` text,
   `DESC_USER` varchar(50) DEFAULT NULL,
   `DESC_SENHA` varchar(50) DEFAULT NULL,
   `DESC_EMAIL` varchar(150) DEFAULT NULL,
-  `ID_CIDADE` int(11) DEFAULT NULL,
+  `COD_CIDADE` int(11) DEFAULT NULL,
+  `DESC_ENDERECO` text,
+  `DESC_ENDERECO_NUM` varchar(20) DEFAULT NULL,
+  `DESC_ENDERECO_COMPLEMENTO` varchar(20) DEFAULT NULL,
+  `COD_BAIRRO` int(11) DEFAULT NULL,
   `DESC_CARTAO` varchar(20) DEFAULT NULL,
+  `DATA_EXP_MES` int(11) DEFAULT NULL,
+  `DATA_EXP_ANO` int(11) DEFAULT NULL,
+  `DESC_CARDHOLDERNAME` text,
+  `PAY_ID` text,
+  `DESC_CPF` varchar(15) DEFAULT NULL,
   PRIMARY KEY (`ID_USUARIO`),
   KEY `FK_REFERENCE_5` (`COD_BAIRRO`),
   KEY `FK_REFERENCE_7` (`COD_CIDADE`),
@@ -439,7 +504,7 @@ CREATE TABLE `usuario` (
 
 LOCK TABLES `usuario` WRITE;
 /*!40000 ALTER TABLE `usuario` DISABLE KEYS */;
-INSERT INTO `usuario` (`ID_USUARIO`, `DESC_NOME`, `DESC_TELEFONE`, `COD_BAIRRO`, `COD_CIDADE`, `DESC_ENDERECO`, `DESC_USER`, `DESC_SENHA`, `DESC_EMAIL`, `ID_CIDADE`, `DESC_CARTAO`) VALUES (1,'Teste da Silva','999999',3,1,'Rua alguma do bairro','T3st3','werty','werty@werty.com',NULL,NULL);
+INSERT INTO `usuario` (`ID_USUARIO`, `DESC_NOME`, `DESC_TELEFONE`, `DESC_USER`, `DESC_SENHA`, `DESC_EMAIL`, `COD_CIDADE`, `DESC_ENDERECO`, `DESC_ENDERECO_NUM`, `DESC_ENDERECO_COMPLEMENTO`, `COD_BAIRRO`, `DESC_CARTAO`, `DATA_EXP_MES`, `DATA_EXP_ANO`, `DESC_CARDHOLDERNAME`, `PAY_ID`, `DESC_CPF`) VALUES (1,'Teste da Silvasssss','999999','f','d','werty@werty.comssss',1,'Rua alguma do bairro',NULL,NULL,3,'',NULL,NULL,NULL,NULL,NULL);
 /*!40000 ALTER TABLE `usuario` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -452,4 +517,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2016-08-03 13:33:58
+-- Dump completed on 2016-08-19 14:21:49
