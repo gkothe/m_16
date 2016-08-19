@@ -1,6 +1,6 @@
 -- MySQL dump 10.13  Distrib 5.7.9, for Win64 (x86_64)
 --
--- Host: localhost    Database: bebidas_v2
+-- Host: localhost    Database: bebidas_novo
 -- ------------------------------------------------------
 -- Server version	5.6.31-log
 
@@ -16,12 +16,12 @@
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 --
--- Current Database: `bebidas_v2`
+-- Current Database: `bebidas_novo`
 --
 
-CREATE DATABASE /*!32312 IF NOT EXISTS*/ `bebidas_v2` /*!40100 DEFAULT CHARACTER SET utf8 */;
+CREATE DATABASE /*!32312 IF NOT EXISTS*/ `bebidas_novo` /*!40100 DEFAULT CHARACTER SET utf8 */;
 
-USE `bebidas_v2`;
+USE `bebidas_novo`;
 
 --
 -- Table structure for table `autocomplete`
