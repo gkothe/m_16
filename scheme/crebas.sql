@@ -1,6 +1,6 @@
 /*==============================================================*/
 /* DBMS name:      MySQL 5.0                                    */
-/* Created on:     19/8/2016 11:20:33 AM                        */
+/* Created on:     19/8/2016 4:24:30 PM                         */
 /*==============================================================*/
 
 
@@ -186,9 +186,11 @@ create table PEDIDO
    DATA_PEDIDO_RESPOSTA datetime,
    NUM_PED              INT8,
    COD_BAIRRO           INT4,
-   DESC_ENDERECO_ENTREGA TEXT,
    NUM_TELEFONECONTATO_CLIENTE VARCHAR(50),
    TEMPO_ESTIMADO_ENTREGA TIME,
+   DESC_ENDERECO_ENTREGA TEXT,
+   DESC_ENDERECO_NUM_ENTREGA VARCHAR(20),
+   DESC_ENDERECO_COMPLEMENTO_ENTREGA VARCHAR(20),
    primary key (ID_PEDIDO)
 )
 auto_increment = 1;
