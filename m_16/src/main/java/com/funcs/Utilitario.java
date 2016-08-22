@@ -119,12 +119,14 @@ public class Utilitario {
 		if (rs2.next()) {
 			if (rs2.getString("FLAG_CUSTOM").equalsIgnoreCase("S")) {
 				dia = 8;// se o flag custom ta ativo, retorna dia feriado/custom.
-			}
-		} else {
-			// ex: se day of week é 4, WEDNESDAY , o retorno vai ser day of week - 1 =3 Qarta feira.
-			dia = new GregorianCalendar().get(Calendar.DAY_OF_WEEK) == 1 ? 7 : new GregorianCalendar().get(Calendar.DAY_OF_WEEK) - 1;
-		}
 
+			} else {
+				// ex: se day of week é 4, WEDNESDAY , o retorno vai ser day of week - 1 =3 Qarta feira.
+				dia = new GregorianCalendar().get(Calendar.DAY_OF_WEEK) == 1 ? 7 : new GregorianCalendar().get(Calendar.DAY_OF_WEEK) - 1;
+			}
+		}else{
+			throw new Exception("Distribuidora não existe.");
+		}
 		return dia;
 	}
 
@@ -144,7 +146,6 @@ public class Utilitario {
 		varname1 += " UNION ";
 		varname1 += " SELECT COALESCE(max(" + coluna + "+1),1) AS missing ";
 		varname1 += " FROM   " + tabela + " where " + chaveprimaria + " = " + id_chaveprimaria + " limit 1 ";
-
 
 		PreparedStatement st = conn.prepareStatement(varname1);
 		int id = 1;

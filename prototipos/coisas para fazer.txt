@@ -1,4 +1,7 @@
 transformar ID_PROD_DIST em long?
-testar função que busca carrinho
-teste bairro no ad carrinho
 
+gerencia de bairros/horarios na ditribuidora, modo pratico caso for fazer para todos bairros ou alg do tipo
+
+qestao de estar online (empresa), criar campo de data referente a ultima requisição de pedidos . ter uma thread rodando, de x em x minutos, se aqela data for muito maior(definir) a empresa esta offline. Possivelmente vai ter outro flag.  Botar som quando aparecer pedido.
+
+qestao de pagar em dinhero, flag na empresa.

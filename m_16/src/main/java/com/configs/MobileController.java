@@ -883,11 +883,10 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 	}
 
 	private static void carregaCarrinho(HttpServletRequest request, HttpServletResponse response, Connection conn, String cod_usuario) throws Exception {
-		// TODO nao testei a função, pode dar erros
 		PrintWriter out = response.getWriter();
 
 		StringBuffer sql = new StringBuffer();
-		sql.append("select carrinho_item.id_carrinho, distribuidora_bairro_entrega.cod_bairro,desc_bairro, seq_item, qtd,val_prod,produtos_distribuidora.id_distribuidora, DESC_RAZAO_SOCIAL,VAL_ENTREGA_MIN , ");
+		sql.append("select carrinho_item.id_carrinho, distribuidora_bairro_entrega.cod_bairro,desc_bairro, seq_item, qtd,val_prod,produtos_distribuidora.id_distribuidora, DESC_RAZAO_SOCIAL,VAL_ENTREGA_MIN , produtos.DESC_PROD, produtos.DESC_ABREVIADO, ");
 		sql.append(" ");
 		sql.append("case when FLAG_TELEBAIRRO = 'S' then distribuidora_bairro_entrega.VAL_TELE_ENTREGA else distribuidora.VAL_TELE_ENTREGA end as VAL_TELE_ENTREGA ");
 		sql.append(" ");
@@ -936,6 +935,8 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 			obj.put("seq_item", rs.getString("seq_item"));
 			obj.put("qtd", rs.getString("qtd"));
 			obj.put("val_prod", rs.getString("val_prod"));
+			obj.put("desc_prod", rs.getString("DESC_PROD"));
+			obj.put("desc_abreviado", rs.getString("DESC_ABREVIADO"));
 			id_distribuidora = rs.getString("id_distribuidora");
 			DESC_RAZAO_SOCIAL = rs.getString("DESC_RAZAO_SOCIAL");
 			VAL_ENTREGA_MIN = rs.getString("VAL_ENTREGA_MIN");
@@ -952,11 +953,13 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 		carrinho.put("VAL_ENTREGA_MIN", VAL_ENTREGA_MIN);
 
 		carrinho.put("produtos", carrinhoitem);
+		
+		
+		System.out.println(carrinho.toJSONString());
 		out.print(carrinho.toJSONString());
 	}
 
 	private static void addCarrinho(HttpServletRequest request, HttpServletResponse response, Connection conn, String cod_usuario) throws Exception {
-		// TODO nao testei a função, pode dar erros
 		PrintWriter out = response.getWriter();
 		JSONObject retorno = new JSONObject();
 
@@ -1096,6 +1099,26 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 			st.setLong(3, Long.parseLong(id_proddistr));
 			st.setLong(4, Integer.parseInt(qtd));
 			st.executeUpdate();
+
+		}
+
+		if (Integer.parseInt(qtd) == 0) {// se qtd é 0, é pq o item foi removido do carrinho, entao aqui é testado se ainda existe algum item no carrinho, caso nao tenha, remove o carrinho
+
+			sql = new StringBuffer();
+			sql.append(" select 1 from carrinho_item ");
+			sql.append("where id_carrinho = ?  ");
+			st = conn.prepareStatement(sql.toString());
+			st.setLong(1, (idcarrinho));
+			rs = st.executeQuery();
+			if (!rs.next()) {
+
+				sql = new StringBuffer();//
+				sql.append(" delete  from carrinho ");
+				sql.append("where id_carrinho = ?  ");
+				st = conn.prepareStatement(sql.toString());
+				st.setLong(1, (idcarrinho));
+				st.executeUpdate();
+			}
 
 		}
 
