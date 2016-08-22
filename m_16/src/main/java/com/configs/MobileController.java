@@ -249,14 +249,12 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 					carregaPedidoUnico(request, response, conn, cod_usuario);
 				} else if (cmd.equalsIgnoreCase("carregaCarrinho")) {
 					carregaCarrinho(request, response, conn, cod_usuario);
+				} else if (cmd.equalsIgnoreCase("addCarrinho")) {
+					addCarrinho(request, response, conn, cod_usuario);
 				} else {
 					throw new Exception("Ação invalida");
 				}
 
-				
-				
-				
-				
 			}
 
 			conn.commit();
@@ -619,7 +617,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 		st = conn.prepareStatement(sql.toString());
 		st.setInt(1, Integer.parseInt(cod_bairro));
 
-		st.setInt(2, new GregorianCalendar().get(Calendar.DAY_OF_WEEK) == 1 ? 7 : new GregorianCalendar().get(Calendar.DAY_OF_WEEK) - 1); // de acordo com o que ta no banco de dados, se for 1 vai ser domingo (codigo 7 no banco), resto é o dia menos 1.
+		st.setInt(2, Utilitario.diaSemana(conn,Integer.parseInt(distribuidora))); //
 		st.setString(3, sdf.format(cal.getTime()));
 
 		if (listagem) {
@@ -931,7 +929,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 
 		while (rs.next()) {
 			JSONObject obj = new JSONObject();
-			//preguiça
+			// preguiça
 			id_carrinho = rs.getString("id_carrinho");
 			cod_bairro = rs.getString("cod_bairro");
 			desc_bairro = rs.getString("desc_bairro");
@@ -957,9 +955,145 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 		out.print(carrinho.toJSONString());
 	}
 
-	public static void main(String[] args) {
-		try {
+	private static void addCarrinho(HttpServletRequest request, HttpServletResponse response, Connection conn, String cod_usuario) throws Exception {
+		// TODO nao testei a função, pode dar erros
+		PrintWriter out = response.getWriter();
+		JSONObject retorno = new JSONObject();
 
+		// String id_prod = request.getParameter("id_prod") == null ? "" : request.getParameter("id_prod");
+		String id_proddistr = request.getParameter("id_proddistr") == null ? "" : request.getParameter("id_proddistr"); // precisa receber
+		// String id_ditribuidora = request.getParameter("id_ditribuidora") == null ? "" : request.getParameter("id_ditribuidora");
+		String qtd = request.getParameter("qtd") == null ? "" : request.getParameter("qtd"); // precisa receber
+		String cod_bairro = request.getParameter("cod_bairro") == null ? "" : request.getParameter("cod_bairro"); // precisa receber
+
+		boolean jatemcarrinho = false;
+		long idcarrinho = 0;
+		int id_distribuidora_prod = 0;
+
+		if (!Utilitario.isNumeric(id_proddistr)) {
+			throw new Exception("Produto inválido!");
+		}
+
+		if (!Utilitario.isNumeric(cod_bairro)) {
+			throw new Exception("Bairro inválido!");
+		}
+
+		if (!Utilitario.isNumeric(qtd)) {
+			throw new Exception("Quantidade inválida!");
+		}
+
+		if (cod_bairro.equalsIgnoreCase("0")) {
+			throw new Exception("Bairro inválido!");
+		}
+
+		if (id_proddistr.equalsIgnoreCase("0")) {
+			throw new Exception("Produto inválido!");
+		}
+
+		StringBuffer sql = new StringBuffer();
+		sql.append("SELECT id_carrinho from carrinho where id_usuario = ? ");
+		PreparedStatement st = conn.prepareStatement(sql.toString());
+		st.setLong(1, Long.parseLong(cod_usuario));
+		ResultSet rs = st.executeQuery();
+
+		if (rs.next()) {// ja tem carrinho
+			jatemcarrinho = true;
+			idcarrinho = rs.getLong("id_carrinho");
+		}
+
+		sql = new StringBuffer();// testa se o produto existe e pega id da distribuidora relacionada ao produto
+		sql.append(" select * from produtos_distribuidora ");
+		sql.append(" where ID_PROD_DIST = ? and flag_ativo = 'S' ");
+		st = conn.prepareStatement(sql.toString());
+		st.setLong(1, Long.parseLong(id_proddistr));
+		rs = st.executeQuery();
+		if (rs.next()) {
+			id_distribuidora_prod = rs.getInt("ID_DISTRIBUIDORA");
+		} else {
+			throw new Exception("Produto inválido!");
+		}
+
+		if (jatemcarrinho && id_distribuidora_prod != 0) {
+			sql = new StringBuffer();// testa para ver se a distribuidora não é difernte de alguma que se encontra no carrinho
+			sql.append(" select ID_DISTRIBUIDORA from carrinho_item ");
+			sql.append("inner join produtos_distribuidora ");
+			sql.append("on produtos_distribuidora.ID_PROD_DIST = carrinho_item.ID_PROD_DIST ");
+			sql.append("where id_carrinho = ?  ");
+			st = conn.prepareStatement(sql.toString());
+			st.setLong(1, (idcarrinho));
+			rs = st.executeQuery();
+			while (rs.next()) {
+				if (id_distribuidora_prod != rs.getInt("ID_DISTRIBUIDORA")) {
+					throw new Exception("Produto selecionado é de uma distribuidora diferente da que se encontra no carrinho!");
+				}
+			}
+		}
+
+		{// TODO testar dia da semana, testar flag custom horarios, testar se distribuidora ta ativa
+			sql = new StringBuffer();// testa para ver se a distribuidora é compativel com o bairro no horario atual
+			sql.append(" select 1 from distribuidora_bairro_entrega ");
+			sql.append(" inner join distribuidora_horario_dia_entre ");
+			sql.append(" on distribuidora_horario_dia_entre.ID_DISTR_BAIRRO   =   distribuidora_bairro_entrega.ID_DISTR_BAIRRO ");
+			sql.append(" where cod_bairro = ? and distribuidora_bairro_entrega.id_distribuidora  = ? and (now() between horario_ini and horario_fim) and cod_dia = ?  ");
+			st = conn.prepareStatement(sql.toString());
+			st.setLong(1, Long.parseLong(cod_bairro));
+			st.setLong(2, (id_distribuidora_prod));
+			st.setLong(3, Utilitario.diaSemana(conn, id_distribuidora_prod));
+			rs = st.executeQuery();
+			if (!rs.next()) {
+				throw new Exception("Distribuidora não se encontra disponível para o bairro escolhido.");
+			}
+		}
+
+		if (jatemcarrinho) {
+			sql = new StringBuffer();// deleta item do carrinho se ele exister exite no carrinho, add depois
+			sql.append(" delete from carrinho_item ");
+			sql.append(" where ID_PROD_DIST = ? and id_carrinho  = ?  ");
+			st = conn.prepareStatement(sql.toString());
+			st.setLong(1, Long.parseLong(id_proddistr));
+			st.setLong(2, (idcarrinho));
+			st.executeUpdate();
+		}
+
+		if (!jatemcarrinho && Integer.parseInt(qtd) != 0) {// criar carrinho
+
+			idcarrinho = Utilitario.retornaIdinsert("carrinho", "id_carrinho", conn); // add carrinho
+			sql = new StringBuffer();// insere no carrinho
+			sql.append(" INSERT INTO carrinho (`ID_CARRINHO`, `ID_USUARIO`, `COD_BAIRRO`, `DATA_CRIACAO`) VALUES (?, ?, ?, now()); ");
+			st = conn.prepareStatement(sql.toString());
+			st.setLong(1, idcarrinho);
+			st.setLong(2, Long.parseLong(cod_usuario));
+			st.setLong(3, Long.parseLong(cod_bairro));
+			st.executeUpdate();
+			jatemcarrinho = true;
+
+		}
+
+		if (jatemcarrinho && Integer.parseInt(qtd) != 0) {
+
+			sql = new StringBuffer();// insere no carrinho
+			sql.append(" INSERT INTO carrinho_item (`ID_CARRINHO`, `SEQ_ITEM`, `ID_PROD_DIST`, `QTD`) VALUES (?, ?, ?, ?); ");
+			st = conn.prepareStatement(sql.toString());
+			st.setLong(1, (idcarrinho));
+			st.setLong(2, Utilitario.retornaIdinsertChaveSecundaria("carrinho_item", "id_carrinho", idcarrinho + "", "seq_item", conn));
+			st.setLong(3, Long.parseLong(id_proddistr));
+			st.setLong(4, Integer.parseInt(qtd));
+			st.executeUpdate();
+
+		}
+
+		retorno.put("msg", "ok");
+
+		out.print(retorno.toJSONString());
+	}
+
+	public static void main(String[] args) {
+
+		Connection conn = null;
+		try {
+			conn = Conexao.getConexao();
+
+			Utilitario.retornaIdinsertChaveSecundaria("pedido_item", "id_pedido", "5", "seq_item", conn);
 			/*
 			 * SecretKey secretKey = KeyGenerator.getInstance("AES").generateKey(); // get base64 encoded version of the key String encodedKey = Base64.getEncoder().encodeToString(secretKey.getEncoded());
 			 * 
@@ -969,6 +1103,14 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 			/// System.out.println(new GregorianCalendar().get(Calendar.DAY_OF_WEEK));
 
 		} catch (Exception e) {
+		} finally {
+			if (conn != null) {
+				try {
+					conn.close();
+				} catch (Exception e2) {
+				}
+
+			}
 		}
 
 	}
