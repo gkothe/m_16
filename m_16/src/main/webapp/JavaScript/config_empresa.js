@@ -366,9 +366,10 @@ function addBairro() {
 			for (t = 0; t < horarios_bairros.length; t++) {
 
 				if (horarios_bairros[t].cod_bairro == $("#cod_bairro").val()) {
-					alert("Atenção! Bairro já existe na relação de bairros para entrega. O sistema irá carregar as informaçoes existentes.");
+					alert("Atenção! Bairro já existe na relação de bairros para entrega. O sistema irá carregar as informações existentes.");
 					jatem = true;
 					loadDadosBairro($("#cod_bairro").val());
+					break;
 				}
 
 			}

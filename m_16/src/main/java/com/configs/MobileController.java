@@ -34,10 +34,10 @@ import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
 import org.json.simple.parser.JSONParser;
 
-import com.ajax.Home_ajax;
-import com.ajax.Parametros_ajax;
-import com.ajax.Pedidos_ajax;
-import com.ajax.Utilitario;
+import com.funcs.Home_ajax;
+import com.funcs.Parametros_ajax;
+import com.funcs.Pedidos_ajax;
+import com.funcs.Utilitario;
 import com.mercadopago.MP;
 
 import javax.crypto.KeyGenerator;
@@ -617,7 +617,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 		st = conn.prepareStatement(sql.toString());
 		st.setInt(1, Integer.parseInt(cod_bairro));
 
-		st.setInt(2, Utilitario.diaSemana(conn,Integer.parseInt(distribuidora))); //
+		st.setInt(2, Utilitario.diaSemana(conn, Integer.parseInt(distribuidora))); //
 		st.setString(3, sdf.format(cal.getTime()));
 
 		if (listagem) {
@@ -1013,6 +1013,23 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 			throw new Exception("Produto inválido!");
 		}
 
+		{
+			sql = new StringBuffer();// testa flags da distribuidora
+			sql.append(" select FLAG_ATIVO,FLAG_ATIVO_MASTER from  distribuidora where id_distribuidora = ? ");
+			st = conn.prepareStatement(sql.toString());
+			st.setLong(1, (id_distribuidora_prod));
+			rs = st.executeQuery();
+			if (rs.next()) {
+				if (rs.getString("FLAG_ATIVO").equalsIgnoreCase("N")) {
+					throw new Exception("Distribuidora está offline no momento.");
+				}
+
+				if (rs.getString("FLAG_ATIVO_MASTER").equalsIgnoreCase("N")) {
+					throw new Exception("Distribuidora está desativada.");
+				}
+			}
+		}
+
 		if (jatemcarrinho && id_distribuidora_prod != 0) {
 			sql = new StringBuffer();// testa para ver se a distribuidora não é difernte de alguma que se encontra no carrinho
 			sql.append(" select ID_DISTRIBUIDORA from carrinho_item ");
@@ -1029,7 +1046,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 			}
 		}
 
-		{// TODO testar dia da semana, testar flag custom horarios, testar se distribuidora ta ativa
+		{
 			sql = new StringBuffer();// testa para ver se a distribuidora é compativel com o bairro no horario atual
 			sql.append(" select 1 from distribuidora_bairro_entrega ");
 			sql.append(" inner join distribuidora_horario_dia_entre ");

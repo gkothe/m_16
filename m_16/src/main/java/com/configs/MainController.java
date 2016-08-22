@@ -14,10 +14,10 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.json.simple.JSONObject;
 
-import com.ajax.Home_ajax;
-import com.ajax.Parametros_ajax;
-import com.ajax.Pedidos_ajax;
-import com.ajax.Utilitario;
+import com.funcs.Home_ajax;
+import com.funcs.Parametros_ajax;
+import com.funcs.Pedidos_ajax;
+import com.funcs.Utilitario;
 
 @SuppressWarnings("serial")
 @WebServlet(urlPatterns = { "" })

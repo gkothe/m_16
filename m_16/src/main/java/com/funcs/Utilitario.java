@@ -1,4 +1,4 @@
-package com.ajax;
+package com.funcs;
 
 import java.io.PrintWriter;
 import java.sql.Connection;
@@ -111,19 +111,20 @@ public class Utilitario {
 		// FRIDAY, 6
 		// SATURDAY. 7
 
-		String varname1 = " select FLAG_CUSTOM from distribuidora where id_distribuidora= ? ";
-int dia = 0;
+		String varname1 = " select FLAG_CUSTOM from distribuidora where id_distribuidora = ? ";
+		int dia = 0;
 		PreparedStatement st = conn.prepareStatement(varname1);
+		st.setInt(1, distribuidora);
 		ResultSet rs2 = st.executeQuery();
 		if (rs2.next()) {
 			if (rs2.getString("FLAG_CUSTOM").equalsIgnoreCase("S")) {
-				dia =  8;//se o flag custom ta ativo, retorna dia feriado/custom.
+				dia = 8;// se o flag custom ta ativo, retorna dia feriado/custom.
 			}
 		} else {
 			// ex: se day of week é 4, WEDNESDAY , o retorno vai ser day of week - 1 =3 Qarta feira.
-			dia =  new GregorianCalendar().get(Calendar.DAY_OF_WEEK) == 1 ? 7 : new GregorianCalendar().get(Calendar.DAY_OF_WEEK) - 1;
+			dia = new GregorianCalendar().get(Calendar.DAY_OF_WEEK) == 1 ? 7 : new GregorianCalendar().get(Calendar.DAY_OF_WEEK) - 1;
 		}
-		
+
 		return dia;
 	}
 
@@ -144,7 +145,6 @@ int dia = 0;
 		varname1 += " SELECT COALESCE(max(" + coluna + "+1),1) AS missing ";
 		varname1 += " FROM   " + tabela + " where " + chaveprimaria + " = " + id_chaveprimaria + " limit 1 ";
 
-		System.out.println(varname1);
 
 		PreparedStatement st = conn.prepareStatement(varname1);
 		int id = 1;
@@ -158,7 +158,6 @@ int dia = 0;
 
 	public static void main(String[] args) {
 		try {
-
 			sendEmail("g.kothe@hotmail.com", "aaaa", "Recuperação de senha");
 		} catch (Exception e) {
 			// TODO: handle exception

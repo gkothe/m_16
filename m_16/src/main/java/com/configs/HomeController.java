@@ -33,9 +33,9 @@ import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
 import org.json.simple.parser.JSONParser;
 
-import com.ajax.Home_ajax;
-import com.ajax.Parametros_ajax;
-import com.ajax.Pedidos_ajax;
+import com.funcs.Home_ajax;
+import com.funcs.Parametros_ajax;
+import com.funcs.Pedidos_ajax;
 
 @SuppressWarnings("unchecked")
 @WebServlet(urlPatterns = { "/home" })

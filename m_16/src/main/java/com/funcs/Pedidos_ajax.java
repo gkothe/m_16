@@ -1,4 +1,4 @@
-package com.ajax;
+package com.funcs;
 
 import java.io.PrintWriter;
 import java.sql.Connection;
