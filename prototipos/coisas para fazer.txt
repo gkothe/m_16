@@ -1,7 +1,25 @@
-transformar ID_PROD_DIST em long?
 
 gerencia de bairros/horarios na ditribuidora, modo pratico caso for fazer para todos bairros ou alg do tipo
 
-qestao de estar online (empresa), criar campo de data referente a ultima requisição de pedidos . ter uma thread rodando, de x em x minutos, se aqela data for muito maior(definir) a empresa esta offline. Possivelmente vai ter outro flag.  Botar som quando aparecer pedido.
+tocar som em novo_pedido
 
-qestao de pagar em dinhero, flag na empresa.
+
+
+
+
+se server esta off, fica na tela fazendo requisões, pensar algo ()
+
+
+tabela de parametros, flag-> receber requisoçoes do mobile de usuarios diferente do admin (1)
+
+
+
+
+Qem sabe mudar a key de geração de senha quando liga o servidor? estudar.
+
+
+
+
+
+	
+	

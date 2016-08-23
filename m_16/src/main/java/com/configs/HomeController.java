@@ -36,6 +36,7 @@ import org.json.simple.parser.JSONParser;
 import com.funcs.Home_ajax;
 import com.funcs.Parametros_ajax;
 import com.funcs.Pedidos_ajax;
+import com.funcs.Utilitario;
 
 @SuppressWarnings("unchecked")
 @WebServlet(urlPatterns = { "/home" })
@@ -53,13 +54,13 @@ public class HomeController extends javax.servlet.http.HttpServlet {
 
 	public void processaRequisicoes(HttpServletRequest request, HttpServletResponse response) {
 
-	/*-	System.out.println("--------entro home");
-		Map map = request.getParameterMap();
-		for (Iterator iterator = map.keySet().iterator(); iterator.hasNext();) {
-			String type = (String) iterator.next();
-			System.out.println(type + " : " + request.getParameter(type));
-		}
-*/
+		/*-	System.out.println("--------entro home");
+			Map map = request.getParameterMap();
+			for (Iterator iterator = map.keySet().iterator(); iterator.hasNext();) {
+				String type = (String) iterator.next();
+				System.out.println(type + " : " + request.getParameter(type));
+			}
+		*/
 		try {
 
 			String strTipo = request.getParameter("ac");
@@ -148,7 +149,9 @@ public class HomeController extends javax.servlet.http.HttpServlet {
 			conn = Conexao.getConexao();
 			conn.setAutoCommit(false);
 			String cmd = request.getParameter("cmd");
-
+			
+			atualizaLastAjax(coddistr, conn);
+			
 			if (cmd.equalsIgnoreCase("checkPedidos")) {
 				Home_ajax.checkPedidos(request, response, conn, coddistr);
 			} else if (cmd.equalsIgnoreCase("getLogo")) {
@@ -209,6 +212,15 @@ public class HomeController extends javax.servlet.http.HttpServlet {
 			} catch (Exception ex) {
 			}
 		}
+	}
+
+	private void atualizaLastAjax(int coddistr, Connection conn) throws Exception {
+
+		String sql = " Update distribuidora set DATE_LASTAJAX = now() where ID_DISTRIBUIDORA = ? ";
+		PreparedStatement st = conn.prepareStatement(sql.toString());
+		st.setLong(1, (coddistr));
+		st.executeUpdate();
+
 	}
 
 	private void listapedfechado(HttpServletRequest request, HttpServletResponse response) throws Exception {

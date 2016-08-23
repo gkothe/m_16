@@ -34,9 +34,7 @@ import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
 import org.json.simple.parser.JSONParser;
 
-import com.funcs.Home_ajax;
-import com.funcs.Parametros_ajax;
-import com.funcs.Pedidos_ajax;
+import com.funcs.Sys_parametros;
 import com.funcs.Utilitario;
 import com.mercadopago.MP;
 
@@ -53,8 +51,6 @@ import java.util.Date;
 @SuppressWarnings("unchecked")
 @WebServlet(urlPatterns = { "/mobile" })
 public class MobileController extends javax.servlet.http.HttpServlet {
-	;
-	private final String key = "LxLnKYU3QbR6HmLHCyAGKQ=="; // guardar no banco
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) {
 		processaRequisicoes(request, response);
@@ -68,18 +64,13 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 
 		try {
 
-			System.out.println("----------entro mobile");
+			/*
+			 * System.out.println("----------entro mobile");
+			 * 
+			 * Map map = request.getParameterMap(); for (Iterator iterator = map.keySet().iterator(); iterator.hasNext();) { String type = (String) iterator.next(); System.out.println(type + " : " + request.getParameter(type)); }
+			 */
 
-			Map map = request.getParameterMap();
-			for (Iterator iterator = map.keySet().iterator(); iterator.hasNext();) {
-				String type = (String) iterator.next();
-				System.out.println(type + " : " + request.getParameter(type));
-			}
-
-			String strTipo = request.getParameter("ac"); // acho que aqui soh
-															// vai ter ajax, mas
-															// vo dexa assim por
-															// enqto.
+			String strTipo = request.getParameter("ac"); // acho que aqui soh vai ter ajax, mas vo dexa assim por enqto.
 			if (strTipo == null) {
 				strTipo = "ajax";
 			}
@@ -115,13 +106,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 		if (rs.next()) {
 			objRetorno.put("msg", "ok");
 			MobileController mob = new MobileController();
-			objRetorno.put("token", mob.criaToken(user, pass, 604800000));// 1
-																			// semana
-																			// ou
-																			// 1
-																			// mes,
-																			// nao
-																			// lembro
+			objRetorno.put("token", mob.criaToken(user, pass, 604800000, conn));// 1 semana ou 1 mes, nao lembro
 
 		} else {
 			objRetorno.put("erro", "Login inválido!");
@@ -131,8 +116,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 
 	}
 
-	private String returnKey() {
-
+	private String returnKey() {// nao esta sendo usado, server para gerar uma key. Qem sabe mudar a key quando liga o servidor?
 		SecretKey secretKey = null;
 		try {
 			secretKey = KeyGenerator.getInstance("AES").generateKey();
@@ -140,13 +124,11 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 		} catch (NoSuchAlgorithmException e) {
 			e.printStackTrace();
 		} // get base64 encoded version of the key
-
 		return Base64.getEncoder().encodeToString(secretKey.getEncoded());
-
 	}
 
 	// http://stackoverflow.com/questions/5355466/converting-secret-key-into-a-string-and-vice-versa
-	private String criaToken(String user, String pass, long ttlMillis) {
+	private String criaToken(String user, String pass, long ttlMillis, Connection conn) {
 
 		// The JWT signature algorithm we will be using to sign the token
 		SignatureAlgorithm signatureAlgorithm = SignatureAlgorithm.HS256;
@@ -154,8 +136,10 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 		long nowMillis = System.currentTimeMillis();
 		Date now = new Date(nowMillis);
 
+		Sys_parametros sys = new Sys_parametros(conn);
+
 		// We will sign our JWT with our ApiKey secret
-		byte[] apiKeySecretBytes = DatatypeConverter.parseBase64Binary(key);
+		byte[] apiKeySecretBytes = DatatypeConverter.parseBase64Binary(sys.getDesc_key());
 		Key signingKey = new SecretKeySpec(apiKeySecretBytes, signatureAlgorithm.getJcaName());
 
 		// Let's set the JWT Claims
@@ -175,10 +159,11 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 		return builder.compact();
 	}
 
-	private String parseJWT(HttpServletRequest request, HttpServletResponse response, Connection conn, String jwt) throws Exception {
+	private long parseJWT(HttpServletRequest request, HttpServletResponse response, Connection conn, String jwt) throws Exception {
 
 		try {
-			Claims claims = Jwts.parser().setSigningKey(DatatypeConverter.parseBase64Binary(key)).parseClaimsJws(jwt.replaceFirst("\\.", "")).getBody();
+			Sys_parametros sys = new Sys_parametros(conn);
+			Claims claims = Jwts.parser().setSigningKey(DatatypeConverter.parseBase64Binary(sys.getDesc_key())).parseClaimsJws(jwt.replaceFirst("\\.", "")).getBody();
 			String user = claims.getId();
 			String pass = claims.getSubject();
 
@@ -189,14 +174,20 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 			st.setString(2, pass);
 			ResultSet rs = st.executeQuery();
 			if (rs.next()) {
-				return rs.getString("id_usuario");
+				long codusuer = rs.getLong("id_usuario");
+				if (rs.wasNull()) {// acho que nao tem como isso acontecer, mas por via das duvida...
+					return 0;
+				} else {
+					return codusuer;
+				}
+
 			} else {
-				throw new Exception("Dados de acesso invalido");
+				throw new Exception("Dados de acesso inválidos");
 			}
 
 		} catch (Exception e) {
 			e.printStackTrace();
-			throw new Exception("Dados de acesso invalido");
+			throw new Exception("Dados de acesso inválidos");
 		}
 
 	}
@@ -227,7 +218,11 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 			} else if (cmd.equalsIgnoreCase("inserir_user")) {
 
 			} else {
-				String cod_usuario = parseJWT(request, response, conn, request.getHeader("X-Auth-Token"));
+				long cod_usuario = parseJWT(request, response, conn, request.getHeader("X-Auth-Token"));
+
+				if (cod_usuario == 0) {
+					throw new Exception("Usuário inválido");
+				}
 
 				if (cmd.equalsIgnoreCase("update_user")) {
 					updateUser(request, response, conn, cod_usuario);
@@ -375,13 +370,14 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 
 	}
 
-	private static void updateUser(HttpServletRequest request, HttpServletResponse response, Connection conn, String cod_usuario) throws Exception {
+	private static void updateUser(HttpServletRequest request, HttpServletResponse response, Connection conn, long cod_usuario) throws Exception {
 
 		PrintWriter out = response.getWriter();
 		JSONObject objRetorno = new JSONObject();
-		if (cod_usuario.equalsIgnoreCase("") || cod_usuario == null || cod_usuario.equalsIgnoreCase("0")) {
-			throw new Exception("Usuário inválido.");
-		} else {
+		// if (cod_usuario.equalsIgnoreCase("") || cod_usuario == null || cod_usuario.equalsIgnoreCase("0")) {
+		// throw new Exception("Usuário inválido.");
+		// } else
+		{
 
 			String desc_email = request.getParameter("c_email") == null ? "" : request.getParameter("c_email");
 			String desc_nome = request.getParameter("c_nome") == null ? "" : request.getParameter("c_nome");
@@ -408,7 +404,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 
 			PreparedStatement st = conn.prepareStatement("SELECT 1 from  usuario where  Binary desc_email = ? and id_usuario != ?  ");
 			st.setString(1, desc_email);
-			st.setInt(2, Integer.parseInt(cod_usuario));
+			st.setLong(2, cod_usuario);
 			ResultSet rs = st.executeQuery();
 			if (rs.next()) {
 				throw new Exception("Email já cadastrado!.");
@@ -472,16 +468,17 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 
 	}
 
-	private static void carregaUser(HttpServletRequest request, HttpServletResponse response, Connection conn, String cod_usuario) throws Exception {
+	private static void carregaUser(HttpServletRequest request, HttpServletResponse response, Connection conn, long cod_usuario) throws Exception {
 
 		PrintWriter out = response.getWriter();
 		JSONObject objRetorno = new JSONObject();
-		if (cod_usuario.equalsIgnoreCase("") || cod_usuario == null || cod_usuario.equalsIgnoreCase("0")) {
-			throw new Exception("Usuário inválido.");
-		} else {
+		// if (cod_usuario.equalsIgnoreCase("") || cod_usuario == null || cod_usuario.equalsIgnoreCase("0")) {
+		// throw new Exception("Usuário inválido.");
+		// } else
+		{
 
 			PreparedStatement st = conn.prepareStatement(" select * from usuario  where `ID_USUARIO` = ?  ");
-			st.setInt(1, Integer.parseInt(cod_usuario));
+			st.setLong(1, cod_usuario);
 			ResultSet rs = st.executeQuery();
 			if (rs.next()) {
 
@@ -512,13 +509,13 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 
 	}
 
-	private static void carregaBairros(HttpServletRequest request, HttpServletResponse response, Connection conn, String cod_usuario) throws Exception {
+	private static void carregaBairros(HttpServletRequest request, HttpServletResponse response, Connection conn, long cod_usuario) throws Exception {
 		JSONArray retorno = new JSONArray();
 		PrintWriter out = response.getWriter();
 
 		String sql = "SELECT cod_cidade from  usuario where id_usuario  = ? ";
 		PreparedStatement st = conn.prepareStatement(sql);
-		st.setInt(1, Integer.parseInt(cod_usuario));
+		st.setLong(1, cod_usuario);
 		ResultSet rs = st.executeQuery();
 		int codcidade = 0;
 		while (rs.next()) {
@@ -541,7 +538,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 		out.print(retorno.toJSONString());
 	}
 
-	private static void carregaProdutos(HttpServletRequest request, HttpServletResponse response, Connection conn, String cod_usuario, boolean listagem) throws Exception {
+	private static void carregaProdutos(HttpServletRequest request, HttpServletResponse response, Connection conn, long cod_usuario, boolean listagem) throws Exception {
 
 		PrintWriter out = response.getWriter();
 
@@ -567,7 +564,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 		sql.append("where id_usuario = ? limit 1 ");
 
 		PreparedStatement st = conn.prepareStatement(sql.toString());
-		st.setInt(1, Integer.parseInt(cod_usuario));
+		st.setLong(1, cod_usuario);
 		ResultSet rs = st.executeQuery();
 		if (rs.next()) {
 			distribuidora = rs.getString("id_distribuidora"); // se ja tem produtos no carrinho, ele vai usar a distribuidora que la se encontra
@@ -658,7 +655,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 		out.print(prods.toJSONString());
 	}
 
-	private static void carregaPedidos(HttpServletRequest request, HttpServletResponse response, Connection conn, String cod_usuario) throws Exception {
+	private static void carregaPedidos(HttpServletRequest request, HttpServletResponse response, Connection conn, long cod_usuario) throws Exception {
 
 		PrintWriter out = response.getWriter();
 
@@ -771,7 +768,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 			contparam++;
 		}
 
-		st.setLong(contparam, Long.parseLong(cod_usuario));
+		st.setLong(contparam, cod_usuario);
 
 		ResultSet rs = st.executeQuery();
 		JSONArray prods = new JSONArray();
@@ -793,7 +790,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 		out.print(prods.toJSONString());
 	}
 
-	private static void carregaPedidoUnico(HttpServletRequest request, HttpServletResponse response, Connection conn, String cod_usuario) throws Exception {
+	private static void carregaPedidoUnico(HttpServletRequest request, HttpServletResponse response, Connection conn, long cod_usuario) throws Exception {
 
 		PrintWriter out = response.getWriter();
 
@@ -827,7 +824,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 
 		PreparedStatement st = conn.prepareStatement(sql.toString());
 		st.setLong(1, Long.parseLong(id_pedido));
-		st.setLong(2, Long.parseLong(cod_usuario));
+		st.setLong(2, (cod_usuario));
 
 		ResultSet rs = st.executeQuery();
 		JSONObject ped = new JSONObject();
@@ -882,7 +879,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 		out.print(ped.toJSONString());
 	}
 
-	private static void carregaCarrinho(HttpServletRequest request, HttpServletResponse response, Connection conn, String cod_usuario) throws Exception {
+	private static void carregaCarrinho(HttpServletRequest request, HttpServletResponse response, Connection conn, long cod_usuario) throws Exception {
 		PrintWriter out = response.getWriter();
 
 		StringBuffer sql = new StringBuffer();
@@ -913,7 +910,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 		sql.append("where id_usuario = ? ");
 
 		PreparedStatement st = conn.prepareStatement(sql.toString());
-		st.setLong(1, Long.parseLong(cod_usuario));
+		st.setLong(1, (cod_usuario));
 		ResultSet rs = st.executeQuery();
 		JSONObject carrinho = new JSONObject();
 
@@ -953,13 +950,12 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 		carrinho.put("VAL_ENTREGA_MIN", VAL_ENTREGA_MIN);
 
 		carrinho.put("produtos", carrinhoitem);
-		
-		
+
 		System.out.println(carrinho.toJSONString());
 		out.print(carrinho.toJSONString());
 	}
 
-	private static void addCarrinho(HttpServletRequest request, HttpServletResponse response, Connection conn, String cod_usuario) throws Exception {
+	private static void addCarrinho(HttpServletRequest request, HttpServletResponse response, Connection conn, long cod_usuario) throws Exception {
 		PrintWriter out = response.getWriter();
 		JSONObject retorno = new JSONObject();
 
@@ -996,7 +992,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 		StringBuffer sql = new StringBuffer();
 		sql.append("SELECT id_carrinho from carrinho where id_usuario = ? ");
 		PreparedStatement st = conn.prepareStatement(sql.toString());
-		st.setLong(1, Long.parseLong(cod_usuario));
+		st.setLong(1, (cod_usuario));
 		ResultSet rs = st.executeQuery();
 
 		if (rs.next()) {// ja tem carrinho
@@ -1082,7 +1078,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 			sql.append(" INSERT INTO carrinho (`ID_CARRINHO`, `ID_USUARIO`, `COD_BAIRRO`, `DATA_CRIACAO`) VALUES (?, ?, ?, now()); ");
 			st = conn.prepareStatement(sql.toString());
 			st.setLong(1, idcarrinho);
-			st.setLong(2, Long.parseLong(cod_usuario));
+			st.setLong(2, (cod_usuario));
 			st.setLong(3, Long.parseLong(cod_bairro));
 			st.executeUpdate();
 			jatemcarrinho = true;

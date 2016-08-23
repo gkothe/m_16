@@ -59,6 +59,19 @@ public class Utilitario {
 
 		return "";
 	}
+	
+	public static String returnModoPagamento(String flag) {
+
+		if (flag.equalsIgnoreCase("D")) {
+			return "Dinhero";
+		} else if (flag.equalsIgnoreCase("C")) {
+			return "Cartão";
+		} else if (flag.equalsIgnoreCase("A")) {
+			return "Ambos";
+		}
+
+		return "";
+	}
 
 	public static int retornaIdinsert(String tabela, String coluna, Connection conn) throws Exception {
 		String varname1 = "";

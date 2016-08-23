@@ -6,6 +6,8 @@
 	<Local Expanded="Yes">
 		<Model Expanded="Yes" ID="{CF5F277C-8F0C-4E1E-A14B-5DA683CE4818}" Loaded="No" Name="mysql" Type="{CDE44E21-9669-11D1-9914-006097355D9B}" URL="mysql.pdm"/>
 		<Model Expanded="Yes" ID="{CF5F277C-8F0C-4E1E-A14B-5DA683CE4818}" Loaded="No" Name="mysql" Type="{CDE44E21-9669-11D1-9914-006097355D9B}" URL="mysql.pdm"/>
+		<Model Expanded="Yes" ID="{CF5F277C-8F0C-4E1E-A14B-5DA683CE4818}" Loaded="No" Name="mysql" Type="{CDE44E21-9669-11D1-9914-006097355D9B}" URL="mysql.pdm"/>
+		<Model Expanded="Yes" ID="{CF5F277C-8F0C-4E1E-A14B-5DA683CE4818}" Loaded="No" Name="mysql" Type="{CDE44E21-9669-11D1-9914-006097355D9B}" URL="mysql.pdm"/>
 		<Model Expanded="Yes" ID="{CF5F277C-8F0C-4E1E-A14B-5DA683CE4818}" Name="mysql" Type="{CDE44E21-9669-11D1-9914-006097355D9B}" URL="mysql.pdm"/>
 	</Local>
 	<BrowserModule Name="Repository"/>

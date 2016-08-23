@@ -1,6 +1,6 @@
 /*==============================================================*/
 /* DBMS name:      MySQL 5.0                                    */
-/* Created on:     19/8/2016 4:24:30 PM                         */
+/* Created on:     23/8/2016 10:26:46 AM                        */
 /*==============================================================*/
 
 
@@ -33,6 +33,8 @@ drop table if exists PEDIDO_MOTIVOS_RECUSA;
 drop table if exists PRODUTOS;
 
 drop table if exists PRODUTOS_DISTRIBUIDORA;
+
+drop table if exists SYS_PARAMETROS;
 
 drop table if exists USUARIO;
 
@@ -79,7 +81,7 @@ create table CARRINHO_ITEM
 (
    ID_CARRINHO          INT8 not null,
    SEQ_ITEM             INT4 not null,
-   ID_PROD_DIST         INT4,
+   ID_PROD_DIST         bigint,
    QTD                  INT4,
    primary key (ID_CARRINHO, SEQ_ITEM)
 );
@@ -122,11 +124,13 @@ create table DISTRIBUIDORA
    DESC_COMPLEMENTO     TEXT,
    VAL_TELE_ENTREGA     NUMERIC(12,2),
    FLAG_CUSTOM          char(1),
-   FLAG_ATIVO           char(1),
    DESC_LOGIN           varchar(45),
    DESC_SENHA           varchar(45),
-   FLAG_ATIVO_MASTER    char(1),
    DESC_MAIL            text,
+   FLAG_ATIVO_MASTER    char(1),
+   FLAG_ATIVO           char(1),
+   FLAG_MODOPAGAMENTO   char(1),
+   DATE_LASTAJAX        datetime,
    primary key (ID_DISTRIBUIDORA)
 )
 auto_increment = 1;
@@ -240,7 +244,7 @@ auto_increment = 1;
 /*==============================================================*/
 create table PRODUTOS_DISTRIBUIDORA
 (
-   ID_PROD_DIST         int(4) not null auto_increment,
+   ID_PROD_DIST         bigint not null auto_increment,
    ID_PROD              INT4 not null,
    ID_DISTRIBUIDORA     INT4 not null,
    VAL_PROD             NUMERIC(12,2),
@@ -248,6 +252,20 @@ create table PRODUTOS_DISTRIBUIDORA
    primary key (ID_PROD_DIST)
 )
 auto_increment = 1;
+
+alter table PRODUTOS_DISTRIBUIDORA comment 'Fks: id_prod_distr ou por (id_distribuidora + id_produto). ';
+
+/*==============================================================*/
+/* Table: SYS_PARAMETROS                                        */
+/*==============================================================*/
+create table SYS_PARAMETROS
+(
+   COD_CIDADE           INT4,
+   ID_USUARIO_ADMIN     INT8,
+   FLAG_MANUTENCAO      char(1),
+   DESC_KEY             text,
+   SEGS_TESTE_AJAX      bigint
+);
 
 /*==============================================================*/
 /* Table: USUARIO                                               */
@@ -331,6 +349,12 @@ alter table PRODUTOS_DISTRIBUIDORA add constraint FK_REFERENCE_1 foreign key (ID
 
 alter table PRODUTOS_DISTRIBUIDORA add constraint FK_REFERENCE_2 foreign key (ID_DISTRIBUIDORA)
       references DISTRIBUIDORA (ID_DISTRIBUIDORA) on delete restrict on update restrict;
+
+alter table SYS_PARAMETROS add constraint FK_REFERENCE_26 foreign key (COD_CIDADE)
+      references CIDADE (COD_CIDADE) on delete restrict on update restrict;
+
+alter table SYS_PARAMETROS add constraint FK_REFERENCE_27 foreign key (ID_USUARIO_ADMIN)
+      references USUARIO (ID_USUARIO) on delete restrict on update restrict;
 
 alter table USUARIO add constraint FK_REFERENCE_5 foreign key (COD_BAIRRO)
       references BAIRROS (COD_BAIRRO) on delete restrict on update restrict;
