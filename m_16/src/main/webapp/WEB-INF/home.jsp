@@ -189,6 +189,12 @@ input:focus {
 											respondidos! </span></a>
 
 								</div>
+								<div style="cursor: pointer; display: none;" id="msg_holder2">
+									<a ><span
+										class="label label-warning aviso_pedido" id="msg_offline"
+										style="font-size: 195%;">O servidor ChamaTrago está offline! </span></a>
+
+								</div>
 
 							</li>
 

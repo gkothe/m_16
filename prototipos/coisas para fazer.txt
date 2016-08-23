@@ -1,24 +1,9 @@
 
 gerencia de bairros/horarios na ditribuidora, modo pratico caso for fazer para todos bairros ou alg do tipo
 
-tocar som em novo_pedido
-
-
-
-
-
-se server esta off, fica na tela fazendo requisões, pensar algo ()
-
-
-tabela de parametros, flag-> receber requisoçoes do mobile de usuarios diferente do admin (1)
-
-
-
-
 Qem sabe mudar a key de geração de senha quando liga o servidor? estudar.
-
-
-
+quand fazer pedido, terá q ter as mesmas valições do carrinho.
+discutir momento para tocar o som do pedido. Penseio em quando abre o pedido, setar um flag como vizualizado.
 
 
 	

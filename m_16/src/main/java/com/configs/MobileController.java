@@ -64,12 +64,6 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 
 		try {
 
-			/*
-			 * System.out.println("----------entro mobile");
-			 * 
-			 * Map map = request.getParameterMap(); for (Iterator iterator = map.keySet().iterator(); iterator.hasNext();) { String type = (String) iterator.next(); System.out.println(type + " : " + request.getParameter(type)); }
-			 */
-
 			String strTipo = request.getParameter("ac"); // acho que aqui soh vai ter ajax, mas vo dexa assim por enqto.
 			if (strTipo == null) {
 				strTipo = "ajax";
@@ -85,111 +79,6 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 			} catch (Exception e) {
 			}
 		}
-	}
-
-	public static void loginMobile(HttpServletRequest request, HttpServletResponse response, Connection conn) throws Exception {
-
-		PrintWriter out = response.getWriter();
-
-		String user = request.getParameter("user");
-		String pass = request.getParameter("pass");
-
-		JSONObject objRetorno = new JSONObject();
-
-		String sql = "select * from usuario where Binary DESC_USER = ?  and Binary DESC_SENHA = ? ";
-
-		PreparedStatement st = conn.prepareStatement(sql);
-		st.setString(1, user);
-		st.setString(2, pass);
-		ResultSet rs = st.executeQuery();
-
-		if (rs.next()) {
-			objRetorno.put("msg", "ok");
-			MobileController mob = new MobileController();
-			objRetorno.put("token", mob.criaToken(user, pass, 604800000, conn));// 1 semana ou 1 mes, nao lembro
-
-		} else {
-			objRetorno.put("erro", "Login inválido!");
-		}
-
-		out.print(objRetorno.toJSONString());
-
-	}
-
-	private String returnKey() {// nao esta sendo usado, server para gerar uma key. Qem sabe mudar a key quando liga o servidor?
-		SecretKey secretKey = null;
-		try {
-			secretKey = KeyGenerator.getInstance("AES").generateKey();
-
-		} catch (NoSuchAlgorithmException e) {
-			e.printStackTrace();
-		} // get base64 encoded version of the key
-		return Base64.getEncoder().encodeToString(secretKey.getEncoded());
-	}
-
-	// http://stackoverflow.com/questions/5355466/converting-secret-key-into-a-string-and-vice-versa
-	private String criaToken(String user, String pass, long ttlMillis, Connection conn) {
-
-		// The JWT signature algorithm we will be using to sign the token
-		SignatureAlgorithm signatureAlgorithm = SignatureAlgorithm.HS256;
-
-		long nowMillis = System.currentTimeMillis();
-		Date now = new Date(nowMillis);
-
-		Sys_parametros sys = new Sys_parametros(conn);
-
-		// We will sign our JWT with our ApiKey secret
-		byte[] apiKeySecretBytes = DatatypeConverter.parseBase64Binary(sys.getDesc_key());
-		Key signingKey = new SecretKeySpec(apiKeySecretBytes, signatureAlgorithm.getJcaName());
-
-		// Let's set the JWT Claims
-		// JwtBuilder builder =
-		// Jwts.builder().setId(id).setIssuedAt(now).setSubject(subject).setIssuer(issuer).signWith(signatureAlgorithm,
-		// signingKey);
-
-		JwtBuilder builder = Jwts.builder().setId(user).setSubject(pass).setIssuedAt(now).signWith(signatureAlgorithm, signingKey);
-		// if it has been specified, let's add the expiration
-		if (ttlMillis >= 0) {
-			long expMillis = nowMillis + ttlMillis;
-			Date exp = new Date(expMillis);
-			builder.setExpiration(exp);
-		}
-
-		// Builds the JWT and serializes it to a compact, URL-safe string
-		return builder.compact();
-	}
-
-	private long parseJWT(HttpServletRequest request, HttpServletResponse response, Connection conn, String jwt) throws Exception {
-
-		try {
-			Sys_parametros sys = new Sys_parametros(conn);
-			Claims claims = Jwts.parser().setSigningKey(DatatypeConverter.parseBase64Binary(sys.getDesc_key())).parseClaimsJws(jwt.replaceFirst("\\.", "")).getBody();
-			String user = claims.getId();
-			String pass = claims.getSubject();
-
-			String sql = "select * from usuario where Binary DESC_USER = ?  and Binary DESC_SENHA = ? ";
-
-			PreparedStatement st = conn.prepareStatement(sql);
-			st.setString(1, user);
-			st.setString(2, pass);
-			ResultSet rs = st.executeQuery();
-			if (rs.next()) {
-				long codusuer = rs.getLong("id_usuario");
-				if (rs.wasNull()) {// acho que nao tem como isso acontecer, mas por via das duvida...
-					return 0;
-				} else {
-					return codusuer;
-				}
-
-			} else {
-				throw new Exception("Dados de acesso inválidos");
-			}
-
-		} catch (Exception e) {
-			e.printStackTrace();
-			throw new Exception("Dados de acesso inválidos");
-		}
-
 	}
 
 	private void ajax(HttpServletRequest request, HttpServletResponse response) throws Exception {
@@ -214,14 +103,19 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 			String cmd = request.getParameter("cmd") == null ? "" : request.getParameter("cmd");
 
 			if (cmd.equalsIgnoreCase("login")) {
-				loginMobile(request, response, conn);
+				MobileLogin.loginMobile(request, response, conn);
 			} else if (cmd.equalsIgnoreCase("inserir_user")) {
 
 			} else {
-				long cod_usuario = parseJWT(request, response, conn, request.getHeader("X-Auth-Token"));
+				long cod_usuario = MobileLogin.parseJWT(request, response, conn, request.getHeader("X-Auth-Token"));
 
 				if (cod_usuario == 0) {
 					throw new Exception("Usuário inválido");
+				}
+
+				Sys_parametros sys = new Sys_parametros(conn);
+				if (sys.getFlag_manutencao().equalsIgnoreCase("S") && sys.getId_usuario_admin() != cod_usuario) {
+					throw new Exception("Servidor está em manutenção. Tente novamente mais tarde. Cheers! ");
 				}
 
 				if (cmd.equalsIgnoreCase("update_user")) {
@@ -247,7 +141,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 				} else if (cmd.equalsIgnoreCase("addCarrinho")) {
 					addCarrinho(request, response, conn, cod_usuario);
 				} else {
-					throw new Exception("Ação invalida");
+					throw new Exception("Ação inválida");
 				}
 
 			}

@@ -21,7 +21,7 @@ var numerico = {
 	vMin : 0,
 	aSign : 'R$ '
 };
-
+var temped = false;
 var delay = (function() {
 	var timer = 0;
 	return function(callback, ms) {
@@ -177,13 +177,31 @@ $(document).ready(function() {
 	$('#msg_nao_vizu').blink({
 		delay : 400
 	});
+	
+	$('#msg_offline').blink({
+		delay : 400
+	})
+	
 	window.setInterval(function() {
 		checarPedidos();
 	}, 5000);
-
+	
+/*	window.setInterval(function() {
+		playAudioPedido();
+	}, 5000);
+*/
 	resizedivs();
 
 });
+
+
+function playAudioPedido(){
+	if(temped){
+		var audio = new Audio('audiopedido.mp3');
+		audio.play();
+	}
+	
+}
 
 function limpaModal() {
 
@@ -229,7 +247,6 @@ function loadLogoEmpresa() {
 }
 
 function checarPedidos() {
-
 	$.ajax({
 		type : 'POST',
 		url : 'home?ac=ajax',
@@ -239,14 +256,14 @@ function checarPedidos() {
 		async : true,
 		dataType : 'json',
 		success : function(data) {
-			
+			$("#msg_holder2").hide();
 			$("#menu_notification").html("");
 			$("#h_qtd_pedz").html("");
 
 			if (data.errologin != undefined) {
 			    window.location.href="" ;
 			} else if (data.tem == "true") {
-
+				temped = true;
 				$("#msg_holder").show();
 
 				var html = "";
@@ -277,7 +294,15 @@ function checarPedidos() {
 
 		},
 		error : function(data) {
-			alert(data.responseText);
+			if(data.status == 0 ){
+				
+				$("#msg_holder").hide();
+				$("#msg_holder2").show();
+				$("#h_qtd_pedz").html("");
+				
+			}else{
+				alert(data.statusText);
+			}
 		}
 	});
 

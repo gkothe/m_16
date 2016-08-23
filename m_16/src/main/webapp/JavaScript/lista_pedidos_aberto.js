@@ -229,7 +229,13 @@ function loadAbertos(blockui) {
 			if(blockui){
 				$.unblockUI();
 			}
-			alert("Erro: " + msg.msg);
+			if(data.status == 0 ){
+			
+			}else{
+				alert("Erro: " + msg.msg);
+				
+			}
+			
 		}
 	});
 
