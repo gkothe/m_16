@@ -21,7 +21,6 @@ var numerico = {
 	vMin : 0,
 	aSign : 'R$ '
 };
-var temped = false;
 var delay = (function() {
 	var timer = 0;
 	return function(callback, ms) {
@@ -196,10 +195,8 @@ $(document).ready(function() {
 
 
 function playAudioPedido(){
-	if(temped){
 		var audio = new Audio('audiopedido.mp3');
 		audio.play();
-	}
 	
 }
 
@@ -263,10 +260,11 @@ function checarPedidos() {
 			if (data.errologin != undefined) {
 			    window.location.href="" ;
 			} else if (data.tem == "true") {
-				temped = true;
+				
 				$("#msg_holder").show();
 
 				var html = "";
+				var vizualizado = "";
 				$("#h_qtd_pedz").html(data.qtd);
 				for (t = 0; t < data.pedidos.length; t++) {
 					var html = "";
@@ -275,6 +273,9 @@ function checarPedidos() {
 					html = html + ("	<span class=\"message\">Bairro: " + data.pedidos[t].desc_bairro + "  </span>    ");
 					html = html + ("	<span class=\"message\">Valor: R$ <label style='font-weight:normal !important;' id='lbl_notval_" + t + "'>   </span>  	</a> </li> ");
 
+					if(data.pedidos[t].flag_vizualizado == 'N'){
+						vizualizado = 'N';
+					}
 					$("#menu_notification").html($("#menu_notification").html() + html);
 					$("#lbl_notval_" + t).autoNumeric('init', numerico);
 					$("#lbl_notval_" + t).autoNumeric('set', data.pedidos[t].valor);
@@ -287,6 +288,10 @@ function checarPedidos() {
 
 				$(".not_numerico").autoNumeric('init', numerico);
 
+				if(vizualizado == "N"){
+					playAudioPedido();
+				}
+				
 			} else if (data.tem == "false") {
 				$("#msg_holder").hide();
 

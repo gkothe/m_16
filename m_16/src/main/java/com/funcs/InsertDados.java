@@ -84,12 +84,12 @@ public class InsertDados {
 			horariosobj.put("HORARIO_INI", "09:00:00");
 			horariosobj.put("HORARIO_FIM", "15:00:00");
 			horarios.add(horariosobj);
-//			horariosobj = new JSONObject();
-//			horariosobj.put("HORARIO_INI", "13:25:00");
-//			horariosobj.put("HORARIO_FIM", "20:00:00");
-//			horarios.add(horariosobj);
+			horariosobj = new JSONObject();
+			horariosobj.put("HORARIO_INI", "13:25:00");
+			horariosobj.put("HORARIO_FIM", "20:00:00");
+			horarios.add(horariosobj);
 
-			populateHorarios("", dias, horarios, conn, 2,true);
+			populateHorarios("", dias, horarios, conn, 1,true);
 			conn.commit();
 		} catch (Exception e) {
 			e.printStackTrace();

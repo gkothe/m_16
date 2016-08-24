@@ -1,6 +1,6 @@
 /*==============================================================*/
 /* DBMS name:      MySQL 5.0                                    */
-/* Created on:     23/8/2016 10:26:46 AM                        */
+/* Created on:     24/8/2016 12:47:44 AM                        */
 /*==============================================================*/
 
 
@@ -195,6 +195,7 @@ create table PEDIDO
    DESC_ENDERECO_ENTREGA TEXT,
    DESC_ENDERECO_NUM_ENTREGA VARCHAR(20),
    DESC_ENDERECO_COMPLEMENTO_ENTREGA VARCHAR(20),
+   FLAG_VIZUALIZADO     char(1),
    primary key (ID_PEDIDO)
 )
 auto_increment = 1;

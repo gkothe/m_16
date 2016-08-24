@@ -45,7 +45,7 @@ public class Home_ajax {
 
 		if (objRetorno.get("tem").toString().equalsIgnoreCase("true")) {
 
-			sql = "select id_pedido,DESC_BAIRRO,NUM_PED,VAL_TOTALPROD,DATA_PEDIDO, NOW() as agora from pedido inner join bairros on bairros.cod_bairro = pedido.cod_bairro where ID_DISTRIBUIDORA = ? and flag_status = \'A\' order by data_pedido asc";
+			sql = "select id_pedido,DESC_BAIRRO,NUM_PED,VAL_TOTALPROD,DATA_PEDIDO, NOW() as agora, Coalesce(flag_vizualizado,'N') as flag_vizualizado  from pedido inner join bairros on bairros.cod_bairro = pedido.cod_bairro where ID_DISTRIBUIDORA = ? and flag_status = \'A\' order by data_pedido asc";
 
 			st = conn.prepareStatement(sql);
 			st.setInt(1, coddistr);
@@ -59,6 +59,7 @@ public class Home_ajax {
 				pedidos.put("desc_bairro", rs.getString("DESC_BAIRRO"));
 				pedidos.put("valor", rs.getString("VAL_TOTALPROD"));
 				pedidos.put("id_pedido", rs.getString("id_pedido"));
+				pedidos.put("flag_vizualizado", rs.getString("flag_vizualizado") == "" ? "N" :  rs.getString("flag_vizualizado") );
 
 				Date date_pedido = rs.getTimestamp("DATA_PEDIDO");
 				Date agora = rs.getTimestamp("agora");

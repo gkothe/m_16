@@ -499,8 +499,17 @@ public class Pedidos_ajax {
 				}
 
 			}
+			
+			
+			sql = " update  pedido  set flag_vizualizado = 'S' where id_pedido = ?  ";
+			st = conn.prepareStatement(sql);
+			st.setInt(1, Integer.parseInt(id_pedido));
+			st.executeUpdate();
 
 		}
+		
+		
+	
 
 		out.print(objRetorno.toJSONString());
 
