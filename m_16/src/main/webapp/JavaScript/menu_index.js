@@ -21,6 +21,7 @@ var numerico = {
 	vMin : 0,
 	aSign : 'R$ '
 };
+
 var delay = (function() {
 	var timer = 0;
 	return function(callback, ms) {
@@ -176,28 +177,36 @@ $(document).ready(function() {
 	$('#msg_nao_vizu').blink({
 		delay : 400
 	});
-	
+
 	$('#msg_offline').blink({
 		delay : 400
 	})
-	
+
 	window.setInterval(function() {
 		checarPedidos();
 	}, 5000);
-	
-/*	window.setInterval(function() {
-		playAudioPedido();
-	}, 5000);
-*/
+
+	/*
+	 * window.setInterval(function() { playAudioPedido(); }, 5000);
+	 */
 	resizedivs();
 
 });
 
-
-function playAudioPedido(){
-		var audio = new Audio('audiopedido.mp3');
-		audio.play();
+var sommute = false;
+var audio = new Audio('audiopedido.mp3');
+function mutarsom() {
+	audio.pause();
+	audio.currentTime = 0;
+	sommute = true;
+	 setTimeout(function () {
+		 sommute = false;
+	    }, 10000);
 	
+}
+function playAudioPedido() {
+	if (!sommute)
+		audio.play();
 }
 
 function limpaModal() {
@@ -258,9 +267,9 @@ function checarPedidos() {
 			$("#h_qtd_pedz").html("");
 
 			if (data.errologin != undefined) {
-			    window.location.href="" ;
+				window.location.href = "";
 			} else if (data.tem == "true") {
-				
+
 				$("#msg_holder").show();
 
 				var html = "";
@@ -273,7 +282,7 @@ function checarPedidos() {
 					html = html + ("	<span class=\"message\">Bairro: " + data.pedidos[t].desc_bairro + "  </span>    ");
 					html = html + ("	<span class=\"message\">Valor: R$ <label style='font-weight:normal !important;' id='lbl_notval_" + t + "'>   </span>  	</a> </li> ");
 
-					if(data.pedidos[t].flag_vizualizado == 'N'){
+					if (data.pedidos[t].flag_vizualizado == 'N') {
 						vizualizado = 'N';
 					}
 					$("#menu_notification").html($("#menu_notification").html() + html);
@@ -288,10 +297,10 @@ function checarPedidos() {
 
 				$(".not_numerico").autoNumeric('init', numerico);
 
-				if(vizualizado == "N"){
+				if (vizualizado == "N") {
 					playAudioPedido();
 				}
-				
+
 			} else if (data.tem == "false") {
 				$("#msg_holder").hide();
 
@@ -299,13 +308,13 @@ function checarPedidos() {
 
 		},
 		error : function(data) {
-			if(data.status == 0 ){
-				
+			if (data.status == 0) {
+
 				$("#msg_holder").hide();
 				$("#msg_holder2").show();
 				$("#h_qtd_pedz").html("");
-				
-			}else{
+
+			} else {
 				alert(data.statusText);
 			}
 		}
@@ -405,6 +414,9 @@ function visualizarPedido(id) {
 		dataType : 'json',
 		success : function(data) {
 
+			audio.pause();
+			audio.currentTime = 0;
+			
 			$("#m_desc_bairro").html(data.desc_bairro);
 			$("#m_total_pedido").autoNumeric('set', parseFloat(data.VAL_ENTREGA) + parseFloat(data.VAL_TOTALPROD));
 			$("#m_total_tele").autoNumeric('set', data.VAL_ENTREGA);
