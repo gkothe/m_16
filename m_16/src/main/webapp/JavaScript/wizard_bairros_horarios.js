@@ -23,7 +23,7 @@ $(document).ready(function() {
 	});
 
 	$('[data-toggle="tooltip"]').tooltip();
-	
+
 	$("#desmarca_bairros").click(function() {
 
 		$('.bairripick').each(function() {
@@ -34,24 +34,32 @@ $(document).ready(function() {
 	$("#p_add_periodo").click(function() {
 		addHorario();
 	});
+
+	
+	
+	
+	
+	$("#btn_prox_0").click(function() {
+		$('#tabs_horarios a[href="#bairros"]').tab('show')
+
+	});
 	
 	$("#btn_prox_3").click(function() {
-		if(confirm("Tem certeza que deseja continuar?")){
-			salvarconfigs();	
+		if (confirm("Tem certeza que deseja continuar?")) {
+			salvarconfigs();
 		}
-		
-	});
 
+	});
 
 	$("#btn_prox_1").click(function() {
 		$('#tabs_horarios a[href="#diashoras"]').tab('show')
 	});
-	
+
 	$("#btn_prox_2").click(function() {
 		$('#tabs_horarios a[href="#confir"]').tab('show')
 	});
 
-	$('#tabs_horarios a[href="#bairros"]').tab('show')
+	$('#tabs_horarios a[href="#info"]').tab('show')
 
 	var tabela = $('#table_horarios');
 
@@ -73,54 +81,74 @@ $(document).ready(function() {
 
 });
 
+function removerPeriodo(periodo) {
 
+	for (t = 0; t < horarios.length; t++) {
+		if (horarios[t].id_horario == periodo) {
+			horarios[t] = null;
+		}
+	}
 
-function salvarconfigs(){
-	
+	horarios = horarios.filter(function(n) {
+		return n != undefined
+	});
+
+	$('#table_horarios').bootstrapTable('load', horarios);
+	$('#table_horarios').bootstrapTable('resetView');
+
+}
+
+function salvarconfigs() {
+
 	var bairrosbox = [];
-	
-	$('.bairripick').each(function () {
-	       var sThisVal = (this.checked ? $(this).val() : "");
-	       if(sThisVal!="")
-	    	   bairrosbox.push(sThisVal);
+
+	$('.bairripick').each(function() {
+		var sThisVal = (this.checked ? $(this).val() : "");
+		if (sThisVal != "")
+			bairrosbox.push(sThisVal);
 	});
-	
-	
+
 	var diassemana = [];
-	
-	$('.diapic').each(function () {
-	       var sThisVal = (this.checked ? $(this).val() : "");
-	       if(sThisVal!="")
-	    	   diassemana.push(sThisVal);
+
+	$('.diapic').each(function() {
+		var sThisVal = (this.checked ? $(this).val() : "");
+		if (sThisVal != "")
+			diassemana.push(sThisVal);
 	});
-	
+
 	var horariosjson = JSON.stringify(horarios);
 	var tipoopc = $('input[name=opc_tipoopc]:checked').val();
-	
+
 	$.ajax({
 		type : 'POST',
 		url : "home?ac=ajax",
 		data : {
 			cmd : "salvarConfigsHorariosBairros",
-			bairrosbox:bairrosbox.toString(),
-			diassemana:diassemana.toString(),
-			horariosjson:horariosjson,
-			tipoopc:tipoopc
-			
+			bairrosbox : bairrosbox.toString(),
+			diassemana : diassemana.toString(),
+			horariosjson : horariosjson,
+			tipoopc : tipoopc
+
 		},
 		async : true,
 		dataType : 'json',
 		success : function(data) {
 
-		
-			
-			
+			if (data.msg == 'ok') {
+
+				alert("Configurações de bairros/horários salvos!");
+				location.reload(true);
+
+			} else {
+				alert(data.erro);
+			}
+
 		},
 		error : function(data) {
 			alert(data.responseText);
 		}
 	});
-	
+
 }
 function addHorario() {
 

@@ -1,6 +1,6 @@
 /*==============================================================*/
 /* DBMS name:      MySQL 5.0                                    */
-/* Created on:     24/8/2016 12:47:44 AM                        */
+/* Created on:     25/8/2016 5:16:02 PM                         */
 /*==============================================================*/
 
 
@@ -154,7 +154,7 @@ auto_increment = 1;
 /*==============================================================*/
 create table DISTRIBUIDORA_HORARIO_DIA_ENTRE
 (
-   ID_HORARIO           INT4 not null auto_increment,
+   ID_HORARIO           bigint not null auto_increment,
    ID_DISTRIBUIDORA     INT4 not null,
    COD_DIA              INT4 not null,
    ID_DISTR_BAIRRO      INT4,

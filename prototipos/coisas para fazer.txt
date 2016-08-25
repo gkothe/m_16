@@ -1,11 +1,17 @@
 
 gerencia de bairros/horarios na ditribuidora, modo pratico caso for fazer para todos bairros ou alg do tipo
+
 Qem sabe mudar a key de geração de senha quando liga o servidor? estudar.
+
 quand fazer pedido, terá q ter as mesmas valições do carrinho.
+
 discutir momento para tocar o som do pedido. Penseio em quando abre o pedido, setar um flag como vizualizado.
+
 se um dia os o banco tiver mais de uma cidade, revisar lugar que busca bairros.
+
 Campos de hora, ver otro tipo de mascara/plugin.
+
 botar um botao para mutar o som por alguns minutos.	
+
 estudar possibilidade de tooltips na tela de Configuração de bairros e horarios passo 1, passar o mouse em cima do bairro e dizer quais cofigs existem ou um botao/icone de info do lado. qem sabe mudar a cor ou botar um asterisco pros bairros que nao contem nenhum dia configurado.
-transformar id_horario em bigint	
-throw new Exception("Dados de horario conflitantes!");//TODO melhorar a msg
+

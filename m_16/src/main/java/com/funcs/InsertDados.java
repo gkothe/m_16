@@ -53,7 +53,7 @@ public class InsertDados {
 					JSONObject horariosobj = (JSONObject) horarios.get(j);
 					sql = "INSERT INTO distribuidora_horario_dia_entre (`ID_HORARIO`, `ID_DISTRIBUIDORA`, `COD_DIA`, `ID_DISTR_BAIRRO`, `HORARIO_INI`, `HORARIO_FIM`) VALUES (?, ?, ?, ?, ?, ?);";
 					st3 = conn.prepareStatement(sql);
-					st3.setInt(1, Utilitario.retornaIdinsert("distribuidora_horario_dia_entre", "id_horario", conn));
+					st3.setLong(1, Utilitario.retornaIdinsertLong("distribuidora_horario_dia_entre", "id_horario", conn));
 					st3.setInt(2, cod_distribuidora);
 					st3.setInt(3, coddia);
 					st3.setInt(4, iddistrbair);

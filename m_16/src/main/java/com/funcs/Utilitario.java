@@ -102,6 +102,38 @@ public class Utilitario {
 
 		return id;
 	}
+	
+	
+	public static long retornaIdinsertLong(String tabela, String coluna, Connection conn) throws Exception {
+		String varname1 = "";
+		// so funciona para pk single
+		varname1 = "";
+		varname1 += "SELECT ";
+		varname1 += " z.expected AS missing ";
+		varname1 += "FROM ( ";
+		varname1 += " SELECT ";
+		varname1 += "  @rownum:=@rownum+1 AS expected, ";
+		varname1 += "  IF(@rownum=" + coluna + ", 0, @rownum:=" + coluna + ") AS got ";
+		varname1 += " FROM ";
+		varname1 += "  (SELECT @rownum:=0) AS a ";
+		varname1 += "  JOIN  " + tabela;
+		varname1 += "  ORDER BY  " + coluna;
+		varname1 += " ) AS z ";
+		varname1 += " WHERE z.got!=0 ";
+		varname1 += "union ";
+		varname1 += " select  Coalesce(max(" + coluna + "+1),1)     AS missing from  " + tabela;
+		varname1 += " limit 1";
+
+		PreparedStatement st = conn.prepareStatement(varname1);
+		long id = 1;
+		ResultSet rs2 = st.executeQuery();
+		if (rs2.next()) {
+			id = rs2.getLong("missing");
+		}
+
+		return id;
+	}
+	
 
 	public static Integer diaSemana(Connection conn, int distribuidora) throws Exception {
 
@@ -142,7 +174,76 @@ public class Utilitario {
 		}
 		return dia;
 	}
+	
+	
+	public static String getDescDiaSemana(Connection conn, int cod_dia) throws Exception {
 
+		String varname1 = " select * from  dias_semana where cod_dia = ? ";
+		PreparedStatement st = conn.prepareStatement(varname1);
+		st.setInt(1, cod_dia);
+		ResultSet rs2 = st.executeQuery();
+		if (rs2.next()) {
+			return rs2.getString("DESC_DIA");
+		}else{
+			throw new Exception("Dia não existe.");
+		}
+		
+	}
+	
+	
+	public static String getNomeBairro(Connection conn, int cod_bairro, int ID_DISTR_BAIRRO) throws Exception {
+
+		String desc_bairro = "";
+		
+		if(cod_bairro!= 0){
+			
+			String varname1 = " select * from bairros where cod_bairro =  " + cod_bairro;
+			PreparedStatement st = conn.prepareStatement(varname1);
+			ResultSet rs2 = st.executeQuery();
+			if (rs2.next()) {
+				desc_bairro = rs2.getString("DESC_BAIRRO");
+			}else{
+				throw new Exception("Bairro não existe.");
+			}
+			
+		}else if(ID_DISTR_BAIRRO!= 0){
+			
+			String varname1 = " select * from bairros inner join distribuidora_bairro_entrega where ID_DISTR_BAIRRO = "+ID_DISTR_BAIRRO+" limit 1";
+			PreparedStatement st = conn.prepareStatement(varname1);
+			ResultSet rs2 = st.executeQuery();
+			if (rs2.next()) {
+				desc_bairro = rs2.getString("DESC_BAIRRO");
+			}else{
+				throw new Exception("Bairro não existe.");
+			}
+			
+		}
+		
+		return desc_bairro;
+	}
+
+	public static String getNomeProd(Connection conn, int id_prod, boolean abreviado) throws Exception {
+
+			String desc_produto = "";
+			String varname1 = " select * from produtos where id_prod =  " + id_prod;
+			PreparedStatement st = conn.prepareStatement(varname1);
+			ResultSet rs2 = st.executeQuery();
+			if (rs2.next()) {
+				
+				if(!abreviado){
+					desc_produto = rs2.getString("DESC_PROD");
+				}else{
+					desc_produto = rs2.getString("DESC_ABREVIADO");
+				}
+			}else{
+				throw new Exception("Bairro não existe.");
+			}
+			
+		return desc_produto;
+	}
+	
+	
+	
 	public static int retornaIdinsertChaveSecundaria(String tabela, String chaveprimaria, String id_chaveprimaria, String coluna, Connection conn) throws Exception {
 		String varname1 = "";
 		// so funciona para pk single

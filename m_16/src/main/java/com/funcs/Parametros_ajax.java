@@ -217,7 +217,7 @@ public class Parametros_ajax {
 				while (rs3.next()) {
 					obj = new JSONObject();
 
-					obj.put("id_horario", rs3.getInt("id_horario"));
+					obj.put("id_horario", rs3.getLong("id_horario"));
 					obj.put("HORARIO_INI", rs3.getString("HORARIO_INI"));
 					obj.put("HORARIO_FIM", rs3.getString("HORARIO_FIM"));
 
@@ -487,7 +487,7 @@ public class Parametros_ajax {
 
 					sql = "INSERT INTO distribuidora_horario_dia_entre (`ID_HORARIO`, `ID_DISTRIBUIDORA`, `COD_DIA`, `ID_DISTR_BAIRRO`, `HORARIO_INI`, `HORARIO_FIM`) VALUES (?, ?, ?, ?, ?, ?);";
 					st = conn.prepareStatement(sql);
-					st.setInt(1, Utilitario.retornaIdinsert("distribuidora_horario_dia_entre", "id_horario", conn));
+					st.setLong(1, Utilitario.retornaIdinsertLong("distribuidora_horario_dia_entre", "id_horario", conn));
 					st.setInt(2, coddistr);
 					st.setInt(3, Integer.parseInt(dia.get("cod_dia").toString()));
 					st.setInt(4, iddistrbair);
@@ -525,7 +525,7 @@ public class Parametros_ajax {
 
 	public static void salvarConfigsHorariosBairros(HttpServletRequest request, HttpServletResponse response, Connection conn, int coddistr) throws Exception {
 		PrintWriter out = response.getWriter();
-		JSONArray ret = new JSONArray();
+		JSONObject ret = new JSONObject();
 
 		String bairrosbox = request.getParameter("bairrosbox") == null ? "" : request.getParameter("bairrosbox"); //
 		String diassemana = request.getParameter("diassemana") == null ? "" : request.getParameter("diassemana"); //
@@ -546,12 +546,10 @@ public class Parametros_ajax {
 
 		String[] dias = diassemana.split(",");
 		for (int i = 0; i < dias.length; i++) {
-			System.out.println(dias[i]);
 			if (!Utilitario.isNumeric(dias[i])) {
 				throw new Exception("Dia inválido.");
 			}
 		}
-		
 
 		JSONArray horarios = (JSONArray) new JSONParser().parse(horariosjson);
 
@@ -594,6 +592,7 @@ public class Parametros_ajax {
 		st = conn.prepareStatement(sql);
 		ResultSet rs = st.executeQuery();
 		ResultSet rs2 = null;
+		String msg = "";
 		while (rs.next()) {
 			int iddistrbair = 0;
 			boolean inserirbairro = true;
@@ -645,18 +644,34 @@ public class Parametros_ajax {
 					} catch (Exception e) {
 						throw new Exception("Dados de horario inválidos, entre em contato com o suporte.");
 					}
-					
-					//	teste de conflito de horario
-					st2 = conn.prepareStatement("    select * from distribuidora_horario_dia_entre where id_distribuidora = " + coddistr + " and cod_dia = " + coddia + " and id_distr_bairro = "+iddistrbair+" and (HORARIO_INI between ? and ? or HORARIO_FIM between ? and ? )  ;");
+
+					// teste de conflito de horario
+
+					StringBuffer varname1 = new StringBuffer();
+					varname1.append("SELECT * ");
+					varname1.append("FROM   distribuidora_horario_dia_entre ");
+					varname1.append("WHERE  id_distribuidora = " + coddistr + " ");
+					varname1.append("       AND cod_dia = " + coddia + " ");
+					varname1.append("       AND id_distr_bairro =  " + iddistrbair + " ");
+					varname1.append("       AND ( ( horario_ini BETWEEN ? AND ? ");
+					varname1.append("                OR horario_fim BETWEEN ? AND ? ) ");
+					varname1.append("              OR ( ? BETWEEN horario_ini AND horario_fim ");
+					varname1.append("                    OR ? BETWEEN horario_ini AND horario_fim ) );");
+
+					st2 = conn.prepareStatement(varname1.toString());
 					st2.setString(1, horario.get("HORARIO_INI").toString());
 					st2.setString(2, horario.get("HORARIO_FIM").toString());
 					st2.setString(3, horario.get("HORARIO_INI").toString());
 					st2.setString(4, horario.get("HORARIO_FIM").toString());
+					st2.setString(5, horario.get("HORARIO_INI").toString());
+					st2.setString(6, horario.get("HORARIO_FIM").toString());
 					rs2 = st2.executeQuery();
-					if(rs2.next()){
-						throw new Exception("Dados de horario conflitantes!");//TODO melhorar a msg
+
+					if (rs2.next()) {
+						msg = msg + "O horário " + horario.get("HORARIO_INI").toString() + " até as " + horario.get("HORARIO_FIM").toString() + " conflita com horários no Bairro: " + Utilitario.getNomeBairro(conn, 0, iddistrbair) + "   -  Dia: " + Utilitario.getDescDiaSemana(conn, (coddia)) + " - das " + rs2.getString("HORARIO_INI") + " até " + rs2.getString("HORARIO_FIM") + " \n";
+						// throw new Exception("O horário " + horario.get("HORARIO_INI").toString() + " até as " + horario.get("HORARIO_FIM").toString() + " conflita com horários no Bairro: " + Utilitario.getNomeBairro(conn, 0, iddistrbair) + " - Dia: " + Utilitario.getDescDiaSemana(conn, (coddia)) + " - das " + rs2.getString("HORARIO_INI") + " até " + rs2.getString("HORARIO_FIM") );
 					}
-					
+
 					sql = "INSERT INTO distribuidora_horario_dia_entre (`ID_HORARIO`, `ID_DISTRIBUIDORA`, `COD_DIA`, `ID_DISTR_BAIRRO`, `HORARIO_INI`, `HORARIO_FIM`) VALUES (?, ?, ?, ?, ?, ?);";
 					st3 = conn.prepareStatement(sql);
 					st3.setInt(1, Utilitario.retornaIdinsert("distribuidora_horario_dia_entre", "id_horario", conn));
@@ -668,8 +683,13 @@ public class Parametros_ajax {
 					st3.executeUpdate();
 				}
 			}
+			
 		}
 
+		if (!msg.equalsIgnoreCase("")) {
+			throw new Exception(msg);
+		} 
+		ret.put("msg", "ok");
 		out.print(ret.toJSONString());
 	}
 

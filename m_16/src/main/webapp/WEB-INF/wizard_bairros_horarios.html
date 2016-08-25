@@ -17,25 +17,65 @@
 
 <div class="x_content">
 
-
 	<!-- Nav tabs -->
 	<ul class="nav nav-pills" id="tabs_horarios" role="tablist">
-		<li role="presentation" class="active"><a href="#bairros"
+		<li role="presentation" class="active"><a href="#infos"
+			aria-controls="home" role="tab" data-toggle="tab">Informação</a></li>
+		<li role="presentation" ><a href="#bairros"
 			aria-controls="home" role="tab" data-toggle="tab">Bairros</a></li>
 		<li role="presentation"><a href="#diashoras"
 			aria-controls="profile" role="tab" data-toggle="tab">Dias e
 				horários</a></li>
 		<li role="presentation"><a href="#confir"
-			aria-controls="messages" role="tab" data-toggle="tab">Treta</a></li>
-
+			aria-controls="messages" role="tab" data-toggle="tab">Operação</a></li>
 	</ul>
 
 	<!-- Tab panes -->
 	<div class="tab-content">
-		<div role="tabpanel" class="tab-pane active" id="bairros">
+
+		<div role="tabpanel" class="tab-pane active" id="infos">
 
 			<div style="width: 98%; height: 100%"
 				class="container bs-docs-container">
+
+				<Br>
+
+				<div class="row">
+					<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 " align="left">
+						<label for=""> Olá. Esta tela lhe ajudará a configurar seus bairros de entrega, dias e horários que sua distribuidora estará disponível para realizar vendas.</label>
+						<br>
+						<label for=""> Primeiramento você devera escolher os bairros que deseja estar disponível, depois o os dias e os horarios desejados e por final o tipo de operação que deseja realizar, que são explicadas na etapa final.</label>
+						<label for=""> Para realizar a primeira etapa de escolha de bairros, clique no botão "Continuar".</label>
+
+					</div>
+				</div>
+
+				<br>
+				<div class="row">
+					<div class="col-xs-8 col-sm-8 col-md-8 col-lg-8">
+						<table>
+							<tr>
+								<td style="width: 300px" align="right">
+
+									<div class="form-group">
+										<button type="button" id="btn_prox_0" class="btn btn-primary">Continuar</button>
+									</div>
+									<td>
+							
+							</tr>
+
+
+						</table>
+					</div>
+				</div>
+
+
+			</div>
+		</div>
+		<div role="tabpanel" class="tab-pane " id="bairros">
+
+										<div style="width: 98%; height: 100%"
+											class="container bs-docs-container">
 
 				<Br>
 
@@ -61,10 +101,10 @@
 								</tr>
 								<tr>
 									<td colspan="2"><button type="button"
-											class="btn btn-primary" id="marca_bairros">Marcar
+																		class="btn btn-primary" id="marca_bairros">Marcar
 											Todos</button>
 										<button type="button" class="btn btn-primary"
-											id="desmarca_bairros">Desmarcar Todos</button></td>
+																		id="desmarca_bairros">Desmarcar Todos</button></td>
 
 								</tr>
 							</tfoot>
@@ -81,8 +121,10 @@
 									<div class="form-group">
 										<button type="button" id="btn_prox_1" class="btn btn-primary">Continuar</button>
 									</div>
-								<td>
-							</tr>
+								
+															<td>
+							
+														</tr>
 
 
 						</table>
@@ -115,20 +157,22 @@
 				<div class="col-xs-8 col-sm-8 col-md-8 col-lg-8  align="left">
 					<div style="max-width: 600px">
 						<table id="table_horarios" data-toggle="table" data-height="200"
-							data-locale="pt-BR" class="table_boots"
-							data-minimum-count-columns="1" data-reorderable-columns="false"
-							data-sort-name="HORARIO_INI" data-sort-order="asc">
+														data-locale="pt-BR" class="table_boots"
+														data-minimum-count-columns="1"
+														data-reorderable-columns="false"
+														data-sort-name="HORARIO_INI" data-sort-order="asc">
 							<thead class="header">
 								<tr>
 									<th data-visible="false" data-field="id_horario"></th>
 									<th data-sortable="true" data-width="100px"
-										data-field="HORARIO_INI" data-align="left">Período/Hora
+																	data-field="HORARIO_INI" data-align="left">Período/Hora
 										Inicial</th>
 									<th data-sortable="true" data-width="100px"
-										data-field="HORARIO_FIM" data-align="left">Período/Hora
+																	data-field="HORARIO_FIM" data-align="left">Período/Hora
 										Final</th>
 									<th data-sortable="false" data-width="100px"
-										data-align="center" data-formatter="btnFormater_horario">Opções</th>
+																	data-align="center"
+																	data-formatter="btnFormater_horario">Opções</th>
 								</tr>
 							</thead>
 							<tbody>
@@ -147,27 +191,33 @@
 							<td style="width: 175px">
 								<div class="form-group">
 									<label>Hora inicial</label> <input type="text" maxlength="22"
-										class="form-control hora" id="b_hora_inicial" />
+																	class="form-control hora" id="b_hora_inicial" />
 								</div>
-							<td>
-							<td style="width: 30px"></td>
+							
+														<td>
+							
+														<td style="width: 30px"></td>
 							<td style="width: 175px">
 
 								<div class="form-group">
 									<label>Hora final</label> <input type="text" maxlength="22"
-										class="form-control hora" id="b_hora_final" />
+																	class="form-control hora" id="b_hora_final" />
 								</div>
-							<td>
-							<td style="width: 30px"></td>
+							
+														<td>
+							
+														<td style="width: 30px"></td>
 							<td style="width: 175px" align="right">
 
 								<div class="form-group"
-									style="margin-left: 105px; margin-top: 20px;">
+																style="margin-left: 105px; margin-top: 20px;">
 									<button type="button" id="p_add_periodo"
-										class="btn btn-primary">Adicionar</button>
+																	class="btn btn-primary">Adicionar</button>
 								</div>
-							<td>
-						</tr>
+							
+														<td>
+						
+													</tr>
 
 
 					</table>
@@ -183,8 +233,10 @@
 								<div class="form-group">
 									<button type="button" id="btn_prox_2" class="btn btn-primary">Continuar</button>
 								</div>
-							<td>
-						</tr>
+							
+														<td>
+						
+													</tr>
 
 
 					</table>
@@ -206,14 +258,14 @@
 			</div>
 			<div class="row">
 				<div class=" col-xs-9 col-md-9 col-lg-9"
-					style="margin-top: 30px; padding-left: 0px;">
+												style="margin-top: 30px; padding-left: 0px;">
 
 					<div class="checkbox" data-toggle="tooltip"
-						title="Ao marcar esta opção, você estará ADICIONANDO os bairros/horários que você acabou de marcar aos bairros/horários já existentes no sistema. Em caso de conflito de horários o sistema irá retornar um aviso informando qual foi o conflito encontrado."
-						style="margin-top: 0px; margin-bottom: 0px">
+													title="Ao marcar esta opção, você estará ADICIONANDO os bairros/horários que você acabou de marcar aos bairros/horários já existentes no sistema. Em caso de conflito de horários o sistema irá retornar um aviso informando qual foi o conflito encontrado."
+													style="margin-top: 0px; margin-bottom: 0px">
 						<label> <input type="radio" name='opc_tipoopc'
-							id="opc_tipoopc" style="color: black !important" name=''
-							" class="" value="1"><strong> Adicionar e não
+														id="opc_tipoopc" style="color: black !important" name=''
+														" class="" value="1"><strong> Adicionar e não
 								apagar nenhuma configuração anterior.</strong>
 						</label>
 					</div>
@@ -225,14 +277,14 @@
 
 			<div class="row">
 				<div class=" col-xs-9 col-md-9 col-lg-9"
-					style="margin-top: 30px; padding-left: 0px;">
+												style="margin-top: 30px; padding-left: 0px;">
 
 					<div class="checkbox" data-toggle="tooltip"
-						title="Ao marcar esta opção, você estará ADICIONANDO e SOBRESCREVENDO bairros/hórarios que já possuem configurações existentes. Ex: Se você selecionar o bairro Centro para adicionar uma faixa de horário e ele já possuir dias/horários informados, o sistema vai apagar TODAS informações relacionadas ao bairro Centro (incluindo TODOS os dias configurados) e vai adicionar as novas configurações que você acabou de informar."
-						style="margin-top: 0px; margin-bottom: 0px">
+													title="Ao marcar esta opção, você estará ADICIONANDO e SOBRESCREVENDO bairros/hórarios que já possuem configurações existentes. Ex: Se você selecionar o bairro Centro para adicionar uma faixa de horário e ele já possuir dias/horários informados, o sistema vai apagar TODAS informações relacionadas ao bairro Centro (incluindo TODOS os dias configurados) e vai adicionar as novas configurações que você acabou de informar."
+													style="margin-top: 0px; margin-bottom: 0px">
 						<label> <input type="radio" name='opc_tipoopc'
-							id="opc_tipoopc" style="color: black !important" name='' class=""
-							value="2"><strong> Adicionar e sobrescrever as
+														id="opc_tipoopc" style="color: black !important" name=''
+														class="" value="2"><strong> Adicionar e sobrescrever as
 								configurações para os bairros/horários selecionados. </strong>
 
 						</label>
@@ -245,14 +297,14 @@
 
 			<div class="row">
 				<div class=" col-xs-9 col-md-9 col-lg-9"
-					style="margin-top: 30px; padding-left: 0px;">
+												style="margin-top: 30px; padding-left: 0px;">
 
 					<div class="checkbox" data-toggle="tooltip"
-						title="Ao marcar esta opção, você estará REMOVENDO TODAS CONFIGURAÇÕES relacioandas a bairros/horários já configuradas previamente no sistema e adicionando as configurações que você acabou de informar. Esta opção serve para começar uma configuração inteiramente nova."
-						style="margin-top: 0px; margin-bottom: 0px">
+													title="Ao marcar esta opção, você estará REMOVENDO TODAS CONFIGURAÇÕES relacioandas a bairros/horários já configuradas previamente no sistema e adicionando as configurações que você acabou de informar. Esta opção serve para começar uma configuração inteiramente nova."
+													style="margin-top: 0px; margin-bottom: 0px">
 						<label> <input type="radio" name='opc_tipoopc'
-							id="opc_tipoopc" style="color: black !important" name=''
-							" class="" value="3"><strong> APAGAR TODAS as
+														id="opc_tipoopc" style="color: black !important" name=''
+														" class="" value="3"><strong> APAGAR TODAS as
 								configurações de barrios/horários existentes e adicionar as
 								configurações para os bairros/horários selecionados. </strong>
 
@@ -264,8 +316,7 @@
 
 			</div>
 
-<br>
-<br>
+			<br> <br>
 			<div class="row">
 				<div class="col-xs-8 col-sm-8 col-md-8 col-lg-8">
 					<table>
@@ -275,8 +326,10 @@
 								<div class="form-group">
 									<button type="button" id="btn_prox_3" class="btn btn-primary">Finalizar</button>
 								</div>
-							<td>
-						</tr>
+							
+														<td>
+						
+													</tr>
 					</table>
 				</div>
 			</div>
@@ -284,7 +337,8 @@
 
 
 		</div>
-	</div>
+	
+								</div>
 
 </div>
 
