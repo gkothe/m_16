@@ -76,17 +76,17 @@ public class AcessoController implements SysController {
 			if (!(password.equals("-1")) && !(user.equals("-1"))) {
 
 				PreparedStatement stmt = conn.prepareStatement(
-						"SELECT ID_DISTRIBUIDORA,desc_login FROM distribuidora WHERE  Binary desc_login = ? and Binary desc_senha = ? and flag_ativo_master = 'S' ");
+						"SELECT ID_DISTRIBUIDORA,desc_login,cod_cidade FROM distribuidora WHERE  Binary desc_login = ? and Binary desc_senha = ? and flag_ativo_master = 'S' ");
 				stmt.setString(1, user);
 				stmt.setString(2, password);
 				ResultSet rs = stmt.executeQuery();
 
 				if (rs.next()) {
+				
 					session = request.getSession(true);
 					session.setAttribute("username", rs.getString("desc_login"));
 					session.setAttribute("coddis", rs.getInt("ID_DISTRIBUIDORA"));
-					
-
+					session.setAttribute("cod_cidade", rs.getInt("cod_cidade"));
 
 					request.getRequestDispatcher("home?ac=home").forward(request, response);
 					

@@ -108,8 +108,8 @@ input:focus {
 										class="fa fa-home clickmenu2"></i> Pedidos <span
 										class="fa fa-chevron-down clickmenu"></span></a>
 									<ul class="nav child_menu">
-										<li><a linkmenu="listaped"
-											onclick="trocaPag(this,'N');" class="clickmenu">Abertos</a></li>
+										<li><a linkmenu="listaped" onclick="trocaPag(this,'N');"
+											class="clickmenu">Abertos</a></li>
 										<li><a linkmenu="listapedfechado"
 											onclick="trocaPag(this,'N');" class="clickmenu">Histórico</a></li>
 									</ul></li>
@@ -122,6 +122,9 @@ input:focus {
 										<li><a linkmenu="listaconfigemp"
 											onclick="trocaPag(this,'N');" class="clickmenu">Configurações
 												da empresa</a></li>
+										<li><a linkmenu="wizardhorarios"
+											onclick="trocaPag(this,'N');" class="clickmenu">Configurações
+												de horários</a></li>
 									</ul></li>
 								<li><a class="clickmenu2"><i
 										class="fa fa-edit clickmenu2"></i> Relatórios <span
@@ -182,17 +185,16 @@ input:focus {
 							<li style="margin-top: 15px;">
 
 								<div style="cursor: pointer; display: none;" id="msg_holder">
-									<a onclick="trocaPag(this,'N');"
-										linkmenu="listaped"><span
+									<a onclick="trocaPag(this,'N');" linkmenu="listaped"><span
 										class="label label-danger aviso_pedido" id="msg_nao_vizu"
 										style="font-size: 195%;">Você tem pedidos não
 											respondidos! </span></a>
 
 								</div>
 								<div style="cursor: pointer; display: none;" id="msg_holder2">
-									<a ><span
-										class="label label-warning aviso_pedido" id="msg_offline"
-										style="font-size: 195%;">O servidor ChamaTrago está offline! </span></a>
+									<a><span class="label label-warning aviso_pedido"
+										id="msg_offline" style="font-size: 195%;">O servidor
+											ChamaTrago está offline! </span></a>
 
 								</div>
 
@@ -689,13 +691,12 @@ input:focus {
 	url = '<%=request.getParameter("link")%>';
 	jsp = '<%=request.getParameter("jsp")%>';
 	menu ='<%=request.getParameter("m")%>';
-	
 <%} else {%>
-		url = "listaped"
+	url = "listaped"
 		jsp = "N"
 		menu = "m"
 <%}%>
-//	$('#mainpage').load('home?ac=listaped');
+	//	$('#mainpage').load('home?ac=listaped');
 
 	});
 </script>

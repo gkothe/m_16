@@ -300,8 +300,6 @@ public class Parametros_ajax {
 			obj.put("desc_mail", rs.getString("desc_mail"));
 			obj.put("flag_ativo", rs.getString("flag_ativo"));
 			obj.put("flag_modopag", rs.getString("FLAG_MODOPAGAMENTO"));
-			
-			
 
 			ret.add(obj);
 
@@ -328,9 +326,7 @@ public class Parametros_ajax {
 		String bairrosjson = request.getParameter("bairros") == null ? "" : request.getParameter("bairros"); //
 		String desc_mail = request.getParameter("desc_mail") == null ? "" : request.getParameter("desc_mail"); //
 		String flag_modopag = request.getParameter("flag_modopag") == null ? "" : request.getParameter("flag_modopag"); //
-		
-		
-		
+
 		if (!(flag_custom.equalsIgnoreCase("S")) && !(flag_custom.equalsIgnoreCase("N"))) {
 			throw new Exception("Dados inválidos, entre em contato com o suporte.");
 		}
@@ -358,9 +354,7 @@ public class Parametros_ajax {
 		st.setString(12, desc_mail);
 		st.setString(13, flag_modopag);
 		st.setInt(14, coddistr);
-		
-		
-		
+
 		st.executeUpdate();
 
 		sql = " delete from distribuidora_horario_dia_entre where id_distribuidora = ? ";
@@ -381,8 +375,6 @@ public class Parametros_ajax {
 
 			bairro = (JSONObject) bairros.get(i);
 
-			
-
 			if (bairro.get("cod_bairro") == null || bairro.get("cod_bairro") == "") {
 				throw new Exception("Dados inválidos, entre em contato com o suporte.");
 			}
@@ -398,8 +390,8 @@ public class Parametros_ajax {
 			sql = "select * from distribuidora_bairro_entrega where ID_DISTRIBUIDORA = ? and COD_BAIRRO = ?";
 
 			st = conn.prepareStatement(sql);
-			st.setInt(1,coddistr );
-			st.setInt(2,Integer.parseInt(bairro.get("cod_bairro").toString()) );
+			st.setInt(1, coddistr);
+			st.setInt(2, Integer.parseInt(bairro.get("cod_bairro").toString()));
 			ResultSet rs = st.executeQuery();
 			while (rs.next()) {
 
@@ -497,11 +489,11 @@ public class Parametros_ajax {
 					st = conn.prepareStatement(sql);
 					st.setInt(1, Utilitario.retornaIdinsert("distribuidora_horario_dia_entre", "id_horario", conn));
 					st.setInt(2, coddistr);
-					st.setInt(3,Integer.parseInt(dia.get("cod_dia").toString()));
+					st.setInt(3, Integer.parseInt(dia.get("cod_dia").toString()));
 					st.setInt(4, iddistrbair);
 					st.setString(5, horario.get("HORARIO_INI").toString());
 					st.setString(6, horario.get("HORARIO_FIM").toString());
-					 st.executeUpdate();
+					st.executeUpdate();
 
 				}
 			}
@@ -509,6 +501,175 @@ public class Parametros_ajax {
 		}
 
 		ret.put("msg", "ok");
+		out.print(ret.toJSONString());
+	}
+
+	public static void loadBairrosWizard(HttpServletRequest request, HttpServletResponse response, Connection conn, int coddistr) throws Exception {
+		PrintWriter out = response.getWriter();
+		JSONArray ret = new JSONArray();
+
+		String sql = "select * from bairros where cod_cidade =  " + request.getSession(false).getAttribute("cod_cidade").toString() + " order by desc_bairro";
+
+		PreparedStatement st = conn.prepareStatement(sql);
+		ResultSet rs = st.executeQuery();
+
+		while (rs.next()) {
+			JSONObject dados = new JSONObject();
+			dados.put("cod_bairro", rs.getString("cod_bairro"));
+			dados.put("desc_bairro", rs.getString("desc_bairro"));
+			ret.add(dados);
+		}
+
+		out.print(ret.toJSONString());
+	}
+
+	public static void salvarConfigsHorariosBairros(HttpServletRequest request, HttpServletResponse response, Connection conn, int coddistr) throws Exception {
+		PrintWriter out = response.getWriter();
+		JSONArray ret = new JSONArray();
+
+		String bairrosbox = request.getParameter("bairrosbox") == null ? "" : request.getParameter("bairrosbox"); //
+		String diassemana = request.getParameter("diassemana") == null ? "" : request.getParameter("diassemana"); //
+		String horariosjson = request.getParameter("horariosjson") == null ? "" : request.getParameter("horariosjson"); //
+		String tipoopc = request.getParameter("tipoopc") == null ? "" : request.getParameter("tipoopc"); //
+
+		if (!(tipoopc.equalsIgnoreCase("1")) && !(tipoopc.equalsIgnoreCase("3")) && !(tipoopc.equalsIgnoreCase("2"))) {
+			throw new Exception("Tipo de operação inválida .");
+		}
+
+		String[] bairros = bairrosbox.split(",");
+
+		for (int i = 0; i < bairros.length; i++) {
+			if (!Utilitario.isNumeric(bairros[i])) {
+				throw new Exception("Bairro inválido.");
+			}
+		}
+
+		String[] dias = diassemana.split(",");
+		for (int i = 0; i < dias.length; i++) {
+			System.out.println(dias[i]);
+			if (!Utilitario.isNumeric(dias[i])) {
+				throw new Exception("Dia inválido.");
+			}
+		}
+		
+
+		JSONArray horarios = (JSONArray) new JSONParser().parse(horariosjson);
+
+		PreparedStatement st = null;
+		PreparedStatement st2 = null;
+		PreparedStatement st3 = null;
+
+		if (tipoopc.equalsIgnoreCase("3")) {
+
+			st = conn.prepareStatement("delete from distribuidora_horario_dia_entre where id_distribuidora = ? ");
+			st.setInt(1, coddistr);
+			st.executeUpdate();
+
+			st = conn.prepareStatement("delete from distribuidora_bairro_entrega where id_distribuidora = ? ");
+			st.setInt(1, coddistr);
+			st.executeUpdate();
+
+		} else if (tipoopc.equalsIgnoreCase("2")) {
+
+			String sql = " select * from distribuidora_bairro_entrega where cod_bairro in (" + bairrosbox + ") and id_distribuidora = " + coddistr;
+			st = conn.prepareStatement(sql);
+			ResultSet rs = st.executeQuery();
+			String id_distr_bairro_str = "";
+			while (rs.next()) {
+				id_distr_bairro_str = id_distr_bairro_str + "," + rs.getInt("ID_DISTR_BAIRRO");
+			}
+			id_distr_bairro_str = id_distr_bairro_str.replaceFirst(",", "");
+
+			st = conn.prepareStatement("delete from distribuidora_horario_dia_entre where ID_DISTR_BAIRRO in (" + id_distr_bairro_str + ")  ");
+			st.executeUpdate();
+
+			st = conn.prepareStatement("delete from distribuidora_bairro_entrega where ID_DISTR_BAIRRO in (" + id_distr_bairro_str + ")  ");
+			st.executeUpdate();
+
+		}
+
+		// insert
+		String sql = "select * from  bairros where cod_bairro in (" + bairrosbox + ") and cod_cidade =  " + request.getSession(false).getAttribute("cod_cidade").toString() + " ";
+
+		st = conn.prepareStatement(sql);
+		ResultSet rs = st.executeQuery();
+		ResultSet rs2 = null;
+		while (rs.next()) {
+			int iddistrbair = 0;
+			boolean inserirbairro = true;
+			if (tipoopc.equalsIgnoreCase("1")) {
+				st2 = conn.prepareStatement("    select * from distribuidora_bairro_entrega where id_distribuidora = " + coddistr + " and COD_BAIRRO = " + rs.getString("cod_bairro") + " ;");
+				rs2 = st2.executeQuery();
+				if (rs2.next()) {
+					iddistrbair = rs2.getInt("ID_DISTR_BAIRRO");
+					inserirbairro = false;
+				}
+			}
+
+			if (inserirbairro) {
+				iddistrbair = Utilitario.retornaIdinsert("distribuidora_bairro_entrega", "ID_DISTR_BAIRRO", conn);
+				st2 = conn.prepareStatement("INSERT INTO distribuidora_bairro_entrega (`ID_DISTR_BAIRRO`, `COD_BAIRRO`, `ID_DISTRIBUIDORA`, `VAL_TELE_ENTREGA`, `FLAG_TELEBAIRRO`) VALUES (?, ?, ?, ?, ?);");
+				st2.setInt(1, iddistrbair);
+				st2.setInt(2, rs.getInt("cod_bairro"));
+				st2.setInt(3, coddistr);
+				st2.setDouble(4, 0.0);
+				st2.setString(5, "N");
+				st2.executeUpdate();
+			}
+
+			for (int i = 0; i < dias.length; i++) {
+				int coddia = Integer.parseInt(dias[i]);
+				for (int j = 0; j < horarios.size(); j++) {
+					JSONObject horario = (JSONObject) horarios.get(j);
+
+					if (horario.get("HORARIO_INI") == null || horario.get("HORARIO_INI") == "") {
+						throw new Exception("Dados inválidos, entre em contato com o suporte.");
+					}
+
+					if (horario.get("HORARIO_FIM") == null || horario.get("HORARIO_FIM") == "") {
+						throw new Exception("Dados inválidos, entre em contato com o suporte.");
+					}
+
+					if (horario.get("HORARIO_INI").toString().length() != 5) {
+						throw new Exception("O horário " + horario.get("HORARIO_INI") + " é invalido");
+					}
+					if (horario.get("HORARIO_FIM").toString().length() != 5) {
+						throw new Exception("O horário " + horario.get("HORARIO_FIM") + " é invalido");
+					}
+
+					Date dataini;
+					Date datafim;
+					try {
+						dataini = new SimpleDateFormat("HH:mm").parse(horario.get("HORARIO_INI").toString());
+						datafim = new SimpleDateFormat("HH:mm").parse(horario.get("HORARIO_FIM").toString());
+					} catch (Exception e) {
+						throw new Exception("Dados de horario inválidos, entre em contato com o suporte.");
+					}
+					
+					//	teste de conflito de horario
+					st2 = conn.prepareStatement("    select * from distribuidora_horario_dia_entre where id_distribuidora = " + coddistr + " and cod_dia = " + coddia + " and id_distr_bairro = "+iddistrbair+" and (HORARIO_INI between ? and ? or HORARIO_FIM between ? and ? )  ;");
+					st2.setString(1, horario.get("HORARIO_INI").toString());
+					st2.setString(2, horario.get("HORARIO_FIM").toString());
+					st2.setString(3, horario.get("HORARIO_INI").toString());
+					st2.setString(4, horario.get("HORARIO_FIM").toString());
+					rs2 = st2.executeQuery();
+					if(rs2.next()){
+						throw new Exception("Dados de horario conflitantes!");//TODO melhorar a msg
+					}
+					
+					sql = "INSERT INTO distribuidora_horario_dia_entre (`ID_HORARIO`, `ID_DISTRIBUIDORA`, `COD_DIA`, `ID_DISTR_BAIRRO`, `HORARIO_INI`, `HORARIO_FIM`) VALUES (?, ?, ?, ?, ?, ?);";
+					st3 = conn.prepareStatement(sql);
+					st3.setInt(1, Utilitario.retornaIdinsert("distribuidora_horario_dia_entre", "id_horario", conn));
+					st3.setInt(2, coddistr);
+					st3.setInt(3, coddia);
+					st3.setInt(4, iddistrbair);
+					st3.setString(5, horario.get("HORARIO_INI").toString());
+					st3.setString(6, horario.get("HORARIO_FIM").toString());
+					st3.executeUpdate();
+				}
+			}
+		}
+
 		out.print(ret.toJSONString());
 	}
 

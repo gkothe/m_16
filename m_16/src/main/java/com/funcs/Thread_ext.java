@@ -1,11 +1,11 @@
-package com.configs;
+package com.funcs;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.Date;
 
-import com.funcs.Sys_parametros;
+import com.configs.Conexao;
 
 public class Thread_ext extends Thread {
 
@@ -27,7 +27,7 @@ public class Thread_ext extends Thread {
 
 			while (true) {
 				testeDistribuidorasonline(conn);
-				this.sleep(5000);
+				this.sleep(10000);
 			}
 
 		} catch (Exception e) {

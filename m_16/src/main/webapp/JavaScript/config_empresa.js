@@ -50,7 +50,6 @@ $(document).ready(function() {
 	$(tabela).bootstrapTable().on('dbl-click-cell.bs.table', function(field, value, row, element) {
 		var id = element.seq_movimento;
 		var form = document.getElementById('form');
-		Enviar(form, $("#app_root").val() + "?ac=nfse&id=" + id);
 
 	});
 
@@ -67,7 +66,6 @@ $(document).ready(function() {
 	$(tabela).bootstrapTable().on('dbl-click-cell.bs.table', function(field, value, row, element) {
 		var id = element.seq_movimento;
 		var form = document.getElementById('form');
-		Enviar(form, $("#app_root").val() + "?ac=nfse&id=" + id);
 
 	});
 

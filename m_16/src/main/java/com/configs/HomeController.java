@@ -54,13 +54,13 @@ public class HomeController extends javax.servlet.http.HttpServlet {
 
 	public void processaRequisicoes(HttpServletRequest request, HttpServletResponse response) {
 
-		/*-	System.out.println("--------entro home");
-			Map map = request.getParameterMap();
-			for (Iterator iterator = map.keySet().iterator(); iterator.hasNext();) {
-				String type = (String) iterator.next();
-				System.out.println(type + " : " + request.getParameter(type));
-			}
-		*/
+	/*	System.out.println("--------entro home");
+		Map map = request.getParameterMap();
+		for (Iterator iterator = map.keySet().iterator(); iterator.hasNext();) {
+			String type = (String) iterator.next();
+			System.out.println(type + " : " + request.getParameter(type));
+		}*/
+
 		try {
 
 			String strTipo = request.getParameter("ac");
@@ -87,6 +87,8 @@ public class HomeController extends javax.servlet.http.HttpServlet {
 					listaprod(request, response);
 				} else if (strTipo.equalsIgnoreCase("listaconfigemp")) {
 					listaconfigemp(request, response);
+				} else if (strTipo.equalsIgnoreCase("wizardhorarios")) {
+					wizardhorarios(request, response);
 				} else if (strTipo.equalsIgnoreCase("home")) {
 					home(request, response);
 				} else if (strTipo.equalsIgnoreCase("logout")) {
@@ -149,9 +151,9 @@ public class HomeController extends javax.servlet.http.HttpServlet {
 			conn = Conexao.getConexao();
 			conn.setAutoCommit(false);
 			String cmd = request.getParameter("cmd");
-			
+
 			atualizaLastAjax(coddistr, conn);
-			
+
 			if (cmd.equalsIgnoreCase("checkPedidos")) {
 				Home_ajax.checkPedidos(request, response, conn, coddistr);
 			} else if (cmd.equalsIgnoreCase("getLogo")) {
@@ -190,6 +192,10 @@ public class HomeController extends javax.servlet.http.HttpServlet {
 				Parametros_ajax.loadDadosEmp(request, response, conn, coddistr);
 			} else if (cmd.equalsIgnoreCase("salvarConfigsEmp")) {
 				Parametros_ajax.salvarConfigsEmp(request, response, conn, coddistr);
+			} else if (cmd.equalsIgnoreCase("loadBairrosWizard")) {
+				Parametros_ajax.loadBairrosWizard(request, response, conn, coddistr);
+			} else if (cmd.equalsIgnoreCase("salvarConfigsHorariosBairros")) {
+				Parametros_ajax.salvarConfigsHorariosBairros(request, response, conn, coddistr);
 			}
 
 			conn.commit();
@@ -256,6 +262,16 @@ public class HomeController extends javax.servlet.http.HttpServlet {
 	private void listaped(HttpServletRequest request, HttpServletResponse response) throws Exception {
 		try {
 			request.getRequestDispatcher("/WEB-INF/lista_pedidos_aberto.html").forward(request, response);
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw e;
+		} finally {
+		}
+	}
+
+	private void wizardhorarios(HttpServletRequest request, HttpServletResponse response) throws Exception {
+		try {
+			request.getRequestDispatcher("/WEB-INF/wizard_bairros_horarios.html").forward(request, response);
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw e;
