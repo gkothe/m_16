@@ -222,7 +222,7 @@ public class Utilitario {
 		return desc_bairro;
 	}
 
-	public static String getNomeProd(Connection conn, int id_prod, boolean abreviado) throws Exception {
+	public static String getNomeProd(Connection conn, long id_prod, boolean abreviado) throws Exception {
 
 			String desc_produto = "";
 			String varname1 = " select * from produtos where id_prod =  " + id_prod;
@@ -236,15 +236,40 @@ public class Utilitario {
 					desc_produto = rs2.getString("DESC_ABREVIADO");
 				}
 			}else{
-				throw new Exception("Bairro não existe.");
+				throw new Exception("Produto não existe.");
 			}
 			
 		return desc_produto;
 	}
 	
+	public static String getNomeProdIdProdDistr(Connection conn, long ID_PROD_DIST, boolean abreviado) throws Exception {
+
+		String desc_produto = "";
+		String varname1 = " select DESC_ABREVIADO,DESC_PROD from produtos inner join produtos_distribuidora on produtos_distribuidora.id_prod = produtos.id_prod where ID_PROD_DIST =  " + ID_PROD_DIST;
+		PreparedStatement st = conn.prepareStatement(varname1);
+		ResultSet rs2 = st.executeQuery();
+		if (rs2.next()) {
+			
+			if(!abreviado){
+				desc_produto = rs2.getString("DESC_PROD");
+			}else{
+				desc_produto = rs2.getString("DESC_ABREVIADO");
+			}
+		}else{
+			throw new Exception("Produto não existe.");
+		}
+		
+	return desc_produto;
+}
 	
 	
-	public static int retornaIdinsertChaveSecundaria(String tabela, String chaveprimaria, String id_chaveprimaria, String coluna, Connection conn) throws Exception {
+	
+	public static java.sql.Timestamp getTimeStamp(Date data) {
+	    return new java.sql.Timestamp(data.getTime());
+	}
+	
+	
+	public static int retornaIdinsertChaveSecundaria(String tabela, String nomechaveprimaria, String valchaveprimaria, String coluna, Connection conn) throws Exception {
 		String varname1 = "";
 		// so funciona para pk single
 
@@ -254,12 +279,12 @@ public class Utilitario {
 		varname1 += " FROM     ( ";
 		varname1 += " SELECT @rownum:=0) AS a ";
 		varname1 += " JOIN     " + tabela + " ";
-		varname1 += " where " + chaveprimaria + " = " + id_chaveprimaria + " ";
+		varname1 += " where " + nomechaveprimaria + " = " + valchaveprimaria + " ";
 		varname1 += " ORDER BY " + coluna + " ) AS z ";
 		varname1 += " WHERE  z.got!=0 ";
 		varname1 += " UNION ";
 		varname1 += " SELECT COALESCE(max(" + coluna + "+1),1) AS missing ";
-		varname1 += " FROM   " + tabela + " where " + chaveprimaria + " = " + id_chaveprimaria + " limit 1 ";
+		varname1 += " FROM   " + tabela + " where " + nomechaveprimaria + " = " + valchaveprimaria + " limit 1 ";
 
 		PreparedStatement st = conn.prepareStatement(varname1);
 		int id = 1;

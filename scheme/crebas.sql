@@ -1,6 +1,6 @@
 /*==============================================================*/
 /* DBMS name:      MySQL 5.0                                    */
-/* Created on:     25/8/2016 5:16:02 PM                         */
+/* Created on:     26/8/2016 3:16:34 PM                         */
 /*==============================================================*/
 
 
@@ -83,6 +83,7 @@ create table CARRINHO_ITEM
    SEQ_ITEM             INT4 not null,
    ID_PROD_DIST         bigint,
    QTD                  INT4,
+   VAL_PROD             decimal(12,2),
    primary key (ID_CARRINHO, SEQ_ITEM)
 );
 
@@ -192,9 +193,12 @@ create table PEDIDO
    COD_BAIRRO           INT4,
    NUM_TELEFONECONTATO_CLIENTE VARCHAR(50),
    TEMPO_ESTIMADO_ENTREGA TIME,
+   NOME_PESSOA          text,
    DESC_ENDERECO_ENTREGA TEXT,
    DESC_ENDERECO_NUM_ENTREGA VARCHAR(20),
    DESC_ENDERECO_COMPLEMENTO_ENTREGA VARCHAR(20),
+   FLAG_MODOPAGAMENTO   char(1),
+   DESC_CARTAO          VARCHAR(20),
    FLAG_VIZUALIZADO     char(1),
    primary key (ID_PEDIDO)
 )
