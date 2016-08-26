@@ -193,7 +193,7 @@ public class Parametros_ajax {
 		PreparedStatement st2;
 		ResultSet rs2;
 		JSONObject obj;
-		String sql = "select distribuidora_bairro_entrega.cod_bairro, bairros.desc_bairro, coalesce(val_tele_entrega, 0) as val_tele , coalesce(FLAG_TELEBAIRRO, 'N') as flag_telebairro,id_distr_bairro from distribuidora_bairro_entrega  inner join bairros on bairros.cod_bairro = distribuidora_bairro_entrega.cod_bairro where ID_DISTRIBUIDORA = ? order by desc_bairro  ";
+		String sql = "select distribuidora_bairro_entrega.cod_bairro, bairros.desc_bairro, coalesce(val_tele_entrega, 0) as val_tele , coalesce(FLAG_TELEBAIRRO, 'N') as flag_telebairro,id_distr_bairro from distribuidora_bairro_entrega  inner join bairros on bairros.cod_bairro = distribuidora_bairro_entrega.cod_bairro where ID_DISTRIBUIDORA = ? and bairros.cod_cidade  = "+request.getSession(false).getAttribute("cod_cidade").toString()+" order by desc_bairro  ";
 
 		PreparedStatement st = conn.prepareStatement(sql);
 		st.setInt(1, coddistr);
@@ -569,7 +569,7 @@ public class Parametros_ajax {
 
 		} else if (tipoopc.equalsIgnoreCase("2")) {
 
-			String sql = " select * from distribuidora_bairro_entrega where cod_bairro in (" + bairrosbox + ") and id_distribuidora = " + coddistr;
+			String sql = " select * from distribuidora_bairro_entrega where cod_bairro in (" + bairrosbox + ")  and id_distribuidora = " + coddistr;
 			st = conn.prepareStatement(sql);
 			ResultSet rs = st.executeQuery();
 			String id_distr_bairro_str = "";

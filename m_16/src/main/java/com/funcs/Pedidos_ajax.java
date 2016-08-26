@@ -387,7 +387,7 @@ public class Pedidos_ajax {
 
 			if (status.equalsIgnoreCase("O")) {
 
-				st2 = conn.prepareStatement("SELECT DESC_NOME, DESC_TELEFONE,DESC_ENDERECO, desc_bairro from usuario inner join bairros on bairros.cod_bairro = usuario.cod_bairro  where ID_usuario = ?");
+				st2 = conn.prepareStatement("SELECT DESC_NOME, DESC_TELEFONE,DESC_ENDERECO, desc_bairro from usuario inner join bairros on bairros.cod_bairro = usuario.cod_bairro  where ID_usuario = ? and bairros.cod_cidade = " + request.getSession(false).getAttribute("cod_cidade").toString());
 				st2.setInt(1, (user));
 				rs2 = st2.executeQuery();
 
@@ -474,7 +474,7 @@ public class Pedidos_ajax {
 
 			if (status.equalsIgnoreCase("E")) {
 
-				st2 = conn.prepareStatement("SELECT DESC_NOME, DESC_TELEFONE,DESC_ENDERECO, desc_bairro from usuario inner join bairros on bairros.cod_bairro = usuario.cod_bairro  where ID_usuario = ?");
+				st2 = conn.prepareStatement("SELECT DESC_NOME, DESC_TELEFONE,DESC_ENDERECO, desc_bairro from usuario inner join bairros on bairros.cod_bairro = usuario.cod_bairro  where ID_usuario = ? and bairros.cod_cidade = " + request.getSession(false).getAttribute("cod_cidade").toString());
 				st2.setInt(1, (user));
 				rs2 = st2.executeQuery();
 

@@ -43,8 +43,31 @@
 				<div class="row">
 					<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 " align="left">
 						<label for=""> Olá. Esta tela lhe ajudará a configurar seus bairros de entrega, dias e horários que sua distribuidora estará disponível para realizar vendas.</label>
+							<br>
+						<label for=""> Primeiramento você devera escolher os bairros que deseja estar disponível para realizar entregas, depois o os dias e os horarios desejados e por final o tipo de operação que deseja realizar, que são explicadas na etapa final.</label>
+							<br>
+						<label for=""> Se você deseja configurar dias/horários diferentes para um mesmo bairro, você precisa que realizar o processo de configuração mais de uma vez, conforme o exemplo abaixo.  </label>
+							<br>
+						<label for=""> Exemplo: Bairro Centro, Avenida, Universtário  - de segunda-feira a sexta-feira das 08:00 até as 18:00, sábado a domingo das 10:00 até as 23:59 </label>
+							<br>
+						<label for=""> Passo 1: Na primeira vez, você escolherá os bairros desejados, neste caso: Centro, Avenida, Universtário. </label>
+							<br>
+						<label for=""> Passo 1.1: Então vai você selecionar os dias de segunda-feira a sexta-feira e adicionar o horário das 08:00 até as 18:00 </label>
+							<br>
+						<label for=""> Passo 1.2: Então irá escolher a operação desejada, neste caso, digamos que seja a primeira. </label>
+							<br>
+						<label for=""> Passo 2: Na segunda vez, você escolherá os bairros desejados, neste caso: Centro, Avenida, Universtário.</label>
+							<br>
+						<label for=""> Passo 2.1: Então vai você selecionar os dias de sábado a domingo e adicionar o horário das 10:00 até as 23:59</label>
+							<br>
+						<label for=""> Passo 2.2: Então irá escolher PRIMEIRA operação.</label>
+							<br>
+						<label for=""> Deste modo, os as configurações do 'Passo 1' se juntarão com as configurações do 'Passo 2'.</label>
 						<br>
-						<label for=""> Primeiramento você devera escolher os bairros que deseja estar disponível, depois o os dias e os horarios desejados e por final o tipo de operação que deseja realizar, que são explicadas na etapa final.</label>
+						
+						<br>
+						<br>
+						
 						<label for=""> Para realizar a primeira etapa de escolha de bairros, clique no botão "Continuar".</label>
 
 					</div>
@@ -261,11 +284,11 @@
 												style="margin-top: 30px; padding-left: 0px;">
 
 					<div class="checkbox" data-toggle="tooltip"
-													title="Ao marcar esta opção, você estará ADICIONANDO os bairros/horários que você acabou de marcar aos bairros/horários já existentes no sistema. Em caso de conflito de horários o sistema irá retornar um aviso informando qual foi o conflito encontrado."
+													title="Ao marcar esta opção, você estará ADICIONANDO os bairros/horários que você acabou de marcar aos bairros/horários já existentes no sistema, usado no exmeplo:'passo 2' descrito na seção de informações. Em caso de conflito de horários o sistema irá retornar um aviso informando qual foi o conflito encontrado."
 													style="margin-top: 0px; margin-bottom: 0px">
 						<label> <input type="radio" name='opc_tipoopc'
 														id="opc_tipoopc" style="color: black !important" name=''
-														" class="" value="1"><strong> Adicionar e não
+														" class="" value="1">&nbsp;<strong>1 - Adicionar e não
 								apagar nenhuma configuração anterior.</strong>
 						</label>
 					</div>
@@ -284,7 +307,7 @@
 													style="margin-top: 0px; margin-bottom: 0px">
 						<label> <input type="radio" name='opc_tipoopc'
 														id="opc_tipoopc" style="color: black !important" name=''
-														class="" value="2"><strong> Adicionar e sobrescrever as
+														class="" value="2">&nbsp;<strong>2 - Adicionar e sobrescrever as
 								configurações para os bairros/horários selecionados. </strong>
 
 						</label>
@@ -304,7 +327,7 @@
 													style="margin-top: 0px; margin-bottom: 0px">
 						<label> <input type="radio" name='opc_tipoopc'
 														id="opc_tipoopc" style="color: black !important" name=''
-														" class="" value="3"><strong> APAGAR TODAS as
+														" class="" value="3">&nbsp; <strong> 3 - APAGAR TODAS as
 								configurações de barrios/horários existentes e adicionar as
 								configurações para os bairros/horários selecionados. </strong>
 

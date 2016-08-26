@@ -201,7 +201,7 @@ function mutarsom() {
 	sommute = true;
 	 setTimeout(function () {
 		 sommute = false;
-	    }, 10000);
+	    }, 120000);
 	
 }
 function playAudioPedido() {

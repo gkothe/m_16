@@ -10,7 +10,7 @@ import org.json.simple.JSONObject;
 import com.configs.Conexao;
 
 public class InsertDados {
-
+//classe de teste
 	private static void populateHorarios(String bairros, JSONArray dias, JSONArray horarios, Connection conn, int cod_distribuidora, boolean apagartodos) throws Exception {
 
 		PreparedStatement st2 = null;
