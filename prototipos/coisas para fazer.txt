@@ -1,20 +1,8 @@
 
 
-Campos de hora, ver otro tipo de mascara/plugin.
+
 
 estudar possibilidade de tooltips na tela de Configuração de bairros e horarios passo 1, passar o mouse em cima do bairro e dizer quais cofigs existem ou um botao/icone de info do lado. qem sabe mudar a cor ou botar um asterisco pros bairros que nao contem nenhum dia configurado.
-
-
-filtro vizualizado na tela de pedidos abertos.
-
-
-deu lag pra abrir um pedido, verificar, com duas pagina. segundo click ta abrindo
-
-melhorar mensagens em erros do pedido
-
-terminar parte do pagamento no func de pedido
-
-
 
 
 

@@ -7,12 +7,14 @@ $(document).ready(function() {
 	loadBairrosWizard();
 	loadDiasWizard();
 
-	$('.hora').timepicker({
+	 $(".hora").inputmask("h:s",{ "placeholder": "00:00" });
+	
+/*	$('.hora').timepicker({
 		minuteStep : 1,
 		showSeconds : false,
 		showMeridian : false,
 		defaultTime : false
-	});
+	});*/
 
 	$("#marca_bairros").click(function() {
 

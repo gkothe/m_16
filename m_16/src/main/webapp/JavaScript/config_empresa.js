@@ -27,16 +27,16 @@ $(document).ready(function() {
 	
 	
 
-	
+	 $(".hora").inputmask("h:s",{ "placeholder": "00:00" });
 	
 //	$("#lbl_save").show();	
 	
-	$('.hora').timepicker({
+/*	$('.hora').timepicker({
 		minuteStep : 1,
 		showSeconds : false,
 		showMeridian : false,
 		defaultTime : false
-	});
+	});*/
 
 	$('.keep-open', $('.fixed-table-toolbar')).prependTo($('#colunas'));
 	$('.fixed-table-toolbar').remove();

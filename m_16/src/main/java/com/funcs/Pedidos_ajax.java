@@ -50,7 +50,7 @@ public class Pedidos_ajax {
 	}
 
 	public static void carregaPedidosAbertos(HttpServletRequest request, HttpServletResponse response, Connection conn, int coddistr) throws Exception {
-
+		JSONObject retorno = new JSONObject();
 		JSONArray pedidos = new JSONArray();
 		PrintWriter out = response.getWriter();
 
@@ -64,40 +64,59 @@ public class Pedidos_ajax {
 		String val_ini_aberto = request.getParameter("val_ini_aberto") == null ? "" : request.getParameter("val_ini_aberto");
 		String val_fim_aberto = request.getParameter("val_fim_aberto") == null ? "" : request.getParameter("val_fim_aberto");
 		String flag_situacao = request.getParameter("flag_situacao") == null ? "" : request.getParameter("flag_situacao");
+		String flag_visu = request.getParameter("flag_visu") == null ? "" : request.getParameter("flag_visu");
 
+		String temfiltro = "N";
+		
+		
 		String sql = "select * from pedido inner join bairros on bairros.cod_bairro = pedido.cod_bairro where ID_DISTRIBUIDORA = ? and (flag_status = 'A' or flag_status = 'E') ";
 
 		if (!num_pedido_aberto.equalsIgnoreCase("")) {
 			sql = sql + " and NUM_PED  = ? ";
+			temfiltro = "S";
 		}
 
 		if (!flag_situacao.equalsIgnoreCase("")) {
 			sql = sql + " and flag_status  = ? ";
+			temfiltro = "S";
 		}
 
 		if (!id_produto.equalsIgnoreCase("")) {
 			sql = sql + " and id_pedido in (select id_pedido from pedido_item where id_prod = ? ) ";
+			temfiltro = "S";
 		}
 
 		if (!cod_bairro_aberto.equalsIgnoreCase("")) {
 			sql = sql + " and pedido. COD_BAIRRO = ? ";
+			temfiltro = "S";
 		}
 
 		if (!(data_pedido_ini.equalsIgnoreCase("")) && data_pedido_ini_hora != null) {
 			sql = sql + "  and  data_pedido >= ?";
+			temfiltro = "S";
 		}
 
 		if (!(data_pedido_fim.equalsIgnoreCase("")) && data_pedido_fim_hora != null) {
 			sql = sql + "  and  data_pedido <= ?";
+			temfiltro = "S";
 		}
 
 		if (!val_ini_aberto.equalsIgnoreCase("")) {
 			sql = sql + "  and  VAL_TOTALPROD >= ? ";
+			temfiltro = "S";
 		}
 
 		if (!val_fim_aberto.equalsIgnoreCase("")) {
 			sql = sql + "  and  VAL_TOTALPROD <= ? ";
+			temfiltro = "S";
 		}
+		
+		if (!flag_visu.equalsIgnoreCase("")) {
+			sql = sql + "  and  flag_vizualizado = ? ";
+			temfiltro = "S";
+		}
+		
+		
 		PreparedStatement st = conn.prepareStatement(sql);
 		st.setInt(1, coddistr);
 
@@ -145,6 +164,11 @@ public class Pedidos_ajax {
 			st.setDouble(contparam, Double.parseDouble(val_fim_aberto));
 			contparam++;
 		}
+		
+		if (!flag_visu.equalsIgnoreCase("")) {
+			st.setString(contparam, (flag_visu));
+			contparam++;
+		}
 
 		ResultSet rs = st.executeQuery();
 		PreparedStatement st2;
@@ -153,7 +177,7 @@ public class Pedidos_ajax {
 			JSONObject objRetorno = new JSONObject();
 			sql = " SELECT cONCAT('',QTD_PROD ,' x ', DESC_ABREVIADO) AS DESCPROD FROM PEDIDO_ITEM INNER JOIN produtos ON produtos.ID_PROD  =  PEDIDO_ITEM.ID_PROD AND ID_PEDIDO = ?  ";
 			st2 = conn.prepareStatement(sql);
-			st2.setInt(1, coddistr);
+			st2.setInt(1, rs.getInt("id_pedido"));
 			rs2 = st2.executeQuery();
 			String prods = "";
 			int qtdprod = 0;
@@ -174,11 +198,15 @@ public class Pedidos_ajax {
 			objRetorno.put("VAL_TOTALPROD", rs.getString("VAL_TOTALPROD"));
 			objRetorno.put("FLAG_STATUS", rs.getString("FLAG_STATUS"));
 			objRetorno.put("ID_PEDIDO", rs.getString("ID_PEDIDO"));
+			objRetorno.put("flag_visu", rs.getString("flag_vizualizado"));
+			
+			
 
 			pedidos.add(objRetorno);
 		}
-
-		out.print(pedidos.toJSONString());
+		retorno.put("temfiltro", temfiltro);
+		retorno.put("pedidos", pedidos);
+		out.print(retorno.toJSONString());
 
 	}
 
@@ -561,17 +589,18 @@ public class Pedidos_ajax {
 
 		String id_pedido = request.getParameter("id") == null ? "" : request.getParameter("id"); //
 		String motivos_json = request.getParameter("motivos_json") == null ? "" : request.getParameter("motivos_json");
-		String hora_entrega = request.getParameter("hora_entrega") == null ? "" : request.getParameter("hora_entrega");
-		String min_entrega = request.getParameter("min_entrega") == null ? "" : request.getParameter("min_entrega");
+	//	String hora_entrega = request.getParameter("hora_entrega") == null ? "" : request.getParameter("hora_entrega");
+	//	String min_entrega = request.getParameter("min_entrega") == null ? "" : request.getParameter("min_entrega");
 		String resposta = request.getParameter("resposta") == null ? "" : request.getParameter("resposta");
-
-		if (hora_entrega.equalsIgnoreCase("")) {
+		String m_tempo_entrega_inp = request.getParameter("m_tempo_entrega_inp") == null ? "" : request.getParameter("m_tempo_entrega_inp");
+		
+	/*	if (hora_entrega.equalsIgnoreCase("")) {
 			hora_entrega = "0";
 		}
 
 		if (min_entrega.equalsIgnoreCase("")) {
 			min_entrega = "0";
-		}
+		}*/
 
 		String sql = " 	select * from pedido  where ID_DISTRIBUIDORA = ? and id_pedido = ? and flag_status = 'A'  ";
 
@@ -586,20 +615,28 @@ public class Pedidos_ajax {
 
 			if (resposta.equalsIgnoreCase("A")) {
 
-				if (hora_entrega == "0" && min_entrega == "0") {
+			/*	if (hora_entrega == "0" && min_entrega == "0") {
 					throw new Exception("Você deve preencher o(s) campo(s) de tempo estimado para poder responder o pedido.");
 				}
 
 				if (!Utilitario.isNumeric(hora_entrega) || !Utilitario.isNumeric(min_entrega)) {
 					throw new Exception("Você deve preencher o(s) campo(s) de tempo estimado corretamente poder responder o pedido.");
-				}
+				}*/
 
 				// fazer whatever tem q fazer e setar o pedido para E //TODO
 				// pagamento acho
-				String tempoentrega = hora_entrega + ":" + min_entrega;
+				//String tempoentrega = hora_entrega + ":" + min_entrega;
+				
+				
+				try {
+				Date datatempoentregateste = new SimpleDateFormat("HH:mm").parse(m_tempo_entrega_inp);
+				} catch (Exception e) {
+					throw new Exception("Tempo de entrega inválidos!");
+				}
+				
 				sql = "update  pedido  set flag_status = 'E', `TEMPO_ESTIMADO_ENTREGA` =  ? , `DATA_PEDIDO_RESPOSTA` = NOW()  where ID_DISTRIBUIDORA = ? and id_pedido = ? and flag_status = 'A' ";
 				st = conn.prepareStatement(sql);
-				st.setString(1, tempoentrega);
+				st.setString(1, m_tempo_entrega_inp);
 				st.setInt(2, coddistr);
 				st.setInt(3, Integer.parseInt(id_pedido));
 				st.executeUpdate();

@@ -167,7 +167,8 @@ input:focus {
 											class="fa fa-question pull-right"></i>Ajuda/Informações
 											gerais</a></li>
 									<li><a href="javascript:mutarsom();"><i
-											class="fa fa-sign-out pull-right"></i> Desabilitar som por 2 min. </a></li>
+											class="fa fa-sign-out pull-right"></i> Desabilitar som por 2
+											min. </a></li>
 									<li><a href="home?ac=logout"><i
 											class="fa fa-sign-out pull-right"></i> Sair</a></li>
 								</ul></li>
@@ -536,18 +537,23 @@ input:focus {
 									<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 well"
 										align="">
 
+
 										<table>
 											<tr>
 												<td style="padding-right: 5px;"><label for="">Tempo
 														estimado para entrega: &nbsp;</label></td>
-												<td><input id="m_hora_entrega" style="width: 50px"
-													class="form-control" type="text" maxlength="2" value=""
-													name="m_hora_entrega"></td>
-												<td style="padding-right: 5px;">&nbsp;<label for="">Hora(s)</label></td>
-												<td><input id="m_minutos_entrega" style="width: 50px"
-													class="form-control" type="text" maxlength="2" value=""
-													name="m_minutos_entrega"></td>
-												<td style="padding-right: 5px;">&nbsp;<label for="">Minutos(s)</label></td>
+												<!-- 												<td><input id="m_hora_entrega" style="width: 50px" -->
+												<!-- 													class="form-control" type="text" maxlength="2" value="" -->
+												<!-- 													name="m_hora_entrega"></td> -->
+												<!-- 												<td style="padding-right: 5px;">&nbsp;<label for="">Hora(s)</label></td> -->
+												<!-- 												<td><input id="m_minutos_entrega" style="width: 50px" -->
+												<!-- 													class="form-control" type="text" maxlength="2" value="" -->
+												<!-- 													name="m_minutos_entrega"></td> -->
+												<!-- 												<td style="padding-right: 5px;">&nbsp;<label for="">Minutos(s)</label></td> -->
+												<td><input data-toggle="tooltip"
+													title="Aqui você preenche o tempo previsto que levará para realizar a entrega do pedido. Por exemplo, se você acha que vai levar 30 minutos para entregar. Você deve escrever 0:30 "
+													class='hora form-control' id="m_tempo_entrega_inp" style="width: 100px"
+													placeholder="Ex: 0:30"></td>
 											</tr>
 
 										</table>
@@ -677,6 +683,11 @@ input:focus {
 		src="JavaScript/bootstrap-table-master/export/libs/jsPDF/jspdf.min.js"></script>
 	<script type="text/javascript"
 		src="JavaScript/bootstrap-table-master/export/libs/jsPDF-AutoTable/jspdf.plugin.autotable.js"></script>
+	<script type="text/javascript" src="JavaScript/inputmask/inputmask.js"></script>
+	<script type="text/javascript"
+		src="JavaScript/inputmask/inputmask.date.extensions.js"></script>
+	<script type="text/javascript"
+		src="JavaScript/inputmask/jquery.inputmask.js"></script>
 
 
 </body>

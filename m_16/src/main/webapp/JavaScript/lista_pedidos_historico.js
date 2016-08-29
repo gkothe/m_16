@@ -79,6 +79,19 @@ $(document).ready(function() {
 	$(tabela).on('check.bs.table uncheck.bs.table check-all.bs.table uncheck-all.bs.table', function() {
 		$('#table_pedidos_historico').bootstrapTable('updateFooter');
 	});
+	
+	
+	$(tabela).on('click-cell.bs.table', function(field, value, row, $element) {
+		visualizarPedido($element.ID_PEDIDO);
+	});
+
+	
+	$(tabela).on('page-change.bs.table', function() {
+		$(".openpedido").click(function() {
+			visualizarPedido($(this).attr("data-valor"));
+		});
+	});
+	
 
 	loadhistoricos();
 	carregaBairros();

@@ -123,16 +123,21 @@ $(document).ready(function() {
 	$('#m_tempo_entrega_box').hide();
 	$('#m_motivos_recusa_box').hide();
 
-	$('.hora').timepicker({
+	/*$('.hora').timepicker({
 		minuteStep : 1,
 		showSeconds : false,
 		showMeridian : false,
 		defaultTime : false
-	});
-
+	});*/
+	
+	
+	
+	 $(".hora").inputmask("h:s",{ "placeholder": "00:00" });
+/*
 	$("#m_hora_entrega").autoNumeric('init', inteiro);
 	$("#m_minutos_entrega").autoNumeric('init', inteiro2);
-
+*/
+	
 	$('input[type=radio][name=flag_aceita_recusa]').change(function() {
 		testaAceitaRecusa();
 	});
@@ -172,6 +177,8 @@ $(document).ready(function() {
 		$table.bootstrapTable('resetView');
 	});
 
+	$('[data-toggle="tooltip"]').tooltip();
+	
 	loadMotivos();
 
 	$('#msg_nao_vizu').blink({
@@ -220,8 +227,9 @@ function limpaModal() {
 	$('#m_table_produtos').bootstrapTable('removeAll');
 	$('input[type=radio][name=flag_aceita_recusa]').prop('checked', false);
 	$('.motivo').prop('checked', false);
-	$("#m_hora_entrega").autoNumeric('set', 0);
-	$("#m_minutos_entrega").autoNumeric('set', 0);
+/*	$("#m_hora_entrega").autoNumeric('set', 0);
+	$("#m_minutos_entrega").autoNumeric('set', 0);*/
+	$("#m_tempo_entrega_inp").val("");
 	$("#desc_motivos2").html("");
 
 	testaAceitaRecusa();
@@ -326,7 +334,9 @@ function testaAceitaRecusa() {
 	if ($('input[name=flag_aceita_recusa]:checked').val() == 'A') {
 		$('#m_tempo_entrega_box').show();
 		$('#m_motivos_recusa_box').hide();
-		$("#m_hora_entrega").focus();
+		//$("#m_hora_entrega").focus();
+		$("#m_tempo_entrega_inp").focus();
+		
 
 	} else if ($('input[name=flag_aceita_recusa]:checked').val() == 'R') {
 		$('#m_tempo_entrega_box').hide();
@@ -541,8 +551,11 @@ function responderPedido() {
 				message : 'Respondendo...'
 			});
 
-			var hora_entrega = $("#m_hora_entrega").val();
-			var min_entrega = $("#m_minutos_entrega").val();
+			//var hora_entrega = $("#m_hora_entrega").val();
+			//var min_entrega = $("#m_minutos_entrega").val();
+			var m_tempo_entrega_inp = $("#m_tempo_entrega_inp").val();
+			
+			
 
 			var motivos = [];
 			var i = 0;
@@ -562,8 +575,7 @@ function responderPedido() {
 				data : {
 					cmd : 'responderPedido',
 					motivos_json : motivos_json,
-					hora_entrega : hora_entrega,
-					min_entrega : min_entrega,
+					m_tempo_entrega_inp:m_tempo_entrega_inp,
 					id : id,
 					resposta : resposta
 
@@ -573,9 +585,6 @@ function responderPedido() {
 					if (data.msg == 'ok') {
 						if (resposta == "A") {
 							alert("Pedido Respondido");
-
-							// TRAZER MODAL COM ENDEREÇO OU PDF OU ALGO COM OS 2
-							// EM CONJUNTO
 
 						}
 

@@ -12,13 +12,28 @@ $(window).resize(function() {
 
 $(document).ready(function() {
 
-	$("#btn_filtrar_aberto").click(function() {
+	$(".btn_filtrar_aberto").click(function() {
+		$("#modal_filtros_aberto").modal('hide');
+		
 		loadAbertos(true);
-
+		
 	});
+	
+	
+	
 
-	$("#btn_filtros_limpar").click(function() {
-
+	$('#msg_filtros').blink({
+		delay : 400
+	});
+	
+	$("#btn_maisfiltras_aberto").click(function() {
+		$("#modal_filtros_aberto").modal("show");
+	});	
+	
+	
+	$(".btn_filtros_limpar").click(function() {
+		$("#modal_filtros_aberto").modal('hide');
+		
 		$("#num_pedido_aberto").val("");
 		$("#id_produto").val("");
 		$("#desc_produto").val("");
@@ -30,7 +45,8 @@ $(document).ready(function() {
 		$("#val_ini_aberto").autoNumeric('set', "");
 		$("#val_fim_aberto").autoNumeric('set', "");
 		$("#flag_situacao").val("");
-
+		$("#flag_visu").val("");
+		
 		loadAbertos(true);
 	});
 
@@ -48,13 +64,15 @@ $(document).ready(function() {
 		daysOfWeekHighlighted : "0,6",
 	});
 
-	$('.hora').timepicker({
+	/*$('.hora').timepicker({
 		minuteStep : 1,
 		showSeconds : false,
 		showMeridian : false,
 		defaultTime : false
 	});
-
+*/
+	 $(".hora").inputmask("h:s",{ "placeholder": "00:00" });
+	
 	$('.keep-open', $('.fixed-table-toolbar')).prependTo($('#colunas'));
 	$('.fixed-table-toolbar').remove();
 	$('#colunas').addClass("fixed-table-toolbar");
@@ -67,15 +85,20 @@ $(document).ready(function() {
 	$(tabela).bootstrapTable();
 	
 	
-	
-	
-
 	$(tabela).on('sort.bs.table reset-view.bs.table post-body.bs.table', function() {
 		$('th', $('#table_pedidos_abertos')).css('background-color', 'rgb(248, 248, 248)');
 	});
+	
+	
+	$(tabela).on('click-cell.bs.table', function(field, value, row, $element) {
+		visualizarPedido($element.ID_PEDIDO);
+	});
 
-	$(tabela).on('check.bs.table uncheck.bs.table check-all.bs.table uncheck-all.bs.table', function() {
-		$('#table_pedidos_abertos').bootstrapTable('updateFooter');
+	
+	$(tabela).on('page-change.bs.table', function() {
+		$(".openpedido").click(function() {
+			visualizarPedido($(this).attr("data-valor"));
+		});
 	});
 
 	carregaBairros();
@@ -86,7 +109,7 @@ $(document).ready(function() {
 		loadAbertos(false);
 	}, 5000);
 	
-	// loadAbertos();
+	loadAbertos();
 
 });
 
@@ -101,7 +124,6 @@ function btnFormater(value, row, index) {
 
 function qtdProdFormatter(value, row, index) {
 	var html = "";
-	
 	html = html + "<label style=\"font-weight: normal;\" data-toggle=\"tooltip\" title='"+value+"'  > "+row.qtdprod +" tipo(s) de produto(s). </label>";
 
 	return html;
@@ -126,6 +148,22 @@ function statusFormater(value, row, index) {
 	return html;
 }
 
+
+function visuFormater(value, row, index) {
+
+	var html = "";
+	if (value == "N") {
+
+		html = html + "<label style='color:red'>Não<label>";
+	
+	} else if (value == "S") {
+		html = html + "<label >Sim<label>";
+	}
+
+	
+
+	return html;
+}
 
 
 function carregaBairros() {
@@ -180,6 +218,8 @@ function loadAbertos(blockui) {
 	var val_ini_aberto = $("#val_ini_aberto").autoNumeric('get');
 	var val_fim_aberto = $("#val_fim_aberto").autoNumeric('get');
 	var flag_situacao = $("#flag_situacao").val();
+	var flag_visu = $("#flag_visu").val();
+	
 	
 	if(blockui){
 		$.blockUI({
@@ -203,7 +243,8 @@ function loadAbertos(blockui) {
 			data_pedido_fim_hora : data_pedido_fim_hora,
 			val_ini_aberto : val_ini_aberto,
 			val_fim_aberto : val_fim_aberto,
-			flag_situacao:flag_situacao
+			flag_situacao:flag_situacao,
+			flag_visu:flag_visu
 
 		},
 		success : function(data) {
@@ -212,12 +253,23 @@ function loadAbertos(blockui) {
 			    window.location.href="" ;
 			}
 			
-			$('#table_pedidos_abertos').bootstrapTable('load', data);
+			
+			
+				if(data.temfiltro=='S'){
+					$("#msg_filtros").show();
+				}else{
+					$("#msg_filtros").hide();
+				}
+				
+			
+			
+			$('#table_pedidos_abertos').bootstrapTable('load', data.pedidos);
 			$('#table_pedidos_abertos').bootstrapTable('resetView');
 			$('[data-toggle="tooltip"]').tooltip();
 
-			$(".openpedido").click(function() {
-				visualizarPedido($(this).attr("data-valor"));
+			$(".openpedido").click(function() { //EVENTO RESOLVIDO PELO CLICK ON CELL
+				
+				//visualizarPedido($(this).attr("data-valor"));
 			});
 			$(".th-inner").css("text-align", "center");
 

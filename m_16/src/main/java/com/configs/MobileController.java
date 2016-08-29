@@ -1063,7 +1063,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 		long idcarrinho = 0;
 
 		StringBuffer sql = new StringBuffer();
-		sql.append("select usuario. DESC_NOME, carrinho_item.id_carrinho,distribuidora_bairro_entrega.ID_DISTRIBUIDORA,carrinho.cod_bairro,usuario.DESC_TELEFONE,usuario.DESC_ENDERECO,DESC_ENDERECO_NUM,DESC_ENDERECO_COMPLEMENTO,sum(produtos_distribuidora.val_prod * carrinho_item.qtd ) as val_prod, ");
+		sql.append("select usuario.DESC_EMAIL, usuario. DESC_NOME, carrinho_item.id_carrinho,distribuidora_bairro_entrega.ID_DISTRIBUIDORA,carrinho.cod_bairro,usuario.DESC_TELEFONE,usuario.DESC_ENDERECO,DESC_ENDERECO_NUM,DESC_ENDERECO_COMPLEMENTO,sum(produtos_distribuidora.val_prod * carrinho_item.qtd ) as val_prod, ");
 		sql.append("  ");
 		sql.append("case when FLAG_TELEBAIRRO = 'S' then distribuidora_bairro_entrega.VAL_TELE_ENTREGA else distribuidora.VAL_TELE_ENTREGA end as VAL_TELE_ENTREGA ");
 		sql.append("  ");
@@ -1092,7 +1092,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 		sql.append("  ");
 		sql.append("where usuario.id_usuario = ? ");
 		sql.append(" ");
-		sql.append("group by usuario. DESC_NOME, carrinho_item.id_carrinho,distribuidora_bairro_entrega.ID_DISTRIBUIDORA,carrinho.cod_bairro,usuario.DESC_TELEFONE,usuario.DESC_ENDERECO,DESC_ENDERECO_NUM,DESC_ENDERECO_COMPLEMENTO, VAL_TELE_ENTREGA");
+		sql.append("group by usuario.DESC_EMAIL usuario. DESC_NOME, carrinho_item.id_carrinho,distribuidora_bairro_entrega.ID_DISTRIBUIDORA,carrinho.cod_bairro,usuario.DESC_TELEFONE,usuario.DESC_ENDERECO,DESC_ENDERECO_NUM,DESC_ENDERECO_COMPLEMENTO, VAL_TELE_ENTREGA");
 
 		PreparedStatement st = conn.prepareStatement(sql.toString());
 		PreparedStatement st2 = null;
@@ -1101,6 +1101,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 		ResultSet rs = st.executeQuery();
 		ResultSet rs2 = null;
 		ResultSet rs3 = null;
+		String email = "";
 		if (rs.next()) {
 			idcarrinho = rs.getLong("id_carrinho");
 			
@@ -1109,7 +1110,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 			validacaoTesteCarrinhoDistribuidora(request, response, conn, idcarrinho, rs.getInt("ID_DISTRIBUIDORA"));//se um item do carrinho tiver uma distribuidora diferente, ele vai dar um erro
 		
 			if (rs.getDouble("val_prod") == 0) {
-				throw new Exception("Erro, o valor de seu pedido é R$ 0,00!.");
+				throw new Exception("Erro, o valor dos produtos de seu pedido é R$ 0,00!.");
 			}
 
 			sql = new StringBuffer();
@@ -1138,6 +1139,8 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 			st.setString(15, tipo_pagamento);
 			st.setString(16, rs.getString("DESC_NOME"));
 
+			email = rs.getString("DESC_EMAIL");
+			
 			st.executeUpdate();
 
 			sql = new StringBuffer();
@@ -1155,7 +1158,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 				rs3 = st3.executeQuery();
 				if (rs3.next()) {
 					if (rs3.getDouble("VAL_PROD") != rs2.getDouble("VAL_PROD")) {
-						throw new Exception("O produto " + Utilitario.getNomeProdIdProdDistr(conn, rs2.getLong("ID_PROD_DIST"), true) + " que está no carrinho tem um valor diferente que se encontra na distribuida. Isto pode acontecer quando a distribuidora modifica o valor de um produto. Por favor clique em recalcular carrinho.");
+						throw new Exception("O produto " + Utilitario.getNomeProdIdProdDistr(conn, rs2.getLong("ID_PROD_DIST"), true) + " que está no carrinho tem um valor diferente que se encontra na distribuida. Isto pode acontecer quando a distribuidora modifica o valor de um produto durante sua compra. Por favor clique em recalcular carrinho.");
 					}
 				} else {
 					throw new Exception("O produto " + Utilitario.getNomeProdIdProdDistr(conn, rs2.getLong("ID_PROD_DIST"), true) + " não se encontra disponível. Por favor remova-o de seu carrinho.");
@@ -1178,6 +1181,46 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 
 			}
 
+			
+			if(tipo_pagamento.equalsIgnoreCase("C")){//se for do tipo cartao de credito , tem que salvar as infos
+				
+				String token = request.getParameter("token") == null ? "" : request.getParameter("token")  ;
+				String paymentMethodId = request.getParameter("paymentMethodId") == null ? "" : request.getParameter("paymentMethodId") ;
+				
+				
+				if(paymentMethodId.equalsIgnoreCase("")  ){
+					throw new Exception("Seu tipo de cartão não está preenchido");//TODO, tipo? outro nome
+				}
+
+				if(token.equalsIgnoreCase("")   ){
+					throw new Exception("Erro durante criação do pedido. Token inválida.");
+				}
+				
+				if( email.equalsIgnoreCase("") ){
+					throw new Exception("Email em branco.");
+				}
+				
+				
+				sql = new StringBuffer();
+				sql.append("UPDATE pedido ");
+				sql.append("   SET `PAG_TOKEN` = ?, ");
+				sql.append("       `PAG_MAIL` = ?, ");
+				sql.append("       `PAG_PAYID_TIPOCARTAO` = ?, ");
+				sql.append("WHERE  `ID_PEDIDO` = ?;");
+
+				st = conn.prepareStatement(sql.toString());
+				st.setString(1, token);
+				st.setString(2, email);
+				st.setString(3, paymentMethodId);
+				st.setLong(4, idped);
+				
+				st.executeUpdate();
+				
+			}
+			
+			
+			
+			
 			// realizar pagamento, pensar TODO
 
 		}else{

@@ -1,6 +1,6 @@
 /*==============================================================*/
 /* DBMS name:      MySQL 5.0                                    */
-/* Created on:     26/8/2016 3:16:34 PM                         */
+/* Created on:     29/8/2016 9:49:26 AM                         */
 /*==============================================================*/
 
 
@@ -200,6 +200,9 @@ create table PEDIDO
    FLAG_MODOPAGAMENTO   char(1),
    DESC_CARTAO          VARCHAR(20),
    FLAG_VIZUALIZADO     char(1),
+   PAG_TOKEN            text,
+   PAG_MAIL             text,
+   PAG_PAYID_TIPOCARTAO text,
    primary key (ID_PEDIDO)
 )
 auto_increment = 1;
