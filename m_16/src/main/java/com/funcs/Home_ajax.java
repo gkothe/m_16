@@ -45,7 +45,7 @@ public class Home_ajax {
 
 		if (objRetorno.get("tem").toString().equalsIgnoreCase("true")) {
 
-			sql = "select id_pedido,DESC_BAIRRO,NUM_PED,VAL_TOTALPROD,DATA_PEDIDO, NOW() as agora, Coalesce(flag_vizualizado,'N') as flag_vizualizado  from pedido inner join bairros on bairros.cod_bairro = pedido.cod_bairro where ID_DISTRIBUIDORA = ? and flag_status = \'A\' and bairros.cod_cidade = "+request.getSession(false).getAttribute("cod_cidade").toString()+" order by data_pedido asc";
+			sql = "select id_pedido,DESC_BAIRRO,NUM_PED,VAL_TOTALPROD,DATA_PEDIDO, NOW() as agora, Coalesce(flag_vizualizado,'N') as flag_vizualizado  from pedido inner join bairros on bairros.cod_bairro = pedido.cod_bairro where ID_DISTRIBUIDORA = ? and flag_status = \'A\' and bairros.cod_cidade = "+request.getSession(false).getAttribute("cod_cidade").toString()+"  order by data_pedido asc limit 5";
 
 			st = conn.prepareStatement(sql);
 			st.setInt(1, coddistr);
