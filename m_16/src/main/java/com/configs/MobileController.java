@@ -65,6 +65,16 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 
 		try {
 
+			
+				System.out.println("----------entro mob");
+
+			Map map = request.getParameterMap();
+			for (Iterator iterator = map.keySet().iterator(); iterator.hasNext();) {
+				String type = (String) iterator.next();
+				System.out.println(type + " : " + request.getParameter(type));
+			}
+		
+		
 			String strTipo = request.getParameter("ac"); // acho que aqui soh vai ter ajax, mas vo dexa assim por enqto.
 			if (strTipo == null) {
 				strTipo = "ajax";
@@ -104,7 +114,20 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 			String cmd = request.getParameter("cmd") == null ? "" : request.getParameter("cmd");
 
 			if (cmd.equalsIgnoreCase("login")) {
-				MobileLogin.loginMobile(request, response, conn);
+				String flag_face = request.getParameter("flag_face") == null ? "" : request.getParameter("flag_face");
+
+				if (!(flag_face.equalsIgnoreCase("S")) && !(flag_face.equalsIgnoreCase("N"))) {
+					throw new Exception("Parâmetros de de login incorretos, ta metendo a mão onde não deve mané! ");
+				}
+
+				if (flag_face.equalsIgnoreCase("S")) {
+					MobileLogin.loginMobileFace(request, response, conn);
+				} else {
+					String user = request.getParameter("user");
+					String pass = request.getParameter("pass");
+					MobileLogin.loginMobile(request, response, conn, user, pass);
+				}
+
 			} else if (cmd.equalsIgnoreCase("inserir_user")) {
 
 			} else {
@@ -1092,7 +1115,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 		sql.append("  ");
 		sql.append("where usuario.id_usuario = ? ");
 		sql.append(" ");
-		sql.append("group by usuario.DESC_EMAIL usuario. DESC_NOME, carrinho_item.id_carrinho,distribuidora_bairro_entrega.ID_DISTRIBUIDORA,carrinho.cod_bairro,usuario.DESC_TELEFONE,usuario.DESC_ENDERECO,DESC_ENDERECO_NUM,DESC_ENDERECO_COMPLEMENTO, VAL_TELE_ENTREGA");
+		sql.append("group by usuario.DESC_EMAIL, usuario. DESC_NOME, carrinho_item.id_carrinho,distribuidora_bairro_entrega.ID_DISTRIBUIDORA,carrinho.cod_bairro,usuario.DESC_TELEFONE,usuario.DESC_ENDERECO,DESC_ENDERECO_NUM,DESC_ENDERECO_COMPLEMENTO, VAL_TELE_ENTREGA");
 
 		PreparedStatement st = conn.prepareStatement(sql.toString());
 		PreparedStatement st2 = null;
@@ -1104,11 +1127,11 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 		String email = "";
 		if (rs.next()) {
 			idcarrinho = rs.getLong("id_carrinho");
-			
+
 			validacaoFlagsDistribuidora(request, response, conn, rs.getInt("ID_DISTRIBUIDORA"));
 			validacaoDisBairroHora(request, response, conn, rs.getInt("cod_bairro"), rs.getInt("ID_DISTRIBUIDORA"));
-			validacaoTesteCarrinhoDistribuidora(request, response, conn, idcarrinho, rs.getInt("ID_DISTRIBUIDORA"));//se um item do carrinho tiver uma distribuidora diferente, ele vai dar um erro
-		
+			validacaoTesteCarrinhoDistribuidora(request, response, conn, idcarrinho, rs.getInt("ID_DISTRIBUIDORA"));// se um item do carrinho tiver uma distribuidora diferente, ele vai dar um erro
+
 			if (rs.getDouble("val_prod") == 0) {
 				throw new Exception("Erro, o valor dos produtos de seu pedido é R$ 0,00!.");
 			}
@@ -1140,7 +1163,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 			st.setString(16, rs.getString("DESC_NOME"));
 
 			email = rs.getString("DESC_EMAIL");
-			
+
 			st.executeUpdate();
 
 			sql = new StringBuffer();
@@ -1181,31 +1204,28 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 
 			}
 
-			
-			if(tipo_pagamento.equalsIgnoreCase("C")){//se for do tipo cartao de credito , tem que salvar as infos
-				
-				String token = request.getParameter("token") == null ? "" : request.getParameter("token")  ;
-				String paymentMethodId = request.getParameter("paymentMethodId") == null ? "" : request.getParameter("paymentMethodId") ;
-				
-				
-				if(paymentMethodId.equalsIgnoreCase("")  ){
-					throw new Exception("Seu tipo de cartão não está preenchido");//TODO, tipo? outro nome
+			if (tipo_pagamento.equalsIgnoreCase("C")) {// se for do tipo cartao de credito , tem que salvar as infos
+
+				String token = request.getParameter("token") == null ? "" : request.getParameter("token");
+				String paymentMethodId = request.getParameter("paymentMethodId") == null ? "" : request.getParameter("paymentMethodId");
+
+				if (paymentMethodId.equalsIgnoreCase("")) {
+					throw new Exception("Seu tipo de cartão não está preenchido");// TODO, tipo? outro nome
 				}
 
-				if(token.equalsIgnoreCase("")   ){
+				if (token.equalsIgnoreCase("")) {
 					throw new Exception("Erro durante criação do pedido. Token inválida.");
 				}
-				
-				if( email.equalsIgnoreCase("") ){
+
+				if (email.equalsIgnoreCase("")) {
 					throw new Exception("Email em branco.");
 				}
-				
-				
+
 				sql = new StringBuffer();
 				sql.append("UPDATE pedido ");
 				sql.append("   SET `PAG_TOKEN` = ?, ");
 				sql.append("       `PAG_MAIL` = ?, ");
-				sql.append("       `PAG_PAYID_TIPOCARTAO` = ?, ");
+				sql.append("       `PAG_PAYID_TIPOCARTAO` = ? ");
 				sql.append("WHERE  `ID_PEDIDO` = ?;");
 
 				st = conn.prepareStatement(sql.toString());
@@ -1213,17 +1233,14 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 				st.setString(2, email);
 				st.setString(3, paymentMethodId);
 				st.setLong(4, idped);
-				
+
 				st.executeUpdate();
-				
+
 			}
-			
-			
-			
-			
+
 			// realizar pagamento, pensar TODO
 
-		}else{
+		} else {
 			throw new Exception("Ocorreu um erro com o processamento de seu carrinho! Entre em contato com o suporte.");
 		}
 

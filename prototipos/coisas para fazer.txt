@@ -6,7 +6,7 @@ estudar possibilidade de tooltips na tela de Configuração de bairros e horarios 
 
 
 
-
+questao da cidade qdo loga com face, por enqto vai ficar fixo
 
 
 ----------------mobile
@@ -14,3 +14,78 @@ estudar possibilidade de tooltips na tela de Configuração de bairros e horarios 
 botao de calcular carrinho, na tela de checkout.
 
 Deixar usuario mudar o nome?
+
+
+
+
+Login:
+
+
+
+recebi token e code.
+Ajax para o server
+onetime -> fbtoken, fbcode, flag_face no login
+
+
+pega id_apartir do token	
+
+	getoken info	
+							GET graph.facebook.com/debug_token?
+							input_token={token-to-inspect}
+							&access_token={app-token-or-admin-token}         //ver como faz para pegar
+							
+												{
+													"data": {
+														"app_id": 138483919580948,        guardar no banco
+														"application": "Social Cafe", 
+														"expires_at": 1352419328, 
+														"is_valid": true, 
+														"issued_at": 1347235328, 
+														"metadata": {
+															"sso": "iphone-safari"
+														}, 
+														"scopes": [
+															"email", 
+															"publish_actions"
+														], 
+														"user_id": 1207059
+													}
+												}
+											The app_id and user_id fields help your app verify that the access token is valid for the person and for your app. For a full description of the other fields, see the Getting Info about Access Tokens guide.					
+												
+												
+		
+		compara token para ver se é igual ao -	Exchanging Code for an Access Token
+												GET https://graph.facebook.com/v2.3/oauth/access_token?
+												client_id={app-id}
+												&redirect_uri={redirect-uri}
+												&client_secret={app-secret}
+												&code={code-parameter}
+
+
+	Se nao existe, 
+		faz um cadastro para ela (tem que ver como pegar as informações do user geral, nome, bla bla, botar um flag no usuario  flag_face , pq nao vai ser senha e nao vai ter desc_login, add campo user_id_face)]
+	se já existeapp
+	
+			busca senha gerada no insert e desc_user, e apartir disso, se cria uma token de acesso padrao do sistema.
+		
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

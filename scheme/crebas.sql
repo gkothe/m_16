@@ -1,6 +1,6 @@
 /*==============================================================*/
 /* DBMS name:      MySQL 5.0                                    */
-/* Created on:     29/8/2016 9:49:26 AM                         */
+/* Created on:     31/8/2016 10:37:45 AM                        */
 /*==============================================================*/
 
 
@@ -272,7 +272,11 @@ create table SYS_PARAMETROS
    ID_USUARIO_ADMIN     INT8,
    FLAG_MANUTENCAO      char(1),
    DESC_KEY             text,
-   SEGS_TESTE_AJAX      bigint
+   SEGS_TESTE_AJAX      bigint,
+   FACE_APP_ID          bigint,
+   FACE_APP_SECRETKEY   text,
+   FACE_APP_TOKEN       text,
+   FACE_REDIRECT_URI    text
 );
 
 /*==============================================================*/
@@ -297,6 +301,8 @@ create table USUARIO
    DESC_CARDHOLDERNAME  Text,
    PAY_ID               TEXT,
    DESC_CPF             varchar(15),
+   FLAG_FACEUSER        char(1),
+   ID_USER_FACE         bigint,
    primary key (ID_USUARIO)
 )
 auto_increment = 1;
