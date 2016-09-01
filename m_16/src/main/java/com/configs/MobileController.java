@@ -65,7 +65,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 
 		try {
 
-			
+			/*
 				System.out.println("----------entro mob");
 
 			Map map = request.getParameterMap();
@@ -74,7 +74,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 				System.out.println(type + " : " + request.getParameter(type));
 			}
 		
-		
+		*/
 			String strTipo = request.getParameter("ac"); // acho que aqui soh vai ter ajax, mas vo dexa assim por enqto.
 			if (strTipo == null) {
 				strTipo = "ajax";
@@ -131,6 +131,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 			} else if (cmd.equalsIgnoreCase("inserir_user")) {
 
 			} else {
+				System.out.println(request.getHeader("X-Auth-Token"));
 				long cod_usuario = MobileLogin.parseJWT(request, response, conn, request.getHeader("X-Auth-Token"));
 
 				if (cod_usuario == 0) {

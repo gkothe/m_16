@@ -3,11 +3,13 @@ package com.configs;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.math.BigInteger;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.security.Key;
 import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -33,9 +35,8 @@ import io.jsonwebtoken.SignatureAlgorithm;
 
 public class MobileLogin {
 
-	
 	private static long tempotoken = 604800000; // 1 semana ou 1 mes, nao lembro
-	
+
 	public static void loginMobile(HttpServletRequest request, HttpServletResponse response, Connection conn, String user, String pass) throws Exception {
 
 		PrintWriter out = response.getWriter();
@@ -133,34 +134,32 @@ public class MobileLogin {
 			throw new Exception("Erro nas credenciais");
 		}
 
-		
-		System.out.println(tokentest);
 		String sql = "select * from usuario where ID_USER_FACE = ?  and FLAG_FACEUSER = 'S'  ";
 
 		PreparedStatement st = conn.prepareStatement(sql);
 		st.setLong(1, userid);
 		ResultSet rs = st.executeQuery();
+		MobileLogin mob = new MobileLogin();
+		
 		if (rs.next()) {
 
-			objRetorno.put("msg", "ok");
-			MobileLogin mob = new MobileLogin();
 			objRetorno.put("token", mob.criaToken(rs.getString("DESC_USER"), rs.getString("DESC_SENHA"), tempotoken, conn));//
-			
-		}else{
-			
-			cadastrausuario(request, response, tokentest);
+			objRetorno.put("name",rs.getString("DESC_NOME").split(" ")[0]);
+		} else {
+
+			JSONObject info = cadastrausuario(request, response, tokentest, conn, sys);
+			objRetorno.put("token", mob.criaToken(info.get("user").toString(), info.get("pass").toString(), tempotoken, conn));//
+			objRetorno.put("name",info.get("name").toString());
+
 		}
-
-		
-
+		objRetorno.put("msg", "ok");
 		out.print(objRetorno.toJSONString());
 
 	}
-	
-	private  static JSONObject cadastrausuario(HttpServletRequest request, HttpServletResponse response, String tokentest) throws Exception {
+
+	private static JSONObject cadastrausuario(HttpServletRequest request, HttpServletResponse response, String tokentest, Connection conn, Sys_parametros sys) throws Exception {
 		JSONObject objjson = new JSONObject();
-		
-		
+
 		String url = "https://graph.facebook.com/me?fields=name,id,email&access_token=" + tokentest;
 		URL obj = new URL(url);
 		HttpURLConnection con = (HttpURLConnection) obj.openConnection();
@@ -187,24 +186,33 @@ public class MobileLogin {
 		String name = json.get("name").toString();
 		String id = json.get("id").toString();
 		String email = json.get("email").toString();
-		
-		
-		System.out.println(name);
-		System.out.println(id);
-		System.out.println(email);
-		
-		/*INSERT INTO usuario
-		  (`DESC_NOME`, `DESC_USER`, `DESC_SENHA`, `DESC_EMAIL`, `COD_CIDADE`, `FLAG_FACEUSER`, `ID_USER_FACE`)
-		VALUES
-		  (?);*/
-		
-		//TODO
-		
-		
-		objjson.put("","");
+
+		StringBuffer sql = new StringBuffer();
+		sql.append("INSERT INTO usuario (`DESC_NOME`, `DESC_USER`, `DESC_SENHA`, `DESC_EMAIL`, `COD_CIDADE`, `FLAG_FACEUSER`, `ID_USER_FACE`)  ");
+		sql.append(" 	VALUES    (?,?,?,?,?,?,?) ");
+		String pass = passGen();
+		PreparedStatement st = conn.prepareStatement(sql.toString());
+		st.setString(1, name);
+		st.setString(2, email);
+		st.setString(3, pass);
+		st.setString(4, email);
+		st.setInt(5, sys.getCod_cidade());
+		st.setString(6, "S");
+		st.setLong(7, Long.parseLong(id));
+
+		st.executeUpdate();
+
+		objjson.put("name", name.split(" ")[0]);
+		objjson.put("pass", pass);
+		objjson.put("user", email);
+
 		return objjson;
 	}
-	
+
+	private static String passGen() {
+		SecureRandom random = new SecureRandom();
+		return new BigInteger(130, random).toString(32);
+	}
 
 	private String returnKey() {// nao esta sendo usado, server para gerar uma key. Qem sabe mudar a key quando liga o servidor?
 		SecretKey secretKey = null;
@@ -253,7 +261,7 @@ public class MobileLogin {
 
 		try {
 			Sys_parametros sys = new Sys_parametros(conn);
-			Claims claims = Jwts.parser().setSigningKey(DatatypeConverter.parseBase64Binary(sys.getDesc_key())).parseClaimsJws(jwt.replaceFirst("\\.", "")).getBody();
+			Claims claims = Jwts.parser().setSigningKey(DatatypeConverter.parseBase64Binary(sys.getDesc_key())).parseClaimsJws(jwt).getBody();
 			String user = claims.getId();
 			String pass = claims.getSubject();
 
