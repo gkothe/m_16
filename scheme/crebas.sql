@@ -1,6 +1,6 @@
 /*==============================================================*/
 /* DBMS name:      MySQL 5.0                                    */
-/* Created on:     31/8/2016 10:37:45 AM                        */
+/* Created on:     2/9/2016 4:27:00 PM                          */
 /*==============================================================*/
 
 
@@ -276,7 +276,15 @@ create table SYS_PARAMETROS
    FACE_APP_ID          bigint,
    FACE_APP_SECRETKEY   text,
    FACE_APP_TOKEN       text,
-   FACE_REDIRECT_URI    text
+   FACE_REDIRECT_URI    text,
+   URL_SYSTEM           text,
+   SYS_HOST_NAME_SMTP   text,
+   SYS_SMTP_PORT        int4,
+   SYS_EMAIL            text,
+   SYS_SENHA            text,
+   SYS_FROMEMAIL        text,
+   SYS_FROMDESC         text,
+   SYS_TLS              char(1)
 );
 
 /*==============================================================*/
@@ -303,6 +311,8 @@ create table USUARIO
    DESC_CPF             varchar(15),
    FLAG_FACEUSER        char(1),
    ID_USER_FACE         bigint,
+   FLAG_ATIVADO         char(1),
+   CHAVE_ATIVACAO       varchar(100),
    primary key (ID_USUARIO)
 )
 auto_increment = 1;

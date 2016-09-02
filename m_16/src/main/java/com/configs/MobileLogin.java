@@ -27,6 +27,7 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
 import com.funcs.Sys_parametros;
+import com.funcs.Utilitario;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtBuilder;
@@ -43,7 +44,7 @@ public class MobileLogin {
 
 		JSONObject objRetorno = new JSONObject();
 
-		String sql = "select * from usuario where Binary DESC_USER = ?  and Binary DESC_SENHA = ? ";
+		String sql = "select * from usuario where Binary DESC_USER = ?  and Binary DESC_SENHA = ? and FLAG_ATIVADO = 'S'";
 
 		PreparedStatement st = conn.prepareStatement(sql);
 		st.setString(1, user);
@@ -140,16 +141,16 @@ public class MobileLogin {
 		st.setLong(1, userid);
 		ResultSet rs = st.executeQuery();
 		MobileLogin mob = new MobileLogin();
-		
+
 		if (rs.next()) {
 
 			objRetorno.put("token", mob.criaToken(rs.getString("DESC_USER"), rs.getString("DESC_SENHA"), tempotoken, conn));//
-			objRetorno.put("name",rs.getString("DESC_NOME").split(" ")[0]);
+			objRetorno.put("name", rs.getString("DESC_NOME").split(" ")[0]);
 		} else {
 
 			JSONObject info = cadastrausuario(request, response, tokentest, conn, sys);
 			objRetorno.put("token", mob.criaToken(info.get("user").toString(), info.get("pass").toString(), tempotoken, conn));//
-			objRetorno.put("name",info.get("name").toString());
+			objRetorno.put("name", info.get("name").toString());
 
 		}
 		objRetorno.put("msg", "ok");
@@ -187,31 +188,51 @@ public class MobileLogin {
 		String id = json.get("id").toString();
 		String email = json.get("email").toString();
 
-		StringBuffer sql = new StringBuffer();
-		sql.append("INSERT INTO usuario (`DESC_NOME`, `DESC_USER`, `DESC_SENHA`, `DESC_EMAIL`, `COD_CIDADE`, `FLAG_FACEUSER`, `ID_USER_FACE`)  ");
-		sql.append(" 	VALUES    (?,?,?,?,?,?,?) ");
-		String pass = passGen();
-		PreparedStatement st = conn.prepareStatement(sql.toString());
-		st.setString(1, name);
-		st.setString(2, email);
-		st.setString(3, pass);
-		st.setString(4, email);
-		st.setInt(5, sys.getCod_cidade());
-		st.setString(6, "S");
-		st.setLong(7, Long.parseLong(id));
+		PreparedStatement st = conn.prepareStatement(" select * from usuario where DESC_EMAIL = ?   ");
+		st.setString(1, email);
+		ResultSet rs = st.executeQuery();
 
-		st.executeUpdate();
+		if (rs.next()) {
 
-		objjson.put("name", name.split(" ")[0]);
-		objjson.put("pass", pass);
-		objjson.put("user", email);
+			StringBuffer sql = new StringBuffer();
+			sql.append("update usuario  set `FLAG_FACEUSER` = ? , `ID_USER_FACE` = ?, DESC_NOME= ?, FLAG_ATIVADO = ?  where  DESC_EMAIL = ?  ");
+
+			st = conn.prepareStatement(sql.toString());
+			st.setString(1, "S");
+			st.setLong(2, Long.parseLong(id));
+			st.setString(3, name);
+			st.setString(4, email);
+			st.setString(5, "S");
+			st.executeUpdate();
+
+			objjson.put("name", name.split(" ")[0]);
+			objjson.put("pass", rs.getString("DESC_SENHA"));
+			objjson.put("user", rs.getString("DESC_USER"));
+
+		} else {
+
+			StringBuffer sql = new StringBuffer();
+			sql.append("INSERT INTO usuario (`DESC_NOME`, `DESC_USER`, `DESC_SENHA`, `DESC_EMAIL`,  `FLAG_FACEUSER`, `ID_USER_FACE`, FLAG_ATIVADO)  ");
+			sql.append(" 	VALUES    (?,?,?,?,?,?,?) ");
+			String pass = Utilitario.StringGen(130, 32);
+			st = conn.prepareStatement(sql.toString());
+			st.setString(1, name);
+			st.setString(2, email);
+			st.setString(3, pass);
+			st.setString(4, email);
+			st.setString(5, "S");
+			st.setLong(6, Long.parseLong(id));
+			st.setString(7, "S");
+
+			st.executeUpdate();
+
+			objjson.put("name", name.split(" ")[0]);
+			objjson.put("pass", pass);
+			objjson.put("user", email);
+
+		}
 
 		return objjson;
-	}
-
-	private static String passGen() {
-		SecureRandom random = new SecureRandom();
-		return new BigInteger(130, random).toString(32);
 	}
 
 	private String returnKey() {// nao esta sendo usado, server para gerar uma key. Qem sabe mudar a key quando liga o servidor?
@@ -286,6 +307,69 @@ public class MobileLogin {
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new Exception("Dados de acesso inválidos");
+		}
+
+	}
+
+	public static void validarConta(HttpServletRequest request, HttpServletResponse response) {
+		Connection conn = null;
+		try {
+			conn = Conexao.getConexao();
+			conn.setAutoCommit(false);
+
+			String token = request.getParameter("token") == null ? "" : request.getParameter("token");
+			String msg = "";
+
+			boolean erro = false;
+			if (!token.equalsIgnoreCase("")) {
+				msg = "Token inválido.";
+				erro = true;
+
+			}
+
+			String sql = "select * from usuario where Binary CHAVE_ATIVACAO = ?  ";
+
+			PreparedStatement st = conn.prepareStatement(sql);
+			st.setString(1, token);
+			ResultSet rs = st.executeQuery();
+			if (rs.next()) {
+
+				sql = "update usuario  set `CHAVE_ATIVACAO` = ? ,  FLAG_ATIVADO = ?  where  CHAVE_ATIVACAO = ?  ";
+
+				st = conn.prepareStatement(sql.toString());
+				st.setString(1, "");
+				st.setString(2, "S");
+				st.setString(3, token);
+				st.executeUpdate();
+
+				msg = "Seu e-mail foi verificado e sua conta foi ativada. Você já pode logar no ChamaTrago e chamar trago! :-)";
+				erro = false;
+			} else {
+				if (!token.equalsIgnoreCase("")) {
+					msg = "Token inválido.";
+					erro = true;
+				}
+			}
+			
+			if (erro)
+				request.setAttribute("erro", erro);
+			else
+				request.setAttribute("erro", erro);
+
+			request.setAttribute("msg", msg);
+			request.getRequestDispatcher("/WEB-INF/msg.jsp").forward(request, response);
+
+			conn.commit();
+		} catch (Exception e) {
+			try {
+				conn.rollback();
+			} catch (Exception e2) {
+			}
+
+			try {
+				conn.close();
+			} catch (Exception e2) {
+			}
 		}
 
 	}

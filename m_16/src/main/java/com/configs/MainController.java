@@ -90,7 +90,7 @@ public class MainController extends javax.servlet.http.HttpServlet {
 			if (!rs.next()) {
 				throw new Exception("Não foi encontrado nenhuma empresa com o  email informado.");
 			} else {
-				Utilitario.sendEmail(rs.getString("desc_mail"), "Suas informações de login são <br> \n Usuário: " + rs.getString("desc_login") + "<br>Senha: " + rs.getString("desc_senha"), "Recuperação de senha");
+				Utilitario.sendEmail(rs.getString("desc_mail"), "Suas informações de login são <br> \n Usuário: " + rs.getString("desc_login") + "<br>Senha: " + rs.getString("desc_senha"), "Recuperação de senha",conn);
 			}
 			objRetorno.put("msg", "ok");
 

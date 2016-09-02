@@ -1,13 +1,22 @@
+outros---------
 
 
+trocar versao do Workbench, commit automatico em alters , verificar se isso não é merda do mysql mesmo
 
+
+------------Sys
 
 estudar possibilidade de tooltips na tela de Configuração de bairros e horarios passo 1, passar o mouse em cima do bairro e dizer quais cofigs existem ou um botao/icone de info do lado. qem sabe mudar a cor ou botar um asterisco pros bairros que nao contem nenhum dia configurado.
 
+questao da cidade qdo loga com face, por enqto vai ficar fixo, acho que vai ser null, e vai ter uma tela no mobile apos login para confirmar cidade/bairro.
 
+fazer validacao da token de ativacai(ver se ja nao existe a token gerada, mto improvavel)
 
-questao da cidade qdo loga com face, por enqto vai ficar fixo
+fazer uma tela de msg.jsp ajeitada
 
+criar um email chamatrago
+
+pagamento no lado da distribuidora.
 
 ----------------mobile
 
@@ -15,9 +24,19 @@ botao de calcular carrinho, na tela de checkout.
 
 Deixar usuario mudar o nome?
 
+tem como acessar o service AuthService na troca de states? Algo a ver com trasnformar service em provider.
 
-Se o usuario tentar logar com facebook com um emauil ja usado por um login normal? atualizar as informaçções do usuario com as infos do face, complementar.
+ok - Se o usuario tentar logar com facebook com um emauil ja usado por um login normal? atualizar as informaçções do usuario com as infos do face, complementar. 
 Se o usuario tentar se cadastrar com um login com um email ja cadastrado pelo face? Mandar a senha gerada para o email do cara.
 
+https://developers.facebook.com/docs/facebook-login/testing-your-login-flow  -> teste 3,5,6?, 
 
-https://developers.facebook.com/docs/facebook-login/testing-your-login-flow  -> teste 3,5.
+ao cadastrar, tem que validar email. - função feita
+
+quando logar, tem que ter uma tela de confirmação da cidade/bairro que se encontra.
+
+se mudar de email, refazer validacao de email.
+
+se mudar de email no facebook? ver situações 
+
+tela de cadastro

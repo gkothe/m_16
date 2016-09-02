@@ -82,6 +82,8 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 			request.setCharacterEncoding("UTF-8");
 			if (strTipo.equalsIgnoreCase("ajax")) {
 				ajax(request, response);
+			}else if (strTipo.equalsIgnoreCase("validar")) {
+				MobileLogin.validarConta(request, response);
 			}
 		} catch (Exception ex) {
 			ex.printStackTrace();
@@ -130,8 +132,11 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 
 			} else if (cmd.equalsIgnoreCase("inserir_user")) {
 
+				
+				
+				
 			} else {
-				System.out.println(request.getHeader("X-Auth-Token"));
+				
 				long cod_usuario = MobileLogin.parseJWT(request, response, conn, request.getHeader("X-Auth-Token"));
 
 				if (cod_usuario == 0) {
@@ -149,8 +154,6 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 					carregaUser(request, response, conn, cod_usuario);
 				} else if (cmd.equalsIgnoreCase("carrega_bairros")) {
 					carregaBairros(request, response, conn, cod_usuario);
-				} else if (cmd.equalsIgnoreCase("inserir_user")) {
-					inserirUser(request, response, conn);
 				} else if (cmd.equalsIgnoreCase("doOrder")) {
 					payment(request, response, conn);
 				} else if (cmd.equalsIgnoreCase("carregaProdutos")) {
@@ -216,6 +219,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 
 	}
 
+	
 	private static void inserirUser(HttpServletRequest request, HttpServletResponse response, Connection conn) throws Exception {
 		// TODO tela de inserir nao foi definada ainda como vai ser.
 		PrintWriter out = response.getWriter();
@@ -226,11 +230,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 		String desc_senha_conf = request.getParameter("c_desc_senha_conf") == null ? "" : request.getParameter("c_desc_senha_conf");
 		String desc_email = request.getParameter("c_desc_email") == null ? "" : request.getParameter("c_desc_email");
 		String desc_nome = request.getParameter("c_desc_nome") == null ? "" : request.getParameter("c_desc_nome");
-		String desc_telefone = request.getParameter("c_desc_telefone") == null ? "" : request.getParameter("c_desc_telefone");
-		String cod_cidade = request.getParameter("c_cod_cidade") == null ? "" : request.getParameter("c_cod_cidade");
 
-		String cod_bairro = request.getParameter("c_cod_bairro") == "" ? null : request.getParameter("c_cod_bairro");
-		String desc_endereco = request.getParameter("c_desc_endereco") == null ? "" : request.getParameter("c_desc_endereco");
 
 		if (desc_usuario.equalsIgnoreCase("")) {
 			throw new Exception("Você deve preencher o campo de usuário.");
@@ -256,40 +256,63 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 			throw new Exception("Nome de usuário ja existente!");
 		}
 
-		st = conn.prepareStatement("SELECT 1 from  usuario where  Binary desc_email =  ? ");
+		st = conn.prepareStatement("SELECT * from  usuario where  Binary desc_email =  ? ");
 		st.setString(1, desc_email);
 		rs = st.executeQuery();
 
 		if (rs.next()) {
-			throw new Exception("Email já cadastrado!");
+			if(rs.getString("FLAG_FACEUSER").equalsIgnoreCase("F")){
+				throw new Exception("Este e-mail já está relacionado a uma conta do Facebook. Se você não possui mais uma conta de Facebook, você pode voltar a tela de login e clicar que recuperar senha");
+			}else{
+				throw new Exception("E-mail já cadastrado! Se você se esqueceu de sua senha, volte a tela de login e clique em recuperar senha.");	
+			}
 		}
 
-		st = conn.prepareStatement("SELECT 1 from  cidade where   COD_CIDADE = ? ");
-		st.setInt(1, Integer.parseInt(cod_cidade));
-
+		String validacao = Utilitario.StringGen(1000,32).substring(0,99);
+		
+		st = conn.prepareStatement("SELECT * from  usuario where  Binary desc_email =  ? ");
+		st.setString(1, desc_email);
 		rs = st.executeQuery();
 
-		if (!rs.next()) {
-			throw new Exception("Cidade inválida!");
+		
+		if (rs.next()) {
+			if(rs.getString("FLAG_FACEUSER").equalsIgnoreCase("F")){
+				throw new Exception("Este e-mail já está relacionado a uma conta do Facebook. Se você não possui mais uma conta de Facebook, você pode voltar a tela de login e clicar que recuperar senha");
+			}else{
+				throw new Exception("E-mail já cadastrado! Se você se esqueceu de sua senha, volte a tela de login e clique em recuperar senha.");	
+			}
 		}
-
-		String sql = "INSERT INTO usuario ( `DESC_NOME`, `DESC_TELEFONE`, `COD_BAIRRO`, `COD_CIDADE`, `DESC_ENDERECO`, `DESC_USER`, `DESC_SENHA`, `DESC_EMAIL`) VALUES (?,?,?,?,?,?,?,?)";
+		
+		
+		String sql = "INSERT INTO usuario ( `DESC_NOME`,    `DESC_USER`, `DESC_SENHA`, `DESC_EMAIL`, FLAG_FACEUSER, FLAG_ATIVADO, `CHAVE_ATIVACAO` ) VALUES (?,?,?,?,?,?,?)";
 		st = conn.prepareStatement(sql);
 		st.setString(1, desc_nome);
-		st.setString(2, desc_telefone);
-		st.setInt(3, Integer.parseInt(cod_bairro));
-		st.setInt(4, Integer.parseInt(cod_cidade));
-		st.setString(5, desc_endereco);
-		st.setString(6, desc_usuario);
-		st.setString(7, desc_senha);
-		st.setString(8, desc_email);
+		st.setString(2, desc_usuario);
+		st.setString(3, desc_senha);
+		st.setString(4, desc_email);
+		st.setString(5, "N");
+		st.setString(6, "N");
+		st.setString(7, validacao);
+		
 		st.executeUpdate();
 
+		Sys_parametros sys = new Sys_parametros(conn);
+		
+		String texto = " Bem vindo ao ChamaTrago, para validar seu e-mail clique no link abaixo: /n " + sys.getUrl_system() + "/mobile?ac=validar&token="+validacao;
+		
+		Utilitario.sendEmail(desc_email, texto, "Ativação da sua conta no ChamaTrago!",conn);
+		
 		objRetorno.put("msg", "ok");
 
 		out.print(objRetorno.toJSONString());
 
 	}
+
+	
+	
+	
+	
+	
 
 	private static void updateUser(HttpServletRequest request, HttpServletResponse response, Connection conn, long cod_usuario) throws Exception {
 
@@ -872,7 +895,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 
 		carrinho.put("produtos", carrinhoitem);
 
-		System.out.println(carrinho.toJSONString());
+		//System.out.println(carrinho.toJSONString());
 		out.print(carrinho.toJSONString());
 	}
 

@@ -1,6 +1,8 @@
 package com.funcs;
 
 import java.io.PrintWriter;
+import java.math.BigInteger;
+import java.security.SecureRandom;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -18,6 +20,8 @@ import org.apache.commons.mail.HtmlEmail;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
+import com.configs.Conexao;
+
 public class Utilitario {
 
 	public static boolean isNumeric(String str) {
@@ -29,20 +33,27 @@ public class Utilitario {
 		return true;
 	}
 
-	public static void sendEmail(String para, String html, String subject) throws Exception {
+	public static void sendEmail(String para, String html, String subject, Connection conn) throws Exception {
+
+		Sys_parametros sys = new Sys_parametros(conn);
 
 		HtmlEmail mailService = new HtmlEmail();
 
-		mailService.setHostName("smtp.live.com");
-		mailService.setSmtpPort(587);
-		mailService.setAuthenticator(new DefaultAuthenticator("g.kothe@hotmail.com", ""));
-		mailService.setFrom("g.kothe@hotmail.com", "Chama Trago");
-		mailService.setStartTLSEnabled(true);
+		mailService.setHostName(sys.getSys_host_name_smtp());
+		mailService.setSmtpPort(sys.getSys_smtp_port());
+		mailService.setAuthenticator(new DefaultAuthenticator(sys.getSys_email(), sys.getSys_senha()));
+		mailService.setFrom(sys.getSys_fromemail(), sys.getSys_fromdesc());
+		mailService.setStartTLSEnabled(sys.getSys_tls());
 		mailService.setSubject(subject);
 		mailService.setHtmlMsg(html);
 		mailService.addTo(para);
 		mailService.send();
 
+	}
+
+	public static String StringGen(int a, int b) {
+		SecureRandom random = new SecureRandom();
+		return new BigInteger(a, random).toString(b);
 	}
 
 	public static String returnStatusPedidoFlag(String flag) {
@@ -59,7 +70,7 @@ public class Utilitario {
 
 		return "";
 	}
-	
+
 	public static String returnModoPagamento(String flag) {
 
 		if (flag.equalsIgnoreCase("D")) {
@@ -102,8 +113,7 @@ public class Utilitario {
 
 		return id;
 	}
-	
-	
+
 	public static long retornaIdinsertLong(String tabela, String coluna, Connection conn) throws Exception {
 		String varname1 = "";
 		// so funciona para pk single
@@ -133,7 +143,6 @@ public class Utilitario {
 
 		return id;
 	}
-	
 
 	public static Integer diaSemana(Connection conn, int distribuidora) throws Exception {
 
@@ -169,13 +178,12 @@ public class Utilitario {
 				// ex: se day of week é 4, WEDNESDAY , o retorno vai ser day of week - 1 =3 Qarta feira.
 				dia = new GregorianCalendar().get(Calendar.DAY_OF_WEEK) == 1 ? 7 : new GregorianCalendar().get(Calendar.DAY_OF_WEEK) - 1;
 			}
-		}else{
+		} else {
 			throw new Exception("Distribuidora não existe.");
 		}
 		return dia;
 	}
-	
-	
+
 	public static String getDescDiaSemana(Connection conn, int cod_dia) throws Exception {
 
 		String varname1 = " select * from  dias_semana where cod_dia = ? ";
@@ -184,64 +192,63 @@ public class Utilitario {
 		ResultSet rs2 = st.executeQuery();
 		if (rs2.next()) {
 			return rs2.getString("DESC_DIA");
-		}else{
+		} else {
 			throw new Exception("Dia não existe.");
 		}
-		
+
 	}
-	
-	
+
 	public static String getNomeBairro(Connection conn, int cod_bairro, int ID_DISTR_BAIRRO) throws Exception {
 
 		String desc_bairro = "";
-		
-		if(cod_bairro!= 0){
-			
+
+		if (cod_bairro != 0) {
+
 			String varname1 = " select * from bairros where cod_bairro =  " + cod_bairro;
 			PreparedStatement st = conn.prepareStatement(varname1);
 			ResultSet rs2 = st.executeQuery();
 			if (rs2.next()) {
 				desc_bairro = rs2.getString("DESC_BAIRRO");
-			}else{
+			} else {
 				throw new Exception("Bairro não existe.");
 			}
-			
-		}else if(ID_DISTR_BAIRRO!= 0){
-			
-			String varname1 = " select * from bairros inner join distribuidora_bairro_entrega where ID_DISTR_BAIRRO = "+ID_DISTR_BAIRRO+" limit 1";
+
+		} else if (ID_DISTR_BAIRRO != 0) {
+
+			String varname1 = " select * from bairros inner join distribuidora_bairro_entrega where ID_DISTR_BAIRRO = " + ID_DISTR_BAIRRO + " limit 1";
 			PreparedStatement st = conn.prepareStatement(varname1);
 			ResultSet rs2 = st.executeQuery();
 			if (rs2.next()) {
 				desc_bairro = rs2.getString("DESC_BAIRRO");
-			}else{
+			} else {
 				throw new Exception("Bairro não existe.");
 			}
-			
+
 		}
-		
+
 		return desc_bairro;
 	}
 
 	public static String getNomeProd(Connection conn, long id_prod, boolean abreviado) throws Exception {
 
-			String desc_produto = "";
-			String varname1 = " select * from produtos where id_prod =  " + id_prod;
-			PreparedStatement st = conn.prepareStatement(varname1);
-			ResultSet rs2 = st.executeQuery();
-			if (rs2.next()) {
-				
-				if(!abreviado){
-					desc_produto = rs2.getString("DESC_PROD");
-				}else{
-					desc_produto = rs2.getString("DESC_ABREVIADO");
-				}
-			}else{
-				throw new Exception("Produto não existe.");
+		String desc_produto = "";
+		String varname1 = " select * from produtos where id_prod =  " + id_prod;
+		PreparedStatement st = conn.prepareStatement(varname1);
+		ResultSet rs2 = st.executeQuery();
+		if (rs2.next()) {
+
+			if (!abreviado) {
+				desc_produto = rs2.getString("DESC_PROD");
+			} else {
+				desc_produto = rs2.getString("DESC_ABREVIADO");
 			}
-			
+		} else {
+			throw new Exception("Produto não existe.");
+		}
+
 		return desc_produto;
 	}
-	
+
 	public static String getNomeProdIdProdDistr(Connection conn, long ID_PROD_DIST, boolean abreviado) throws Exception {
 
 		String desc_produto = "";
@@ -249,26 +256,23 @@ public class Utilitario {
 		PreparedStatement st = conn.prepareStatement(varname1);
 		ResultSet rs2 = st.executeQuery();
 		if (rs2.next()) {
-			
-			if(!abreviado){
+
+			if (!abreviado) {
 				desc_produto = rs2.getString("DESC_PROD");
-			}else{
+			} else {
 				desc_produto = rs2.getString("DESC_ABREVIADO");
 			}
-		}else{
+		} else {
 			throw new Exception("Produto não existe.");
 		}
-		
-	return desc_produto;
-}
-	
-	
-	
-	public static java.sql.Timestamp getTimeStamp(Date data) {
-	    return new java.sql.Timestamp(data.getTime());
+
+		return desc_produto;
 	}
-	
-	
+
+	public static java.sql.Timestamp getTimeStamp(Date data) {
+		return new java.sql.Timestamp(data.getTime());
+	}
+
 	public static int retornaIdinsertChaveSecundaria(String tabela, String nomechaveprimaria, String valchaveprimaria, String coluna, Connection conn) throws Exception {
 		String varname1 = "";
 		// so funciona para pk single
@@ -298,7 +302,13 @@ public class Utilitario {
 
 	public static void main(String[] args) {
 		try {
-			sendEmail("g.kothe@hotmail.com", "aaaa", "Recuperação de senha");
+			// sendEmail("g.kothe@hotmail.com", "aaaa", "Recuperação de senha");
+
+			String validacao = Utilitario.StringGen(1000, 32).substring(0, 99);
+			Sys_parametros sys = new Sys_parametros(Conexao.getConexao());
+			String texto = " Bem vindo ao ChamaTrago, para validar seu e-mail clique no link abaixo: <br> " + sys.getUrl_system() + "mobile/ac=validar&token=" + validacao;
+			// Utilitario.sendEmail("g.kothe@hotmail.com", texto, "Ativação da sua conta no ChamaTrago!");
+
 		} catch (Exception e) {
 			// TODO: handle exception
 			e.printStackTrace();

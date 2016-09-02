@@ -14,7 +14,72 @@ public class Sys_parametros {
 	String FACE_APP_SECRETKEY = "";
 	String FACE_APP_TOKEN = "";
 	String FACE_REDIRECT_URI = "";
-	
+	String url_system = "";
+
+	int sys_smtp_port = 0;
+	String sys_host_name_smtp = "";
+	String sys_email = "";
+	String sys_senha = "";
+	String sys_fromemail = "";
+	String sys_fromdesc = "";
+	boolean sys_tls = true;
+
+	public int getSys_smtp_port() {
+		return sys_smtp_port;
+	}
+
+	public void setSys_smtp_port(int sys_smtp_port) {
+		this.sys_smtp_port = sys_smtp_port;
+	}
+
+	public String getSys_host_name_smtp() {
+		return sys_host_name_smtp;
+	}
+
+	public void setSys_host_name_smtp(String sys_host_name_smtp) {
+		this.sys_host_name_smtp = sys_host_name_smtp;
+	}
+
+	public String getSys_email() {
+		return sys_email;
+	}
+
+	public void setSys_email(String sys_email) {
+		this.sys_email = sys_email;
+	}
+
+	public String getSys_senha() {
+		return sys_senha;
+	}
+
+	public void setSys_senha(String sys_senha) {
+		this.sys_senha = sys_senha;
+	}
+
+	public String getSys_fromemail() {
+		return sys_fromemail;
+	}
+
+	public void setSys_fromemail(String sys_fromemail) {
+		this.sys_fromemail = sys_fromemail;
+	}
+
+	public String getSys_fromdesc() {
+		return sys_fromdesc;
+	}
+
+	public void setSys_fromdesc(String sys_fromdesc) {
+		this.sys_fromdesc = sys_fromdesc;
+	}
+
+	public boolean getSys_tls() {
+		return sys_tls;
+	}
+
+	public void setSys_tls(boolean sys_tls) {
+		this.sys_tls = sys_tls;
+	}
+
 	public int getCod_cidade() {
 		return cod_cidade;
 	}
@@ -86,15 +151,22 @@ public class Sys_parametros {
 	public void setSegs_teste_ajax(long segs_teste_ajax) {
 		this.segs_teste_ajax = segs_teste_ajax;
 	}
-	
 
-	
-	public Sys_parametros(Connection conn){
-		//se for o caso futuramente, passar o cod_cidade
+	public String getUrl_system() {
+		return url_system;
+	}
+
+	public void setUrl_system(String url_system) {
+		this.url_system = url_system;
+	}
+
+	public Sys_parametros(Connection conn) {
+		// se for o caso futuramente, passar o cod_cidade
 		try {
 			PreparedStatement st = conn.prepareStatement("select * from sys_parametros ");
 			ResultSet rs = st.executeQuery();
-			if(rs.next()){
+			if (rs.next()) {
+
 				this.setCod_cidade(rs.getInt("cod_cidade"));
 				this.setId_usuario_admin(rs.getLong("ID_USUARIO_ADMIN"));
 				this.setFlag_manutencao(rs.getString("FLAG_MANUTENCAO"));
@@ -102,17 +174,23 @@ public class Sys_parametros {
 				this.setSegs_teste_ajax(rs.getLong("SEGS_TESTE_AJAX"));
 				this.setFACE_APP_ID(rs.getLong("FACE_APP_ID"));
 				this.setFACE_APP_SECRETKEY(rs.getString("FACE_APP_SECRETKEY"));
-				this.setFACE_APP_TOKEN(rs.getString("FACE_APP_TOKEN")); 
+				this.setFACE_APP_TOKEN(rs.getString("FACE_APP_TOKEN"));
 				this.setFACE_REDIRECT_URI(rs.getString("FACE_REDIRECT_URI"));
-				
+				this.setUrl_system(rs.getString("url_system"));
+				this.setSys_host_name_smtp(rs.getString("sys_host_name_smtp"));
+				this.setSys_smtp_port(rs.getInt("sys_smtp_port"));
+				this.setSys_email(rs.getString("sys_email"));
+				this.setSys_senha(rs.getString("sys_senha"));
+				this.setSys_fromemail(rs.getString("sys_fromemail"));
+				this.setSys_fromdesc(rs.getString("sys_fromdesc"));
+				this.setSys_tls(rs.getString("sys_tls").equalsIgnoreCase("S") ? true : false);
+
 			}
-			
+
 		} catch (Exception e) {
 			// TODO: handle exception
 		}
-		
+
 	}
-	
-	
-	
+
 }
