@@ -6,13 +6,13 @@ trocar versao do Workbench, commit automatico em alters , verificar se isso não 
 
 ------------Sys
 
+fazer validacao da token de ativacai(ver se ja nao existe a token gerada, mto improvavel)
+
+fazer uma tela de msg.jsp ajeitada um dia.
+
 estudar possibilidade de tooltips na tela de Configuração de bairros e horarios passo 1, passar o mouse em cima do bairro e dizer quais cofigs existem ou um botao/icone de info do lado. qem sabe mudar a cor ou botar um asterisco pros bairros que nao contem nenhum dia configurado.
 
 questao da cidade qdo loga com face, por enqto vai ficar fixo, acho que vai ser null, e vai ter uma tela no mobile apos login para confirmar cidade/bairro.
-
-fazer validacao da token de ativacai(ver se ja nao existe a token gerada, mto improvavel)
-
-fazer uma tela de msg.jsp ajeitada
 
 criar um email chamatrago
 
@@ -35,8 +35,16 @@ ao cadastrar, tem que validar email. - função feita
 
 quando logar, tem que ter uma tela de confirmação da cidade/bairro que se encontra.
 
-se mudar de email, refazer validacao de email.
+qestoes de email	
+	user sem face
+		muda de mail, pede uma validação do email como se tivesse cadastrando.(vai ter que ter uma tela separada para e-mail e senha, ver se tem como fazer sub-menu.)
+	se tem com face
+		qdo mudar de email no face, (provavelmente fazer uma rotina de checagem ou quando logar, ou requisição) atualizar o email do sistema.
+		se tentar mudar o email dentro do app e ele for diferente do email do facebook, não deixar.
 
-se mudar de email no facebook? ver situações 
 
-tela de cadastro
+tela de cadastro - segunda-feira
+
+
+
+

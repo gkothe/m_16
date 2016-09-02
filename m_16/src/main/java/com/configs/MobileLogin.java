@@ -188,21 +188,23 @@ public class MobileLogin {
 		String id = json.get("id").toString();
 		String email = json.get("email").toString();
 
-		PreparedStatement st = conn.prepareStatement(" select * from usuario where DESC_EMAIL = ?   ");
+		PreparedStatement st = conn.prepareStatement(" select * from usuario where DESC_EMAIL = ?  and FLAG_ATIVADO = 'S' ");
 		st.setString(1, email);
 		ResultSet rs = st.executeQuery();
 
 		if (rs.next()) {
 
 			StringBuffer sql = new StringBuffer();
-			sql.append("update usuario  set `FLAG_FACEUSER` = ? , `ID_USER_FACE` = ?, DESC_NOME= ?, FLAG_ATIVADO = ?  where  DESC_EMAIL = ?  ");
+			sql.append("update usuario  set `FLAG_FACEUSER` = ? , `ID_USER_FACE` = ?, DESC_NOME= ?, FLAG_ATIVADO = ? , CHAVE_ATIVACAO = ?  where  DESC_EMAIL = ?  ");
 
 			st = conn.prepareStatement(sql.toString());
 			st.setString(1, "S");
 			st.setLong(2, Long.parseLong(id));
 			st.setString(3, name);
-			st.setString(4, email);
-			st.setString(5, "S");
+			st.setString(4, "S");
+			st.setString(5, "");
+			st.setString(6, email);
+			
 			st.executeUpdate();
 
 			objjson.put("name", name.split(" ")[0]);
@@ -327,7 +329,7 @@ public class MobileLogin {
 
 			}
 
-			String sql = "select * from usuario where Binary CHAVE_ATIVACAO = ?  ";
+			String sql = "select * from usuario where Binary CHAVE_ATIVACAO = ?   ";
 
 			PreparedStatement st = conn.prepareStatement(sql);
 			st.setString(1, token);

@@ -132,8 +132,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 
 			} else if (cmd.equalsIgnoreCase("inserir_user")) {
 
-				
-				
+				inserirUser(request, response, conn);
 				
 			} else {
 				
