@@ -44,7 +44,7 @@ public class MobileLogin {
 
 		JSONObject objRetorno = new JSONObject();
 
-		String sql = "select * from usuario where Binary DESC_USER = ?  and Binary DESC_SENHA = ? and FLAG_ATIVADO = 'S'";
+		String sql = "select * from usuario where Binary DESC_USER = ?  and Binary DESC_SENHA = ? and (FLAG_ATIVADO = 'S' or FLAG_ATIVADO = 'V')";
 
 		PreparedStatement st = conn.prepareStatement(sql);
 		st.setString(1, user);
@@ -296,6 +296,9 @@ public class MobileLogin {
 			ResultSet rs = st.executeQuery();
 			if (rs.next()) {
 				long codusuer = rs.getLong("id_usuario");
+				if(rs.getString("FLAG_ATIVADO").equalsIgnoreCase("v")){
+					return -1;
+				}
 				if (rs.wasNull()) {// acho que nao tem como isso acontecer, mas por via das duvida...
 					return 0;
 				} else {

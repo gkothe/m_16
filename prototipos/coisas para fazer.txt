@@ -21,7 +21,6 @@ pagamento no lado da distribuidora.
 ----------------mobile
 
 
-
 botao de calcular carrinho, na tela de checkout.
 
 Deixar usuario mudar o nome? com face nao
