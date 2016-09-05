@@ -65,7 +65,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 
 		try {
 
-			/*
+			
 				System.out.println("----------entro mob");
 
 			Map map = request.getParameterMap();
@@ -74,7 +74,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 				System.out.println(type + " : " + request.getParameter(type));
 			}
 		
-		*/
+		
 			String strTipo = request.getParameter("ac"); // acho que aqui soh vai ter ajax, mas vo dexa assim por enqto.
 			if (strTipo == null) {
 				strTipo = "ajax";
@@ -133,6 +133,10 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 			} else if (cmd.equalsIgnoreCase("inserir_user")) {
 
 				inserirUser(request, response, conn);
+				
+			} else if (cmd.equalsIgnoreCase("rec_senha")) {
+
+				recSenha(request, response, conn);
 				
 			} else {
 				
@@ -223,12 +227,14 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 		// TODO tela de inserir nao foi definada ainda como vai ser.
 		PrintWriter out = response.getWriter();
 
+		
+	
 		JSONObject objRetorno = new JSONObject();
-		String desc_usuario = request.getParameter("c_desc_usuario") == null ? "" : request.getParameter("c_desc_usuario");
-		String desc_senha = request.getParameter("c_desc_senha") == null ? "" : request.getParameter("c_desc_senha");
-		String desc_senha_conf = request.getParameter("c_desc_senha_conf") == null ? "" : request.getParameter("c_desc_senha_conf");
-		String desc_email = request.getParameter("c_desc_email") == null ? "" : request.getParameter("c_desc_email");
-		String desc_nome = request.getParameter("c_desc_nome") == null ? "" : request.getParameter("c_desc_nome");
+		String desc_usuario = request.getParameter("c_username") == null ? "" : request.getParameter("c_username");
+		String desc_senha = request.getParameter("c_password") == null ? "" : request.getParameter("c_password");
+		String desc_senha_conf = request.getParameter("c_passwordconfirm") == null ? "" : request.getParameter("c_passwordconfirm");
+		String desc_email = request.getParameter("c_email") == null ? "" : request.getParameter("c_email");
+		String desc_nome = request.getParameter("c_nome") == null ? "" : request.getParameter("c_nome");
 
 
 		if (desc_usuario.equalsIgnoreCase("")) {
@@ -243,7 +249,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 			throw new Exception("Você deve preencher o campo de email.");
 		}
 
-		if (desc_senha.equalsIgnoreCase(desc_senha_conf)) {
+		if (!desc_senha.equalsIgnoreCase(desc_senha_conf)) {
 			throw new Exception("Erro. As senhas são diferentes.");
 		}
 
@@ -260,8 +266,8 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 		rs = st.executeQuery();
 
 		if (rs.next()) {
-			if(rs.getString("FLAG_FACEUSER").equalsIgnoreCase("F")){
-				throw new Exception("Este e-mail já está relacionado a uma conta do Facebook. Se você não possui mais uma conta de Facebook, você pode voltar a tela de login e clicar que recuperar senha");
+			if(rs.getString("FLAG_FACEUSER").equalsIgnoreCase("S")){
+				throw new Exception("Este e-mail já está relacionado a uma conta do Facebook. Se você não possui mais uma conta de Facebook, você pode voltar a tela de login e clicar que recuperar senha.");
 			}else{
 				throw new Exception("E-mail já cadastrado! Se você se esqueceu de sua senha, volte a tela de login e clique em recuperar senha.");	
 			}
@@ -272,7 +278,6 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 		st = conn.prepareStatement("SELECT * from  usuario where  Binary desc_email =  ? ");
 		st.setString(1, desc_email);
 		rs = st.executeQuery();
-
 		
 		if (rs.next()) {
 			if(rs.getString("FLAG_FACEUSER").equalsIgnoreCase("F")){
@@ -310,6 +315,37 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 	
 	
 	
+	private static void recSenha(HttpServletRequest request, HttpServletResponse response, Connection conn) throws Exception {
+		// TODO tela de inserir nao foi definada ainda como vai ser.
+		PrintWriter out = response.getWriter();
+	
+		JSONObject objRetorno = new JSONObject();
+		
+		String desc_email = request.getParameter("c_email") == null ? "" : request.getParameter("c_email");
+
+
+		if (desc_email.equalsIgnoreCase("")) {
+			throw new Exception("Você deve preencher o campo de email.");
+		}
+
+	
+		PreparedStatement st = conn.prepareStatement("SELECT * from  usuario where  Binary desc_email =  ? ");
+		st.setString(1, desc_email);
+		ResultSet rs = st.executeQuery();
+
+		if (rs.next()) {
+			String texto = " Olá, seguem abaixo suas informações de acesso: <br> Usuário: "+rs.getString("DESC_User") + " <br> Senha: "+rs.getString("DESC_SENHA") ;
+			Utilitario.sendEmail(desc_email, texto, "Recuperação de informações de acesso do ChamaTrago!",conn);
+			objRetorno.put("msg", "ok");
+			
+		}else{
+			throw new Exception("E-mail não encontrado.");
+		}
+	
+		out.print(objRetorno.toJSONString());
+
+	}
+
 	
 	
 

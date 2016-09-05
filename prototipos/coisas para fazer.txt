@@ -3,7 +3,7 @@ outros---------
 
 trocar versao do Workbench, commit automatico em alters , verificar se isso não é merda do mysql mesmo
 
-
+morratu@hotmail.com
 ------------Sys
 
 fazer validacao da token de ativacai(ver se ja nao existe a token gerada, mto improvavel)
@@ -20,21 +20,22 @@ pagamento no lado da distribuidora.
 
 ----------------mobile
 
+
+
 botao de calcular carrinho, na tela de checkout.
 
-Deixar usuario mudar o nome?
+Deixar usuario mudar o nome? com face nao
 
 tem como acessar o service AuthService na troca de states? Algo a ver com trasnformar service em provider.
 
-ok - Se o usuario tentar logar com facebook com um emauil ja usado por um login normal? atualizar as informaçções do usuario com as infos do face, complementar. 
-Se o usuario tentar se cadastrar com um login com um email ja cadastrado pelo face? Mandar a senha gerada para o email do cara.
-
 https://developers.facebook.com/docs/facebook-login/testing-your-login-flow  -> teste 3,5,6?, 
 
-ao cadastrar, tem que validar email. - função feita
+
 
 quando logar, tem que ter uma tela de confirmação da cidade/bairro que se encontra.
 
+
+msg de validação de email
 qestoes de email	
 	user sem face
 		muda de mail, pede uma validação do email como se tivesse cadastrando.(vai ter que ter uma tela separada para e-mail e senha, ver se tem como fazer sub-menu.)
@@ -43,7 +44,6 @@ qestoes de email
 		se tentar mudar o email dentro do app e ele for diferente do email do facebook, não deixar.
 
 
-tela de cadastro - segunda-feira
 
 
 
