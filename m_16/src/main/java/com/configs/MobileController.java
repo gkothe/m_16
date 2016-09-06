@@ -155,6 +155,14 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 					carregaProdutos(request, response, conn, cod_usuario, false);
 				} else if (cmd.equalsIgnoreCase("carrega_bairros")) {
 					carregaBairros(request, response, conn, cod_usuario);
+				} else if (cmd.equalsIgnoreCase("carrega_cidade")) {
+					carregaCidade(request, response, conn, cod_usuario);
+				} else if (cmd.equalsIgnoreCase("carregaLocationUser")) {
+					carregaLocationUser(request, response, conn, cod_usuario);
+				} else if (cmd.equalsIgnoreCase("detalheProdutos")) {
+					carregaProdutos(request, response, conn, cod_usuario, false);
+				} else if (cmd.equalsIgnoreCase("saveLocationUser")) {
+					saveLocationUser(request, response, conn, cod_usuario);
 				} else if (cod_usuario == -1) {// operações daqui para cima, são validas para visitante.
 					objRetorno.put("guest", "true");
 					throw new Exception("Você está acessando como visitante. Para poder realizar esta operação você deve criar uma conta no ChamaTrago.");
@@ -337,6 +345,52 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 
 	}
 
+	private static void saveLocationUser(HttpServletRequest request, HttpServletResponse response, Connection conn, long cod_usuario) throws Exception {
+		// TODO tela de inserir nao foi definada ainda como vai ser.
+		PrintWriter out = response.getWriter();
+
+		JSONObject objRetorno = new JSONObject();
+
+		String codbairro = request.getParameter("codbairro") == null ? "" : request.getParameter("codbairro");
+		String codcidade = request.getParameter("codcidade") == null ? "" : request.getParameter("codcidade");
+
+		String sql = "SELECT COD_CIDADE from  cidade where COD_CIDADE  = ? ";
+		PreparedStatement st = conn.prepareStatement(sql);
+		st.setLong(1, Long.parseLong(codcidade));
+		ResultSet rs = st.executeQuery();
+		if (!rs.next()) {
+			throw new Exception("Cidade não encontrada. Você deve escolher uma cidade válida.");
+		}
+
+		st = conn.prepareStatement("SELECT * from bairros where cod_cidade  = ? and cod_bairro = ? ");
+		st.setLong(1, Long.parseLong(codcidade));
+		st.setLong(2, Long.parseLong(codbairro));
+		rs = st.executeQuery();
+
+		if (!rs.next()) {
+			throw new Exception("Bairro não encontrado. Você deve escolher um bairro válido.");
+		}
+
+		StringBuffer sql2 = new StringBuffer();
+		sql2.append("UPDATE usuario ");
+		sql2.append("   SET  ");
+		sql2.append("       `COD_BAIRRO` = ?, ");
+		sql2.append("       `COD_CIDADE` = ? ");
+		sql2.append("WHERE  `ID_USUARIO` = ?;");
+		
+		st = conn.prepareStatement(sql2.toString());
+		st.setLong(2, Long.parseLong(codcidade));
+		st.setLong(1, Long.parseLong(codbairro));
+		st.setLong(3, cod_usuario);
+
+		st.executeUpdate();
+
+		objRetorno.put("msg", "ok");
+
+		out.print(objRetorno.toJSONString());
+
+	}
+
 	private static void updateUser(HttpServletRequest request, HttpServletResponse response, Connection conn, long cod_usuario) throws Exception {
 
 		PrintWriter out = response.getWriter();
@@ -476,6 +530,35 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 
 	}
 
+	private static void carregaLocationUser(HttpServletRequest request, HttpServletResponse response, Connection conn, long cod_usuario) throws Exception {
+		JSONObject retorno = new JSONObject();
+		PrintWriter out = response.getWriter();
+
+		String sql = "SELECT * from usuario where id_usuario = ? ";
+		PreparedStatement st = conn.prepareStatement(sql);
+		st.setLong(1, cod_usuario);
+		ResultSet rs = st.executeQuery();
+
+		Sys_parametros sys = new Sys_parametros(conn);
+
+		int codcidade = 0;
+		int codbairro = 0;
+
+		if (rs.next()) {
+			codbairro = rs.getInt("cod_bairro");
+			codcidade = rs.getInt("cod_cidade");
+		}
+
+		if (codcidade == 0) {
+			codcidade = sys.getCod_cidade();
+		}
+
+		retorno.put("codbairro", codbairro);
+		retorno.put("codcidade", codcidade);
+
+		out.print(retorno.toJSONString());
+	}
+
 	private static void carregaBairros(HttpServletRequest request, HttpServletResponse response, Connection conn, long cod_usuario) throws Exception {
 		JSONArray retorno = new JSONArray();
 		PrintWriter out = response.getWriter();
@@ -484,10 +567,14 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 		PreparedStatement st = conn.prepareStatement(sql);
 		st.setLong(1, cod_usuario);
 		ResultSet rs = st.executeQuery();
-		int codcidade = 0;
-		while (rs.next()) {
+		int codcidade = 0;// para o momento vai ser sempre 1 igual.
+		if (rs.next()) {
 
 			codcidade = rs.getInt("cod_cidade");
+		}
+
+		if (codcidade == 0) {// TODO
+			codcidade = 1;
 		}
 
 		st = conn.prepareStatement("SELECT cod_bairro, desc_bairro from bairros where cod_cidade  = ? order by desc_bairro asc");
@@ -499,6 +586,23 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 			bairro.put("cod_bairro", rs.getString("cod_bairro"));
 			bairro.put("desc_bairro", rs.getString("desc_bairro"));
 
+			retorno.add(bairro);
+		}
+
+		out.print(retorno.toJSONString());
+	}
+
+	private static void carregaCidade(HttpServletRequest request, HttpServletResponse response, Connection conn, long cod_usuario) throws Exception {
+		JSONArray retorno = new JSONArray();
+		PrintWriter out = response.getWriter();
+
+		String sql = "SELECT * from cidade ";
+		PreparedStatement st = conn.prepareStatement(sql);
+		ResultSet rs = st.executeQuery();
+		while (rs.next()) {
+			JSONObject bairro = new JSONObject();
+			bairro.put("cod_cidade", rs.getString("cod_cidade"));
+			bairro.put("desc_cidade", rs.getString("desc_cidade"));
 			retorno.add(bairro);
 		}
 
