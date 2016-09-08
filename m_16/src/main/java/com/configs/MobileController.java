@@ -166,7 +166,9 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 				} else if (cod_usuario == -1) {// operações daqui para cima, são validas para visitante.
 					objRetorno.put("guest", "true");
 					throw new Exception("Você está acessando como visitante. Para poder realizar esta operação você deve criar uma conta no ChamaTrago.");
-				} else if (cmd.equalsIgnoreCase("update_user")) {
+				} else if (cmd.equalsIgnoreCase("carregaPayCreditIds")) {
+					carregaPayCreditIds(request, response, conn);
+				}else if (cmd.equalsIgnoreCase("save_user")) {
 					updateUser(request, response, conn, cod_usuario);
 				} else if (cmd.equalsIgnoreCase("carrega_user")) {
 					carregaUser(request, response, conn, cod_usuario);
@@ -230,6 +232,13 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 		out.print(objRetorno.toJSONString());
 
 	}
+	
+	private static void carregaPayCreditIds(HttpServletRequest request, HttpServletResponse response, Connection conn) throws Exception {
+		PrintWriter out = response.getWriter();
+		out.print(Utilitario.payments_ids().toJSONString());
+	}
+
+	
 
 	private static void inserirUser(HttpServletRequest request, HttpServletResponse response, Connection conn) throws Exception {
 		// TODO tela de inserir nao foi definada ainda como vai ser.
@@ -400,49 +409,68 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 		// } else
 		{
 
-			String desc_email = request.getParameter("c_email") == null ? "" : request.getParameter("c_email");
+			
 			String desc_nome = request.getParameter("c_nome") == null ? "" : request.getParameter("c_nome");
-			String desc_telefone = request.getParameter("c_telefone") == null ? "" : request.getParameter("c_telefone");
-			String cod_cidade = request.getParameter("c_cidade") == null ? "" : request.getParameter("c_cidade");
-			String cod_bairro = request.getParameter("c_bairro") == "" ? null : request.getParameter("c_bairro");
 			String desc_endereco = request.getParameter("c_endereco") == null ? "" : request.getParameter("c_endereco");
-			String desc_cartao = request.getParameter("c_numcartao") == null ? "" : request.getParameter("c_numcartao");
 			String desc_endereco_num = request.getParameter("c_desc_endereco_num") == null ? "" : request.getParameter("c_desc_endereco_num");
 			String desc_endereco_complemento = request.getParameter("c_desc_endereco_complemento") == null ? "" : request.getParameter("c_desc_endereco_complemento");
+			String cod_bairro = request.getParameter("c_bairro") == "" ? null : request.getParameter("c_bairro");
+			String desc_telefone = request.getParameter("c_telefone") == null ? "" : request.getParameter("c_telefone");
+			
+			
+			String desc_cartao = request.getParameter("c_numcartao") == null ? "" : request.getParameter("c_numcartao");
 			String data_exp_mes = request.getParameter("c_data_exp_mes") == null ? "" : request.getParameter("c_data_exp_mes");
 			String data_exp_ano = request.getParameter("c_data_exp_ano") == null ? "" : request.getParameter("c_data_exp_ano");
 			String desc_cardholdername = request.getParameter("c_desc_cardholdername") == null ? "" : request.getParameter("c_desc_cardholdername");
 			String pay_id = request.getParameter("c_pay_id") == null ? "" : request.getParameter("c_pay_id");
 			String desc_cpf = request.getParameter("c_desc_cpf") == null ? "" : request.getParameter("c_desc_cpf");
 
-			if (desc_email.equalsIgnoreCase("")) {
-				throw new Exception("Você deve preencher o campo de email.");
-			}
 
 			if (cod_bairro.equalsIgnoreCase("")) {
 				throw new Exception("Você deve preencher o campo de bairro.");
 			}
+			
+			long codcidade =0;
+			PreparedStatement st = null;
+			ResultSet rs = null;
+			
+			String sql2 = "SELECT * from  usuario where ID_USUARIO  = ? ";
+			st = conn.prepareStatement(sql2);
+			st.setLong(1, cod_usuario);
+			rs = st.executeQuery();
+			if (rs.next()) {
+				codcidade = rs.getLong("cod_cidade");
+			}
+		
+			st = conn.prepareStatement("SELECT * from bairros where cod_cidade  = ? and cod_bairro = ? ");
+			st.setLong(1, codcidade);
+			st.setLong(2, Long.parseLong(cod_bairro));
+			rs = st.executeQuery();
 
-			PreparedStatement st = conn.prepareStatement("SELECT 1 from  usuario where  Binary desc_email = ? and id_usuario != ?  ");
+			if (!rs.next()) {
+				throw new Exception("Bairro não encontrado. Você deve escolher um bairro válido.");
+			}
+			
+
+		/*	PreparedStatement st = conn.prepareStatement("SELECT 1 from  usuario where  Binary desc_email = ? and id_usuario != ?  ");
 			st.setString(1, desc_email);
 			st.setLong(2, cod_usuario);
 			ResultSet rs = st.executeQuery();
 			if (rs.next()) {
 				throw new Exception("Email já cadastrado!.");
-			}
+			}*/
 
-			st = conn.prepareStatement("SELECT 1 from  cidade where   COD_CIDADE = ?   ");
+		/*	st = conn.prepareStatement("SELECT 1 from  cidade where   COD_CIDADE = ?   ");
 			st.setInt(1, Integer.parseInt(cod_cidade));
 			rs = st.executeQuery();
 			if (!rs.next()) {
 				throw new Exception("Cidade inválida!");
-			}
+			}*/
 
 			StringBuffer sql = new StringBuffer();
 			sql.append("UPDATE usuario ");
 			sql.append("   SET `DESC_NOME` = ?, ");
 			sql.append("       `DESC_TELEFONE` = ?, ");
-			sql.append("       `DESC_EMAIL` = ?, ");
 			sql.append("       `DESC_ENDERECO` = ?, ");
 			sql.append("       `DESC_ENDERECO_NUM` = ?, ");
 			sql.append("       `DESC_ENDERECO_COMPLEMENTO` = ?, ");
@@ -459,25 +487,25 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 			st = conn.prepareStatement(sql.toString());
 			st.setString(1, desc_nome);
 			st.setString(2, desc_telefone);
-			st.setString(3, desc_email);
-			st.setString(4, desc_endereco);
-			st.setString(5, desc_endereco_num);
-			st.setString(6, desc_endereco_complemento);
-			st.setInt(7, Integer.parseInt(cod_bairro));
-			st.setString(8, desc_cartao);
-			st.setString(9, desc_cardholdername);
+			st.setString(3, desc_endereco);
+			st.setString(4, desc_endereco_num);
+			st.setString(5, desc_endereco_complemento);
+			st.setInt(6, Integer.parseInt(cod_bairro));
+			st.setString(7, desc_cartao);
+			st.setString(8, desc_cardholdername);
+			if (data_exp_mes.equalsIgnoreCase(""))
+				st.setNull(9, java.sql.Types.INTEGER);
+			else
+				st.setInt(9, Integer.parseInt(data_exp_mes));
+
 			if (data_exp_mes.equalsIgnoreCase(""))
 				st.setNull(10, java.sql.Types.INTEGER);
 			else
-				st.setInt(10, Integer.parseInt(data_exp_mes));
+				st.setInt(10, Integer.parseInt(data_exp_ano));
 
-			if (data_exp_mes.equalsIgnoreCase(""))
-				st.setNull(11, java.sql.Types.INTEGER);
-			else
-				st.setInt(11, Integer.parseInt(data_exp_ano));
-
-			st.setString(12, pay_id);
-			st.setString(13, desc_cpf);
+			st.setString(11, pay_id);
+			st.setString(12, desc_cpf);
+			st.setLong(13, cod_usuario);
 
 			st.executeUpdate();
 

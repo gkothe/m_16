@@ -24,6 +24,36 @@ import com.configs.Conexao;
 
 public class Utilitario {
 
+	
+	
+	
+	
+	public static JSONArray payments_ids(){
+		JSONArray payids = new JSONArray();
+		JSONObject obj = new JSONObject();
+		
+		obj = new JSONObject();
+		obj.put("payid", "");
+		obj.put("desc", "Escolha um tipo de cartão de crédito");
+		payids.add(obj);
+		
+		obj = new JSONObject();
+		obj.put("payid", "master");
+		obj.put("desc", "Mastercard");
+		payids.add(obj);
+		
+		obj = new JSONObject();
+		obj.put("payid", "visa");
+		obj.put("desc", "Visa");
+		payids.add(obj);
+		
+		
+	
+		
+		return payids;
+		
+	}
+	
 	public static boolean isNumeric(String str) {
 		try {
 			double d = Double.parseDouble(str);

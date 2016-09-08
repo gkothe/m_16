@@ -31,19 +31,19 @@ https://developers.facebook.com/docs/facebook-login/testing-your-login-flow  -> 
 
 
 
-quando logar, tem que ter uma tela de confirmação da cidade/bairro que se encontra.
-
 
 msg de validação de email
 qestoes de email	
 	user sem face
-		muda de mail, pede uma validação do email como se tivesse cadastrando.(vai ter que ter uma tela separada para e-mail e senha, ver se tem como fazer sub-menu.)
+		muda de mail, pede uma validação do email como se tivesse cadastrando.(vai ter que ter uma tela separada para e-mail e senha, ver se tem como fazer sub-menu.) Se solicitou a troca de email e esta fazendo um pedido antes de validar? Criar uma tabela de troca de email?
 	se tem com face
 		qdo mudar de email no face, (provavelmente fazer uma rotina de checagem ou quando logar, ou requisição) atualizar o email do sistema.
 		se tentar mudar o email dentro do app e ele for diferente do email do facebook, não deixar.
 
 
 
+//----user info
+ver qestao de permissao de acesso para visitante. 
 
-
+analisar quais campos vale a pena validar.
 
