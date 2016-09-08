@@ -111,6 +111,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 		try {
 			conn = Conexao.getConexao();
 			conn.setAutoCommit(false);
+			Sys_parametros sys = new Sys_parametros(conn);
 			String cmd = request.getParameter("cmd") == null ? "" : request.getParameter("cmd");
 
 			if (cmd.equalsIgnoreCase("login")) {
@@ -121,30 +122,29 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 				}
 
 				if (flag_face.equalsIgnoreCase("S")) {
-					MobileLogin.loginMobileFace(request, response, conn);
+					MobileLogin.loginMobileFace(request, response, conn,sys);
 				} else {
 					String user = request.getParameter("user");
 					String pass = request.getParameter("pass");
-					MobileLogin.loginMobile(request, response, conn, user, pass);
+					MobileLogin.loginMobile(request, response, conn, user, pass,sys);
 				}
 
 			} else if (cmd.equalsIgnoreCase("inserir_user")) {
-
-				inserirUser(request, response, conn);
+			
+				inserirUser(request, response, conn,sys);
 
 			} else if (cmd.equalsIgnoreCase("rec_senha")) {
 
 				recSenha(request, response, conn);
 
 			} else {
-
-				long cod_usuario = MobileLogin.parseJWT(request, response, conn, request.getHeader("X-Auth-Token"));
+				long cod_usuario = MobileLogin.parseJWT(request, response, conn, request.getHeader("X-Auth-Token"), sys);
 
 				if (cod_usuario == 0) {
 					throw new Exception("Usuário inválido");
 				}
 
-				Sys_parametros sys = new Sys_parametros(conn);
+			
 				if (sys.getFlag_manutencao().equalsIgnoreCase("S") && sys.getId_usuario_admin() != cod_usuario) {
 					throw new Exception("Servidor está em manutenção. Tente novamente mais tarde. Cheers! ");
 				}
@@ -158,12 +158,12 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 				} else if (cmd.equalsIgnoreCase("carrega_cidade")) {
 					carregaCidade(request, response, conn, cod_usuario);
 				} else if (cmd.equalsIgnoreCase("carregaLocationUser")) {
-					carregaLocationUser(request, response, conn, cod_usuario);
+					carregaLocationUser(request, response, conn, cod_usuario,sys);
 				} else if (cmd.equalsIgnoreCase("detalheProdutos")) {
 					carregaProdutos(request, response, conn, cod_usuario, false);
 				} else if (cmd.equalsIgnoreCase("saveLocationUser")) {
 					saveLocationUser(request, response, conn, cod_usuario);
-				} else if (cod_usuario == -1) {// operações daqui para cima, são validas para visitante.
+				} else if (cod_usuario == sys.getSys_id_visistante()) {// operações daqui para cima, são validas para visitante.
 					objRetorno.put("guest", "true");
 					throw new Exception("Você está acessando como visitante. Para poder realizar esta operação você deve criar uma conta no ChamaTrago.");
 				} else if (cmd.equalsIgnoreCase("carregaPayCreditIds")) {
@@ -240,7 +240,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 
 	
 
-	private static void inserirUser(HttpServletRequest request, HttpServletResponse response, Connection conn) throws Exception {
+	private static void inserirUser(HttpServletRequest request, HttpServletResponse response, Connection conn, Sys_parametros sys) throws Exception {
 		// TODO tela de inserir nao foi definada ainda como vai ser.
 		PrintWriter out = response.getWriter();
 
@@ -313,7 +313,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 
 		st.executeUpdate();
 
-		Sys_parametros sys = new Sys_parametros(conn);
+		 
 
 		String texto = " Bem vindo ao ChamaTrago, para validar seu e-mail clique no link abaixo: /n " + sys.getUrl_system() + "/mobile?ac=validar&token=" + validacao;
 
@@ -362,7 +362,8 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 
 		String codbairro = request.getParameter("codbairro") == null ? "" : request.getParameter("codbairro");
 		String codcidade = request.getParameter("codcidade") == null ? "" : request.getParameter("codcidade");
-
+	
+		
 		String sql = "SELECT COD_CIDADE from  cidade where COD_CIDADE  = ? ";
 		PreparedStatement st = conn.prepareStatement(sql);
 		st.setLong(1, Long.parseLong(codcidade));
@@ -558,7 +559,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 
 	}
 
-	private static void carregaLocationUser(HttpServletRequest request, HttpServletResponse response, Connection conn, long cod_usuario) throws Exception {
+	private static void carregaLocationUser(HttpServletRequest request, HttpServletResponse response, Connection conn, long cod_usuario, Sys_parametros sys) throws Exception {
 		JSONObject retorno = new JSONObject();
 		PrintWriter out = response.getWriter();
 
@@ -567,7 +568,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 		st.setLong(1, cod_usuario);
 		ResultSet rs = st.executeQuery();
 
-		Sys_parametros sys = new Sys_parametros(conn);
+		 
 
 		int codcidade = 0;
 		int codbairro = 0;

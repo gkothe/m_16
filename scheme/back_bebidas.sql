@@ -220,7 +220,7 @@ CREATE TABLE `distribuidora` (
 
 LOCK TABLES `distribuidora` WRITE;
 /*!40000 ALTER TABLE `distribuidora` DISABLE KEYS */;
-INSERT INTO `distribuidora` (`ID_DISTRIBUIDORA`, `COD_CIDADE`, `DESC_RAZAO_SOCIAL`, `DESC_NOME_ABREV`, `VAL_ENTREGA_MIN`, `DESC_TELEFONE`, `DESC_ENDERECO`, `NUM_ENDEREC`, `DESC_COMPLEMENTO`, `VAL_TELE_ENTREGA`, `FLAG_CUSTOM`, `DESC_LOGIN`, `DESC_SENHA`, `DESC_MAIL`, `FLAG_ATIVO_MASTER`, `FLAG_ATIVO`, `FLAG_MODOPAGAMENTO`, `DATE_LASTAJAX`) VALUES (1,1,'Distribuidora Bêbados de Cair LTDA','Bêbeados de Cair',35.00,'051-999-8888','Rua Fundo da Garrafa','667','Fundos',5.00,'N','b','b','g.kothe@hotmail.com','S','F','A','2016-09-01 11:31:47'),(2,1,'Distribuidora Ela Robou meu Caminhão LTDA','Roubou meu Caminhão',25.00,'051-883821234','Rua Sem o caminhão','143','Na árvore',6.50,'N','a','a',NULL,'S','S',NULL,NULL);
+INSERT INTO `distribuidora` (`ID_DISTRIBUIDORA`, `COD_CIDADE`, `DESC_RAZAO_SOCIAL`, `DESC_NOME_ABREV`, `VAL_ENTREGA_MIN`, `DESC_TELEFONE`, `DESC_ENDERECO`, `NUM_ENDEREC`, `DESC_COMPLEMENTO`, `VAL_TELE_ENTREGA`, `FLAG_CUSTOM`, `DESC_LOGIN`, `DESC_SENHA`, `DESC_MAIL`, `FLAG_ATIVO_MASTER`, `FLAG_ATIVO`, `FLAG_MODOPAGAMENTO`, `DATE_LASTAJAX`) VALUES (1,1,'Distribuidora Bêbados de Cair LTDA','Bêbeados de Cair',35.00,'051-999-8888','Rua Fundo da Garrafa','667','Fundos',5.00,'N','b','b','g.kothe@hotmail.com','S','F','A','2016-09-05 18:56:36'),(2,1,'Distribuidora Ela Robou meu Caminhão LTDA','Roubou meu Caminhão',25.00,'051-883821234','Rua Sem o caminhão','143','Na árvore',6.50,'N','a','a',NULL,'S','S',NULL,NULL);
 /*!40000 ALTER TABLE `distribuidora` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -504,6 +504,7 @@ CREATE TABLE `sys_parametros` (
   `sys_fromemail` text,
   `sys_fromdesc` text,
   `sys_tls` char(1) DEFAULT NULL,
+  `id_visitante` bigint(20) DEFAULT NULL,
   KEY `FK_REFERENCE_26` (`COD_CIDADE`),
   KEY `FK_REFERENCE_27` (`ID_USUARIO_ADMIN`),
   CONSTRAINT `FK_REFERENCE_26` FOREIGN KEY (`COD_CIDADE`) REFERENCES `cidade` (`COD_CIDADE`),
@@ -517,7 +518,7 @@ CREATE TABLE `sys_parametros` (
 
 LOCK TABLES `sys_parametros` WRITE;
 /*!40000 ALTER TABLE `sys_parametros` DISABLE KEYS */;
-INSERT INTO `sys_parametros` (`COD_CIDADE`, `ID_USUARIO_ADMIN`, `FLAG_MANUTENCAO`, `DESC_KEY`, `SEGS_TESTE_AJAX`, `FACE_APP_ID`, `FACE_APP_SECRETKEY`, `FACE_APP_TOKEN`, `FACE_REDIRECT_URI`, `url_system`, `sys_host_name_smtp`, `sys_smtp_port`, `sys_email`, `sys_senha`, `sys_fromemail`, `sys_fromdesc`, `sys_tls`) VALUES (1,1,'N','LxLnKYU3QbR6HmLHCyAGKQ',30,175654116193796,'f8e7da8769ea82db5ddf015cb911bd9d','175654116193796|63Vwiy3C7K38l2rkyxTawKs30k4','http://localhost:4400/oauthcallback.html','http://localhost:8080/m_16/','smtp.live.com',587,'g.kothe@hotmail.com',NULL,'g.kothe@hotmail.com','ChamaTrago','S');
+INSERT INTO `sys_parametros` (`COD_CIDADE`, `ID_USUARIO_ADMIN`, `FLAG_MANUTENCAO`, `DESC_KEY`, `SEGS_TESTE_AJAX`, `FACE_APP_ID`, `FACE_APP_SECRETKEY`, `FACE_APP_TOKEN`, `FACE_REDIRECT_URI`, `url_system`, `sys_host_name_smtp`, `sys_smtp_port`, `sys_email`, `sys_senha`, `sys_fromemail`, `sys_fromdesc`, `sys_tls`, `id_visitante`) VALUES (1,1,'N','LxLnKYU3QbR6HmLHCyAGKQ',30,175654116193796,'f8e7da8769ea82db5ddf015cb911bd9d','175654116193796|63Vwiy3C7K38l2rkyxTawKs30k4','http://localhost:4400/oauthcallback.html','http://localhost:8080/m_16/','smtp.live.com',587,'g.kothe@hotmail.com','','g.kothe@hotmail.com','ChamaTrago','S',2);
 /*!40000 ALTER TABLE `sys_parametros` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -555,7 +556,7 @@ CREATE TABLE `usuario` (
   KEY `FK_REFERENCE_7` (`COD_CIDADE`),
   CONSTRAINT `FK_REFERENCE_5` FOREIGN KEY (`COD_BAIRRO`) REFERENCES `bairros` (`COD_BAIRRO`),
   CONSTRAINT `FK_REFERENCE_7` FOREIGN KEY (`COD_CIDADE`) REFERENCES `cidade` (`COD_CIDADE`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=17 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -564,7 +565,7 @@ CREATE TABLE `usuario` (
 
 LOCK TABLES `usuario` WRITE;
 /*!40000 ALTER TABLE `usuario` DISABLE KEYS */;
-INSERT INTO `usuario` (`ID_USUARIO`, `DESC_NOME`, `DESC_TELEFONE`, `DESC_USER`, `DESC_SENHA`, `DESC_EMAIL`, `COD_CIDADE`, `DESC_ENDERECO`, `DESC_ENDERECO_NUM`, `DESC_ENDERECO_COMPLEMENTO`, `COD_BAIRRO`, `DESC_CARTAO`, `DATA_EXP_MES`, `DATA_EXP_ANO`, `DESC_CARDHOLDERNAME`, `PAY_ID`, `DESC_CPF`, `FLAG_FACEUSER`, `ID_USER_FACE`, `FLAG_ATIVADO`, `CHAVE_ATIVACAO`) VALUES (1,'Teste da Silvasssss','999999','ff','d','werty@werty.comssss',1,'Rua alguma do bairro',NULL,NULL,3,'',NULL,NULL,NULL,NULL,NULL,NULL,NULL,'S',NULL),(5,'Gabriel Dalcin Kothe',NULL,'g.kothe@hotmail.com','ebhqarsmu569a0f449gk3bvg0g','g.kothe@hotmail.com',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'S',1044925118957062,'S',NULL);
+INSERT INTO `usuario` (`ID_USUARIO`, `DESC_NOME`, `DESC_TELEFONE`, `DESC_USER`, `DESC_SENHA`, `DESC_EMAIL`, `COD_CIDADE`, `DESC_ENDERECO`, `DESC_ENDERECO_NUM`, `DESC_ENDERECO_COMPLEMENTO`, `COD_BAIRRO`, `DESC_CARTAO`, `DATA_EXP_MES`, `DATA_EXP_ANO`, `DESC_CARDHOLDERNAME`, `PAY_ID`, `DESC_CPF`, `FLAG_FACEUSER`, `ID_USER_FACE`, `FLAG_ATIVADO`, `CHAVE_ATIVACAO`) VALUES (1,'Teste da Silvasssss','999999','f','d','werty@werty.comssss',1,'Rua alguma do bairro',NULL,NULL,3,'',NULL,NULL,NULL,NULL,NULL,NULL,NULL,'S',NULL),(2,'Visitante',NULL,'v','v',NULL,1,NULL,NULL,NULL,31,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'V',NULL),(14,'Gabriel Dalcin Kothe2','849703102','g.kothe@hotmail.com','o5ur0438mkl1qlrfh3slgpn9dm','g.kothe@hotmail.com',1,'Rua borges de Medeiros2','23','555',32,'999666551112',24,455,'kakaka','master','545645445','S',1044925118957062,'S',NULL),(16,'Gabriel Baierle',NULL,'bielbaierle@hotmail.com','gpici799d5ajsfoptdeujot4f3','bielbaierle@hotmail.com',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'S',1098082656936831,'S',NULL);
 /*!40000 ALTER TABLE `usuario` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -577,4 +578,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2016-09-02 16:36:55
+-- Dump completed on 2016-09-08 20:13:28

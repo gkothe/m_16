@@ -30,6 +30,7 @@ tem como acessar o service AuthService na troca de states? Algo a ver com trasnf
 https://developers.facebook.com/docs/facebook-login/testing-your-login-flow  -> teste 3,5,6?, 
 
 
+msg de acesso invalido
 
 
 msg de validação de email
@@ -43,7 +44,5 @@ qestoes de email
 
 
 //----user info
-ver qestao de permissao de acesso para visitante. 
-
 analisar quais campos vale a pena validar.
 

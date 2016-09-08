@@ -15,7 +15,7 @@ public class Sys_parametros {
 	String FACE_APP_TOKEN = "";
 	String FACE_REDIRECT_URI = "";
 	String url_system = "";
-
+	long sys_id_visistante= 0;
 	int sys_smtp_port = 0;
 	String sys_host_name_smtp = "";
 	String sys_email = "";
@@ -32,6 +32,14 @@ public class Sys_parametros {
 		this.sys_smtp_port = sys_smtp_port;
 	}
 
+	public long getSys_id_visistante() {
+		return sys_id_visistante;
+	}
+
+	public void setSys_id_visistante(long sys_id_visistante) {
+		this.sys_id_visistante = sys_id_visistante;
+	}
+	
 	public String getSys_host_name_smtp() {
 		return sys_host_name_smtp;
 	}
@@ -184,6 +192,7 @@ public class Sys_parametros {
 				this.setSys_fromemail(rs.getString("sys_fromemail"));
 				this.setSys_fromdesc(rs.getString("sys_fromdesc"));
 				this.setSys_tls(rs.getString("sys_tls").equalsIgnoreCase("S") ? true : false);
+				this.setSys_id_visistante(rs.getLong("id_visitante"));
 
 			}
 

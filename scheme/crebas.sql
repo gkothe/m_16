@@ -1,6 +1,6 @@
 /*==============================================================*/
 /* DBMS name:      MySQL 5.0                                    */
-/* Created on:     2/9/2016 4:27:00 PM                          */
+/* Created on:     8/9/2016 7:25:33 PM                          */
 /*==============================================================*/
 
 
@@ -270,6 +270,7 @@ create table SYS_PARAMETROS
 (
    COD_CIDADE           INT4,
    ID_USUARIO_ADMIN     INT8,
+   ID_VISITANTE         bigint,
    FLAG_MANUTENCAO      char(1),
    DESC_KEY             text,
    SEGS_TESTE_AJAX      bigint,

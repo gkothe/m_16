@@ -38,7 +38,7 @@ public class MobileLogin {
 
 	private static long tempotoken = 604800000; // 1 semana ou 1 mes, nao lembro
 
-	public static void loginMobile(HttpServletRequest request, HttpServletResponse response, Connection conn, String user, String pass) throws Exception {
+	public static void loginMobile(HttpServletRequest request, HttpServletResponse response, Connection conn, String user, String pass,Sys_parametros sys) throws Exception {
 
 		PrintWriter out = response.getWriter();
 
@@ -55,6 +55,18 @@ public class MobileLogin {
 			objRetorno.put("msg", "ok");
 			MobileLogin mob = new MobileLogin();
 			objRetorno.put("token", mob.criaToken(user, pass, tempotoken, conn));//
+			
+			if(rs.getLong("id_usuario")==sys.getId_usuario_admin()){
+				objRetorno.put("usrtype","admin" );//
+			}else if(rs.getLong("id_usuario")==sys.getSys_id_visistante()){
+				objRetorno.put("usrtype","visitante" );//
+			}else{
+				objRetorno.put("usrtype","user" );//
+			} 
+			
+			
+			
+			
 
 		} else {
 			objRetorno.put("erro", "Login inválido!");
@@ -64,11 +76,10 @@ public class MobileLogin {
 
 	}
 
-	public static void loginMobileFace(HttpServletRequest request, HttpServletResponse response, Connection conn) throws Exception {
+	public static void loginMobileFace(HttpServletRequest request, HttpServletResponse response, Connection conn, Sys_parametros sys) throws Exception {
 
 		PrintWriter out = response.getWriter();
 		JSONObject objRetorno = new JSONObject();
-		Sys_parametros sys = new Sys_parametros(conn);
 
 		String code = request.getParameter("zcode");
 
@@ -146,11 +157,13 @@ public class MobileLogin {
 
 			objRetorno.put("token", mob.criaToken(rs.getString("DESC_USER"), rs.getString("DESC_SENHA"), tempotoken, conn));//
 			objRetorno.put("name", rs.getString("DESC_NOME").split(" ")[0]);
+			objRetorno.put("usrtype","user" );//
 		} else {
 
 			JSONObject info = cadastrausuario(request, response, tokentest, conn, sys);
 			objRetorno.put("token", mob.criaToken(info.get("user").toString(), info.get("pass").toString(), tempotoken, conn));//
 			objRetorno.put("name", info.get("name").toString());
+			objRetorno.put("usrtype","user" );//
 
 		}
 		objRetorno.put("msg", "ok");
@@ -280,10 +293,9 @@ public class MobileLogin {
 		return builder.compact();
 	}
 
-	public static long parseJWT(HttpServletRequest request, HttpServletResponse response, Connection conn, String jwt) throws Exception {
+	public static long parseJWT(HttpServletRequest request, HttpServletResponse response, Connection conn, String jwt,Sys_parametros sys) throws Exception {
 
 		try {
-			Sys_parametros sys = new Sys_parametros(conn);
 			Claims claims = Jwts.parser().setSigningKey(DatatypeConverter.parseBase64Binary(sys.getDesc_key())).parseClaimsJws(jwt).getBody();
 			String user = claims.getId();
 			String pass = claims.getSubject();
@@ -297,7 +309,7 @@ public class MobileLogin {
 			if (rs.next()) {
 				long codusuer = rs.getLong("id_usuario");
 				if(rs.getString("FLAG_ATIVADO").equalsIgnoreCase("v")){
-					return -1;
+					return sys.getSys_id_visistante();
 				}
 				if (rs.wasNull()) {// acho que nao tem como isso acontecer, mas por via das duvida...
 					return 0;
