@@ -168,9 +168,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 				} else if (cod_usuario == sys.getSys_id_visistante()) {// operações daqui para cima, são validas para visitante.
 					objRetorno.put("guest", "true");
 					throw new Exception("Você está acessando como visitante. Para poder realizar esta operação você deve criar uma conta no S.O.S Trago.");
-				}  else if (cmd.equalsIgnoreCase("atualizaFaceEmail")) {
-					atualizaFaceEmail(request, response, conn,cod_usuario,sys);
-				}else if (cmd.equalsIgnoreCase("trocarEmail")) {
+				} else if (cmd.equalsIgnoreCase("trocarEmail")) {
 					trocarEmail(request, response, conn,cod_usuario,sys);
 				} else if (cmd.equalsIgnoreCase("carregaPayCreditIds")) {
 					carregaPayCreditIds(request, response, conn);
@@ -363,21 +361,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 	}
 	
 	
-	private static void atualizaFaceEmail(HttpServletRequest request, HttpServletResponse response, Connection conn,long cod_usuario, Sys_parametros sys) throws Exception {
-		// TODO tela de inserir nao foi definada ainda como vai ser.
-		PrintWriter out = response.getWriter();
 
-		JSONObject objRetorno = new JSONObject();
-
-		
-			
-
-		
-		
-		out.print(objRetorno.toJSONString());
-
-	}
-	
 
 	private static void trocarEmail(HttpServletRequest request, HttpServletResponse response, Connection conn,long cod_usuario, Sys_parametros sys) throws Exception {
 		// TODO tela de inserir nao foi definada ainda como vai ser.
@@ -399,8 +383,16 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 		}else{
 			
 			if(rs.getString("FLAG_FACEUSER") != null && rs.getString("FLAG_FACEUSER").equalsIgnoreCase("S")){
-				throw new Exception("Sua conta está associada a uma conta do Facebook, para mudar seu e-mail, por favor mude seu e-mail no Facebook.");
+				throw new Exception("Sua conta está associada a uma conta do Facebook, para mudar seu E-mail, por favor mude seu E-mail no Facebook.");
 			}else{
+				
+				PreparedStatement st2 = conn.prepareStatement("SELECT * from  usuario where  DESC_EMAIL =  ? and FLAG_ATIVADO = 'S'  ");
+				st2.setString(1, te_email);
+				ResultSet rs2 = st2.executeQuery();
+				if(rs2.next()){
+					throw new Exception("Este E-mail já esta sendo usado no S.O.S trago");
+				}
+				
 				
 				String validacao = Utilitario.StringGen(1000, 32).substring(0, 99);
 				
