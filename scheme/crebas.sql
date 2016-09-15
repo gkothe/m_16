@@ -1,6 +1,6 @@
 /*==============================================================*/
 /* DBMS name:      MySQL 5.0                                    */
-/* Created on:     8/9/2016 7:25:33 PM                          */
+/* Created on:     15/9/2016 2:49:39 PM                         */
 /*==============================================================*/
 
 
@@ -314,6 +314,8 @@ create table USUARIO
    ID_USER_FACE         bigint,
    FLAG_ATIVADO         char(1),
    CHAVE_ATIVACAO       varchar(100),
+   DESC_NOVOEMAILVALIDACAO VARCHAR(150),
+   CHAVE_ATIVACAO_NOVOEMAIL VARCHAR(100),
    primary key (ID_USUARIO)
 )
 auto_increment = 1;

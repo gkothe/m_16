@@ -154,7 +154,7 @@ public class MobileLogin {
 		MobileLogin mob = new MobileLogin();
 
 		if (rs.next()) {
-
+			atualizaFaceUser(request, response, tokentest, conn, sys, userid);
 			objRetorno.put("token", mob.criaToken(rs.getString("DESC_USER"), rs.getString("DESC_SENHA"), tempotoken, conn));//
 			objRetorno.put("name", rs.getString("DESC_NOME").split(" ")[0]);
 			objRetorno.put("usrtype","user" );//
@@ -171,6 +171,48 @@ public class MobileLogin {
 
 	}
 
+	private static void atualizaFaceUser(HttpServletRequest request, HttpServletResponse response, String tokentest, Connection conn, Sys_parametros sys,long useridface) throws Exception {
+		
+		String url = "https://graph.facebook.com/me?fields=name,id,email&access_token=" + tokentest;
+		URL obj = new URL(url);
+		HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+
+		con.setRequestMethod("GET");
+
+		int responseCode = con.getResponseCode();
+
+		if (responseCode == 400) {
+			throw new Exception("Erro 400 na busca de credencias.");
+		}
+
+		BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
+		String inputLine;
+		StringBuffer responsestr = new StringBuffer();
+
+		while ((inputLine = in.readLine()) != null) {
+			responsestr.append(inputLine);
+		}
+		in.close();
+
+		JSONObject json = (JSONObject) new JSONParser().parse(responsestr.toString());
+
+		String name = json.get("name").toString();
+		String id = json.get("id").toString();
+		String email = json.get("email").toString();
+
+		
+		String sql = "update usuario set DESC_EMAIL = ? ,  DESC_NOME= ?, DESC_USER = ?  where  ID_USER_FACE = ?  ";
+
+		PreparedStatement 	st = conn.prepareStatement(sql.toString());
+		st.setString(1, email);
+		st.setString(2, name);
+		st.setString(3, email);
+		st.setLong(4, Long.parseLong(id));
+				
+		st.executeUpdate();
+		
+	}
+	
 	private static JSONObject cadastrausuario(HttpServletRequest request, HttpServletResponse response, String tokentest, Connection conn, Sys_parametros sys) throws Exception {
 		JSONObject objjson = new JSONObject();
 
@@ -327,8 +369,91 @@ public class MobileLogin {
 		}
 
 	}
+	
+	
+	public static void validarEmailNovo(HttpServletRequest request, HttpServletResponse response) {
+		Connection conn = null;
+		boolean erro = false;
+		String msg = "";
+		try {
+			conn = Conexao.getConexao();
+			conn.setAutoCommit(false);
+
+			String token = request.getParameter("token") == null ? "" : request.getParameter("token");
+		
+
+		
+			if (!token.equalsIgnoreCase("")) {
+				msg = "Token inválido.";
+				erro = true;
+
+			}
+
+			String sql = "select * from usuario where Binary CHAVE_ATIVACAO_NOVOEMAIL = ?   ";
+
+			PreparedStatement st = conn.prepareStatement(sql);
+			st.setString(1, token);
+			ResultSet rs = st.executeQuery();
+			if (rs.next()) {
+
+				sql = "update usuario  set  CHAVE_ATIVACAO_NOVOEMAIL = ? ,  DESC_NOVOEMAILVALIDACAO = ? , DESC_EMAIL = ? where  id_usuario = ?  ";
+
+				st = conn.prepareStatement(sql);
+				st.setString(1, "");
+				st.setString(2, "");
+				st.setString(3, rs.getString("DESC_NOVOEMAILVALIDACAO"));
+				st.setLong(4, rs.getLong("id_usuario"));
+				st.executeUpdate();
+
+				msg = "Seu e-mail foi verificado e atualizado! ";
+				erro = false;
+			} else {
+				if (!token.equalsIgnoreCase("")) {
+					msg = "Token inválido.";
+					erro = true;
+				}
+			}
+			
+		
+
+			conn.commit();
+		} catch (Exception e) {
+			e.printStackTrace();
+			try {
+				conn.rollback();
+			} catch (Exception e2) {
+			}
+
+			try {
+				conn.close();
+			} catch (Exception e2) {
+			}
+			erro = true;
+			msg = e.getMessage();
+			
+		}
+		
+		try {
+			
+			
+			if (erro)
+				request.setAttribute("erro", erro);
+			else
+				request.setAttribute("erro", erro);
+			
+
+			request.setAttribute("msg",msg);
+			request.getRequestDispatcher("/WEB-INF/msg.jsp").forward(request, response);
+		} catch (Exception e2) {
+		}
+		
+
+	}
+
+	
 
 	public static void validarConta(HttpServletRequest request, HttpServletResponse response) {
+
 		Connection conn = null;
 		try {
 			conn = Conexao.getConexao();
@@ -359,7 +484,7 @@ public class MobileLogin {
 				st.setString(3, token);
 				st.executeUpdate();
 
-				msg = "Seu e-mail foi verificado e sua conta foi ativada. Você já pode logar no ChamaTrago e chamar trago! :-)";
+				msg = "Seu e-mail foi verificado e sua conta foi ativada. Você já pode logar no S.O.S Trago e chamar trago! :-)";
 				erro = false;
 			} else {
 				if (!token.equalsIgnoreCase("")) {

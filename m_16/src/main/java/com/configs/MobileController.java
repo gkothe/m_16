@@ -82,6 +82,8 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 				ajax(request, response);
 			} else if (strTipo.equalsIgnoreCase("validar")) {
 				MobileLogin.validarConta(request, response);
+			}else if (strTipo.equalsIgnoreCase("validarEmail")) {
+				MobileLogin.validarEmailNovo(request, response);
 			}
 		} catch (Exception ex) {
 			ex.printStackTrace();
@@ -148,7 +150,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 				if (sys.getFlag_manutencao().equalsIgnoreCase("S") && sys.getId_usuario_admin() != cod_usuario) {
 					throw new Exception("Servidor está em manutenção. Tente novamente mais tarde. Cheers! ");
 				}
-
+				
 				if (cmd.equalsIgnoreCase("carregaProdutos")) {
 					carregaProdutos(request, response, conn, cod_usuario, true);
 				} else if (cmd.equalsIgnoreCase("detalheProdutos")) {
@@ -165,7 +167,11 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 					saveLocationUser(request, response, conn, cod_usuario);
 				} else if (cod_usuario == sys.getSys_id_visistante()) {// operações daqui para cima, são validas para visitante.
 					objRetorno.put("guest", "true");
-					throw new Exception("Você está acessando como visitante. Para poder realizar esta operação você deve criar uma conta no ChamaTrago.");
+					throw new Exception("Você está acessando como visitante. Para poder realizar esta operação você deve criar uma conta no S.O.S Trago.");
+				}  else if (cmd.equalsIgnoreCase("atualizaFaceEmail")) {
+					atualizaFaceEmail(request, response, conn,cod_usuario,sys);
+				}else if (cmd.equalsIgnoreCase("trocarEmail")) {
+					trocarEmail(request, response, conn,cod_usuario,sys);
 				} else if (cmd.equalsIgnoreCase("carregaPayCreditIds")) {
 					carregaPayCreditIds(request, response, conn);
 				}else if (cmd.equalsIgnoreCase("save_user")) {
@@ -239,7 +245,38 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 	}
 
 	
+	private static void recSenha(HttpServletRequest request, HttpServletResponse response, Connection conn) throws Exception {
+		// TODO tela de inserir nao foi definada ainda como vai ser.
+		PrintWriter out = response.getWriter();
 
+		JSONObject objRetorno = new JSONObject();
+
+		String desc_email = request.getParameter("c_email") == null ? "" : request.getParameter("c_email");
+
+		if (desc_email.equalsIgnoreCase("")) {
+			throw new Exception("Você deve preencher o campo de email.");
+		}
+
+		PreparedStatement st = conn.prepareStatement("SELECT * from  usuario where  Binary desc_email =  ? ");
+		st.setString(1, desc_email);
+		ResultSet rs = st.executeQuery();
+
+		if (rs.next()) {
+			String texto = " Olá, seguem abaixo suas informações de acesso: <br> Usuário: " + rs.getString("DESC_User") + " <br> Senha: " + rs.getString("DESC_SENHA");
+			Utilitario.sendEmail(desc_email, texto, "Recuperação de informações de acesso do S.O.S Trago!", conn);
+			objRetorno.put("msg", "ok");
+
+		} else {
+			throw new Exception("E-mail não encontrado.");
+		}
+
+		out.print(objRetorno.toJSONString());
+
+	}
+	
+	
+	
+	
 	private static void inserirUser(HttpServletRequest request, HttpServletResponse response, Connection conn, Sys_parametros sys) throws Exception {
 		// TODO tela de inserir nao foi definada ainda como vai ser.
 		PrintWriter out = response.getWriter();
@@ -315,41 +352,76 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 
 		 
 
-		String texto = " Bem vindo ao ChamaTrago, para validar seu e-mail clique no link abaixo: /n " + sys.getUrl_system() + "/mobile?ac=validar&token=" + validacao;
+		String texto = " Bem vindo ao S.O.S Trago, para validar seu e-mail clique no link abaixo: <br> " + sys.getUrl_system() + "mobile?ac=validar&token=" + validacao;
 
-		Utilitario.sendEmail(desc_email, texto, "Ativação da sua conta no ChamaTrago!", conn);
+		Utilitario.sendEmail(desc_email, texto, "Ativação da sua conta no S.O.S Trago!", conn);
 
 		objRetorno.put("msg", "ok");
 
 		out.print(objRetorno.toJSONString());
 
 	}
-
-	private static void recSenha(HttpServletRequest request, HttpServletResponse response, Connection conn) throws Exception {
+	
+	
+	private static void atualizaFaceEmail(HttpServletRequest request, HttpServletResponse response, Connection conn,long cod_usuario, Sys_parametros sys) throws Exception {
 		// TODO tela de inserir nao foi definada ainda como vai ser.
 		PrintWriter out = response.getWriter();
 
 		JSONObject objRetorno = new JSONObject();
 
-		String desc_email = request.getParameter("c_email") == null ? "" : request.getParameter("c_email");
+		
+			
 
-		if (desc_email.equalsIgnoreCase("")) {
-			throw new Exception("Você deve preencher o campo de email.");
-		}
+		
+		
+		out.print(objRetorno.toJSONString());
 
-		PreparedStatement st = conn.prepareStatement("SELECT * from  usuario where  Binary desc_email =  ? ");
-		st.setString(1, desc_email);
+	}
+	
+
+	private static void trocarEmail(HttpServletRequest request, HttpServletResponse response, Connection conn,long cod_usuario, Sys_parametros sys) throws Exception {
+		// TODO tela de inserir nao foi definada ainda como vai ser.
+		PrintWriter out = response.getWriter();
+
+		JSONObject objRetorno = new JSONObject();
+
+		String te_email = request.getParameter("te_email") == null ? "" : request.getParameter("te_email");
+		String te_passatual = request.getParameter("te_passatual") == null ? "" : request.getParameter("te_passatual");
+		
+		
+		PreparedStatement st = conn.prepareStatement("SELECT * from  usuario where  Binary DESC_SENHA =  ? and ID_USUARIO = ? ");
+		st.setString(1, te_passatual);
+		st.setLong(2, cod_usuario);
 		ResultSet rs = st.executeQuery();
 
-		if (rs.next()) {
-			String texto = " Olá, seguem abaixo suas informações de acesso: <br> Usuário: " + rs.getString("DESC_User") + " <br> Senha: " + rs.getString("DESC_SENHA");
-			Utilitario.sendEmail(desc_email, texto, "Recuperação de informações de acesso do ChamaTrago!", conn);
-			objRetorno.put("msg", "ok");
+		if (!rs.next()) {
+			throw new Exception("Sua senha está incorreta");
+		}else{
+			
+			if(rs.getString("FLAG_FACEUSER") != null && rs.getString("FLAG_FACEUSER").equalsIgnoreCase("S")){
+				throw new Exception("Sua conta está associada a uma conta do Facebook, para mudar seu e-mail, por favor mude seu e-mail no Facebook.");
+			}else{
+				
+				String validacao = Utilitario.StringGen(1000, 32).substring(0, 99);
+				
+				String sql = "UPDATE usuario SET `DESC_NOVOEMAILVALIDACAO` = ? , `CHAVE_ATIVACAO_NOVOEMAIL` = ? WHERE ID_USUARIO = ?";
+				st = conn.prepareStatement(sql);
+				st.setString(1, te_email);
+				st.setString(2, validacao);
+				st.setLong(3, cod_usuario);
+				
+				st.executeUpdate();
 
-		} else {
-			throw new Exception("E-mail não encontrado.");
+				String texto = " Clique no link para validar seu novo e-mail: <br> " + sys.getUrl_system() + "mobile?ac=validarEmail&token=" + validacao;
+				
+				Utilitario.sendEmail(te_email, texto, "Confirmação de novo e-mail - S.O.S Trago", conn);
+				objRetorno.put("msg", "ok");
+			}
+			
+
 		}
 
+		
 		out.print(objRetorno.toJSONString());
 
 	}
