@@ -170,7 +170,9 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 					throw new Exception("Você está acessando como visitante. Para poder realizar esta operação você deve criar uma conta no S.O.S Trago.");
 				} else if (cmd.equalsIgnoreCase("trocarEmail")) {
 					trocarEmail(request, response, conn,cod_usuario,sys);
-				} else if (cmd.equalsIgnoreCase("carregaPayCreditIds")) {
+				} else if (cmd.equalsIgnoreCase("trocarSenha")) {
+					trocarSenha(request, response, conn,cod_usuario,sys);
+				}else if (cmd.equalsIgnoreCase("carregaPayCreditIds")) {
 					carregaPayCreditIds(request, response, conn);
 				}else if (cmd.equalsIgnoreCase("save_user")) {
 					updateUser(request, response, conn, cod_usuario);
@@ -360,7 +362,48 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 
 	}
 	
-	
+	private static void trocarSenha(HttpServletRequest request, HttpServletResponse response, Connection conn,long cod_usuario, Sys_parametros sys) throws Exception {
+		// TODO tela de inserir nao foi definada ainda como vai ser.
+		PrintWriter out = response.getWriter();
+
+		JSONObject objRetorno = new JSONObject();
+
+		String ts_passatual = request.getParameter("ts_passatual") == null ? "" : request.getParameter("ts_passatual");
+		String ts_newpassword = request.getParameter("ts_newpassword") == null ? "" : request.getParameter("ts_newpassword");
+		String ts_newpasswordconfirm = request.getParameter("ts_newpasswordconfirm") == null ? "" : request.getParameter("ts_newpasswordconfirm");
+		
+		
+		PreparedStatement st = conn.prepareStatement("SELECT * from  usuario where  ID_USUARIO = ? ");
+		st.setLong(1, cod_usuario);
+		ResultSet rs = st.executeQuery();
+		
+
+		if (rs.next()) {
+			if(!rs.getString("desc_senha").toString().equals(ts_passatual.toString()))
+				throw new Exception("Sua senha está incorreta");
+			
+
+			if(!ts_newpassword.toString().equals(ts_newpasswordconfirm.toString())){
+				throw new Exception("Suas senhas novas estão diferentes");
+			}
+			
+			String sql = "UPDATE usuario SET desc_senha = ?  WHERE ID_USUARIO = ? ";
+			st = conn.prepareStatement(sql);
+			st.setString(1, ts_newpassword);
+			st.setLong(2, cod_usuario); 
+			st.executeUpdate();
+			
+			MobileLogin. loginMobile(request, response, conn, rs.getString("desc_user"), ts_newpassword, sys);
+			
+		}else{
+		
+		
+		
+		
+		out.print(objRetorno.toJSONString());
+		}
+
+	}
 
 
 	private static void trocarEmail(HttpServletRequest request, HttpServletResponse response, Connection conn,long cod_usuario, Sys_parametros sys) throws Exception {

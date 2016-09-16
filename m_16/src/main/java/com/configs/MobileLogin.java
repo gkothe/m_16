@@ -65,8 +65,6 @@ public class MobileLogin {
 			} 
 			
 			
-			
-			
 
 		} else {
 			objRetorno.put("erro", "Login inválido!");
