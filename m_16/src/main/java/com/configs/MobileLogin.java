@@ -44,7 +44,7 @@ public class MobileLogin {
 
 		JSONObject objRetorno = new JSONObject();
 
-		String sql = "select * from usuario where Binary DESC_USER = ?  and Binary DESC_SENHA = ? and (FLAG_ATIVADO = 'S' or FLAG_ATIVADO = 'V')";
+		String sql = "select Coalesce(FLAG_MAIORIDADE,'N') as maior18 , * from usuario where Binary DESC_USER = ?  and Binary DESC_SENHA = ? and (FLAG_ATIVADO = 'S' or FLAG_ATIVADO = 'V')";
 
 		PreparedStatement st = conn.prepareStatement(sql);
 		st.setString(1, user);
@@ -55,11 +55,13 @@ public class MobileLogin {
 			objRetorno.put("msg", "ok");
 			MobileLogin mob = new MobileLogin();
 			objRetorno.put("token", mob.criaToken(user, pass, tempotoken, conn));//
+			objRetorno.put("maioridade", rs.getString("maior18").equalsIgnoreCase("")?"N":rs.getString("maior18"));//
 			
 			if(rs.getLong("id_usuario")==sys.getId_usuario_admin()){
 				objRetorno.put("usrtype","admin" );//
 			}else if(rs.getLong("id_usuario")==sys.getSys_id_visistante()){
 				objRetorno.put("usrtype","visitante" );//
+				objRetorno.put("maioridade", "N");//
 			}else{
 				objRetorno.put("usrtype","user" );//
 			} 
@@ -144,7 +146,7 @@ public class MobileLogin {
 			throw new Exception("Erro nas credenciais");
 		}
 
-		String sql = "select * from usuario where ID_USER_FACE = ?  and FLAG_FACEUSER = 'S'  ";
+		String sql = "select Coalesce(FLAG_MAIORIDADE,'N') as maior18, * from usuario where ID_USER_FACE = ?  and FLAG_FACEUSER = 'S'  ";
 
 		PreparedStatement st = conn.prepareStatement(sql);
 		st.setLong(1, userid);
@@ -156,12 +158,14 @@ public class MobileLogin {
 			objRetorno.put("token", mob.criaToken(rs.getString("DESC_USER"), rs.getString("DESC_SENHA"), tempotoken, conn));//
 			objRetorno.put("name", rs.getString("DESC_NOME").split(" ")[0]);
 			objRetorno.put("usrtype","user" );//
+			objRetorno.put("maioridade", rs.getString("maior18").equalsIgnoreCase("")?"N":rs.getString("maior18"));//
 		} else {
 
 			JSONObject info = cadastrausuario(request, response, tokentest, conn, sys);
 			objRetorno.put("token", mob.criaToken(info.get("user").toString(), info.get("pass").toString(), tempotoken, conn));//
 			objRetorno.put("name", info.get("name").toString());
 			objRetorno.put("usrtype","user" );//
+			objRetorno.put("maioridade", "N");//
 
 		}
 		objRetorno.put("msg", "ok");

@@ -16,7 +16,7 @@ estudar possibilidade de tooltips na tela de Configuração de bairros e horarios 
 melhorar wizard de horarios, exemplos de hora (caso de 15:00 as 4h). Qem sabe um video
 
 
-questao da cidade qdo loga com face, por enqto vai ficar fixo, acho que vai ser null, e vai ter uma tela no mobile apos login para confirmar cidade/bairro.
+
 
 
 msgs de email, hiperlink em links de email
@@ -29,13 +29,6 @@ pagamento no lado da distribuidora.
 
 parte do visitante ainda ta incabada , permissoes das telas, e se mais de uma pessoa usar, tem q ver como fazer a localização
 
-$ionicLoading onde tem e trocar por 
-   $ionicLoading.show({
-            template: 'msg... <br> <div class="loader"><svg class="circular"><circle class="path" cx="50" cy="50" r="20" fill="none" stroke-width="2" stroke-miterlimit="10"/></svg></div>'
-            
-        });
-
-
 
 tela de confirmação de idade
 
@@ -43,7 +36,6 @@ testar server off/dados invalidos e etcs , msg de acesso invalido
 
 botao de calcular carrinho, na tela de checkout.
 
-Deixar usuario mudar o nome? com face nao
 
 tem como acessar o service AuthService na troca de states? Algo a ver com trasnformar service em provider.
 
