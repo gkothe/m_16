@@ -49,19 +49,26 @@
 							disponível para realizar entregas, depois o os dias e os horarios
 							desejados e por final o tipo de operação que deseja realizar, que
 							são explicadas na etapa final.</label> <br> <label for="">
-							 </label> <br> <label for="">
+							Se você deseja configurar dias/horários diferentes para um mesmo
+							bairro, você precisa que realizar o processo de configuração mais
+							de uma vez, conforme o exemplo abaixo. </label> <br> <label for="">
 							Exemplo: Bairro Centro, Avenida, Universtário - de segunda-feira
 							a sexta-feira das 08:00 até as 18:00, sábado a domingo das 10:00
 							até as 23:59 </label> <br> <label for=""> Passo 1: Na
 							primeira vez, você escolherá os bairros desejados, neste caso:
 							Centro, Avenida, Universtário. </label> <br> <label for="">
-							Passo 2: Então vai você selecionar os dias de segunda-feira a
+							Passo 1.1: Então vai você selecionar os dias de segunda-feira a
 							sexta-feira e adicionar o horário das 08:00 até as 18:00 </label> <br>
-							<label>Passo 3: Então você vai selecionar os
+						<label for=""> Passo 1.2: Então irá escolher a operação
+							desejada, neste caso, digamos que seja a primeira. </label> <br> <label
+							for=""> Passo 2: Na segunda vez, você escolherá os
+							bairros desejados, neste caso: Centro, Avenida, Universtário.</label> <br>
+						<label for=""> Passo 2.1: Então vai você selecionar os
 							dias de sábado a domingo e adicionar o horário das 10:00 até as
-							23:59</label> <br> <label for=""> Passo 4: Então você irá
+							23:59</label> <br> <label for=""> Passo 2.2: Então irá
 							escolher PRIMEIRA operação.</label> <br> <label for="">
-							</label>  <br> <br> <label
+							Deste modo, os as configurações do 'Passo 1' se juntarão com as
+							configurações do 'Passo 2'.</label> <br> <br> <br> <label
 							for=""> Para realizar a primeira etapa de escolha de
 							bairros, clique no botão "Continuar".</label>
 
@@ -159,6 +166,7 @@
 						adicionar os novos horários</label>
 				</div>
 			</div>
+
 			<div class="row">
 				<div class="col-xs-8 col-sm-8 col-md-8 col-lg-8 " align="left">
 					<table id="tab_wizard_dias">
@@ -167,47 +175,35 @@
 			</div>
 
 			<div class="row">
-				<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 " align="left">
 
-					<table id="table_horarios" data-toggle="table" data-height="200"
-						data-locale="pt-BR" class="table_boots"
-						data-minimum-count-columns="1" data-reorderable-columns="false"
-						data-sort-name="HORARIO_INI" data-sort-order="asc">
-						<thead class="header">
-							<tr>
-								<th data-visible="false" data-field="id_faixa"></th>
-								<th data-sortable="true" data-width="100px"
-									data-field="HORARIO_1" data-align="left">Segunda-Feira</th>
-								<th data-sortable="true" data-width="100px"
-									data-field="HORARIO_2" data-align="left">Terça-Feira</th>
-								<th data-sortable="true" data-width="100px"
-									data-field="HORARIO_3" data-align="left">Quarta-Feira</th>
-								<th data-sortable="true" data-width="100px"
-									data-field="HORARIO_4" data-align="left">Quinta-Feira</th>
-								<th data-sortable="true" data-width="100px"
-									data-field="HORARIO_5" data-align="left">Sexta-Feira</th>
-								<th data-sortable="true" data-width="100px"
-									data-field="HORARIO_6" data-align="left">Sábado</th>
-								<th data-sortable="true" data-width="100px"
-									data-field="HORARIO_7" data-align="left">Domingo</th>
-								<th data-sortable="true" data-width="100px"
-									data-field="HORARIO_8" data-align="left">Feriado/Especial</th>
-
-								<th data-sortable="false" data-width="100px" data-align="center"
-									data-formatter="btnFormater_horario">Opções</th>
-							</tr>
-						</thead>
-						<tbody>
-						</tbody>
-					</table>
-
-
+				<div class="col-xs-8 col-sm-8 col-md-8 col-lg-8  align="left">
+					<div style="max-width: 600px">
+						<table id="table_horarios" data-toggle="table" data-height="200"
+							data-locale="pt-BR" class="table_boots"
+							data-minimum-count-columns="1" data-reorderable-columns="false"
+							data-sort-name="HORARIO_INI" data-sort-order="asc">
+							<thead class="header">
+								<tr>
+									<th data-visible="false" data-field="id_horario"></th>
+									<th data-sortable="true" data-width="100px"
+										data-field="HORARIO_INI" data-align="left">Período/Hora
+										Inicial</th>
+									<th data-sortable="true" data-width="100px"
+										data-field="HORARIO_FIM" data-align="left">Período/Hora
+										Final</th>
+									<th data-sortable="false" data-width="100px"
+										data-align="center" data-formatter="btnFormater_horario">Opções</th>
+								</tr>
+							</thead>
+							<tbody>
+							</tbody>
+						</table>
+					</div>
 				</div>
+
 			</div>
 
 			<br>
-			<br>
-			
 			<div class="row">
 				<div class="col-xs-8 col-sm-8 col-md-8 col-lg-8">
 					<table>
@@ -245,8 +241,9 @@
 
 			<div class="row">
 				<div class="col-xs-8 col-sm-8 col-md-8 col-lg-8">
-					<label for="">Hora inicial mínima: 00:00  </label> <br> <label for=""> Hora final máxima:
-						23:59</label>
+					<label for="">Hora inicial mínima: 00:00   Hora final máxima: 23:59     </label>
+					<br>
+					<label for="">     </label>
 				</div>
 			</div>
 

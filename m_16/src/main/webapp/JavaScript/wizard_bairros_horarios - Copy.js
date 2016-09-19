@@ -39,6 +39,8 @@ $(document).ready(function() {
 
 	
 	
+	
+	
 	$("#btn_prox_0").click(function() {
 		$('#tabs_horarios a[href="#bairros"]').tab('show')
 
@@ -116,9 +118,6 @@ function salvarconfigs() {
 			diassemana.push(sThisVal);
 	});
 
-	
-	
-	
 	var horariosjson = JSON.stringify(horarios);
 	var tipoopc = $('input[name=opc_tipoopc]:checked').val();
 
@@ -128,7 +127,7 @@ function salvarconfigs() {
 		data : {
 			cmd : "salvarConfigsHorariosBairros",
 			bairrosbox : bairrosbox.toString(),
-		//	diassemana : diassemana.toString(),
+			diassemana : diassemana.toString(),
 			horariosjson : horariosjson,
 			tipoopc : tipoopc
 
@@ -153,73 +152,7 @@ function salvarconfigs() {
 	});
 
 }
-
-var counter = 1;
 function addHorario() {
-	counter++;
-	try {
-
-		if ($("#b_hora_inicial").val() != "" && $("#b_hora_final").val() != "") {
-			
-			
-			var diassemana = [];
-			$('.diapic').each(function() {
-				var sThisVal = (this.checked ? $(this).val() : "");
-				if (sThisVal != "")
-					diassemana.push(sThisVal);
-			});
-			var horariosstr = $("#b_hora_inicial").val() + " - " + $("#b_hora_final").val(); 
-		
-			var horaini_teste = parseFloat($("#b_hora_inicial").val().replace(":", "."));
-			var horafim_teste = parseFloat($("#b_hora_final").val().replace(":", "."));
-		
-			for (t = 0; t < horarios.length; t++) {
-				var horario = horarios[t];
-				horario.id_horario  = counter;
-				for (a = 0; a < diassemana.length; a++) {
-					
-					if(horario["HORARIO_"+diassemana[a]]!=undefined && horario["HORARIO_"+diassemana[t]]!=""){
-					horastrteste  = horario["HORARIO_"+diassemana[t]] 
-					
-					var horas_jadd = horastrteste.split(" - ");
-					var p_ini = parseFloat(horas_jadd[0].replace(":", "."));
-					var p_fim = parseFloat(horas_jadd[1].replace(":", "."));
-					
-					if (horaini_teste >= p_ini && horaini_teste <= p_fim) {
-						throw "O horario inicial adicionado conflita com o horario de " + horarios[t]["HORARIO_"+diassemana[t]] ;
-					}
-
-					if (horafim_teste >= p_ini && horafim_teste <= p_fim) {
-						throw "O horario inicial adicionado conflita com o horario de " +  horarios[t]["HORARIO_"+diassemana[t]];
-					}
-					}
-				}
-
-			}
-			
-			var horario = new Object();
-			for (t = 0; t < diassemana.length; t++) { //o código esta fixo na tabela, horario_1 = segunda-fera, e etc
-					horario["HORARIO_"+diassemana[t]]  = horariosstr;
-			}
-			
-	
-			horarios.push(horario);
-
-			$('#table_horarios').bootstrapTable('load', horarios);
-			$('#table_horarios').bootstrapTable('resetView');
-			
-			
-		} else {
-			throw "Horário invalido! Preencha ambos os campos.";
-		}
-
-	} catch (err) {
-		alert(err);
-	}
-}
-
-
-function addHorario2() {
 
 	try {
 
@@ -324,8 +257,6 @@ function loadBairrosWizard() {
 }
 
 function btnFormater_horario(value, row, index) {
-	
-	counter++;
 	var html = "";
 	html = html + "<a  data-toggle=\"tooltip\" tabindex=\"0\" role=\"button\" title=\"Remover este período\" data-trigger=\"focus\"  onclick='removerPeriodo(" + row.id_horario + ")'  class=\"btn btn-default  btn_tabela \"     data-container=\"body\" data-placement=\"left\" >";
 	html = html + "<i class=\"fa fa-trash-o\"></i>";

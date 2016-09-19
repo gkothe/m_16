@@ -76,7 +76,7 @@ input:focus {
 				<div class="left_col scroll-view">
 					<div class="navbar nav_title" style="border: 0;">
 						<a class="site_title"><image style="width: 25px"
-								src="images/beer_PNG2388.png"></image> <span>ChamaTrago!</span></a>
+								src="images/beer_PNG2388.png"></image> <span>S.O.S Trago!</span></a>
 					</div>
 
 					<div class="clearfix"></div>
@@ -197,7 +197,7 @@ input:focus {
 								<div style="cursor: pointer; display: none;" id="msg_holder2">
 									<a><span class="label label-warning aviso_pedido"
 										id="msg_offline" style="font-size: 195%;">O servidor
-											ChamaTrago está offline! </span></a>
+											S.O.S Trago está offline! </span></a>
 
 								</div>
 
@@ -241,7 +241,7 @@ input:focus {
 							</button>
 							<h4 class="modal-title" id="">
 								<label style="font-size: 20px; color: black" id="">Ajuda/Informações
-									do ChamaTrago!</label>
+									do S.O.S Trago!</label>
 							</h4>
 						</div>
 						<div class="modal-body" style="max-height: 800px; overflow: auto;">
@@ -249,7 +249,7 @@ input:focus {
 							<div class="row">
 
 								<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 ">
-									<strong>Bem-vindo ao ChamaTrago!</strong><br> Para
+									<strong>Bem-vindo ao S.O.S Trago!</strong><br> Para
 									visualizar pedidos abertos vá no menu no lado esquerdo da tela,
 									clique em "Pedidos" e em seguida "Abertos". <br> Para
 									visualizar o histórico de pedidos vá no menu no lado esquerdo

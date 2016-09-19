@@ -339,6 +339,10 @@ public class Utilitario {
 			String texto = " Bem vindo ao S.O.S Trago, para validar seu e-mail clique no link abaixo: <br> " + sys.getUrl_system() + "mobile/ac=validar&token=" + validacao;
 			// Utilitario.sendEmail("g.kothe@hotmail.com", texto, "Ativação da sua conta no S.O.S Trago!");
 
+			System.out.println("Horario_1".toString().substring("Horario_1".toString().length()-1, "Horario_1".toString().length()));
+			
+			
+			
 		} catch (Exception e) {
 			// TODO: handle exception
 			e.printStackTrace();

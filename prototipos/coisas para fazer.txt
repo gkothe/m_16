@@ -5,6 +5,7 @@ trocar versao do Workbench, commit automatico em alters , verificar se isso não 
 
 morratu@hotmail.com
 ------------Sys
+bug - qdo add horario no wizard, e da conflito, e tenta0-se deletar, o primero delete falha.
 
 fazer validacao da token de ativacai(ver se ja nao existe a token gerada, mto improvavel)
 
