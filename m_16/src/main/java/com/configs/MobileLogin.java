@@ -44,7 +44,7 @@ public class MobileLogin {
 
 		JSONObject objRetorno = new JSONObject();
 
-		String sql = "select Coalesce(FLAG_MAIORIDADE,'N') as maior18 , * from usuario where Binary DESC_USER = ?  and Binary DESC_SENHA = ? and (FLAG_ATIVADO = 'S' or FLAG_ATIVADO = 'V')";
+		String sql = "select  *, Coalesce(FLAG_MAIORIDADE,'N') as maior18 from usuario where Binary DESC_USER = ?  and Binary DESC_SENHA = ? and (FLAG_ATIVADO = 'S' or FLAG_ATIVADO = 'V')";
 
 		PreparedStatement st = conn.prepareStatement(sql);
 		st.setString(1, user);
@@ -146,7 +146,7 @@ public class MobileLogin {
 			throw new Exception("Erro nas credenciais");
 		}
 
-		String sql = "select Coalesce(FLAG_MAIORIDADE,'N') as maior18, * from usuario where ID_USER_FACE = ?  and FLAG_FACEUSER = 'S'  ";
+		String sql = "select  *, Coalesce(FLAG_MAIORIDADE,'N') as maior18 from usuario where ID_USER_FACE = ?  and FLAG_FACEUSER = 'S'  ";
 
 		PreparedStatement st = conn.prepareStatement(sql);
 		st.setLong(1, userid);
