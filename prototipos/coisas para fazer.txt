@@ -13,10 +13,7 @@ fazer uma tela de msg.jsp ajeitada um dia.
 
 estudar possibilidade de tooltips na tela de Configuração de bairros e horarios passo 1, passar o mouse em cima do bairro e dizer quais cofigs existem ou um botao/icone de info do lado. qem sabe mudar a cor ou botar um asterisco pros bairros que nao contem nenhum dia configurado.
 
-melhorar wizard de horarios, exemplos de hora (caso de 15:00 as 4h). Qem sabe um video
-
-
-
+Wizard de horarios -> Video tutorial?
 
 
 msgs de email, hiperlink em links de email
@@ -29,8 +26,6 @@ pagamento no lado da distribuidora.
 
 parte do visitante ainda ta incabada , permissoes das telas, e se mais de uma pessoa usar, tem q ver como fazer a localização
 
-
-tela de confirmação de idade
 
 testar server off/dados invalidos e etcs , msg de acesso invalido
 

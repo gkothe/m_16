@@ -9,6 +9,9 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Timestamp;
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
+import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Base64;
@@ -18,6 +21,7 @@ import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import javax.servlet.ServletContext;
@@ -53,6 +57,10 @@ import java.util.Date;
 @WebServlet(urlPatterns = { "/mobile" })
 public class MobileController extends javax.servlet.http.HttpServlet {
 
+	public static  DecimalFormatSymbols dfs = new DecimalFormatSymbols (new Locale ("pt", "BR"));  
+	public static  NumberFormat df = new DecimalFormat ("###,###.#", dfs);
+	public static  NumberFormat df2 = new DecimalFormat ("#,###,###.00", dfs);
+	
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) {
 		processaRequisicoes(request, response);
 	}
@@ -165,7 +173,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 				} else if (cmd.equalsIgnoreCase("saveLocationUser")) {
 					saveLocationUser(request, response, conn, cod_usuario);
 				} else if (cmd.equalsIgnoreCase("confirmaIdade")) {
-					confirmaIdade(request, response, conn, cod_usuario);
+					confirmaIdade(request, response, conn, cod_usuario, sys);
 				} else if (cod_usuario == sys.getSys_id_visistante()) {// operações daqui para cima, são validas para visitante.
 					objRetorno.put("guest", "true");
 					throw new Exception("Você está acessando como visitante. Para poder realizar esta operação você deve criar uma conta no S.O.S Trago.");
@@ -245,23 +253,24 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 		out.print(Utilitario.payments_ids().toJSONString());
 	}
 
-	private static void confirmaIdade(HttpServletRequest request, HttpServletResponse response, Connection conn, long cod_usuario) throws Exception {
+	private static void confirmaIdade(HttpServletRequest request, HttpServletResponse response, Connection conn, long cod_usuario, Sys_parametros sys) throws Exception {
 
 		PrintWriter out = response.getWriter();
 
 		JSONObject objRetorno = new JSONObject();
 
-		StringBuffer sql = new StringBuffer();
-		sql.append(" UPDATE usuario ");
-		sql.append("   SET `FLAG_MAIORIDADE` = ? ");
+		if (sys.getSys_id_visistante() != cod_usuario) {
+			StringBuffer sql = new StringBuffer();
+			sql.append(" UPDATE usuario ");
+			sql.append("   SET `FLAG_MAIORIDADE` = ? ");
 
-		sql.append(" WHERE   `ID_USUARIO` = ? ");
+			sql.append(" WHERE   `ID_USUARIO` = ? ");
 
-		PreparedStatement st = conn.prepareStatement(sql.toString());
-		st.setString(1, "S");
-		st.setLong(2, cod_usuario);
-		st.executeUpdate();
-
+			PreparedStatement st = conn.prepareStatement(sql.toString());
+			st.setString(1, "S");
+			st.setLong(2, cod_usuario);
+			st.executeUpdate();
+		}
 		objRetorno.put("msg", "ok");
 		out.print(objRetorno.toJSONString());
 
@@ -869,7 +878,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 		String cod_bairro = request.getParameter("cod_bairro") == null ? "" : request.getParameter("cod_bairro");
 
 		StringBuffer sql = new StringBuffer();
-		sql.append(" select NUM_PED,DATA_PEDIDO,VAL_TOTALPROD,FLAG_STATUS,DESC_NOME_ABREV,id_pedido from pedido ");
+		sql.append(" select NUM_PED,DATA_PEDIDO,VAL_TOTALPROD,FLAG_STATUS,Coalesce(VAL_ENTREGA,0) as VAL_ENTREGA,DESC_NOME_ABREV,id_pedido from pedido ");
 		sql.append(" inner join distribuidora ");
 		sql.append(" on distribuidora.ID_DISTRIBUIDORA  = pedido.ID_DISTRIBUIDORA ");
 
@@ -968,25 +977,28 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 		}
 
 		st.setLong(contparam, cod_usuario);
-
+		double maxvalue = 0.0;
 		ResultSet rs = st.executeQuery();
+		JSONObject ret = new JSONObject();
 		JSONArray prods = new JSONArray();
 		while (rs.next()) {
 
-			// NUM_PED,DATA_PEDIDO,VAL_TOTALPROD,FLAG_STATUS,DESC_NOME_ABREV,id_pedido
-
+			maxvalue = maxvalue <  rs.getDouble("VAL_TOTALPROD") + rs.getDouble("VAL_ENTREGA") ? rs.getDouble("VAL_TOTALPROD") + rs.getDouble("VAL_ENTREGA") : maxvalue;
 			JSONObject prod = new JSONObject();
 			prod.put("NUM_PED", rs.getString("NUM_PED"));
-			prod.put("DATA_PEDIDO", rs.getString("DATA_PEDIDO"));
-			prod.put("VAL_TOTALPROD", rs.getString("VAL_TOTALPROD"));
+			prod.put("DATA_PEDIDO",new SimpleDateFormat("dd/MM/yyyy").format(rs.getDate("DATA_PEDIDO"))  );
+			prod.put("VAL_TOTAL",   df2.format(  rs.getDouble("VAL_TOTALPROD") + rs.getDouble("VAL_ENTREGA") ));
 			prod.put("FLAG_STATUS", Utilitario.returnStatusPedidoFlag(rs.getString("FLAG_STATUS")));
 			prod.put("DESC_NOME_ABREV", rs.getString("DESC_NOME_ABREV"));
 			prod.put("id_pedido", rs.getString("id_pedido"));
-
+ 
 			prods.add(prod);
 		}
 
-		out.print(prods.toJSONString());
+		ret.put("pedidos", prods);
+		ret.put("maxvalue", Math.ceil(maxvalue) );
+		
+		out.print(ret.toJSONString());
 	}
 
 	private static void carregaPedidoUnico(HttpServletRequest request, HttpServletResponse response, Connection conn, long cod_usuario) throws Exception {
