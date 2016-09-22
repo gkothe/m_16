@@ -100,6 +100,45 @@ public class Utilitario {
 
 		return "";
 	}
+	
+	
+	public static JSONArray returnJsonStatusPedidoFlag() {
+	
+		JSONArray retornoarray = new JSONArray();
+		
+		JSONObject obj = new JSONObject();
+		
+		
+		obj = new JSONObject();
+		obj.put("id", "");
+		obj.put("desc", "Escolha uma situação");
+		retornoarray.add(obj);
+		
+		obj = new JSONObject();
+		obj.put("id", "A");
+		obj.put("desc", "Aberto");
+		retornoarray.add(obj);
+		
+		obj = new JSONObject();
+		obj.put("id", "F");
+		obj.put("desc", "Finalizado");
+		retornoarray.add(obj);
+		
+		obj = new JSONObject();
+		obj.put("id", "E");
+		obj.put("desc", "Em envio");
+		retornoarray.add(obj);
+		
+		obj = new JSONObject();
+		obj.put("id", "R");
+		obj.put("desc", "Recusado");
+		retornoarray.add(obj);
+		
+
+		
+		
+		return retornoarray;
+	}
 
 	public static String returnModoPagamento(String flag) {
 

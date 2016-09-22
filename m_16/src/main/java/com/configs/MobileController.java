@@ -164,6 +164,8 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 					carregaProdutos(request, response, conn, cod_usuario, false);
 				} else if (cmd.equalsIgnoreCase("carrega_bairros")) {
 					carregaBairros(request, response, conn, cod_usuario);
+				} else if (cmd.equalsIgnoreCase("carrega_distribuidoras")) {
+					carregaDistribuidora(request, response, conn, cod_usuario);
 				} else if (cmd.equalsIgnoreCase("carrega_cidade")) {
 					carregaCidade(request, response, conn, cod_usuario);
 				} else if (cmd.equalsIgnoreCase("carregaLocationUser")) {
@@ -177,6 +179,8 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 				} else if (cod_usuario == sys.getSys_id_visistante()) {// operações daqui para cima, são validas para visitante.
 					objRetorno.put("guest", "true");
 					throw new Exception("Você está acessando como visitante. Para poder realizar esta operação você deve criar uma conta no S.O.S Trago.");
+				} else if (cmd.equalsIgnoreCase("carrega_situacaoes")) {
+					carregaSitucaoes(request, response, conn, cod_usuario);
 				} else if (cmd.equalsIgnoreCase("trocarEmail")) {
 					trocarEmail(request, response, conn, cod_usuario, sys);
 				} else if (cmd.equalsIgnoreCase("trocarSenha")) {
@@ -485,6 +489,14 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 		String codbairro = request.getParameter("codbairro") == null ? "" : request.getParameter("codbairro");
 		String codcidade = request.getParameter("codcidade") == null ? "" : request.getParameter("codcidade");
 
+		if(codcidade.equalsIgnoreCase("")){
+			throw new Exception("Cidade inválida.");
+		}
+		
+		if(codbairro.equalsIgnoreCase("")){
+			throw new Exception("Bairro inválida.");
+		}
+		
 		String sql = "SELECT COD_CIDADE from  cidade where COD_CIDADE  = ? ";
 		PreparedStatement st = conn.prepareStatement(sql);
 		st.setLong(1, Long.parseLong(codcidade));
@@ -535,7 +547,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 			String desc_endereco = request.getParameter("c_endereco") == null ? "" : request.getParameter("c_endereco");
 			String desc_endereco_num = request.getParameter("c_desc_endereco_num") == null ? "" : request.getParameter("c_desc_endereco_num");
 			String desc_endereco_complemento = request.getParameter("c_desc_endereco_complemento") == null ? "" : request.getParameter("c_desc_endereco_complemento");
-			String cod_bairro = request.getParameter("c_bairro") == "" ? null : request.getParameter("c_bairro");
+			String cod_bairro = request.getParameter("c_bairro") ==   null  ? "" : request.getParameter("c_bairro");
 			String desc_telefone = request.getParameter("c_telefone") == null ? "" : request.getParameter("c_telefone");
 
 			String desc_cartao = request.getParameter("c_numcartao") == null ? "" : request.getParameter("c_numcartao");
@@ -718,8 +730,16 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 		st.setInt(1, codcidade);
 		rs = st.executeQuery();
 
+		JSONObject bairro = new JSONObject();
+		bairro.put("cod_bairro", "");
+		bairro.put("desc_bairro", "Escolha um bairro");
+
+		retorno.add(bairro);
+
+		
+		
 		while (rs.next()) {
-			JSONObject bairro = new JSONObject();
+			bairro = new JSONObject();
 			bairro.put("cod_bairro", rs.getString("cod_bairro"));
 			bairro.put("desc_bairro", rs.getString("desc_bairro"));
 
@@ -728,7 +748,52 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 
 		out.print(retorno.toJSONString());
 	}
+	
+	private static void carregaSitucaoes(HttpServletRequest request, HttpServletResponse response, Connection conn, long cod_usuario) throws Exception {
+		PrintWriter out = response.getWriter();
+		out.print(Utilitario.returnJsonStatusPedidoFlag().toJSONString());
+	}
+	
+	private static void carregaDistribuidora(HttpServletRequest request, HttpServletResponse response, Connection conn, long cod_usuario) throws Exception {
+		JSONArray retorno = new JSONArray();
+		PrintWriter out = response.getWriter();
 
+		String sql = "SELECT cod_cidade from  usuario where id_usuario  = ? ";
+		PreparedStatement st = conn.prepareStatement(sql);
+		st.setLong(1, cod_usuario);
+		ResultSet rs = st.executeQuery();
+		int codcidade = 0;// para o momento vai ser sempre 1 igual.
+		if (rs.next()) {
+
+			codcidade = rs.getInt("cod_cidade");
+		}
+
+		if (codcidade == 0) {// TODO
+			codcidade = 1;
+		}
+
+		st = conn.prepareStatement("SELECT * from  distribuidora where cod_cidade  = ? ");
+		st.setInt(1, codcidade);
+		rs = st.executeQuery();
+
+		
+		JSONObject distr = new JSONObject();
+		distr.put("id_distribuidora", "");
+		distr.put("desc_nome_abrev", "Escolha uma distribuidora");
+
+		retorno.add(distr);
+		
+		while (rs.next()) {
+			distr = new JSONObject();
+			distr.put("id_distribuidora", rs.getString("ID_DISTRIBUIDORA"));
+			distr.put("desc_nome_abrev", rs.getString("DESC_NOME_ABREV"));
+
+			retorno.add(distr);
+		}
+
+		out.print(retorno.toJSONString());
+	}
+	
 	private static void carregaCidade(HttpServletRequest request, HttpServletResponse response, Connection conn, long cod_usuario) throws Exception {
 		JSONArray retorno = new JSONArray();
 		PrintWriter out = response.getWriter();
@@ -873,17 +938,19 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 		String valini = request.getParameter("val_ini") == null ? "" : request.getParameter("val_ini");
 		String valfim = request.getParameter("val_fim") == null ? "" : request.getParameter("val_fim");
 		String flagsituacao = request.getParameter("flagsituacao") == null ? "" : request.getParameter("flagsituacao");
-		String distribuidora = request.getParameter("flagsituacao") == null ? "" : request.getParameter("flagsituacao");
-		String idproduto = request.getParameter("idproduto") == null ? "" : request.getParameter("idproduto");
+		String distribuidora = request.getParameter("distribuidora") == null ? "" : request.getParameter("distribuidora");
+		String desc_prod = request.getParameter("desc_prod") == null ? "" : request.getParameter("desc_prod");
 		String cod_bairro = request.getParameter("cod_bairro") == null ? "" : request.getParameter("cod_bairro");
 
 		StringBuffer sql = new StringBuffer();
-		sql.append(" select NUM_PED,DATA_PEDIDO,VAL_TOTALPROD,FLAG_STATUS,Coalesce(VAL_ENTREGA,0) as VAL_ENTREGA,DESC_NOME_ABREV,id_pedido from pedido ");
+		sql.append(" select pedido.cod_bairro,NUM_PED,DATA_PEDIDO,VAL_TOTALPROD,FLAG_STATUS,Coalesce(VAL_ENTREGA,0) as VAL_ENTREGA,DESC_NOME_ABREV,id_pedido from pedido ");
 		sql.append(" inner join distribuidora ");
 		sql.append(" on distribuidora.ID_DISTRIBUIDORA  = pedido.ID_DISTRIBUIDORA ");
+		
+
 
 		if (!numero.equalsIgnoreCase("")) {
-			sql.append(" and numero = ? ");
+			sql.append(" and NUM_PED = ? ");
 		}
 
 		if (!(dataini.equalsIgnoreCase(""))) {
@@ -895,11 +962,11 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 		}
 
 		if (!valini.equalsIgnoreCase("")) {
-			sql.append("  and  VAL_TOTALPROD >= ? ");
+			sql.append("  and  (VAL_TOTALPROD + VAL_ENTREGA) >= ? ");
 		}
 
 		if (!valfim.equalsIgnoreCase("")) {
-			sql.append("  and  VAL_TOTALPROD <= ? ");
+			sql.append("  and  (VAL_TOTALPROD + VAL_ENTREGA) <= ? ");
 		}
 
 		if (!flagsituacao.equalsIgnoreCase("")) {
@@ -910,8 +977,8 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 			sql.append("  and  pedido.ID_DISTRIBUIDORA = ? ");
 		}
 
-		if (!idproduto.equalsIgnoreCase("")) {
-			sql.append(" and exists (select 1 from pedido_item where pedido_item.id_pedido  = 	pedido.id_pedido and id_prod = ? )");
+		if (!desc_prod.equalsIgnoreCase("")) {
+			sql.append(" and exists (select 1 from pedido_item where pedido_item.id_pedido  = 	pedido.id_pedido and id_prod in (select id_prod from produtos where desc_prod like ?) )");
 		}
 
 		if (!cod_bairro.equalsIgnoreCase("")) {
@@ -966,8 +1033,9 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 			contparam++;
 		}
 
-		if (!idproduto.equalsIgnoreCase("")) {
-			st.setLong(contparam, Long.parseLong(idproduto));
+		if (!desc_prod.equalsIgnoreCase("")) {
+			
+			st.setString(contparam,"%"+desc_prod+"%" );
 			contparam++;
 		}
 
@@ -991,12 +1059,16 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 			prod.put("FLAG_STATUS", Utilitario.returnStatusPedidoFlag(rs.getString("FLAG_STATUS")));
 			prod.put("DESC_NOME_ABREV", rs.getString("DESC_NOME_ABREV"));
 			prod.put("id_pedido", rs.getString("id_pedido"));
- 
+			prod.put("desc_bairro",Utilitario.getNomeBairro(conn, rs.getInt("cod_bairro"), 0) );
+			
+			
+			
 			prods.add(prod);
 		}
 
 		ret.put("pedidos", prods);
 		ret.put("maxvalue", Math.ceil(maxvalue) );
+		
 		
 		out.print(ret.toJSONString());
 	}
