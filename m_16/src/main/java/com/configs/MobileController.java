@@ -1116,23 +1116,35 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 			// NUM_PED,DATA_PEDIDO,VAL_TOTALPROD,FLAG_STATUS,DESC_NOME_ABREV,id_pedido
 			ped.put("num_ped", rs.getString("NUM_PED"));
 			ped.put("data_pedido", new SimpleDateFormat("dd/MM/yyyy HH:mm").format(rs.getTimestamp("DATA_PEDIDO")));
-			ped.put("val_totalprod", rs.getString("VAL_TOTALPROD"));
+			if(rs.getTimestamp("DATA_PEDIDO_RESPOSTA")!=null){
+				ped.put("data_pedidoresp", new SimpleDateFormat("dd/MM/yyyy HH:mm").format(rs.getTimestamp("DATA_PEDIDO_RESPOSTA")));
+			}else{
+				ped.put("data_pedidoresp", "Não respondido.");
+			}
+			ped.put("val_totalprod","R$ "+df2.format(rs.getDouble("VAL_TOTALPROD")));
 			ped.put("flag_status", Utilitario.returnStatusPedidoFlag(rs.getString("FLAG_STATUS")));
 			ped.put("desc_nome_abrev", rs.getString("DESC_NOME_ABREV"));
 			ped.put("id_pedido", rs.getString("id_pedido"));
-			ped.put("val_entrega", rs.getString("val_entrega"));
+			ped.put("val_entrega", "R$ "+ df2.format(rs.getDouble("val_entrega")));
+			
+			ped.put("val_total", "R$ "+ df2.format(rs.getDouble("val_entrega")+rs.getDouble("VAL_TOTALPROD")));
+			String end = rs.getString("desc_endereco_entrega") == null ? "" : rs.getString("desc_endereco_entrega");
+			String num = rs.getString("desc_endereco_num_entrega") == null ? "" : rs.getString("desc_endereco_num_entrega");
+			String compl = rs.getString("desc_endereco_complemento_entrega") == null ? "" : rs.getString("desc_endereco_complemento_entrega");
+			
+			ped.put("endereco_completo",end + " " + num +" " + compl);
 			ped.put("desc_razao_social", rs.getString("desc_razao_social"));
 			ped.put("desc_bairro", rs.getString("desc_bairro"));
 			ped.put("desc_endereco_entrega", rs.getString("desc_endereco_entrega"));
 			ped.put("desc_endereco_num_entrega", rs.getString("desc_endereco_num_entrega"));
 			ped.put("desc_endereco_complemento_entrega", rs.getString("desc_endereco_complemento_entrega"));
-			ped.put("tempo_entrega", new SimpleDateFormat("HH:mm").format(rs.getTimestamp("TEMPO_ESTIMADO_ENTREGA")));
+			ped.put("tempo_entrega",rs.getTimestamp("TEMPO_ESTIMADO_ENTREGA") == null ?"" : new SimpleDateFormat("HH:mm").format(rs.getTimestamp("TEMPO_ESTIMADO_ENTREGA")));
 
 			StringBuffer sql2 = new StringBuffer();
 			sql2.append("select DESC_PROD, VAL_UNIT, QTD_PROD, QTD_PROD * VAL_UNIT   as total, DESC_ABREVIADO, produtos.id_prod from pedido_item ");
 			sql2.append("inner join produtos ");
 			sql2.append("on produtos.ID_PROD  = pedido_item.ID_PROD ");
-			sql2.append("where id_pedido = ? ");
+			sql2.append("where id_pedido = ? order by desc_prod");
 
 			JSONArray produtos = new JSONArray();
 
@@ -1144,9 +1156,9 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 				JSONObject prod = new JSONObject();
 
 				prod.put("desc_prod", rs2.getString("DESC_PROD"));
-				prod.put("val_unit", rs2.getString("VAL_UNIT"));
+				prod.put("val_unit", df2.format(rs2.getDouble("VAL_UNIT")));
 				prod.put("qtd_prod", rs2.getString("QTD_PROD"));
-				prod.put("total", rs2.getString("total"));
+				prod.put("total", df2.format(rs2.getDouble("total")));
 				prod.put("id_prod", rs2.getString("id_prod"));
 				prod.put("desc_abreviado", rs2.getString("DESC_ABREVIADO"));
 
