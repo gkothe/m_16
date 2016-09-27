@@ -158,7 +158,10 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 					throw new Exception("Servidor está em manutenção. Tente novamente mais tarde. Cheers! ");
 				}
 
-				if (cmd.equalsIgnoreCase("carregaProdutos")) {
+				
+				if (cmd.equalsIgnoreCase("descbairro")) {
+					descBairro(request, response, conn);
+				}else if (cmd.equalsIgnoreCase("carregaProdutos")) {
 					carregaProdutos(request, response, conn, cod_usuario, true);
 				} else if (cmd.equalsIgnoreCase("detalheProdutos")) {
 					carregaProdutos(request, response, conn, cod_usuario, false);
@@ -257,6 +260,16 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 		out.print(Utilitario.payments_ids().toJSONString());
 	}
 
+	private static void descBairro(HttpServletRequest request, HttpServletResponse response, Connection conn) throws Exception {
+		PrintWriter out = response.getWriter();
+		String cod = request.getParameter("cod") == null ? "" : request.getParameter("cod");	
+	
+		JSONObject objRetorno = new JSONObject();
+		objRetorno.put("descbairro", 	Utilitario.getNomeBairro(conn,Integer.parseInt(cod), 0));
+		out.print(objRetorno.toJSONString());
+	}
+	
+	
 	private static void confirmaIdade(HttpServletRequest request, HttpServletResponse response, Connection conn, long cod_usuario, Sys_parametros sys) throws Exception {
 
 		PrintWriter out = response.getWriter();
