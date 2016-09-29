@@ -99,7 +99,9 @@ function removerPeriodo(periodo) {
 }
 
 function salvarconfigs() {
-
+	$.blockUI({
+		message : 'Salvando...'
+	});
 	var bairrosbox = [];
 
 	$('.bairripick').each(function() {
@@ -145,9 +147,10 @@ function salvarconfigs() {
 			} else {
 				alert(data.erro);
 			}
-
+			$.unblockUI();
 		},
 		error : function(data) {
+			$.unblockUI();
 			alert(data.responseText);
 		}
 	});

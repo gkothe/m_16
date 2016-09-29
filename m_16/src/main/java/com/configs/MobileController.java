@@ -161,10 +161,10 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 				
 				if (cmd.equalsIgnoreCase("descbairro")) {
 					descBairro(request, response, conn);
+				}else if (cmd.equalsIgnoreCase("valprodmax")) {
+					getValprodMax(request, response, conn,cod_usuario);
 				}else if (cmd.equalsIgnoreCase("carregaProdutos")) {
 					carregaProdutos(request, response, conn, cod_usuario, true);
-				} else if (cmd.equalsIgnoreCase("detalheProdutos")) {
-					carregaProdutos(request, response, conn, cod_usuario, false);
 				} else if (cmd.equalsIgnoreCase("carrega_bairros")) {
 					carregaBairros(request, response, conn, cod_usuario);
 				} else if (cmd.equalsIgnoreCase("carrega_distribuidoras")) {
@@ -493,6 +493,35 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 
 	}
 
+	
+	private static void getValprodMax(HttpServletRequest request, HttpServletResponse response, Connection conn, long cod_usuario) throws Exception {
+
+		PrintWriter out = response.getWriter();
+		JSONObject objRetorno = new JSONObject();
+		// if (cod_usuario.equalsIgnoreCase("") || cod_usuario == null || cod_usuario.equalsIgnoreCase("0")) {
+		// throw new Exception("Usuário inválido.");
+		// } else
+		{
+
+			PreparedStatement st = conn.prepareStatement(" select max(VAL_PROD) as val_prod from produtos_distribuidora where FLAG_ATIVO = 'S' ");
+			
+			ResultSet rs = st.executeQuery();
+			if (rs.next()) {
+
+				objRetorno.put("val_prod", rs.getString("VAL_PROD"));
+			
+
+			}
+
+			objRetorno.put("msg", "ok");
+
+		}
+
+		out.print(objRetorno.toJSONString());
+
+	}
+	
+	
 	private static void saveLocationUser(HttpServletRequest request, HttpServletResponse response, Connection conn, long cod_usuario) throws Exception {
 		// TODO tela de inserir nao foi definada ainda como vai ser.
 		PrintWriter out = response.getWriter();
@@ -825,14 +854,14 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 	}
 
 	private static void carregaProdutos(HttpServletRequest request, HttpServletResponse response, Connection conn, long cod_usuario, boolean listagem) throws Exception {
-
+		JSONObject retorno = new JSONObject();
 		PrintWriter out = response.getWriter();
 
 		String cod_bairro = request.getParameter("cod_bairro") == null ? "" : request.getParameter("cod_bairro");
 		String distribuidora = request.getParameter("distribuidora") == null ? "" : request.getParameter("distribuidora");
 		String desc_pesquisa = request.getParameter("desc_pesquisa") == null ? "" : request.getParameter("desc_pesquisa");
-		String valini = request.getParameter("val_ini") == null ? "" : request.getParameter("val_ini");
-		String valfim = request.getParameter("val_fim") == null ? "" : request.getParameter("val_fim");
+		String valini = request.getParameter("valini") == null ? "" : request.getParameter("valini");
+		String valfim = request.getParameter("valfim") == null ? "" : request.getParameter("valfim");
 		String idproduto = request.getParameter("idproduto") == null ? "" : request.getParameter("idproduto");
 
 		if (cod_bairro.equalsIgnoreCase("")) {
@@ -857,14 +886,17 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 		}
 
 		sql = new StringBuffer();
-		sql.append(" select ");
+		sql.append("select * from ( ");
+		sql.append(" ");
+		sql.append("select ");
 		sql.append(" produtos.ID_PROD, ");
 		sql.append(" DESC_PROD, ");
 		sql.append(" DESC_ABREVIADO, ");
 		sql.append(" produtos_distribuidora.VAL_PROD, ");
 		sql.append(" distribuidora.ID_DISTRIBUIDORA, ");
 		sql.append(" produtos_distribuidora.ID_PROD_DIST, ");
-		sql.append(" DESC_NOME_ABREV ");
+		sql.append(" DESC_NOME_ABREV  ");
+		
 		sql.append(" from produtos ");
 		sql.append(" inner join produtos_distribuidora ");
 		sql.append(" on produtos_distribuidora.id_prod = produtos.id_prod ");
@@ -873,43 +905,83 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 		sql.append(" inner join distribuidora_bairro_entrega ");
 		sql.append(" on distribuidora_bairro_entrega.ID_DISTRIBUIDORA = distribuidora.ID_DISTRIBUIDORA ");
 		sql.append(" inner join distribuidora_horario_dia_entre ");
-		sql.append(" on distribuidora_horario_dia_entre.ID_DISTR_BAIRRO   = distribuidora_bairro_entrega.ID_DISTR_BAIRRO");
-		sql.append(" where produtos_distribuidora.FLAG_ATIVO = 'S' and distribuidora.FLAG_ATIVO_MASTER ='S' and distribuidora.FLAG_ATIVO='S' and cod_bairro = ?  and cod_dia = ? and ? between horario_ini and horario_fim ");
+		sql.append(" on distribuidora_horario_dia_entre.ID_DISTR_BAIRRO   = distribuidora_bairro_entrega.ID_DISTR_BAIRRO ");
+		sql.append(" where produtos_distribuidora.FLAG_ATIVO = 'S' and distribuidora.FLAG_ATIVO_MASTER ='S' and distribuidora.FLAG_ATIVO='S' ");
+		sql.append(" and cod_bairro = ?  and cod_dia = ? and ? between horario_ini and horario_fim and flag_custom = 'N' ");
+		sql.append("  ");
+		sql.append("union all ");
+		sql.append(" ");
+		sql.append(" select ");
+		sql.append(" produtos.ID_PROD, ");
+		sql.append(" DESC_PROD, ");
+		sql.append(" DESC_ABREVIADO, ");
+		sql.append(" produtos_distribuidora.VAL_PROD, ");
+		sql.append(" distribuidora.ID_DISTRIBUIDORA, ");
+		sql.append(" produtos_distribuidora.ID_PROD_DIST, ");
+		sql.append(" DESC_NOME_ABREV  ");
+		
+		sql.append(" from produtos ");
+		sql.append(" inner join produtos_distribuidora ");
+		sql.append(" on produtos_distribuidora.id_prod = produtos.id_prod ");
+		sql.append(" inner join distribuidora ");
+		sql.append(" on produtos_distribuidora.ID_DISTRIBUIDORA = distribuidora.ID_DISTRIBUIDORA ");
+		sql.append(" inner join distribuidora_bairro_entrega ");
+		sql.append(" on distribuidora_bairro_entrega.ID_DISTRIBUIDORA = distribuidora.ID_DISTRIBUIDORA ");
+		sql.append(" inner join distribuidora_horario_dia_entre ");
+		sql.append(" on distribuidora_horario_dia_entre.ID_DISTR_BAIRRO   = distribuidora_bairro_entrega.ID_DISTR_BAIRRO ");
+		sql.append(" where produtos_distribuidora.FLAG_ATIVO = 'S' and distribuidora.FLAG_ATIVO_MASTER ='S' and distribuidora.FLAG_ATIVO='S' ");
+		sql.append(" and cod_bairro = ?  and cod_dia = 8 and ? between horario_ini and horario_fim and flag_custom = 'S' ");
+		sql.append("  ");
+		sql.append(") as  tab ");
+		
+		sql.append("where 1=1 ");
+		
+
+		
 		if (listagem) {// se for listagem de todos produtos ou de um especifico, tela de detalhes.
-			sql.append(" and desc_prod  like ? ");
+			sql.append(" and tab.desc_prod  like ? ");
 		} else {
-			sql.append(" and produtos_distribuidora.id_prod  =  ?  ");
+			sql.append(" and tab.id_prod  =  ?  ");
 		}
 
 		if (!distribuidora.equalsIgnoreCase("")) {
-			sql.append(" and id_distribuidora = ?");
+			sql.append(" and tab.id_distribuidora = ?");
 		}
 
 		if (!valini.equalsIgnoreCase("")) {
-			sql.append("  and  produtos_distribuidora.VAL_PROD >= ? ");
+			sql.append("  and  tab.VAL_PROD >= ? ");
 		}
 
 		if (!valfim.equalsIgnoreCase("")) {
-			sql.append("  and  produtos_distribuidora.VAL_PROD <= ? ");
+			sql.append("  and  tab.VAL_PROD <= ? ");
 		}
 
-		sql.append("  order by  data_pedido desc limit 20 ");
+		
+		sql.append(" order by tab.DESC_PROD desc limit 20");
+		
+		
 
 		Calendar cal = Calendar.getInstance();
 		SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
 		st = conn.prepareStatement(sql.toString());
 		st.setInt(1, Integer.parseInt(cod_bairro));
-
-		st.setInt(2, Utilitario.diaSemana(conn, Integer.parseInt(distribuidora))); //
+		st.setInt(2, Utilitario.diaSemanaSimple(conn)); //
 		st.setString(3, sdf.format(cal.getTime()));
+		st.setInt(4, Integer.parseInt(cod_bairro));
+		st.setString(5, sdf.format(cal.getTime()));
+		
+		
+		int contparam = 6;
 
 		if (listagem) {
-			st.setString(4, "%" + desc_pesquisa + "%");
+			st.setString(contparam, "%" + desc_pesquisa + "%");
+			contparam++;
 		} else {
-			st.setInt(4, Integer.parseInt(idproduto));
+			st.setInt(contparam, Integer.parseInt(idproduto));
+			contparam++;
 		}
 
-		int contparam = 5;
+		
 		if (!distribuidora.equalsIgnoreCase("")) {
 			st.setInt(contparam, Integer.parseInt(distribuidora));
 			contparam++;
@@ -938,7 +1010,10 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 			prods.add(prod);
 		}
 
-		out.print(prods.toJSONString());
+		retorno.put("prods", prods);
+		retorno.put("msg", "ok");
+		
+		out.print(retorno.toJSONString());
 	}
 
 	private static void carregaPedidos(HttpServletRequest request, HttpServletResponse response, Connection conn, long cod_usuario) throws Exception {
