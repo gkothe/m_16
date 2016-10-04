@@ -201,10 +201,10 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 					carregaPedidos(request, response, conn, cod_usuario);
 				} else if (cmd.equalsIgnoreCase("carregaPedidoUnico")) {
 					carregaPedidoUnico(request, response, conn, cod_usuario);
-				}else if (cmd.equalsIgnoreCase("carregaItemCarrinho")) {
-					carregaCarrinho(request, response, conn, cod_usuario,true);
+				} else if (cmd.equalsIgnoreCase("carregaItemCarrinho")) {
+					carregaCarrinho(request, response, conn, cod_usuario, true);
 				} else if (cmd.equalsIgnoreCase("carregaCarrinho")) {
-					carregaCarrinho(request, response, conn, cod_usuario,false);
+					carregaCarrinho(request, response, conn, cod_usuario, false);
 				} else if (cmd.equalsIgnoreCase("addCarrinho")) {
 					addCarrinho(request, response, conn, cod_usuario);
 				} else if (cmd.equalsIgnoreCase("criarPedido")) {
@@ -858,7 +858,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 		String desc_pesquisa = request.getParameter("desc_pesquisa") == null ? "" : request.getParameter("desc_pesquisa");
 		String valini = request.getParameter("valini") == null ? "" : request.getParameter("valini");
 		String valfim = request.getParameter("valfim") == null ? "" : request.getParameter("valfim");
-		String idproduto = request.getParameter("idproduto") == null ? "" : request.getParameter("idproduto");
+		String idproddistr = request.getParameter("idproddistr") == null ? "" : request.getParameter("idproddistr");
 
 		if (cod_bairro.equalsIgnoreCase("")) {
 			throw new Exception("Nenhum bairro informado!");
@@ -881,7 +881,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 			distribuidora = rs.getString("id_distribuidora"); // se ja tem produtos no carrinho, ele vai usar a distribuidora que la se encontra
 		}
 
-		 sql = new StringBuffer();
+		sql = new StringBuffer();
 		sql.append("select * from ( ");
 		sql.append(" ");
 		sql.append(" select ");
@@ -893,8 +893,8 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 		sql.append(" distribuidora.ID_DISTRIBUIDORA, ");
 		sql.append(" produtos_distribuidora.ID_PROD_DIST, ");
 		sql.append(" DESC_NOME_ABREV , ");
-		sql.append(" carrinho_item.QTD ");
-		sql.append("  ");
+		sql.append(" carrinho_item.QTD, ");
+		sql.append(" distribuidora.VAL_ENTREGA_MIN ");
 		sql.append(" ");
 		sql.append(" from produtos ");
 		sql.append(" inner join produtos_distribuidora ");
@@ -928,7 +928,8 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 		sql.append(" distribuidora.ID_DISTRIBUIDORA, ");
 		sql.append(" produtos_distribuidora.ID_PROD_DIST, ");
 		sql.append(" DESC_NOME_ABREV , ");
-		sql.append(" carrinho_item.QTD ");
+		sql.append(" carrinho_item.QTD, ");
+		sql.append(" distribuidora.VAL_ENTREGA_MIN ");
 		sql.append("  ");
 		sql.append(" ");
 		sql.append(" from produtos ");
@@ -954,14 +955,14 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 		sql.append(") as  tab ");
 		sql.append(" ");
 		sql.append(" ");
-		
 
-		sql.append("where 1=1 ");
+		sql.append(" where 1=1 ");
 
 		if (listagem) {// se for listagem de todos produtos ou de um especifico, tela de detalhes.
 			sql.append(" and tab.desc_prod  like ? ");
 		} else {
-			sql.append(" and tab.id_prod  =  ?  ");
+			// sql.append(" and tab.id_prod = ? ");
+			sql.append(" and tab.ID_PROD_DIST  =  ?  ");
 		}
 
 		if (!distribuidora.equalsIgnoreCase("")) {
@@ -993,7 +994,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 			st.setString(contparam, "%" + desc_pesquisa + "%");
 			contparam++;
 		} else {
-			st.setInt(contparam, Integer.parseInt(idproduto));
+			st.setInt(contparam, Integer.parseInt(idproddistr));
 			contparam++;
 		}
 
@@ -1013,29 +1014,58 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 		}
 
 		rs = st.executeQuery();
-		JSONArray prods = new JSONArray();
-		while (rs.next()) {
-			JSONObject prod = new JSONObject();
-			prod.put("ID_PROD", rs.getString("ID_PROD"));
-			prod.put("ID_PROD_DIST", rs.getString("ID_PROD_DIST"));
-			prod.put("QTD", rs.getString("QTD")==null?"": rs.getString("QTD"));
-			prod.put("DESC_PROD", rs.getString("DESC_PROD"));
-			prod.put("DESC_ABREVIADO", rs.getString("DESC_ABREVIADO"));// abreviado do produto
-			prod.put("VAL_PROD", "R$ " + df2.format(rs.getDouble("VAL_PROD")));// TODO trazer formatado se nao conseguir tratar no front end.
-			prod.put("ID_DISTRIBUIDORA", rs.getString("ID_DISTRIBUIDORA"));
-			prod.put("DESC_NOME_ABREV", rs.getString("DESC_NOME_ABREV"));/// abreviado da distribuidora
-			prods.add(prod);
-		}
 
-		retorno.put("prods", prods);
-		retorno.put("valcar", df2.format(retornaValCarrinho(cod_usuario, conn)));
+		if (listagem) {
+
+			JSONArray prods = new JSONArray();
+			while (rs.next()) {
+				JSONObject prod = new JSONObject();
+				prod.put("ID_PROD", rs.getString("ID_PROD"));
+				prod.put("ID_PROD_DIST", rs.getString("ID_PROD_DIST"));
+				prod.put("QTD", rs.getString("QTD") == null ? "" : rs.getString("QTD"));
+				prod.put("DESC_PROD", rs.getString("DESC_PROD"));
+				prod.put("DESC_ABREVIADO", rs.getString("DESC_ABREVIADO"));// abreviado do produto
+				prod.put("VAL_PROD", "R$ " + df2.format(rs.getDouble("VAL_PROD")));// TODO trazer formatado se nao conseguir tratar no front end.
+				prod.put("ID_DISTRIBUIDORA", rs.getString("ID_DISTRIBUIDORA"));
+				prod.put("DESC_NOME_ABREV", rs.getString("DESC_NOME_ABREV"));/// abreviado da distribuidora
+				prods.add(prod);
+			}
+			double valcar  = retornaValCarrinho(cod_usuario, conn);
+			if(valcar!=0){
+				retorno.put("temcar", true);
+			}else{
+				retorno.put("temcar", false);
+			}
+			retorno.put("fp_distr", distribuidora+"");
+			retorno.put("valcar", df2.format(valcar));
+			retorno.put("prods", prods);
+
+		} else {
+
+			if (rs.next()) {
+
+				retorno.put("ID_PROD", rs.getString("ID_PROD"));
+				retorno.put("ID_PROD_DIST", rs.getString("ID_PROD_DIST"));
+				retorno.put("QTD", rs.getString("QTD") == null ? "" : rs.getInt("QTD"));
+				retorno.put("DESC_PROD", rs.getString("DESC_PROD"));
+				retorno.put("DESC_ABREVIADO", rs.getString("DESC_ABREVIADO"));// abreviado do produto
+				retorno.put("VAL_PROD", rs.getDouble("VAL_PROD"));// TODO trazer formatado se nao conseguir tratar no front end.
+				retorno.put("ID_DISTRIBUIDORA", rs.getString("ID_DISTRIBUIDORA"));
+				retorno.put("DESC_NOME_ABREV", rs.getString("DESC_NOME_ABREV"));/// abreviado da distribuidora
+				retorno.put("val_minentrega", rs.getString("VAL_ENTREGA_MIN"));///
+				retorno.put("valcar", df2.format(retornaValCarrinho(cod_usuario, conn) - (rs.getInt("QTD") * rs.getDouble("VAL_PROD") ) ));
+			}
+
+			
+		}
+	
 		retorno.put("msg", "ok");
 
 		out.print(retorno.toJSONString());
 	}
-	
-	private static double  retornaValCarrinho(long cod_usuario, Connection conn) throws Exception{
-		StringBuffer	sql = new StringBuffer();
+
+	private static double retornaValCarrinho(long cod_usuario, Connection conn) throws Exception {
+		StringBuffer sql = new StringBuffer();
 		sql.append("select sum(val_prod*qtd) as valcar from carrinho ");
 		sql.append(" ");
 		sql.append("inner join carrinho_item ");
@@ -1045,23 +1075,21 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 		PreparedStatement st = conn.prepareStatement(sql.toString());
 		ResultSet rs = st.executeQuery();
 		if (rs.next()) {
-			valcar = (rs.getDouble("valcar")); 
+			valcar = (rs.getDouble("valcar"));
 		}
-		
+
 		return valcar;
 	}
-	
-	
+
 	private static void carregaValCarrinho(HttpServletRequest request, HttpServletResponse response, Connection conn, long cod_usuario) throws Exception {
-		
+
 		JSONObject retorno = new JSONObject();
 		PrintWriter out = response.getWriter();
 		retorno.put("valcar", df2.format(retornaValCarrinho(cod_usuario, conn)));
 		out.print(retorno.toJSONString());
-		
+
 	}
-	
-	
+
 	private static void carregaPedidos(HttpServletRequest request, HttpServletResponse response, Connection conn, long cod_usuario) throws Exception {
 
 		PrintWriter out = response.getWriter();
@@ -1382,12 +1410,12 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 			carrinho.put("produtos", carrinhoitem);
 		} else {
 
-			if(rs.next()){
+			if (rs.next()) {
 				carrinho.put("qtd", rs.getString("qtd"));
-			}else{
+			} else {
 				carrinho.put("qtd", 0);
 			}
-			
+
 		}
 
 		// System.out.println(carrinho.toJSONString());
