@@ -195,8 +195,6 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 					updateUser(request, response, conn, cod_usuario);
 				} else if (cmd.equalsIgnoreCase("carrega_user")) {
 					carregaUser(request, response, conn, cod_usuario);
-				} else if (cmd.equalsIgnoreCase("doOrder")) {
-					payment(request, response, conn);
 				} else if (cmd.equalsIgnoreCase("carregaPedidos")) {
 					carregaPedidos(request, response, conn, cod_usuario);
 				} else if (cmd.equalsIgnoreCase("carregaPedidoUnico")) {
@@ -237,7 +235,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 		}
 	}
 
-	private static void payment(HttpServletRequest request, HttpServletResponse response, Connection conn) throws Exception {
+	private static void payment(HttpServletRequest request, HttpServletResponse response, Connection conn, long id_usuario, String email) throws Exception {
 
 		PrintWriter out = response.getWriter();
 
@@ -246,15 +244,16 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 		MP mp = new MP("TEST-3928083096731492-072914-2aa78c35c6f210a6322c4acf9abe4d14__LD_LC__-222772872");
 
 		String token = request.getParameter("token");
-		String email = request.getParameter("email");
 		String paymentMethodId = request.getParameter("paymentMethodId");
 
 		org.codehaus.jettison.json.JSONObject payment = mp.post("/v1/payments", "{" + "'transaction_amount': 100," + "'token': " + token + "," + "'description': 'Title of what you are paying for'," + "'installments': 1," + "'payment_method_id': '" + paymentMethodId + "'," + "'payer': {" + "'email': '" + email + "'" + "}" + "}");
-
 		System.out.println(payment);
+		if (payment.get("status").toString().equalsIgnoreCase("400") || payment.get("status").toString().equalsIgnoreCase("404") || payment.get("status").toString().equalsIgnoreCase("403")) {
+			throw new Exception(((org.codehaus.jettison.json.JSONObject) payment.get("response")).get("message").toString());
+		}
 
-		objRetorno.put("msg", "ok");
-		out.print(objRetorno.toJSONString());
+		// objRetorno.put("msg", "ok");
+		// out.print(objRetorno.toJSONString());
 
 	}
 
@@ -296,7 +295,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 	}
 
 	private static void recSenha(HttpServletRequest request, HttpServletResponse response, Connection conn) throws Exception {
-		// TODO tela de inserir nao foi definada ainda como vai ser.
+
 		PrintWriter out = response.getWriter();
 
 		JSONObject objRetorno = new JSONObject();
@@ -325,7 +324,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 	}
 
 	private static void inserirUser(HttpServletRequest request, HttpServletResponse response, Connection conn, Sys_parametros sys) throws Exception {
-		// TODO tela de inserir nao foi definada ainda como vai ser.
+
 		PrintWriter out = response.getWriter();
 
 		JSONObject objRetorno = new JSONObject();
@@ -408,7 +407,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 	}
 
 	private static void trocarSenha(HttpServletRequest request, HttpServletResponse response, Connection conn, long cod_usuario, Sys_parametros sys) throws Exception {
-		// TODO tela de inserir nao foi definada ainda como vai ser.
+
 		PrintWriter out = response.getWriter();
 
 		JSONObject objRetorno = new JSONObject();
@@ -445,7 +444,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 	}
 
 	private static void trocarEmail(HttpServletRequest request, HttpServletResponse response, Connection conn, long cod_usuario, Sys_parametros sys) throws Exception {
-		// TODO tela de inserir nao foi definada ainda como vai ser.
+
 		PrintWriter out = response.getWriter();
 
 		JSONObject objRetorno = new JSONObject();
@@ -522,7 +521,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 	}
 
 	private static void saveLocationUser(HttpServletRequest request, HttpServletResponse response, Connection conn, long cod_usuario) throws Exception {
-		// TODO tela de inserir nao foi definada ainda como vai ser.
+
 		PrintWriter out = response.getWriter();
 
 		JSONObject objRetorno = new JSONObject();
@@ -1025,18 +1024,18 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 				prod.put("QTD", rs.getString("QTD") == null ? "" : rs.getString("QTD"));
 				prod.put("DESC_PROD", rs.getString("DESC_PROD"));
 				prod.put("DESC_ABREVIADO", rs.getString("DESC_ABREVIADO"));// abreviado do produto
-				prod.put("VAL_PROD", "R$ " + df2.format(rs.getDouble("VAL_PROD")));// TODO trazer formatado se nao conseguir tratar no front end.
+				prod.put("VAL_PROD", "R$ " + df2.format(rs.getDouble("VAL_PROD")));//
 				prod.put("ID_DISTRIBUIDORA", rs.getString("ID_DISTRIBUIDORA"));
 				prod.put("DESC_NOME_ABREV", rs.getString("DESC_NOME_ABREV"));/// abreviado da distribuidora
 				prods.add(prod);
 			}
-			double valcar  = retornaValCarrinho(cod_usuario, conn);
-			if(valcar!=0){
+			double valcar = retornaValCarrinho(cod_usuario, conn);
+			if (valcar != 0) {
 				retorno.put("temcar", true);
-			}else{
+			} else {
 				retorno.put("temcar", false);
 			}
-			retorno.put("fp_distr", distribuidora+"");
+			retorno.put("fp_distr", distribuidora + "");
 			retorno.put("valcar", df2.format(valcar));
 			retorno.put("prods", prods);
 
@@ -1049,16 +1048,15 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 				retorno.put("QTD", rs.getString("QTD") == null ? "" : rs.getInt("QTD"));
 				retorno.put("DESC_PROD", rs.getString("DESC_PROD"));
 				retorno.put("DESC_ABREVIADO", rs.getString("DESC_ABREVIADO"));// abreviado do produto
-				retorno.put("VAL_PROD", rs.getDouble("VAL_PROD"));// TODO trazer formatado se nao conseguir tratar no front end.
+				retorno.put("VAL_PROD", rs.getDouble("VAL_PROD"));//
 				retorno.put("ID_DISTRIBUIDORA", rs.getString("ID_DISTRIBUIDORA"));
 				retorno.put("DESC_NOME_ABREV", rs.getString("DESC_NOME_ABREV"));/// abreviado da distribuidora
 				retorno.put("val_minentrega", rs.getString("VAL_ENTREGA_MIN"));///
-				retorno.put("valcar", df2.format(retornaValCarrinho(cod_usuario, conn) - (rs.getInt("QTD") * rs.getDouble("VAL_PROD") ) ));
+				retorno.put("valcar", df2.format(retornaValCarrinho(cod_usuario, conn) - (rs.getInt("QTD") * rs.getDouble("VAL_PROD"))));
 			}
 
-			
 		}
-	
+
 		retorno.put("msg", "ok");
 
 		out.print(retorno.toJSONString());
@@ -1392,15 +1390,15 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 				obj.put("id_prod_dist", rs.getString("ID_PROD_DIST"));
 				obj.put("qtd", rs.getString("qtd"));
 				obj.put("val_prod", rs.getString("val_prod"));
-				obj.put("total",df2.format(rs.getInt("qtd") * rs.getDouble("val_prod")));
+				obj.put("total", rs.getInt("qtd") * rs.getDouble("val_prod"));
 				obj.put("desc_prod", rs.getString("DESC_PROD"));
 				obj.put("desc_abreviado", rs.getString("DESC_ABREVIADO"));
 				id_distribuidora = rs.getString("id_distribuidora");
 				DESC_RAZAO_SOCIAL = rs.getString("DESC_RAZAO_SOCIAL");
 				VAL_ENTREGA_MIN = rs.getString("VAL_ENTREGA_MIN");
-				subtotal = subtotal + rs.getDouble("val_prod");
+				subtotal = subtotal + (rs.getInt("qtd") * rs.getDouble("val_prod"));
 				frete = rs.getDouble("VAL_TELE_ENTREGA");
-				
+
 				carrinhoitem.add(obj);
 
 			}
@@ -1413,9 +1411,36 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 			carrinho.put("VAL_ENTREGA_MIN", VAL_ENTREGA_MIN);
 			carrinho.put("val_subtotal", subtotal);
 			carrinho.put("val_frete", frete);
-			carrinho.put("val_totalcarrinho", subtotal+frete);
+			carrinho.put("val_totalcarrinho", subtotal + frete);
 
 			carrinho.put("produtos", carrinhoitem);
+
+			sql = new StringBuffer();
+			sql.append(" select * from usuario ");
+			sql.append(" where id_usuario = ? ");
+
+			st = conn.prepareStatement(sql.toString());
+			st.setLong(1, (cod_usuario));
+
+			rs = st.executeQuery();
+			if (rs.next()) {
+
+				carrinho.put("desc_email", rs.getString("DESC_EMAIL"));
+				carrinho.put("desc_endereco", rs.getString("DESC_ENDERECO"));
+				carrinho.put("desc_endereco_num", rs.getString("DESC_ENDERECO_NUM"));
+				carrinho.put("desc_endereco_complemento", rs.getString("DESC_ENDERECO_COMPLEMENTO"));
+				carrinho.put("desc_cartao", rs.getString("DESC_CARTAO"));
+				carrinho.put("data_exp_mes", rs.getString("DATA_EXP_MES"));
+				carrinho.put("data_exp_ano", rs.getString("DATA_EXP_ANO"));
+				carrinho.put("desc_cardholdername", rs.getString("DESC_CARDHOLDERNAME"));
+				carrinho.put("pay_id", rs.getString("PAY_ID"));
+				carrinho.put("desc_cpf", rs.getString("DESC_CPF"));
+
+				carrinho.put("seccode", "");
+				carrinho.put("doctype", "CPF");
+
+			}
+
 		} else {
 
 			if (rs.next()) {
@@ -1584,11 +1609,11 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 
 	}
 
-	private static void validacaoFlagsDistribuidora(HttpServletRequest request, HttpServletResponse response, Connection conn, int id_distribuidora_prod) throws Exception {
+	private static double validacaoFlagsDistribuidora(HttpServletRequest request, HttpServletResponse response, Connection conn, int id_distribuidora_prod) throws Exception {
 		{
 
 			StringBuffer sql = new StringBuffer();// testa para ver se a distribuidora é compativel com o bairro no horario atual
-			sql.append(" select FLAG_ATIVO,FLAG_ATIVO_MASTER from  distribuidora where id_distribuidora = ? ");
+			sql.append(" select FLAG_ATIVO,FLAG_ATIVO_MASTER,VAL_ENTREGA_MIN from  distribuidora where id_distribuidora = ? ");
 			PreparedStatement st = conn.prepareStatement(sql.toString());
 			st.setLong(1, (id_distribuidora_prod));
 			ResultSet rs = st.executeQuery();
@@ -1600,10 +1625,12 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 				if (!rs.getString("FLAG_ATIVO_MASTER").equalsIgnoreCase("S")) {
 					throw new Exception("Distribuidora está desativada.");
 				}
+
+				return rs.getDouble("VAL_ENTREGA_MIN");// aproveitei pra trazer o valor junto, pra nao precisar faze otra função e consulta
 			}
 
 		}
-
+		return 0;
 	}
 
 	private static void validacaoTesteCarrinhoDistribuidora(HttpServletRequest request, HttpServletResponse response, Connection conn, long id_carrinho, int id_distribuidora_prod) throws Exception {
@@ -1683,10 +1710,10 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 		if (rs.next()) {
 			idcarrinho = rs.getLong("id_carrinho");
 
-			validacaoFlagsDistribuidora(request, response, conn, rs.getInt("ID_DISTRIBUIDORA"));
+			double valmin_entrgega = validacaoFlagsDistribuidora(request, response, conn, rs.getInt("ID_DISTRIBUIDORA"));
 			validacaoDisBairroHora(request, response, conn, rs.getInt("cod_bairro"), rs.getInt("ID_DISTRIBUIDORA"));
 			validacaoTesteCarrinhoDistribuidora(request, response, conn, idcarrinho, rs.getInt("ID_DISTRIBUIDORA"));// se um item do carrinho tiver uma distribuidora diferente, ele vai dar um erro
-
+			double subtotal = 0;
 			if (rs.getDouble("val_prod") == 0) {
 				throw new Exception("Erro, o valor dos produtos de seu pedido é R$ 0,00!.");
 			}
@@ -1754,9 +1781,13 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 				st.setDouble(3, rs2.getDouble("VAL_PROD"));
 				st.setLong(4, rs2.getLong("ID_PROD"));
 				st.setLong(5, rs2.getLong("QTD"));
-
+				subtotal = subtotal + (rs2.getDouble("VAL_PROD") * rs2.getLong("QTD"));
 				st.executeUpdate();
 
+			}
+
+			if (valmin_entrgega > subtotal) {
+				throw new Exception("Sua pedido não atingiu o valor mínimo de entrega da distribuidora. O valor mínimo é de R$ " + df2.format(valmin_entrgega));
 			}
 
 			if (tipo_pagamento.equalsIgnoreCase("C")) {// se for do tipo cartao de credito , tem que salvar as infos
@@ -1765,7 +1796,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 				String paymentMethodId = request.getParameter("paymentMethodId") == null ? "" : request.getParameter("paymentMethodId");
 
 				if (paymentMethodId.equalsIgnoreCase("")) {
-					throw new Exception("Seu tipo de cartão não está preenchido");// TODO, tipo? outro nome
+					throw new Exception("Seu bandeira de cartão não foi escolhida.");
 				}
 
 				if (token.equalsIgnoreCase("")) {
@@ -1781,7 +1812,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 				sql.append("   SET `PAG_TOKEN` = ?, ");
 				sql.append("       `PAG_MAIL` = ?, ");
 				sql.append("       `PAG_PAYID_TIPOCARTAO` = ? ");
-				sql.append("WHERE  `ID_PEDIDO` = ?;");
+				sql.append("WHERE  `ID_PEDIDO` = ? ");
 
 				st = conn.prepareStatement(sql.toString());
 				st.setString(1, token);
@@ -1795,18 +1826,22 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 
 			// realizar pagamento, pensar TODO
 
+			// payment(request, response, conn, cod_usuario,email);
+
 		} else {
-			throw new Exception("Ocorreu um erro com o processamento de seu carrinho! Entre em contato com o suporte.");
+			throw new Exception("Não há itens em seu carrinho!");
 		}
 
 		{
 			sql = new StringBuffer();// deleta item do carrinho se ele exister exite no carrinho, add depois
 			sql.append(" delete from carrinho_item where ID_CARRINHO = ? ");
+			st = conn.prepareStatement(sql.toString());
 			st.setLong(1, (idcarrinho));
 			st.executeUpdate();
 
 			sql = new StringBuffer();// deleta item do carrinho se ele exister exite no carrinho, add depois
 			sql.append(" delete from carrinho  where ID_CARRINHO = ? ");
+			st = conn.prepareStatement(sql.toString());
 			st.setLong(1, (idcarrinho));
 			st.executeUpdate();
 		}

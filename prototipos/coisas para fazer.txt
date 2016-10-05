@@ -1,59 +1,9 @@
-outros---------
-opção de retirar na loja!!
-
-trocar versao do Workbench, commit automatico em alters , verificar se isso não é merda do mysql mesmo
-
-morratu@hotmail.com
-------------Sys
-bug - qdo add horario no wizard, e da conflito, e tenta0-se deletar, o primero delete falha.
-
-fazer validacao da token de ativacai(ver se ja nao existe a token gerada, mto improvavel)
-
-fazer uma tela de msg.jsp ajeitada um dia.
-
-estudar possibilidade de tooltips na tela de Configuração de bairros e horarios passo 1, passar o mouse em cima do bairro e dizer quais cofigs existem ou um botao/icone de info do lado. qem sabe mudar a cor ou botar um asterisco pros bairros que nao contem nenhum dia configurado.
-
-Wizard de horarios -> Video tutorial?
-
-
-msgs de email, hiperlink em links de email
-
-criar um email chamatrago
-
-pagamento no lado da distribuidora.
-
-----------------mobile
-
-parte do visitante ainda ta incabada , permissoes das telas, e se mais de uma pessoa usar, tem q ver como fazer a localização
-
-
-testar server off/dados invalidos e etcs , msg de acesso invalido
-
-botao de calcular carrinho, na tela de checkout.
-
-
-tem como acessar o service AuthService na troca de states? Algo a ver com trasnformar service em provider.
-
-https://developers.facebook.com/docs/facebook-login/testing-your-login-flow  -> teste 3,5,6?, 
-
-
-
-msg de validação de email
-qestoes de email	
-	user sem face
-		muda de mail, pede uma validação do email como se tivesse cadastrando.(vai ter que ter uma tela separada para e-mail e senha, ver se tem como fazer sub-menu.) Se solicitou a troca de email e esta fazendo um pedido antes de validar? Criar uma tabela de troca de email?
-	se tem com face
-		qdo mudar de email no face, (provavelmente fazer uma rotina de checagem ou quando logar, ou requisição) atualizar o email do sistema.
-		se tentar mudar o email dentro do app e ele for diferente do email do facebook, não deixar.
-
-
-
-//----user info
-analisar quais campos vale a pena validar.
-
-
-
-
+tela de carrinho
+Se trocar o bairro, fazer função para validar os itens do carrinho, mesma função terá que se chamada quando pedido for finalizado.
+Opção de retirar no lugar.
+	Se esta opção estiver ativa, valor minimo de entrega é ignorado.
+Autocomplete/sugestion de  endereços de antigos pedidos.
+Opção para marcar "salvar configurações" do cartão. Não ira gravar o código de segurança
 
 
 
