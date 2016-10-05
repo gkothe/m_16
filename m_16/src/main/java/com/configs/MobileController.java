@@ -1335,7 +1335,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 		PrintWriter out = response.getWriter();
 		String idprodistr = request.getParameter("idprodistr") == null ? "" : request.getParameter("idprodistr");
 		StringBuffer sql = new StringBuffer();
-		sql.append("select carrinho_item.id_carrinho, distribuidora_bairro_entrega.cod_bairro,desc_bairro, seq_item, qtd,carrinho_item.val_prod,produtos_distribuidora.id_distribuidora, DESC_RAZAO_SOCIAL,VAL_ENTREGA_MIN , produtos.DESC_PROD, produtos.DESC_ABREVIADO, ");
+		sql.append("select carrinho_item.ID_PROD_DIST,carrinho_item.id_carrinho, distribuidora_bairro_entrega.cod_bairro,desc_bairro, seq_item, qtd,carrinho_item.val_prod,produtos_distribuidora.id_distribuidora, DESC_RAZAO_SOCIAL,VAL_ENTREGA_MIN , produtos.DESC_PROD, produtos.DESC_ABREVIADO, ");
 		sql.append(" ");
 		sql.append("case when FLAG_TELEBAIRRO = 'S' then distribuidora_bairro_entrega.VAL_TELE_ENTREGA else distribuidora.VAL_TELE_ENTREGA end as VAL_TELE_ENTREGA ");
 		sql.append(" ");
@@ -1378,7 +1378,8 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 		String id_distribuidora = "";
 		String DESC_RAZAO_SOCIAL = "";
 		String VAL_ENTREGA_MIN = "";
-
+		double subtotal = 0;
+		double frete = 0;
 		JSONArray carrinhoitem = new JSONArray();
 		if (!single) {
 			while (rs.next()) {
@@ -1388,14 +1389,18 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 				cod_bairro = rs.getString("cod_bairro");
 				desc_bairro = rs.getString("desc_bairro");
 				obj.put("seq_item", rs.getString("seq_item"));
+				obj.put("id_prod_dist", rs.getString("ID_PROD_DIST"));
 				obj.put("qtd", rs.getString("qtd"));
 				obj.put("val_prod", rs.getString("val_prod"));
+				obj.put("total",df2.format(rs.getInt("qtd") * rs.getDouble("val_prod")));
 				obj.put("desc_prod", rs.getString("DESC_PROD"));
 				obj.put("desc_abreviado", rs.getString("DESC_ABREVIADO"));
 				id_distribuidora = rs.getString("id_distribuidora");
 				DESC_RAZAO_SOCIAL = rs.getString("DESC_RAZAO_SOCIAL");
 				VAL_ENTREGA_MIN = rs.getString("VAL_ENTREGA_MIN");
-
+				subtotal = subtotal + rs.getDouble("val_prod");
+				frete = rs.getDouble("VAL_TELE_ENTREGA");
+				
 				carrinhoitem.add(obj);
 
 			}
@@ -1404,8 +1409,11 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 			carrinho.put("cod_bairro", cod_bairro);
 			carrinho.put("desc_bairro", desc_bairro);
 			carrinho.put("id_distribuidora", id_distribuidora);
-			carrinho.put("DESC_RAZAO_SOCIAL", DESC_RAZAO_SOCIAL);
+			carrinho.put("desc_razao_social", DESC_RAZAO_SOCIAL);
 			carrinho.put("VAL_ENTREGA_MIN", VAL_ENTREGA_MIN);
+			carrinho.put("val_subtotal", subtotal);
+			carrinho.put("val_frete", frete);
+			carrinho.put("val_totalcarrinho", subtotal+frete);
 
 			carrinho.put("produtos", carrinhoitem);
 		} else {
