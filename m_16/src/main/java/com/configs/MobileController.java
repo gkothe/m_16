@@ -8,6 +8,7 @@ import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.Statement;
 import java.sql.Timestamp;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
@@ -207,10 +208,15 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 					addCarrinho(request, response, conn, cod_usuario);
 				} else if (cmd.equalsIgnoreCase("criarPedido")) {
 					criarPedido(request, response, conn, cod_usuario);
+				}  else if (cmd.equalsIgnoreCase("testesMudaBairroCarrinho")) {
+					testesMudaBairroCarrinho(request, response, conn, cod_usuario);
 				} else {
 					throw new Exception("Ação inválida");
 				}
 
+				
+				
+				
 			}
 
 			conn.commit();
@@ -1333,7 +1339,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 		PrintWriter out = response.getWriter();
 		String idprodistr = request.getParameter("idprodistr") == null ? "" : request.getParameter("idprodistr");
 		StringBuffer sql = new StringBuffer();
-		sql.append("select carrinho_item.ID_PROD_DIST,carrinho_item.id_carrinho, distribuidora_bairro_entrega.cod_bairro,desc_bairro, seq_item, qtd,carrinho_item.val_prod,produtos_distribuidora.id_distribuidora, DESC_RAZAO_SOCIAL,VAL_ENTREGA_MIN , produtos.DESC_PROD, produtos.DESC_ABREVIADO, ");
+		sql.append("select carrinho_item.ID_PROD_DIST,carrinho_item.id_carrinho, carrinho.cod_bairro ,desc_bairro, seq_item, qtd,carrinho_item.val_prod,produtos_distribuidora.id_distribuidora, DESC_RAZAO_SOCIAL,VAL_ENTREGA_MIN , produtos.DESC_PROD, produtos.DESC_ABREVIADO, ");
 		sql.append(" ");
 		sql.append("case when FLAG_TELEBAIRRO = 'S' then distribuidora_bairro_entrega.VAL_TELE_ENTREGA else distribuidora.VAL_TELE_ENTREGA end as VAL_TELE_ENTREGA ");
 		sql.append(" ");
@@ -1354,7 +1360,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 		sql.append("inner join bairros ");
 		sql.append("on bairros.cod_bairro = carrinho.cod_bairro ");
 		sql.append(" ");
-		sql.append("inner join distribuidora_bairro_entrega ");
+		sql.append("left join distribuidora_bairro_entrega ");
 		sql.append("on distribuidora_bairro_entrega.cod_bairro = bairros.cod_bairro and distribuidora_bairro_entrega.ID_DISTRIBUIDORA = distribuidora.ID_DISTRIBUIDORA ");
 		sql.append(" ");
 		sql.append("where id_usuario = ? ");
@@ -1601,6 +1607,9 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 			st.setLong(1, (cod_bairro));
 			st.setLong(2, (id_distribuidora_prod));
 			st.setLong(3, Utilitario.diaSemana(conn, id_distribuidora_prod));
+			
+			
+			 
 			ResultSet rs = st.executeQuery();
 			if (!rs.next()) {
 				throw new Exception("Distribuidora não se encontra disponível para o bairro escolhido.");
@@ -1633,6 +1642,23 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 		return 0;
 	}
 
+	private static void validacaoProdutoDistribuidora(HttpServletRequest request, HttpServletResponse response, Connection conn, long id_distribuidora_prod, double valprod_carrinho) throws Exception {
+
+		StringBuffer sql = new StringBuffer();// teste para ver se o valor do carrinho é igual ao valor do produto.
+		sql.append("select  * from produtos_distribuidora  where  ID_PROD_DIST = ? and flag_ativo = 'S' ");
+		PreparedStatement st3 = conn.prepareStatement(sql.toString());
+		st3.setLong(1, id_distribuidora_prod);
+		ResultSet rs3 = st3.executeQuery();
+		if (rs3.next()) {
+			if (rs3.getDouble("VAL_PROD") != valprod_carrinho) {
+				throw new Exception("O produto " + Utilitario.getNomeProdIdProdDistr(conn, id_distribuidora_prod, true) + " que está no carrinho tem um valor diferente que se encontra na distribuida. Isto pode acontecer quando a distribuidora modifica o valor de um produto durante sua compra. Por favor clique em recalcular carrinho.");
+			}
+		} else {
+			throw new Exception("O produto " + Utilitario.getNomeProdIdProdDistr(conn, id_distribuidora_prod, true) + " não se encontra disponível. Por favor remova-o de seu carrinho.");
+		}
+
+	}
+
 	private static void validacaoTesteCarrinhoDistribuidora(HttpServletRequest request, HttpServletResponse response, Connection conn, long id_carrinho, int id_distribuidora_prod) throws Exception {
 		{
 
@@ -1655,20 +1681,29 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 
 	}
 
-	private static void criarPedido(HttpServletRequest request, HttpServletResponse response, Connection conn, long cod_usuario) throws Exception {
+	private static void testesMudaBairroCarrinho(HttpServletRequest request, HttpServletResponse response, Connection conn, long cod_usuario) throws Exception {
 		PrintWriter out = response.getWriter();
 		JSONObject retorno = new JSONObject();
 
-		String tipo_pagamento = request.getParameter("tipo_pagamento") == null ? "" : request.getParameter("tipo_pagamento");
+		
+		String novobairro = request.getParameter("novobairro") == null ? "" : request.getParameter("novobairro");
+		
+		StringBuffer 	sql = new StringBuffer();
+		sql.append("UPDATE carrinho ");
+		sql.append("   SET cod_bairro = ? ");
+		sql.append("WHERE  id_usuario = ? ");
 
-		if (!tipo_pagamento.equalsIgnoreCase("D") && !tipo_pagamento.equalsIgnoreCase("C")) {
-			throw new Exception("Tipo de pagamento inválido.");
-		}
-
+		PreparedStatement st = conn.prepareStatement(sql.toString());
+		st.setInt(1, Integer.parseInt(novobairro));
+		st.setLong(2, cod_usuario);
+		st.executeUpdate();
+		
+		
 		long idcarrinho = 0;
-
-		StringBuffer sql = new StringBuffer();
-		sql.append("select usuario.DESC_EMAIL, usuario. DESC_NOME, carrinho_item.id_carrinho,distribuidora_bairro_entrega.ID_DISTRIBUIDORA,carrinho.cod_bairro,usuario.DESC_TELEFONE,usuario.DESC_ENDERECO,DESC_ENDERECO_NUM,DESC_ENDERECO_COMPLEMENTO,sum(produtos_distribuidora.val_prod * carrinho_item.qtd ) as val_prod, ");
+		
+		
+		sql = new StringBuffer();
+		sql.append("select usuario.DESC_EMAIL, usuario. DESC_NOME, carrinho_item.id_carrinho,distribuidora.ID_DISTRIBUIDORA,carrinho.cod_bairro,usuario.DESC_TELEFONE,usuario.DESC_ENDERECO,DESC_ENDERECO_NUM,DESC_ENDERECO_COMPLEMENTO,sum(produtos_distribuidora.val_prod * carrinho_item.qtd ) as val_prod, ");
 		sql.append("  ");
 		sql.append("case when FLAG_TELEBAIRRO = 'S' then distribuidora_bairro_entrega.VAL_TELE_ENTREGA else distribuidora.VAL_TELE_ENTREGA end as VAL_TELE_ENTREGA ");
 		sql.append("  ");
@@ -1689,7 +1724,85 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 		sql.append("inner join bairros ");
 		sql.append("on bairros.cod_bairro = carrinho.cod_bairro ");
 		sql.append("");
-		sql.append("inner join distribuidora_bairro_entrega ");
+		sql.append("left join distribuidora_bairro_entrega ");
+		sql.append("on distribuidora_bairro_entrega.cod_bairro = bairros.cod_bairro and distribuidora_bairro_entrega.ID_DISTRIBUIDORA = distribuidora.ID_DISTRIBUIDORA ");
+		sql.append(" ");
+		sql.append("inner join usuario ");
+		sql.append("on usuario.id_usuario = carrinho.id_usuario ");
+		sql.append("  ");
+		sql.append("where usuario.id_usuario = ? ");
+		sql.append(" ");
+		sql.append("group by usuario.DESC_EMAIL, usuario. DESC_NOME, carrinho_item.id_carrinho,distribuidora_bairro_entrega.ID_DISTRIBUIDORA,carrinho.cod_bairro,usuario.DESC_TELEFONE,usuario.DESC_ENDERECO,DESC_ENDERECO_NUM,DESC_ENDERECO_COMPLEMENTO, VAL_TELE_ENTREGA");
+
+		 st = conn.prepareStatement(sql.toString());
+		PreparedStatement st2 = null;
+
+		st.setLong(1, (cod_usuario));
+		ResultSet rs = st.executeQuery();
+		ResultSet rs2 = null;
+
+		if (rs.next()) {
+			idcarrinho = rs.getLong("id_carrinho");
+
+			validacaoFlagsDistribuidora(request, response, conn, rs.getInt("ID_DISTRIBUIDORA"));
+			validacaoDisBairroHora(request, response, conn, rs.getInt("cod_bairro"), rs.getInt("ID_DISTRIBUIDORA"));
+			validacaoTesteCarrinhoDistribuidora(request, response, conn, idcarrinho, rs.getInt("ID_DISTRIBUIDORA"));
+
+			sql = new StringBuffer();
+			sql.append("select * from carrinho_item inner join produtos_distribuidora on produtos_distribuidora.ID_PROD_DIST = carrinho_item.ID_PROD_DIST  where id_carrinho = ? ");
+
+			
+			st2 = conn.prepareStatement(sql.toString());
+			st2.setLong(1, idcarrinho);
+			rs2 = st2.executeQuery();
+			while (rs2.next()) {
+
+				validacaoProdutoDistribuidora(request, response, conn, rs2.getLong("ID_PROD_DIST"), rs2.getDouble("VAL_PROD"));
+
+			}
+		}
+
+		retorno.put("msg", "ok");
+
+		out.print(retorno.toJSONString());
+		
+	}
+
+	private static void criarPedido(HttpServletRequest request, HttpServletResponse response, Connection conn, long cod_usuario) throws Exception {
+		PrintWriter out = response.getWriter();
+		JSONObject retorno = new JSONObject();
+
+		String tipo_pagamento = request.getParameter("tipo_pagamento") == null ? "" : request.getParameter("tipo_pagamento");
+
+		if (!tipo_pagamento.equalsIgnoreCase("D") && !tipo_pagamento.equalsIgnoreCase("C")) {
+			throw new Exception("Tipo de pagamento inválido.");
+		}
+
+		long idcarrinho = 0;
+
+		StringBuffer sql = new StringBuffer();
+		sql.append("select usuario.DESC_EMAIL, usuario. DESC_NOME, carrinho_item.id_carrinho,distribuidora.ID_DISTRIBUIDORA,carrinho.cod_bairro,usuario.DESC_TELEFONE,usuario.DESC_ENDERECO,DESC_ENDERECO_NUM,DESC_ENDERECO_COMPLEMENTO,sum(produtos_distribuidora.val_prod * carrinho_item.qtd ) as val_prod, ");
+		sql.append("  ");
+		sql.append("case when FLAG_TELEBAIRRO = 'S' then distribuidora_bairro_entrega.VAL_TELE_ENTREGA else distribuidora.VAL_TELE_ENTREGA end as VAL_TELE_ENTREGA ");
+		sql.append("  ");
+		sql.append("from carrinho ");
+		sql.append(" ");
+		sql.append("inner join carrinho_item ");
+		sql.append("on carrinho_item.id_carrinho = carrinho.id_carrinho ");
+		sql.append(" ");
+		sql.append("inner join produtos_distribuidora ");
+		sql.append("on produtos_distribuidora.ID_PROD_DIST = carrinho_item.ID_PROD_DIST ");
+		sql.append(" ");
+		sql.append("inner join produtos ");
+		sql.append("on produtos_distribuidora.ID_PROD = produtos.ID_PROD ");
+		sql.append("  ");
+		sql.append("inner join distribuidora ");
+		sql.append("on distribuidora.id_distribuidora = produtos_distribuidora.ID_DISTRIBUIDORA ");
+		sql.append("  ");
+		sql.append("inner join bairros ");
+		sql.append("on bairros.cod_bairro = carrinho.cod_bairro ");
+		sql.append("");
+		sql.append("left join distribuidora_bairro_entrega ");
 		sql.append("on distribuidora_bairro_entrega.cod_bairro = bairros.cod_bairro and distribuidora_bairro_entrega.ID_DISTRIBUIDORA = distribuidora.ID_DISTRIBUIDORA ");
 		sql.append(" ");
 		sql.append("inner join usuario ");
@@ -1756,18 +1869,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 			rs2 = st2.executeQuery();
 			while (rs2.next()) {
 
-				sql = new StringBuffer();// teste para ver se o valor do carrinho é igual ao valor do produto.
-				sql.append("select  * from produtos_distribuidora  where  ID_PROD_DIST = ? and flag_ativo = 'S' ");
-				st3 = conn.prepareStatement(sql.toString());
-				st3.setLong(1, rs2.getLong("ID_PROD_DIST"));
-				rs3 = st3.executeQuery();
-				if (rs3.next()) {
-					if (rs3.getDouble("VAL_PROD") != rs2.getDouble("VAL_PROD")) {
-						throw new Exception("O produto " + Utilitario.getNomeProdIdProdDistr(conn, rs2.getLong("ID_PROD_DIST"), true) + " que está no carrinho tem um valor diferente que se encontra na distribuida. Isto pode acontecer quando a distribuidora modifica o valor de um produto durante sua compra. Por favor clique em recalcular carrinho.");
-					}
-				} else {
-					throw new Exception("O produto " + Utilitario.getNomeProdIdProdDistr(conn, rs2.getLong("ID_PROD_DIST"), true) + " não se encontra disponível. Por favor remova-o de seu carrinho.");
-				}
+				validacaoProdutoDistribuidora(request, response, conn, rs2.getLong("ID_PROD_DIST"), rs2.getDouble("VAL_PROD"));
 
 				sql = new StringBuffer();
 				sql.append(" INSERT INTO pedido_item ");
