@@ -667,7 +667,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 			else
 				st.setInt(9, Integer.parseInt(data_exp_mes));
 
-			if (data_exp_mes.equalsIgnoreCase(""))
+			if (data_exp_ano.equalsIgnoreCase(""))
 				st.setNull(10, java.sql.Types.INTEGER);
 			else
 				st.setInt(10, Integer.parseInt(data_exp_ano));
@@ -1895,7 +1895,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 			if (tipo_pagamento.equalsIgnoreCase("C")) {// se for do tipo cartao de credito , tem que salvar as infos
 
 				String token = request.getParameter("token") == null ? "" : request.getParameter("token");
-				String paymentMethodId = request.getParameter("paymentMethodId") == null ? "" : request.getParameter("paymentMethodId");
+				String paymentMethodId = request.getParameter("pay_id") == null ? "" : request.getParameter("pay_id");
 
 				if (paymentMethodId.equalsIgnoreCase("")) {
 					throw new Exception("Seu bandeira de cartão não foi escolhida.");
@@ -1923,7 +1923,56 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 				st.setLong(4, idped);
 
 				st.executeUpdate();
+			
+				String salvarinfos = request.getParameter("salvarinfos") == null ? "" : request.getParameter("salvarinfos");
+				
+				if(salvarinfos.equalsIgnoreCase("true")){
+					
+					
+					String data_exp_ano = request.getParameter("data_exp_ano") == null ? "" : request.getParameter("data_exp_ano");
+					String data_exp_mes = request.getParameter("data_exp_mes") == null ? "" : request.getParameter("data_exp_mes");
+					String desc_cardholdername = request.getParameter("desc_cardholdername") == null ? "" : request.getParameter("desc_cardholdername");
+					String desc_cpf = request.getParameter("desc_cpf") == null ? "" : request.getParameter("desc_cpf");
+					String desc_cartao = request.getParameter("desc_cartao") == null ? "" : request.getParameter("desc_cartao");
+					String pay_id = request.getParameter("pay_id") == null ? "" : request.getParameter("pay_id");
+					
+					
+					sql = new StringBuffer();
+					sql.append("UPDATE usuario ");
+					sql.append("   SET  ");
+					sql.append("       `DESC_CARTAO` = ?, ");
+					sql.append("       `DESC_CARDHOLDERNAME` = ?, ");
+					sql.append("       `DATA_EXP_MES` = ?, ");
+					sql.append("       `DATA_EXP_ANO` = ?, ");
+					sql.append("       `PAY_ID` = ?, ");
+					sql.append("       `DESC_CPF` = ? ");
+					sql.append("WHERE  `ID_USUARIO` = ?;");
+					
+					st = conn.prepareStatement(sql.toString());
+					st.setString(1, desc_cartao);
+					st.setString(2, desc_cardholdername);
+					
+					
+					if (data_exp_mes.equalsIgnoreCase(""))
+						st.setNull(3, java.sql.Types.INTEGER);
+					else
+						st.setInt(3, Integer.parseInt(data_exp_mes));
 
+					if (data_exp_ano.equalsIgnoreCase(""))
+						st.setNull(4, java.sql.Types.INTEGER);
+					else
+						st.setInt(4, Integer.parseInt(data_exp_ano));
+					
+					
+					st.setString(5, pay_id);
+					st.setString(6, desc_cpf);
+					st.setLong(7, cod_usuario);
+					
+					st.executeUpdate();
+					
+					
+				}
+				
 			}
 
 			// realizar pagamento, pensar TODO

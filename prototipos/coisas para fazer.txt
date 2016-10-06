@@ -1,9 +1,15 @@
-tela de carrinho
-Se trocar o bairro, fazer função para validar os itens do carrinho, mesma função terá que se chamada quando pedido for finalizado.
+
+
+
+
+
+
+
 Opção de retirar no lugar.
 	Se esta opção estiver ativa, valor minimo de entrega é ignorado.
 Autocomplete/sugestion de  endereços de antigos pedidos.
-Opção para marcar "salvar configurações" do cartão. Não ira gravar o código de segurança
+
+
 
 
 
