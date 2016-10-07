@@ -174,7 +174,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 				} else if (cmd.equalsIgnoreCase("carregaLocationUser")) {
 					carregaLocationUser(request, response, conn, cod_usuario, sys);
 				} else if (cmd.equalsIgnoreCase("detalheProdutos")) {
-					carregaProdutos(request, response, conn, cod_usuario, false);
+					carregaProdutoUnico(request, response, conn, cod_usuario);
 				} else if (cmd.equalsIgnoreCase("saveLocationUser")) {
 					saveLocationUser(request, response, conn, cod_usuario);
 				} else if (cmd.equalsIgnoreCase("confirmaIdade")) {
@@ -184,6 +184,8 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 					throw new Exception("Você está acessando como visitante. Para poder realizar esta operação você deve criar uma conta no S.O.S Trago.");
 				} else if (cmd.equalsIgnoreCase("carregaValCarrinho")) {
 					carregaValCarrinho(request, response, conn, cod_usuario);
+				} else if (cmd.equalsIgnoreCase("removerItemCarrinho")) {
+					removerItemCarrinho(request, response, conn, cod_usuario);
 				} else if (cmd.equalsIgnoreCase("carrega_situacaoes")) {
 					carregaSitucaoes(request, response, conn, cod_usuario);
 				} else if (cmd.equalsIgnoreCase("trocarEmail")) {
@@ -212,7 +214,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 					criarPedido(request, response, conn, cod_usuario);
 				}  else if (cmd.equalsIgnoreCase("testesMudaBairroCarrinho")) {
 					testesMudaBairroCarrinho(request, response, conn, cod_usuario);
-				} else {
+				}  else {
 					throw new Exception("Ação inválida");
 				}
 
@@ -856,6 +858,71 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 		out.print(retorno.toJSONString());
 	}
 
+	
+	
+	private static void carregaProdutoUnico(HttpServletRequest request, HttpServletResponse response, Connection conn, long cod_usuario) throws Exception {
+		JSONObject retorno = new JSONObject();
+		PrintWriter out = response.getWriter();
+
+		String idproddistr = request.getParameter("idproddistr") == null ? "" : request.getParameter("idproddistr");
+	
+		StringBuffer	sql = new StringBuffer();
+		
+		sql.append(" ");
+		sql.append(" select ");
+		sql.append(" ");
+		sql.append("  produtos.ID_PROD, ");
+		sql.append(" DESC_PROD, ");
+		sql.append(" DESC_ABREVIADO, ");
+		sql.append(" produtos_distribuidora.VAL_PROD, ");
+		sql.append(" distribuidora.ID_DISTRIBUIDORA, ");
+		sql.append(" produtos_distribuidora.ID_PROD_DIST, ");
+		sql.append(" DESC_NOME_ABREV , ");
+		sql.append(" carrinho_item.QTD, ");
+		sql.append(" distribuidora.VAL_ENTREGA_MIN ");
+		sql.append(" ");
+		sql.append(" from produtos ");
+		sql.append(" inner join produtos_distribuidora ");
+		sql.append(" on produtos_distribuidora.id_prod = produtos.id_prod ");
+		sql.append(" inner join distribuidora ");
+		sql.append(" on produtos_distribuidora.ID_DISTRIBUIDORA = distribuidora.ID_DISTRIBUIDORA ");
+		sql.append(" inner join distribuidora_bairro_entrega ");
+		sql.append(" on distribuidora_bairro_entrega.ID_DISTRIBUIDORA = distribuidora.ID_DISTRIBUIDORA ");
+		sql.append(" inner join distribuidora_horario_dia_entre ");
+		sql.append(" on distribuidora_horario_dia_entre.ID_DISTR_BAIRRO   = distribuidora_bairro_entrega.ID_DISTR_BAIRRO ");
+		sql.append("  ");
+		sql.append(" left join carrinho ");
+		sql.append(" on carrinho.id_usuario =   " + cod_usuario);
+		sql.append("  ");
+		sql.append(" ");
+		sql.append(" left join carrinho_item ");
+		sql.append(" on carrinho_item.ID_PROD_DIST = produtos_distribuidora.ID_PROD_DIST and carrinho_item.id_carrinho = carrinho.id_carrinho ");
+		
+	
+		sql.append(" where produtos_distribuidora.ID_PROD_DIST = ? ");
+		PreparedStatement st = conn.prepareStatement(sql.toString());
+		st.setLong(1, Long.parseLong(idproddistr));
+		ResultSet rs = st.executeQuery();
+			if (rs.next()) {
+
+				retorno.put("ID_PROD", rs.getString("ID_PROD"));
+				retorno.put("ID_PROD_DIST", rs.getString("ID_PROD_DIST"));
+				retorno.put("QTD", rs.getString("QTD") == null ? "" : rs.getInt("QTD"));
+				retorno.put("DESC_PROD", rs.getString("DESC_PROD"));
+				retorno.put("DESC_ABREVIADO", rs.getString("DESC_ABREVIADO"));// abreviado do produto
+				retorno.put("VAL_PROD", rs.getDouble("VAL_PROD"));//
+				retorno.put("ID_DISTRIBUIDORA", rs.getString("ID_DISTRIBUIDORA"));
+				retorno.put("DESC_NOME_ABREV", rs.getString("DESC_NOME_ABREV"));/// abreviado da distribuidora
+				retorno.put("val_minentrega", rs.getString("VAL_ENTREGA_MIN"));///
+				retorno.put("valcar", df2.format(retornaValCarrinho(cod_usuario, conn) - (rs.getInt("QTD") * rs.getDouble("VAL_PROD"))));
+
+		}
+
+		retorno.put("msg", "ok");
+
+		out.print(retorno.toJSONString());
+	}
+	
 	private static void carregaProdutos(HttpServletRequest request, HttpServletResponse response, Connection conn, long cod_usuario, boolean listagem) throws Exception {
 		JSONObject retorno = new JSONObject();
 		PrintWriter out = response.getWriter();
@@ -1647,6 +1714,67 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 		out.print(retorno.toJSONString());
 	}
 
+	
+	private static void removerItemCarrinho(HttpServletRequest request, HttpServletResponse response, Connection conn, long cod_usuario) throws Exception {
+		PrintWriter out = response.getWriter();
+		JSONObject retorno = new JSONObject();
+
+		// String id_prod = request.getParameter("id_prod") == null ? "" : request.getParameter("id_prod");
+		String id_proddistr = request.getParameter("id_proddistr") == null ? "" : request.getParameter("id_proddistr"); // precisa receber
+
+		boolean jatemcarrinho = false;
+		long idcarrinho = 0;
+		
+
+		if (id_proddistr.equalsIgnoreCase("0")) {
+			throw new Exception("Produto inválido!");
+		}
+
+		StringBuffer sql = new StringBuffer();
+		sql.append("SELECT id_carrinho from carrinho where id_usuario = ? ");
+		PreparedStatement st = conn.prepareStatement(sql.toString());
+		st.setLong(1, (cod_usuario));
+		ResultSet rs = st.executeQuery();
+
+		if (rs.next()) {// ja tem carrinho
+			jatemcarrinho = true;
+			idcarrinho = rs.getLong("id_carrinho");
+		}
+
+		if (jatemcarrinho) {
+			sql = new StringBuffer();// deleta item do carrinho se ele exister exite no carrinho, add depois
+			sql.append(" delete from carrinho_item ");
+			sql.append(" where ID_PROD_DIST = ? and id_carrinho  = ?  ");
+			st = conn.prepareStatement(sql.toString());
+			st.setLong(1, Long.parseLong(id_proddistr));
+			st.setLong(2, (idcarrinho));
+			st.executeUpdate();
+		}
+
+		
+		sql = new StringBuffer();
+		sql.append(" select 1 from carrinho_item ");
+		sql.append("where id_carrinho = ?  ");
+		st = conn.prepareStatement(sql.toString());
+		st.setLong(1, (idcarrinho));
+		rs = st.executeQuery();
+		if (!rs.next()) {
+
+			sql = new StringBuffer();//
+			sql.append(" delete  from carrinho ");
+			sql.append("where id_carrinho = ?  ");
+			st = conn.prepareStatement(sql.toString());
+			st.setLong(1, (idcarrinho));
+			st.executeUpdate();
+		}
+
+		
+		retorno.put("msg", "ok");
+
+		out.print(retorno.toJSONString());
+	}
+
+	
 	private static void validacaoDisBairroHora(HttpServletRequest request, HttpServletResponse response, Connection conn, long cod_bairro, int id_distribuidora_prod) throws Exception {
 
 		{
