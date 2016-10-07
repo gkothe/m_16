@@ -45,7 +45,7 @@ function showHelp() {
 
 }
 
-function trocaPag(pag, jsp) {
+function trocaPag(pag, jsp,e) {
 
 	var link = $(pag).attr('linkmenu');
 	var men = "";
@@ -54,8 +54,13 @@ function trocaPag(pag, jsp) {
 	} else {
 		men = "s"
 	}
-
-	document.location.href = "home?link=" + link + "&jsp=" + jsp + "&m=" + men;
+	  
+	 if (e && (e.which == 2 || e.button == 4 )) {
+		 window.open("home?link=" + link + "&jsp=" + jsp + "&m=" + men,'_blank');
+     }else{
+    	 document.location.href = "home?link=" + link + "&jsp=" + jsp + "&m=" + men;
+     }
+	
 }
 
 var active_menu;
@@ -273,7 +278,7 @@ function checarPedidos() {
 			$("#msg_holder2").hide();
 			$("#menu_notification").html("");
 			$("#h_qtd_pedz").html("");
-
+			
 			if (data.errologin != undefined) {
 				window.location.href = "";
 			} else if (data.tem == "true") {
@@ -281,7 +286,7 @@ function checarPedidos() {
 				$("#msg_holder").show();
 
 				var html = "";
-				var vizualizado = "";
+				
 				$("#h_qtd_pedz").html(data.qtd);
 				for (t = 0; t < data.pedidos.length; t++) {
 					var html = "";
@@ -290,9 +295,7 @@ function checarPedidos() {
 					html = html + ("	<span class=\"message\">Bairro: " + data.pedidos[t].desc_bairro + "  </span>    ");
 					html = html + ("	<span class=\"message\">Valor: R$ <label style='font-weight:normal !important;' id='lbl_notval_" + t + "'>   </span>  	</a> </li> ");
 
-					if (data.pedidos[t].flag_vizualizado == 'N') {
-						vizualizado = 'N';
-					}
+					
 					$("#menu_notification").html($("#menu_notification").html() + html);
 					$("#lbl_notval_" + t).autoNumeric('init', numerico);
 					$("#lbl_notval_" + t).autoNumeric('set', data.pedidos[t].valor);
@@ -304,8 +307,8 @@ function checarPedidos() {
 				$("#menu_notification").html($("#menu_notification").html() + html);
 
 				$(".not_numerico").autoNumeric('init', numerico);
-
-				if (vizualizado == "N") {
+				
+				if (data.flag_vizualizado == "N") {
 					playAudioPedido();
 				}
 

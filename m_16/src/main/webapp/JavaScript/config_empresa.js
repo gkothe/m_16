@@ -85,6 +85,10 @@ $(document).ready(function() {
 		ativaWarningSalvar();
 	});
 	
+	$("#flag_modopag").change(function() {
+		ativaWarningSalvar();
+	});
+	
 	
 	$(".warn-change").change(function(){
 		ativaWarningSalvar();

@@ -76,7 +76,7 @@ input:focus {
 				<div class="left_col scroll-view">
 					<div class="navbar nav_title" style="border: 0;">
 						<a class="site_title"><image style="width: 25px"
-								src="images/beer_PNG2388.png"></image> <span>S.O.S Trago!</span></a>
+								src="images/beer_PNG2388.png"></image> <span>TragoAqui!</span></a>
 					</div>
 
 					<div class="clearfix"></div>
@@ -108,22 +108,22 @@ input:focus {
 										class="fa fa-home clickmenu2"></i> Pedidos <span
 										class="fa fa-chevron-down clickmenu"></span></a>
 									<ul class="nav child_menu">
-										<li><a linkmenu="listaped" onclick="trocaPag(this,'N');"
+										<li><a linkmenu="listaped" onclick="trocaPag(this,'N',event);"
 											class="clickmenu">Abertos</a></li>
 										<li><a linkmenu="listapedfechado"
-											onclick="trocaPag(this,'N');" class="clickmenu">Histórico</a></li>
+											onclick="trocaPag(this,'N',event);" class="clickmenu">Histórico</a></li>
 									</ul></li>
 								<li><a class="clickmenu2"><i
 										class="fa fa-gear clickmenu2"></i> Parâmetros <span
 										class="fa fa-chevron-down clickmenu"></span></a>
 									<ul class="nav child_menu">
 										<li class=''><a linkmenu="listaprod"
-											onclick="trocaPag(this,'N');" class="clickmenu">Produtos</a></li>
+											onclick="trocaPag(this,'N',event);" class="clickmenu">Produtos</a></li>
 										<li><a linkmenu="listaconfigemp"
-											onclick="trocaPag(this,'N');" class="clickmenu">Configurações
+											onclick="trocaPag(this,'N',event);" class="clickmenu">Configurações
 												da empresa</a></li>
 										<li><a linkmenu="wizardhorarios"
-											onclick="trocaPag(this,'N');" class="clickmenu">Configurações
+											onclick="trocaPag(this,'N',event);" class="clickmenu">Configurações
 												de horários</a></li>
 									</ul></li>
 								<li><a class="clickmenu2"><i
@@ -197,7 +197,7 @@ input:focus {
 								<div style="cursor: pointer; display: none;" id="msg_holder2">
 									<a><span class="label label-warning aviso_pedido"
 										id="msg_offline" style="font-size: 195%;">O servidor
-											S.O.S Trago está offline! </span></a>
+											TragoAqui está offline! </span></a>
 
 								</div>
 
@@ -241,7 +241,7 @@ input:focus {
 							</button>
 							<h4 class="modal-title" id="">
 								<label style="font-size: 20px; color: black" id="">Ajuda/Informações
-									do S.O.S Trago!</label>
+									do TragoAqui!</label>
 							</h4>
 						</div>
 						<div class="modal-body" style="max-height: 800px; overflow: auto;">

@@ -278,10 +278,11 @@ function loadAbertos(blockui) {
 			}
 		},
 		error : function(msg) {
+			
 			if(blockui){
 				$.unblockUI();
 			}
-			if(data.status == 0 ){
+			if(msg.status == 0 ){
 			
 			}else{
 				alert("Erro: " + msg.msg);

@@ -42,15 +42,27 @@ public class Home_ajax {
 			}
 
 		}
-
+		objRetorno.put("flag_vizualizado", "S");
 		if (objRetorno.get("tem").toString().equalsIgnoreCase("true")) {
 
-			sql = "select id_pedido,DESC_BAIRRO,NUM_PED,VAL_TOTALPROD,DATA_PEDIDO, NOW() as agora, Coalesce(flag_vizualizado,'N') as flag_vizualizado  from pedido inner join bairros on bairros.cod_bairro = pedido.cod_bairro where ID_DISTRIBUIDORA = ? and flag_status = \'A\' and bairros.cod_cidade = "+request.getSession(false).getAttribute("cod_cidade").toString()+"  order by data_pedido asc limit 5";
+			sql = "" + "SELECT " + "           COALESCE(flag_vizualizado,'N') AS flag_vizualizado " + "FROM       pedido " + "INNER JOIN bairros " + "ON         bairros.cod_bairro = pedido.cod_bairro " + "WHERE      id_distribuidora = ? " + "AND        flag_status = 'A' " + "AND        bairros.cod_cidade = " + request.getSession(false).getAttribute("cod_cidade").toString() + " and  COALESCE(flag_vizualizado,'N') = 'N' group by COALESCE(flag_vizualizado,'N');";
+
+			st = conn.prepareStatement(sql);
+			st.setInt(1, coddistr);
+
+			rs = st.executeQuery();
+			if (rs.next()) {
+				if (rs.getString("flag_vizualizado").equalsIgnoreCase("N")) {
+					objRetorno.put("flag_vizualizado", "N");
+				}
+			}
+
+			sql = "select id_pedido,DESC_BAIRRO,NUM_PED,VAL_TOTALPROD,DATA_PEDIDO, NOW() as agora, Coalesce(flag_vizualizado,'N') as flag_vizualizado  from pedido inner join bairros on bairros.cod_bairro = pedido.cod_bairro where ID_DISTRIBUIDORA = ? and flag_status = \'A\' and bairros.cod_cidade = " + request.getSession(false).getAttribute("cod_cidade").toString() + "  order by data_pedido asc limit 5";
 
 			st = conn.prepareStatement(sql);
 			st.setInt(1, coddistr);
 			rs = st.executeQuery();
-
+			String flagvizu;
 			while (rs.next()) {
 
 				JSONObject pedidos = new JSONObject();
@@ -59,7 +71,11 @@ public class Home_ajax {
 				pedidos.put("desc_bairro", rs.getString("DESC_BAIRRO"));
 				pedidos.put("valor", rs.getString("VAL_TOTALPROD"));
 				pedidos.put("id_pedido", rs.getString("id_pedido"));
-				pedidos.put("flag_vizualizado", rs.getString("flag_vizualizado") == "" ? "N" :  rs.getString("flag_vizualizado") );
+				flagvizu = "";
+				if (rs.getString("flag_vizualizado") != null) {
+					flagvizu = rs.getString("flag_vizualizado");
+				}
+				pedidos.put("flag_vizualizado", flagvizu == "" ? "N" : flagvizu);
 
 				Date date_pedido = rs.getTimestamp("DATA_PEDIDO");
 				Date agora = rs.getTimestamp("agora");
@@ -159,8 +175,7 @@ public class Home_ajax {
 
 			String campo = request.getParameter("campo") == null ? "" : request.getParameter("campo");
 			String q = request.getParameter("q") == null ? "" : request.getParameter("q");
-		
-			
+
 			if (campo.equals("id_produto")) {
 
 				String sql = "select produtos.id_prod, produtos.desc_prod from produtos_distribuidora inner join produtos on produtos_distribuidora.id_prod =  produtos.id_prod where id_distribuidora = ? and produtos_distribuidora.flag_ativo = 'S' and produtos.FLAG_ATIVO = 'S' and produtos_distribuidora.id_prod = ? limit 10";
@@ -180,20 +195,20 @@ public class Home_ajax {
 
 				PreparedStatement st = conn.prepareStatement(sql);
 				st.setInt(1, coddistr);
-				st.setString(2, "%"+q+"%");
+				st.setString(2, "%" + q + "%");
 				ResultSet rs = st.executeQuery();
 				while (rs.next()) {
 					objValor = new org.json.simple.JSONObject();
 					objValor.put("descr", rs.getString("descr"));
-					objValor.put("id", rs.getString("id"));  
+					objValor.put("id", rs.getString("id"));
 					objRetornoArray.add(objValor);
 				}
 				out.print(objRetornoArray.toJSONString());
-				
+
 			} else if (campo.equals("id_produto_listagem")) {
 				// em relação ao autocomplete do 'id_produto' e do 'desc_produto' muda o join, a distribuidora vai na ligação.
-                // considerando os ativos do distribuidora e do sistema, caso precisar separar os flags, tem q mandar algum parametro extra.
-				
+				// considerando os ativos do distribuidora e do sistema, caso precisar separar os flags, tem q mandar algum parametro extra.
+
 				String sql = "select produtos.id_prod, desc_prod  from produtos  left join produtos_distribuidora on produtos.id_prod = produtos_distribuidora.id_prod	 and ID_DISTRIBUIDORA = ? where (produtos.flag_ativo = 'S') and  produtos_distribuidora.id_prod = ? order by desc_prod asc limit 10";
 
 				PreparedStatement st = conn.prepareStatement(sql);
@@ -205,26 +220,25 @@ public class Home_ajax {
 				}
 
 				out.print(objValor.toJSONString());
-				
 
 			} else if (campo.equals("desc_produto_listagem")) {
 				// em relação ao autocomplete do 'id_produto' e do 'desc_produto' muda o join, a distribuidora vai na ligação.
-                // considerando os ativos do distribuidora e do sistema, caso precisar separar os flags, tem q mandar algum parametro extra.
-				
+				// considerando os ativos do distribuidora e do sistema, caso precisar separar os flags, tem q mandar algum parametro extra.
+
 				String sql = "select produtos.id_prod as id, desc_prod as descr from produtos  left join produtos_distribuidora on produtos.id_prod = produtos_distribuidora.id_prod	 and ID_DISTRIBUIDORA = ? where (produtos.flag_ativo = 'S') and  produtos.desc_prod like  ? order by desc_prod asc  limit 10";
 
 				PreparedStatement st = conn.prepareStatement(sql);
 				st.setInt(1, coddistr);
-				st.setString(2, "%"+q+"%");
+				st.setString(2, "%" + q + "%");
 				ResultSet rs = st.executeQuery();
 				while (rs.next()) {
 					objValor = new org.json.simple.JSONObject();
 					objValor.put("descr", rs.getString("descr"));
-					objValor.put("id", rs.getString("id"));  
+					objValor.put("id", rs.getString("id"));
 					objRetornoArray.add(objValor);
 				}
 				out.print(objRetornoArray.toJSONString());
-				
+
 			}
 		}
 

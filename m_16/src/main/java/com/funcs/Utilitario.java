@@ -403,8 +403,8 @@ public class Utilitario {
 
 			String validacao = Utilitario.StringGen(1000, 32).substring(0, 99);
 			Sys_parametros sys = new Sys_parametros(Conexao.getConexao());
-			String texto = " Bem vindo ao S.O.S Trago, para validar seu e-mail clique no link abaixo: <br> " + sys.getUrl_system() + "mobile/ac=validar&token=" + validacao;
-			// Utilitario.sendEmail("g.kothe@hotmail.com", texto, "Ativação da sua conta no S.O.S Trago!");
+			String texto = " Bem vindo ao TragoAqui, para validar seu e-mail clique no link abaixo: <br> " + sys.getUrl_system() + "mobile/ac=validar&token=" + validacao;
+			// Utilitario.sendEmail("g.kothe@hotmail.com", texto, "Ativação da sua conta no TragoAqui!");
 
 			System.out.println("Horario_1".toString().substring("Horario_1".toString().length()-1, "Horario_1".toString().length()));
 			

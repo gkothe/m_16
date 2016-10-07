@@ -486,7 +486,7 @@ public class MobileLogin {
 				st.setString(3, token);
 				st.executeUpdate();
 
-				msg = "Seu e-mail foi verificado e sua conta foi ativada. Você já pode logar no S.O.S Trago e chamar trago! :-)";
+				msg = "Seu e-mail foi verificado e sua conta foi ativada. Você já pode logar no TragoAqui e chamar trago! :-)";
 				erro = false;
 			} else {
 				if (!token.equalsIgnoreCase("")) {

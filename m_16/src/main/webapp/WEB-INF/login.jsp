@@ -6,7 +6,7 @@
 <meta charset="utf-8" />
 <title>Login</title>
 <meta content="width=device-width, initial-scale=1.0" name="viewport" />
-<title>S.O.S Trago!</title>
+<title>TragoAqui!</title>
 
 <script src="gentelella-master/vendors/jquery/dist/jquery.min.js"></script>
 <script

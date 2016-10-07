@@ -320,7 +320,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 
 		if (rs.next()) {
 			String texto = " Olá, seguem abaixo suas informações de acesso: <br> Usuário: " + rs.getString("DESC_User") + " <br> Senha: " + rs.getString("DESC_SENHA");
-			Utilitario.sendEmail(desc_email, texto, "Recuperação de informações de acesso do S.O.S Trago!", conn);
+			Utilitario.sendEmail(desc_email, texto, "Recuperação de informações de acesso do TragoAqui!", conn);
 			objRetorno.put("msg", "ok");
 
 		} else {
@@ -404,9 +404,9 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 
 		st.executeUpdate();
 
-		String texto = " Bem vindo ao S.O.S Trago, para validar seu e-mail clique no link abaixo: <br> " + sys.getUrl_system() + "mobile?ac=validar&token=" + validacao;
+		String texto = " Bem vindo ao TragoAqui, para validar seu e-mail clique no link abaixo: <br> " + sys.getUrl_system() + "mobile?ac=validar&token=" + validacao;
 
-		Utilitario.sendEmail(desc_email, texto, "Ativação da sua conta no S.O.S Trago!", conn);
+		Utilitario.sendEmail(desc_email, texto, "Ativação da sua conta no TragoAqui!", conn);
 
 		objRetorno.put("msg", "ok");
 
@@ -477,7 +477,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 				st2.setString(1, te_email);
 				ResultSet rs2 = st2.executeQuery();
 				if (rs2.next()) {
-					throw new Exception("Este E-mail já esta sendo usado no S.O.S trago");
+					throw new Exception("Este E-mail já esta sendo usado no TragoAqui");
 				}
 
 				String validacao = Utilitario.StringGen(1000, 32).substring(0, 99);
@@ -492,7 +492,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 
 				String texto = " Clique no link para validar seu novo e-mail: <br> " + sys.getUrl_system() + "mobile?ac=validarEmail&token=" + validacao;
 
-				Utilitario.sendEmail(te_email, texto, "Confirmação de novo e-mail - S.O.S Trago", conn);
+				Utilitario.sendEmail(te_email, texto, "Confirmação de novo e-mail - TragoAqui", conn);
 				objRetorno.put("msg", "ok");
 			}
 
