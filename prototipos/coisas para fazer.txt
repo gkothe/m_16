@@ -6,8 +6,7 @@
 
 
 Opção de retirar no lugar.
-	Se esta opção estiver ativa, valor minimo de entrega é ignorado.
-Autocomplete/sugestion de  endereços de antigos pedidos.
+	
 
 
 

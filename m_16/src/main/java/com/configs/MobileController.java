@@ -204,6 +204,8 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 					carregaCarrinho(request, response, conn, cod_usuario, true);
 				} else if (cmd.equalsIgnoreCase("carregaCarrinho")) {
 					carregaCarrinho(request, response, conn, cod_usuario, false);
+				}  else if (cmd.equalsIgnoreCase("carregaEnderecos")) {
+					carregaEnderecos(request, response, conn, cod_usuario);
 				} else if (cmd.equalsIgnoreCase("addCarrinho")) {
 					addCarrinho(request, response, conn, cod_usuario);
 				} else if (cmd.equalsIgnoreCase("criarPedido")) {
@@ -1429,9 +1431,10 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 			st.setLong(1, (cod_usuario));
 
 			rs = st.executeQuery();
+			
 			if (rs.next()) {
-
-				carrinho.put("desc_email", rs.getString("DESC_EMAIL"));
+				JSONObject obj = new JSONObject();
+				carrinho.put("desc_mail", rs.getString("DESC_EMAIL"));
 				carrinho.put("desc_endereco", rs.getString("DESC_ENDERECO"));
 				carrinho.put("desc_endereco_num", rs.getString("DESC_ENDERECO_NUM"));
 				carrinho.put("desc_endereco_complemento", rs.getString("DESC_ENDERECO_COMPLEMENTO"));
@@ -1444,9 +1447,17 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 
 				carrinho.put("seccode", "");
 				carrinho.put("doctype", "CPF");
-
+				
+			
 			}
 
+			
+			 
+			 
+			
+			
+			
+			
 		} else {
 
 			if (rs.next()) {
@@ -1461,6 +1472,49 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 		out.print(carrinho.toJSONString());
 	}
 
+	private static void carregaEnderecos(HttpServletRequest request, HttpServletResponse response, Connection conn, long cod_usuario) throws Exception {
+		PrintWriter out = response.getWriter();
+		JSONObject retorno = new JSONObject();
+		
+		
+		String descender = request.getParameter("descender") == null ? "" : request.getParameter("descender"); // precisa receber
+		
+		StringBuffer	sql = new StringBuffer();
+		sql.append(" select DESC_ENDERECO_ENTREGA,DESC_ENDERECO_NUM_ENTREGA,DESC_ENDERECO_COMPLEMENTO_ENTREGA from pedido");
+		sql.append(" where id_usuario = ?  and   (CONCAT(Coalesce(DESC_ENDERECO_ENTREGA,''),Coalesce(DESC_ENDERECO_NUM_ENTREGA,''),Coalesce(DESC_ENDERECO_COMPLEMENTO_ENTREGA,''))  like ? )" );
+		sql.append(" group by DESC_ENDERECO_ENTREGA,DESC_ENDERECO_NUM_ENTREGA,DESC_ENDERECO_COMPLEMENTO_ENTREGA  order by DESC_ENDERECO_ENTREGA " );
+
+		PreparedStatement st = conn.prepareStatement(sql.toString());
+		st.setLong(1, (cod_usuario));
+		st.setString(2, "%"+descender+"%");
+		
+		ResultSet rs = st.executeQuery();
+		JSONArray enderecos = new JSONArray();
+		while (rs.next()) {
+			JSONObject obj = new JSONObject();
+			
+			 String edereco = rs.getString("DESC_ENDERECO_ENTREGA") == null ? "" :  rs.getString("DESC_ENDERECO_ENTREGA");
+			 String desc_endereco_num = rs.getString("DESC_ENDERECO_NUM_ENTREGA") == null ? "" :  rs.getString("DESC_ENDERECO_NUM_ENTREGA");
+			 String desc_endereco_complemento = rs.getString("DESC_ENDERECO_COMPLEMENTO_ENTREGA") == null ? "" :  rs.getString("DESC_ENDERECO_COMPLEMENTO_ENTREGA");
+			
+			
+			obj.put("descender", edereco + " " + desc_endereco_num + " " +desc_endereco_complemento);
+			
+			obj.put("desc_endereco_entrega", rs.getString("DESC_ENDERECO_ENTREGA") == null ? "" :  rs.getString("DESC_ENDERECO_ENTREGA"));
+			obj.put("desc_endereco_num_entrega", rs.getString("DESC_ENDERECO_NUM_ENTREGA") == null ? "" :  rs.getString("DESC_ENDERECO_NUM_ENTREGA"));
+			obj.put("desc_endereco_complemento_entrega", rs.getString("DESC_ENDERECO_COMPLEMENTO_ENTREGA") == null ? "" :  rs.getString("DESC_ENDERECO_COMPLEMENTO_ENTREGA"));
+			
+			enderecos.add(obj);
+			
+		}
+
+		
+		retorno.put("enderecos", enderecos);
+		
+		
+		out.print(retorno.toJSONString());
+	}
+	
 	private static void addCarrinho(HttpServletRequest request, HttpServletResponse response, Connection conn, long cod_usuario) throws Exception {
 		PrintWriter out = response.getWriter();
 		JSONObject retorno = new JSONObject();
@@ -1773,10 +1827,24 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 		JSONObject retorno = new JSONObject();
 
 		String tipo_pagamento = request.getParameter("tipo_pagamento") == null ? "" : request.getParameter("tipo_pagamento");
+		String desc_endereco = request.getParameter("desc_endereco") == null ? "" : request.getParameter("desc_endereco");
+		String desc_endereco_num = request.getParameter("desc_endereco_num") == null ? "" : request.getParameter("desc_endereco_num");
+		String desc_endereco_complemento = request.getParameter("desc_endereco_complemento") == null ? "" : request.getParameter("desc_endereco_complemento");
 
+	
+		
 		if (!tipo_pagamento.equalsIgnoreCase("D") && !tipo_pagamento.equalsIgnoreCase("C")) {
 			throw new Exception("Tipo de pagamento inválido.");
 		}
+		
+		if (desc_endereco.equalsIgnoreCase("")) {
+			throw new Exception("Seu endereço está em branco!");
+		}
+		
+		if (desc_endereco_num.equalsIgnoreCase("")) {
+			throw new Exception("Seu número de endereço está em branco!");
+		}
+		
 
 		long idcarrinho = 0;
 
@@ -1850,9 +1918,10 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 			st.setLong(8, idped);
 			st.setInt(9, rs.getInt("cod_bairro"));
 			st.setString(10, rs.getString("DESC_TELEFONE"));
-			st.setString(11, rs.getString("DESC_ENDERECO"));
-			st.setString(12, rs.getString("DESC_ENDERECO_NUM"));
-			st.setString(13, rs.getString("DESC_ENDERECO_COMPLEMENTO"));
+			st.setString(11, desc_endereco);
+			st.setString(12, desc_endereco_num);
+			st.setString(13, desc_endereco_complemento);
+			
 			st.setString(14, "N");
 			st.setString(15, tipo_pagamento);
 			st.setString(16, rs.getString("DESC_NOME"));
