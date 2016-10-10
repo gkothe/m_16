@@ -89,6 +89,12 @@ $(document).ready(function() {
 		ativaWarningSalvar();
 	});
 	
+	$("#flag_entre_ret").change(function() {
+		ativaWarningSalvar();
+	});
+	
+	
+	
 	
 	$(".warn-change").change(function(){
 		ativaWarningSalvar();
@@ -287,6 +293,8 @@ function salvarTela() {
 	var val_min_entrega = $("#val_min_entrega").autoNumeric('get');
 	var val_padrao_tele = $("#val_padrao_tele").autoNumeric('get');
 	var flag_modopag = $("#flag_modopag").val();
+	var flag_entre_ret = $("#flag_entre_ret").val();
+	
 	var flag_custom = "";
 
 	if ($("#check_custommode").is(":checked")) {
@@ -318,7 +326,8 @@ function salvarTela() {
 			flag_custom : flag_custom,
 			bairros : bairros,
 			desc_mail:desc_mail,
-			flag_modopag:flag_modopag
+			flag_modopag:flag_modopag,
+			flag_entre_ret:flag_entre_ret
 			
 
 		},
@@ -540,6 +549,9 @@ function loadDados() {
 			$("#desc_mail").val(data[0].desc_mail);
 			$("#flag_modopag").val(data[0].flag_modopag);
 			$("#emp_logo").attr("src", data[0].nome_img);
+			$("#flag_entre_ret").val(data[0].flag_entre_ret);
+			
+			
 
 			if (data[0].flag_custom == 'S') {
 				$("#check_custommode").prop('checked', true);

@@ -223,7 +223,9 @@ function playAudioPedido() {
 
 function limpaModal() {
 
+	$("#m_tempo_max").html("");
 	$("#m_desc_bairro").html("");
+	$("#m_lbl_bairro").html("Bairro:");
 	$("#m_total_pedido").autoNumeric('set', 0);
 	$("#m_total_tele").autoNumeric('set', 0);
 	$("#m_total_produtos").autoNumeric('set', 0);
@@ -426,10 +428,17 @@ function visualizarPedido(id) {
 		async : false,
 		dataType : 'json',
 		success : function(data) {
-
+			console.log(data);
 			audio.pause();
 			audio.currentTime = 0;
-			
+			if(data.tipo_servico == "T"){
+				$("#m_lbl_bairro").html("Bairro:");
+				$("#m_tempo_max").html(data.m_tempo_max);
+				$("#m_tempomax_div").show();
+			}else{
+				$("#m_tempomax_div").hide();
+				$("#m_lbl_bairro").html("");
+			}
 			$("#m_desc_bairro").html(data.desc_bairro);
 			$("#m_total_pedido").autoNumeric('set', parseFloat(data.VAL_ENTREGA) + parseFloat(data.VAL_TOTALPROD));
 			$("#m_total_tele").autoNumeric('set', data.VAL_ENTREGA);

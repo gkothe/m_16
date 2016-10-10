@@ -380,7 +380,17 @@ public class Pedidos_ajax {
 		ResultSet rs = st.executeQuery();
 		if (rs.next()) {
 
-			objRetorno.put("desc_bairro", rs.getString("DESC_BAIRRO"));
+			
+			objRetorno.put("tipo_servico", rs.getString("FLAG_PEDIDO_RET_ENTRE"));
+			if(rs.getString("FLAG_PEDIDO_RET_ENTRE").equalsIgnoreCase("L")){
+				objRetorno.put("desc_bairro", "Retirar no local");
+			}else{
+				objRetorno.put("m_tempo_max", new SimpleDateFormat("HH:mm").format(rs.getTimestamp("TEMPO_ESTIMADO_DESEJADO")));
+				objRetorno.put("desc_bairro", rs.getString("DESC_BAIRRO"));
+			}
+			
+			
+			
 			objRetorno.put("data_pedido", new SimpleDateFormat("dd/MM/yyyy HH:mm").format(rs.getTimestamp("DATA_PEDIDO")));
 			objRetorno.put("VAL_TOTALPROD", rs.getString("VAL_TOTALPROD"));
 			objRetorno.put("VAL_ENTREGA", rs.getString("VAL_ENTREGA"));
@@ -466,7 +476,17 @@ public class Pedidos_ajax {
 		ResultSet rs = st.executeQuery();
 		if (rs.next()) {
 
-			objRetorno.put("desc_bairro", rs.getString("DESC_BAIRRO"));
+			objRetorno.put("tipo_servico", rs.getString("FLAG_PEDIDO_RET_ENTRE"));
+			if(rs.getString("FLAG_PEDIDO_RET_ENTRE").equalsIgnoreCase("L")){
+				objRetorno.put("desc_bairro", "Retirar no local");
+			}else{
+				objRetorno.put("m_tempo_max", new SimpleDateFormat("HH:mm").format(rs.getTimestamp("TEMPO_ESTIMADO_DESEJADO")));
+				objRetorno.put("desc_bairro", rs.getString("DESC_BAIRRO"));
+			}
+			
+			
+			
+			
 			objRetorno.put("data_pedido", new SimpleDateFormat("dd/MM/yyyy HH:mm").format(rs.getTimestamp("DATA_PEDIDO")));
 			objRetorno.put("VAL_TOTALPROD", rs.getString("VAL_TOTALPROD"));
 			objRetorno.put("VAL_ENTREGA", rs.getString("VAL_ENTREGA"));
@@ -609,6 +629,11 @@ public class Pedidos_ajax {
 		st.setInt(2, Integer.parseInt(id_pedido));
 		ResultSet rs = st.executeQuery();
 
+		
+		if(!resposta.equalsIgnoreCase("A") && !resposta.equalsIgnoreCase("R")){
+			throw new Exception("Tipo de reposta inválida.");
+		}
+		
 		if (!rs.next()) {
 			throw new Exception("Pedido inválido, contate o suporte.");
 		} else {
@@ -627,12 +652,20 @@ public class Pedidos_ajax {
 				// pagamento acho
 				//String tempoentrega = hora_entrega + ":" + min_entrega;
 				
-				
+				Date datatempoentregateste;//tempo de entrega da distri
+				Date datatempoentregateste2;//tempo de entrega do usuario
 				try {
-				Date datatempoentregateste = new SimpleDateFormat("HH:mm").parse(m_tempo_entrega_inp);
+					datatempoentregateste = new SimpleDateFormat("HH:mm").parse(m_tempo_entrega_inp);
+					datatempoentregateste2 = new SimpleDateFormat("HH:mm").parse(rs.getString("TEMPO_ESTIMADO_DESEJADO"));
+					
 				} catch (Exception e) {
 					throw new Exception("Tempo de entrega inválidos!");
 				}
+				
+				if(datatempoentregateste.after(datatempoentregateste2)){//;/
+					throw new Exception("Tempo de entrega é acima do desejado!");
+				}
+				
 				
 				sql = "update  pedido  set flag_status = 'E', `TEMPO_ESTIMADO_ENTREGA` =  ? , `DATA_PEDIDO_RESPOSTA` = NOW()  where ID_DISTRIBUIDORA = ? and id_pedido = ? and flag_status = 'A' ";
 				st = conn.prepareStatement(sql);

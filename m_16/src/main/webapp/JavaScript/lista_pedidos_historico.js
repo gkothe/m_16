@@ -179,6 +179,16 @@ function visualizarPedidoHistorico(id) {
 		dataType : 'json',
 		success : function(data) {
 
+			
+			if(data.tipo_servico == "T"){
+				$("#m_lbl_bairro").html("Bairro:");
+				$("#m_tempo_max").html(data.m_tempo_max);
+				$("#m_tempomax_div").show();
+			}else{
+				$("#m_tempomax_div").hide();
+				$("#m_lbl_bairro").html("");
+			}
+			
 			$("#m_desc_bairro").html(data.desc_bairro);
 			$("#m_total_pedido").autoNumeric('set', parseFloat(data.VAL_ENTREGA) + parseFloat(data.VAL_TOTALPROD));
 			$("#m_total_tele").autoNumeric('set', data.VAL_ENTREGA);

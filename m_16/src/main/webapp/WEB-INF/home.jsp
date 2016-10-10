@@ -320,7 +320,7 @@ input:focus {
 									<table style="font-size: 120%">
 
 										<tr>
-											<td style="padding-right: 5px;"><label for="">Bairro:
+											<td style="padding-right: 5px;"><label id="m_lbl_bairro" for="">Bairro:
 											</label></td>
 											<td><label id="m_desc_bairro"> </label></td>
 
@@ -462,6 +462,20 @@ input:focus {
 											<td style="padding-right: 5px;"><label for="">Total
 													pedido: </label></td>
 											<td><label id=""> </label><label id="m_total_pedido"></label></td>
+
+
+										</tr>
+
+									</table>
+
+								</div>
+							</div>
+							<div class="row" id="m_tempomax_div">
+								<div class="col-xs-8 col-sm-8 col-md-8 col-lg-8" align="">
+									<table>
+										<tr>
+											<td style="padding-right: 5px;"><label for="">Tempo máximo desejado para a entrega: </label></td>
+											<td><label id="m_tempo_max"></label></td>
 
 
 										</tr>

@@ -151,7 +151,7 @@ public class HomeController extends javax.servlet.http.HttpServlet {
 			conn = Conexao.getConexao();
 			conn.setAutoCommit(false);
 			String cmd = request.getParameter("cmd");
-
+			System.out.println(cmd);
 			atualizaLastAjax(coddistr, conn);
 
 			if (cmd.equalsIgnoreCase("checkPedidos")) {

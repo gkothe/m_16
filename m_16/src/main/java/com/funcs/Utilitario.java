@@ -24,36 +24,52 @@ import com.configs.Conexao;
 
 public class Utilitario {
 
-	
-	
-	
-	
-	public static JSONArray payments_ids(){
+	public static JSONArray payments_ids() {
 		JSONArray payids = new JSONArray();
 		JSONObject obj = new JSONObject();
-		
+
 		obj = new JSONObject();
 		obj.put("payid", "");
 		obj.put("desc", "Escolha um tipo de cartão de crédito");
 		payids.add(obj);
-		
+
 		obj = new JSONObject();
 		obj.put("payid", "master");
 		obj.put("desc", "Mastercard");
 		payids.add(obj);
-		
+
 		obj = new JSONObject();
 		obj.put("payid", "visa");
 		obj.put("desc", "Visa");
 		payids.add(obj);
-		
-		
-	
-		
+
 		return payids;
-		
+
 	}
-	
+
+	public static JSONArray FlagEntreRet() {
+		JSONArray payids = new JSONArray();
+		JSONObject obj = new JSONObject();
+
+		obj = new JSONObject();
+		obj.put("flag_entre_ret", "A");
+		obj.put("desc", "Todos - Retirada no local e entrega");
+		payids.add(obj);
+
+		obj = new JSONObject();
+		obj.put("flag_entre_ret", "L");
+		obj.put("desc", "Somente retirada no local");
+		payids.add(obj);
+
+		obj = new JSONObject();
+		obj.put("flag_entre_ret", "T");
+		obj.put("desc", "Somente entrega");
+		payids.add(obj);
+
+		return payids;
+
+	}
+
 	public static boolean isNumeric(String str) {
 		try {
 			double d = Double.parseDouble(str);
@@ -100,43 +116,66 @@ public class Utilitario {
 
 		return "";
 	}
-	
-	
+
+	public static String returnDistrTiposPedido(String flag) { // , flag_entre_ret
+
+		if (flag.equalsIgnoreCase("L")) {
+			return "Somente retirada no local";
+		} else if (flag.equalsIgnoreCase("T")) {
+			return "Somente tele-entrega";
+		} else if (flag.equalsIgnoreCase("A")) {
+			return "Ambos - Retirada no local e tele-entrega";
+		}
+
+		return "";
+	}
+
+	public static String returntipoPedido(String flag) { // , FLAG_PEDIDO_RET_ENTRE
+
+		if (flag.equalsIgnoreCase("L")) {
+			// return "Somente retirada no local";
+			return "Retirada no local";
+		} else if (flag.equalsIgnoreCase("T")) {
+			// return "Somente tele-entrega";
+			return "Entrega";
+		}
+
+		return "";
+	}
+
+	//
+
 	public static JSONArray returnJsonStatusPedidoFlag() {
-	
+
 		JSONArray retornoarray = new JSONArray();
-		
+
 		JSONObject obj = new JSONObject();
-		
-		
+
 		obj = new JSONObject();
 		obj.put("id", "");
 		obj.put("desc", "Escolha uma situação");
 		retornoarray.add(obj);
-		
+
 		obj = new JSONObject();
 		obj.put("id", "A");
 		obj.put("desc", "Aberto");
 		retornoarray.add(obj);
-		
+
 		obj = new JSONObject();
 		obj.put("id", "F");
 		obj.put("desc", "Finalizado");
 		retornoarray.add(obj);
-		
+
 		obj = new JSONObject();
 		obj.put("id", "E");
 		obj.put("desc", "Em envio");
 		retornoarray.add(obj);
-		
+
 		obj = new JSONObject();
 		obj.put("id", "R");
 		obj.put("desc", "Recusado");
 		retornoarray.add(obj);
-		
 
-		
-		
 		return retornoarray;
 	}
 
@@ -234,11 +273,9 @@ public class Utilitario {
 		// FRIDAY, 6
 		// SATURDAY. 7
 
-		
 		return new GregorianCalendar().get(Calendar.DAY_OF_WEEK) == 1 ? 7 : new GregorianCalendar().get(Calendar.DAY_OF_WEEK) - 1;
 	}
 
-	
 	public static Integer diaSemana(Connection conn, int distribuidora) throws Exception {
 
 		// de acordo com o que ta no banco de dados, se for DAY_OF_WEEK = 1 vai ser domingo (codigo 7 no banco), resto é o dia menos 1.
@@ -279,8 +316,6 @@ public class Utilitario {
 		return dia;
 	}
 
-	
-	
 	public static String getDescDiaSemana(Connection conn, int cod_dia) throws Exception {
 
 		String varname1 = " select * from  dias_semana where cod_dia = ? ";
@@ -398,23 +433,58 @@ public class Utilitario {
 	}
 
 	public static void main(String[] args) {
+
+		Connection conn =null;
 		try {
 			// sendEmail("g.kothe@hotmail.com", "aaaa", "Recuperação de senha");
-
-			String validacao = Utilitario.StringGen(1000, 32).substring(0, 99);
-			Sys_parametros sys = new Sys_parametros(Conexao.getConexao());
-			String texto = " Bem vindo ao TragoAqui, para validar seu e-mail clique no link abaixo: <br> " + sys.getUrl_system() + "mobile/ac=validar&token=" + validacao;
+			conn = Conexao.getConexao();
+			// String validacao = Utilitario.StringGen(1000, 32).substring(0, 99);
+			// Sys_parametros sys = new Sys_parametros(Conexao.getConexao());
+			// String texto = " Bem vindo ao TragoAqui, para validar seu e-mail clique no link abaixo: <br> " + sys.getUrl_system() + "mobile/ac=validar&token=" + validacao;
 			// Utilitario.sendEmail("g.kothe@hotmail.com", texto, "Ativação da sua conta no TragoAqui!");
 
-			System.out.println("Horario_1".toString().substring("Horario_1".toString().length()-1, "Horario_1".toString().length()));
-			
-			
-			
+			// System.out.println("Horario_1".toString().substring("Horario_1".toString().length() - 1, "Horario_1".toString().length()));
+			// String hora = "1234";
+
+			// System.out.println(hora.substring(0, 2));
+			// System.out.println(hora.substring(2, 4));
+
+			String sql = " 	select * from pedido  where id_pedido = 1   ";
+
+			PreparedStatement st = conn.prepareStatement(sql);
+
+			ResultSet rs = st.executeQuery();
+
+			if (rs.next()) {
+
+				Date datatempoentregateste;
+				Date datatempoentregateste2;
+				try {
+					datatempoentregateste = new SimpleDateFormat("HH:mm").parse("01:00");
+					datatempoentregateste2 = new SimpleDateFormat("HH:mm").parse(rs.getString("TEMPO_ESTIMADO_DESEJADO"));
+					System.out.println(datatempoentregateste);
+					System.out.println(datatempoentregateste2);	
+					
+					
+				} catch (Exception e) {
+					throw new Exception("Tempo de entrega inválidos!");
+				}
+				
+				if(datatempoentregateste.after(datatempoentregateste2)){
+					throw new Exception("Tempo de entrega é acima do desejado!");
+				}
+				
+			}
 		} catch (Exception e) {
 			// TODO: handle exception
 			e.printStackTrace();
 		}
 
+		try {
+			conn.close();
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
 	}
 
 }

@@ -1,6 +1,6 @@
 /*==============================================================*/
 /* DBMS name:      MySQL 5.0                                    */
-/* Created on:     19/9/2016 10:36:20 AM                        */
+/* Created on:     10/10/2016 10:07:22 AM                       */
 /*==============================================================*/
 
 
@@ -132,6 +132,7 @@ create table DISTRIBUIDORA
    FLAG_ATIVO           char(1),
    FLAG_MODOPAGAMENTO   char(1),
    DATE_LASTAJAX        datetime,
+   FLAG_ENTRE_RET       char(1),
    primary key (ID_DISTRIBUIDORA)
 )
 auto_increment = 1;
@@ -203,6 +204,8 @@ create table PEDIDO
    PAG_TOKEN            text,
    PAG_MAIL             text,
    PAG_PAYID_TIPOCARTAO text,
+   FLAG_PEDIDO_RET_ENTRE char(1),
+   TEMPO_ESTIMADO_DESEJADO TIME,
    primary key (ID_PEDIDO)
 )
 auto_increment = 1;
