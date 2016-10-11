@@ -184,10 +184,6 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 				} else if (cod_usuario == sys.getSys_id_visistante()) {// operações daqui para cima, são validas para visitante.
 					objRetorno.put("guest", "true");
 					throw new Exception("Você está acessando como visitante. Para poder realizar esta operação você deve criar uma conta no S.O.S Trago.");
-				} else if (cmd.equalsIgnoreCase("carregaValCarrinho")) {
-					carregaValCarrinho(request, response, conn, cod_usuario);
-				} else if (cmd.equalsIgnoreCase("removerItemCarrinho")) {
-					removerItemCarrinho(request, response, conn, cod_usuario);
 				} else if (cmd.equalsIgnoreCase("carrega_situacaoes")) {
 					carregaSitucaoes(request, response, conn, cod_usuario);
 				} else if (cmd.equalsIgnoreCase("trocarEmail")) {
@@ -208,21 +204,24 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 					carregaCarrinho(request, response, conn, cod_usuario, true);
 				} else if (cmd.equalsIgnoreCase("carregaCarrinho")) {
 					carregaCarrinho(request, response, conn, cod_usuario, false);
-				} else if (cmd.equalsIgnoreCase("carregaEnderecos")) {
-					carregaEnderecos(request, response, conn, cod_usuario);
-				} else if (cmd.equalsIgnoreCase("addCarrinho")) {
+				}else if (cmd.equalsIgnoreCase("addCarrinho")) {
 					addCarrinho(request, response, conn, cod_usuario);
-				}  else if (cmd.equalsIgnoreCase("recalcularCarrinho")) {
+				} else if (cmd.equalsIgnoreCase("recalcularCarrinho")) {
 					recalcularCarrinho(request, response, conn, cod_usuario);
-				}else if (cmd.equalsIgnoreCase("criarPedido")) {
+				} else if (cmd.equalsIgnoreCase("carregaValCarrinho")) {
+					carregaValCarrinho(request, response, conn, cod_usuario);
+				} else if (cmd.equalsIgnoreCase("removerItemCarrinho")) {
+					removerItemCarrinho(request, response, conn, cod_usuario);
+				} else if (cmd.equalsIgnoreCase("criarPedido")) {
 					criarPedido(request, response, conn, cod_usuario);
 				} else if (cmd.equalsIgnoreCase("testesMudaBairroCarrinho")) {
 					testesMudaBairroCarrinho(request, response, conn, cod_usuario);
-				} else {
+				} else if (cmd.equalsIgnoreCase("carregaEnderecos")) {
+					carregaEnderecos(request, response, conn, cod_usuario);
+				}  else {
 					throw new Exception("Ação inválida");
 				}
-				
-				
+
 			}
 
 			conn.commit();
@@ -1410,7 +1409,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 			ped.put("flag_status", Utilitario.returnStatusPedidoFlag(rs.getString("FLAG_STATUS")));
 
 			ped.put("tempo_entrega_max", rs.getTimestamp("TEMPO_ESTIMADO_DESEJADO") == null ? "" : new SimpleDateFormat("HH:mm").format(rs.getTimestamp("TEMPO_ESTIMADO_DESEJADO")));
-			
+
 			ped.put("desc_serv", Utilitario.returnDistrTiposPedido(rs.getString("FLAG_PEDIDO_RET_ENTRE")));
 			ped.put("desc_nome_abrev", rs.getString("DESC_NOME_ABREV"));
 			ped.put("id_pedido", rs.getString("id_pedido"));
@@ -1638,7 +1637,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 		// String id_ditribuidora = request.getParameter("id_ditribuidora") == null ? "" : request.getParameter("id_ditribuidora");
 		String qtd = request.getParameter("qtd") == null ? "" : request.getParameter("qtd"); // precisa receber
 		String cod_bairro = request.getParameter("cod_bairro") == null ? "" : request.getParameter("cod_bairro"); // precisa receber
-
+		
 		boolean jatemcarrinho = false;
 		long idcarrinho = 0;
 		int id_distribuidora_prod = 0;
@@ -1735,7 +1734,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 			st.executeUpdate();
 
 		}
-
+		retorno.put("temcar", jatemcarrinho);
 		if (Integer.parseInt(qtd) == 0) {// se qtd é 0, é pq o item foi removido do carrinho, entao aqui é testado se ainda existe algum item no carrinho, caso nao tenha, remove o carrinho
 
 			sql = new StringBuffer();
@@ -1752,21 +1751,25 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 				st = conn.prepareStatement(sql.toString());
 				st.setLong(1, (idcarrinho));
 				st.executeUpdate();
+				retorno.put("temcar", false);
 			}
 
 		}
 
+		
+		
+		
+		
 		retorno.put("msg", "ok");
 
 		out.print(retorno.toJSONString());
 	}
 
-
 	private static void recalcularCarrinho(HttpServletRequest request, HttpServletResponse response, Connection conn, long cod_usuario) throws Exception {
 		PrintWriter out = response.getWriter();
 		JSONObject retorno = new JSONObject();
 
-		PreparedStatement st2=null;
+		PreparedStatement st2 = null;
 		StringBuffer sql = new StringBuffer();
 		sql.append("SELECT id_carrinho from carrinho where id_usuario = ? ");
 		PreparedStatement st = conn.prepareStatement(sql.toString());
@@ -1774,24 +1777,24 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 		ResultSet rs = st.executeQuery();
 		long idcarrinho = 0;
 		if (rs.next()) {// ja tem carrinho
-			
+
 			idcarrinho = rs.getLong("id_carrinho");
 		}
-		
-		if(idcarrinho == 0){
-			throw new Exception("Seu carrinho está vazio!");	
+
+		if (idcarrinho == 0) {
+			throw new Exception("Seu carrinho está vazio!");
 		}
 
 		sql = new StringBuffer();// testa se o produto existe e pega id da distribuidora relacionada ao produto
 		sql.append(" select carrinho_item.* , produtos_distribuidora.val_prod as val_correto from carrinho_item inner join produtos_distribuidora on produtos_distribuidora.ID_PROD_DIST = carrinho_item.ID_PROD_DIST ");
-		sql.append(" where ID_CARRINHO = "+idcarrinho+" ");
+		sql.append(" where ID_CARRINHO = " + idcarrinho + " ");
 		st = conn.prepareStatement(sql.toString());
-		
+
 		rs = st.executeQuery();
 		while (rs.next()) {
 			double valprod_car = rs.getDouble("val_prod");
 			double valprod_dis = rs.getDouble("val_correto");
-			if(valprod_car!=valprod_dis){
+			if (valprod_car != valprod_dis) {
 				sql = new StringBuffer();
 				sql.append("UPDATE carrinho_item ");
 				sql.append("   SET val_prod = ? ");
@@ -1802,18 +1805,14 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 				st2.setInt(3, rs.getInt("seq_item"));
 				st2.executeUpdate();
 			}
-			
-		}
 
+		}
 
 		retorno.put("msg", "ok");
 
 		out.print(retorno.toJSONString());
 	}
 
-	
-	
-	
 	private static void removerItemCarrinho(HttpServletRequest request, HttpServletResponse response, Connection conn, long cod_usuario) throws Exception {
 		PrintWriter out = response.getWriter();
 		JSONObject retorno = new JSONObject();
@@ -1855,6 +1854,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 		st = conn.prepareStatement(sql.toString());
 		st.setLong(1, (idcarrinho));
 		rs = st.executeQuery();
+		retorno.put("temcar", true);
 		if (!rs.next()) {
 
 			sql = new StringBuffer();//
@@ -1863,6 +1863,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 			st = conn.prepareStatement(sql.toString());
 			st.setLong(1, (idcarrinho));
 			st.executeUpdate();
+			retorno.put("temcar", false);
 		}
 
 		retorno.put("msg", "ok");

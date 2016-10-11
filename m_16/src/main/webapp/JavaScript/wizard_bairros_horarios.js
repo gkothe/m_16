@@ -82,7 +82,8 @@ $(document).ready(function() {
 });
 
 function removerPeriodo(periodo) {
-
+console.log(periodo);
+console.log(horarios);
 	for (t = 0; t < horarios.length; t++) {
 		if (horarios[t].id_horario == periodo) {
 			horarios[t] = null;
@@ -178,7 +179,7 @@ function addHorario() {
 		
 			for (t = 0; t < horarios.length; t++) {
 				var horario = horarios[t];
-				horario.id_horario  = counter;
+				
 				for (a = 0; a < diassemana.length; a++) {
 					
 					if(horario["HORARIO_"+diassemana[a]]!=undefined && horario["HORARIO_"+diassemana[t]]!=""){
@@ -201,11 +202,12 @@ function addHorario() {
 			}
 			
 			var horario = new Object();
+			horario.id_horario  = counter;
 			for (t = 0; t < diassemana.length; t++) { //o código esta fixo na tabela, horario_1 = segunda-fera, e etc
 					horario["HORARIO_"+diassemana[t]]  = horariosstr;
 			}
 			
-	
+			console.log(horario);
 			horarios.push(horario);
 
 			$('#table_horarios').bootstrapTable('load', horarios);
