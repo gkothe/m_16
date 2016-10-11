@@ -1319,18 +1319,17 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 			prod.put("NUM_PED", rs.getString("NUM_PED"));
 			prod.put("DATA_PEDIDO", new SimpleDateFormat("dd/MM/yyyy").format(rs.getDate("DATA_PEDIDO")));
 			prod.put("VAL_TOTAL", df2.format(rs.getDouble("VAL_TOTALPROD") + rs.getDouble("VAL_ENTREGA")));
-			if(rs.getString("FLAG_PEDIDO_RET_ENTRE").equalsIgnoreCase("T")){
-				prod.put("FLAG_STATUS", Utilitario.returnStatusPedidoFlag(rs.getString("FLAG_STATUS")));	
-			}else{
-					if(rs.getString("FLAG_STATUS").equalsIgnoreCase("E")){
-						prod.put("FLAG_STATUS", Utilitario.returnStatusPedidoFlag("S"));//se for do tipo local, retorna "em espera"
-					}else{
-						prod.put("FLAG_STATUS", Utilitario.returnStatusPedidoFlag(rs.getString("FLAG_STATUS")));	
-					}
-				
+			if (rs.getString("FLAG_PEDIDO_RET_ENTRE").equalsIgnoreCase("T")) {
+				prod.put("FLAG_STATUS", Utilitario.returnStatusPedidoFlag(rs.getString("FLAG_STATUS")));
+			} else {
+				if (rs.getString("FLAG_STATUS").equalsIgnoreCase("E")) {
+					prod.put("FLAG_STATUS", Utilitario.returnStatusPedidoFlag("S"));// se for do tipo local, retorna "em espera"
+				} else {
+					prod.put("FLAG_STATUS", Utilitario.returnStatusPedidoFlag(rs.getString("FLAG_STATUS")));
+				}
+
 			}
-			
-			
+
 			prod.put("DESC_NOME_ABREV", rs.getString("DESC_NOME_ABREV"));
 			prod.put("id_pedido", rs.getString("id_pedido"));
 			prod.put("desc_bairro", Utilitario.getNomeBairro(conn, rs.getInt("cod_bairro"), 0));
@@ -1366,7 +1365,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 		sql.append("       data_pedido, ");
 		sql.append("       data_pedido_resposta, ");
 		sql.append("       TEMPO_ESTIMADO_ENTREGA, ");
-		sql.append("       DESC_NOME_ABREV, FLAG_PEDIDO_RET_ENTRE");
+		sql.append("       DESC_NOME_ABREV, FLAG_PEDIDO_RET_ENTRE,TEMPO_ESTIMADO_DESEJADO,FLAG_PEDIDO_RET_ENTRE,");
 		sql.append("       flag_status,id_pedido,bairros.desc_bairro ,desc_endereco_num_entrega,desc_endereco_complemento_entrega ");
 		sql.append(" FROM   pedido ");
 		sql.append("       INNER JOIN distribuidora ");
@@ -1393,23 +1392,24 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 				ped.put("data_pedidoresp", "Não respondido.");
 			}
 			ped.put("val_totalprod", "R$ " + df2.format(rs.getDouble("VAL_TOTALPROD")));
-			
-			
-			if(rs.getString("FLAG_PEDIDO_RET_ENTRE").equalsIgnoreCase("T")){
-				ped.put("flag_status", Utilitario.returnStatusPedidoFlag(rs.getString("FLAG_STATUS")));	
-			}else{
-					if(rs.getString("FLAG_STATUS").equalsIgnoreCase("E")){
-						ped.put("flag_status", Utilitario.returnStatusPedidoFlag("S"));//se for do tipo local, retorna "em espera"
-					}else{
-						ped.put("flag_status", Utilitario.returnStatusPedidoFlag(rs.getString("FLAG_STATUS")));	
-					}
-				
+
+			if (rs.getString("FLAG_PEDIDO_RET_ENTRE").equalsIgnoreCase("T")) {
+				ped.put("flag_status", Utilitario.returnStatusPedidoFlag(rs.getString("FLAG_STATUS")));
+			} else {
+				if (rs.getString("FLAG_STATUS").equalsIgnoreCase("E")) {
+					ped.put("flag_status", Utilitario.returnStatusPedidoFlag("S"));// se for do tipo local, retorna "em espera"
+				} else {
+					ped.put("flag_status", Utilitario.returnStatusPedidoFlag(rs.getString("FLAG_STATUS")));
+				}
+
 			}
-			
-			
+
 			ped.put("flag_status", Utilitario.returnStatusPedidoFlag(rs.getString("FLAG_STATUS")));
+
+			ped.put("tempo_entrega_max", rs.getTimestamp("TEMPO_ESTIMADO_DESEJADO") == null ? "" : new SimpleDateFormat("HH:mm").format(rs.getTimestamp("TEMPO_ESTIMADO_DESEJADO")));
 			
 			
+			ped.put("desc_serv", Utilitario.returnDistrTiposPedido(rs.getString("FLAG_PEDIDO_RET_ENTRE")));
 			ped.put("desc_nome_abrev", rs.getString("DESC_NOME_ABREV"));
 			ped.put("id_pedido", rs.getString("id_pedido"));
 			ped.put("val_entrega", "R$ " + df2.format(rs.getDouble("val_entrega")));
@@ -2037,8 +2037,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 				throw new Exception("Seu número de endereço está em branco!");
 			}
 
-			
-			Utilitario.testeHora("HHmm", tempomax,"Tempo de entrega inválidos!");
+			Utilitario.testeHora("HHmm", tempomax, "Tempo de entrega inválidos!");
 
 		}
 

@@ -122,9 +122,9 @@ public class Utilitario {
 	public static String returnDistrTiposPedido(String flag) { // , flag_entre_ret
 
 		if (flag.equalsIgnoreCase("L")) {
-			return "Somente retirada no local";
+			return "Retirada no local";
 		} else if (flag.equalsIgnoreCase("T")) {
-			return "Somente tele-entrega";
+			return "Entrega";
 		} else if (flag.equalsIgnoreCase("A")) {
 			return "Ambos - Retirada no local e tele-entrega";
 		}
