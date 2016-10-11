@@ -238,6 +238,7 @@ function limpaModal() {
 	$("#m_minutos_entrega").autoNumeric('set', 0);*/
 	$("#m_tempo_entrega_inp").val("");
 	$("#desc_motivos2").html("");
+	$("#m_flag_pedido_ret_entre").val("");
 
 	testaAceitaRecusa();
 
@@ -337,10 +338,13 @@ function checarPedidos() {
 
 function testaAceitaRecusa() {
 	if ($('input[name=flag_aceita_recusa]:checked').val() == 'A') {
-		$('#m_tempo_entrega_box').show();
+		if($('#m_flag_pedido_ret_entre').val() =="T"){
+			$('#m_tempo_entrega_box').show();
+			$("#m_tempo_entrega_inp").focus();
+		}
 		$('#m_motivos_recusa_box').hide();
 		//$("#m_hora_entrega").focus();
-		$("#m_tempo_entrega_inp").focus();
+		
 		
 
 	} else if ($('input[name=flag_aceita_recusa]:checked').val() == 'R') {
@@ -439,7 +443,13 @@ function visualizarPedido(id) {
 				$("#m_tempomax_div").hide();
 				$("#m_lbl_bairro").html("");
 			}
-			$("#m_desc_bairro").html(data.desc_bairro);
+			$("#m_flag_pedido_ret_entre").val(data.tipo_servico);
+			if(data.desc_bairro_ret !=undefined && data.desc_bairro_ret !== ""){
+				$("#m_desc_bairro").html(data.desc_bairro_ret);	
+			}else{
+				$("#m_desc_bairro").html(data.desc_bairro);
+			}
+			
 			$("#m_total_pedido").autoNumeric('set', parseFloat(data.VAL_ENTREGA) + parseFloat(data.VAL_TOTALPROD));
 			$("#m_total_tele").autoNumeric('set', data.VAL_ENTREGA);
 			$("#m_total_produtos").autoNumeric('set', data.VAL_TOTALPROD);
@@ -458,7 +468,14 @@ function visualizarPedido(id) {
 
 			} else if (data.flag_status == "E") {
 				$("#m_lbl_titulo").css("color", "green");
-				$("#m_lbl_titulo").html("Em envio");
+				
+				if(data.tipo_servico == "T"){
+					$("#m_lbl_titulo").html("Em envio");
+				}else{
+					$("#m_lbl_titulo").html("Em espera");
+				}
+				
+			
 
 				$("#m_responder").hide();
 				// setar os dados se estiver em envio

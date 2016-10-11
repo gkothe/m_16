@@ -1,6 +1,6 @@
 /*==============================================================*/
 /* DBMS name:      MySQL 5.0                                    */
-/* Created on:     10/10/2016 10:07:22 AM                       */
+/* Created on:     11/10/2016 9:58:43 AM                        */
 /*==============================================================*/
 
 
@@ -288,7 +288,8 @@ create table SYS_PARAMETROS
    SYS_SENHA            text,
    SYS_FROMEMAIL        text,
    SYS_FROMDESC         text,
-   SYS_TLS              char(1)
+   SYS_TLS              char(1),
+   PED_HORASOKEY        int
 );
 
 /*==============================================================*/

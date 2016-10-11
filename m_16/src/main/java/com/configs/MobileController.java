@@ -1208,7 +1208,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 		String cod_bairro = request.getParameter("cod_bairro") == null ? "" : request.getParameter("cod_bairro");
 
 		StringBuffer sql = new StringBuffer();
-		sql.append(" select pedido.cod_bairro,NUM_PED,DATA_PEDIDO,VAL_TOTALPROD,FLAG_STATUS,Coalesce(VAL_ENTREGA,0) as VAL_ENTREGA,DESC_NOME_ABREV,id_pedido from pedido ");
+		sql.append(" select pedido.cod_bairro,NUM_PED,DATA_PEDIDO,VAL_TOTALPROD,FLAG_STATUS,Coalesce(VAL_ENTREGA,0) as VAL_ENTREGA,DESC_NOME_ABREV,id_pedido,FLAG_PEDIDO_RET_ENTRE from pedido ");
 		sql.append(" inner join distribuidora ");
 		sql.append(" on distribuidora.ID_DISTRIBUIDORA  = pedido.ID_DISTRIBUIDORA ");
 
@@ -1319,7 +1319,18 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 			prod.put("NUM_PED", rs.getString("NUM_PED"));
 			prod.put("DATA_PEDIDO", new SimpleDateFormat("dd/MM/yyyy").format(rs.getDate("DATA_PEDIDO")));
 			prod.put("VAL_TOTAL", df2.format(rs.getDouble("VAL_TOTALPROD") + rs.getDouble("VAL_ENTREGA")));
-			prod.put("FLAG_STATUS", Utilitario.returnStatusPedidoFlag(rs.getString("FLAG_STATUS")));
+			if(rs.getString("FLAG_PEDIDO_RET_ENTRE").equalsIgnoreCase("T")){
+				prod.put("FLAG_STATUS", Utilitario.returnStatusPedidoFlag(rs.getString("FLAG_STATUS")));	
+			}else{
+					if(rs.getString("FLAG_STATUS").equalsIgnoreCase("E")){
+						prod.put("FLAG_STATUS", Utilitario.returnStatusPedidoFlag("S"));//se for do tipo local, retorna "em espera"
+					}else{
+						prod.put("FLAG_STATUS", Utilitario.returnStatusPedidoFlag(rs.getString("FLAG_STATUS")));	
+					}
+				
+			}
+			
+			
 			prod.put("DESC_NOME_ABREV", rs.getString("DESC_NOME_ABREV"));
 			prod.put("id_pedido", rs.getString("id_pedido"));
 			prod.put("desc_bairro", Utilitario.getNomeBairro(conn, rs.getInt("cod_bairro"), 0));
@@ -1355,7 +1366,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 		sql.append("       data_pedido, ");
 		sql.append("       data_pedido_resposta, ");
 		sql.append("       TEMPO_ESTIMADO_ENTREGA, ");
-		sql.append("       DESC_NOME_ABREV, ");
+		sql.append("       DESC_NOME_ABREV, FLAG_PEDIDO_RET_ENTRE");
 		sql.append("       flag_status,id_pedido,bairros.desc_bairro ,desc_endereco_num_entrega,desc_endereco_complemento_entrega ");
 		sql.append(" FROM   pedido ");
 		sql.append("       INNER JOIN distribuidora ");
@@ -1382,7 +1393,23 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 				ped.put("data_pedidoresp", "Não respondido.");
 			}
 			ped.put("val_totalprod", "R$ " + df2.format(rs.getDouble("VAL_TOTALPROD")));
+			
+			
+			if(rs.getString("FLAG_PEDIDO_RET_ENTRE").equalsIgnoreCase("T")){
+				ped.put("flag_status", Utilitario.returnStatusPedidoFlag(rs.getString("FLAG_STATUS")));	
+			}else{
+					if(rs.getString("FLAG_STATUS").equalsIgnoreCase("E")){
+						ped.put("flag_status", Utilitario.returnStatusPedidoFlag("S"));//se for do tipo local, retorna "em espera"
+					}else{
+						ped.put("flag_status", Utilitario.returnStatusPedidoFlag(rs.getString("FLAG_STATUS")));	
+					}
+				
+			}
+			
+			
 			ped.put("flag_status", Utilitario.returnStatusPedidoFlag(rs.getString("FLAG_STATUS")));
+			
+			
 			ped.put("desc_nome_abrev", rs.getString("DESC_NOME_ABREV"));
 			ped.put("id_pedido", rs.getString("id_pedido"));
 			ped.put("val_entrega", "R$ " + df2.format(rs.getDouble("val_entrega")));
@@ -2010,19 +2037,8 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 				throw new Exception("Seu número de endereço está em branco!");
 			}
 
-			Date teste;
-			try {
-				teste = new SimpleDateFormat("HHmm").parse(tempomax);
-				int t = Integer.parseInt(tempomax.substring(0, 2));
-				if (t > 24)
-					throw new Exception("");
-
-				t = Integer.parseInt(tempomax.substring(2, 4));
-				if (t > 59)
-					throw new Exception("");
-			} catch (Exception e) {
-				throw new Exception("Tempo máximo desejado inválido");
-			}
+			
+			Utilitario.testeHora("HHmm", tempomax,"Tempo de entrega inválidos!");
 
 		}
 
@@ -2102,7 +2118,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 			} else {
 				st.setDouble(7, 0.0);
 			}
-			st.setLong(8, idped);
+			st.setLong(8, Utilitario.getNextNumpad(conn, rs.getInt("ID_DISTRIBUIDORA")));
 			st.setInt(9, rs.getInt("cod_bairro"));
 			st.setString(10, rs.getString("DESC_TELEFONE"));
 			if (choiceserv.equalsIgnoreCase("T")) {

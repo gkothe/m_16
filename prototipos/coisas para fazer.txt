@@ -5,26 +5,6 @@
 
 
 
-Opção de retirar no lugar.
-	flag na distribuidora e no pedido - ok
-	listagem dos produtos , filtro para as opçoes, padrão é entrega. - ok
-	checkout, opção para o tipo de entrega - ok
-	ao criar pedido, verificar se a distribuidora aceita o tipo de pedido - ok
-	frete, val minimo de entrega  - ok
-	colocar tempo maximo de entrega desejado pelo usuario no checktout. - ok
-	ao receper um pedido,tempo maximo de entrega desejado pelo usuario -  ok
-	ao receper um pedido, mostrar na tela o tipo do pedido, acho que na listagem tb. - ok
-	fazer filtro na listagem de pedidos abertos e historico do tipo de pedido - ok
-
-
-
-
-
-
-
-
-
-
 
 
 

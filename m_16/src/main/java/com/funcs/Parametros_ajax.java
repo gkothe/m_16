@@ -456,14 +456,10 @@ public class Parametros_ajax {
 					if (horario.get("HORARIO_FIM").toString().length() != 5) {
 						throw new Exception("O horário " + horario.get("HORARIO_FIM") + " é invalido");
 					}
-					Date dataini;
-					Date datafim;
-					try {
-						dataini = new SimpleDateFormat("HH:mm").parse(horario.get("HORARIO_INI").toString());
-						datafim = new SimpleDateFormat("HH:mm").parse(horario.get("HORARIO_FIM").toString());
-					} catch (Exception e) {
-						throw new Exception("Dados de horario inválidos, entre em contato com o suporte.");
-					}
+					
+					Date dataini = Utilitario.testeHora("HH:mm", horario.get("HORARIO_INI").toString(),"");//tempo de entrega da distri
+					Date datafim = Utilitario.testeHora("HH:mm", horario.get("HORARIO_FIM").toString(),"");;//tempo de entrega do usuario
+					
 
 					for (int l = 0; l < horarios.size(); l++) {
 
@@ -472,14 +468,10 @@ public class Parametros_ajax {
 
 						if (!(idteste.equalsIgnoreCase(horario2.get("id_horario").toString()))) {
 
-							Date dataini2;
-							Date datafim2;
-							try {
-								dataini2 = new SimpleDateFormat("HH:mm").parse(horario2.get("HORARIO_INI").toString());
-								datafim2 = new SimpleDateFormat("HH:mm").parse(horario2.get("HORARIO_FIM").toString());
-							} catch (Exception e) {
-								throw new Exception("Dados de horario inválidos, entre em contato com o suporte.");
-							}
+							Date dataini2 = Utilitario.testeHora("HH:mm", horario.get("HORARIO_INI").toString(),"");//tempo de entrega da distri
+							Date datafim2 = Utilitario.testeHora("HH:mm", horario.get("HORARIO_FIM").toString(),"");;//tempo de entrega do usuario
+							
+
 
 							if (dataini.after(dataini2) && dataini.before(datafim2)) {
 								throw new Exception("Erro ao salvar. Existem horarios conflitantes.");
@@ -647,14 +639,12 @@ public class Parametros_ajax {
 						throw new Exception("O horário " + horario.get("HORARIO_FIM") + " é invalido");
 					}
 
-					Date dataini;
-					Date datafim;
-					try {
-						dataini = new SimpleDateFormat("HH:mm").parse(horario.get("HORARIO_INI").toString());
-						datafim = new SimpleDateFormat("HH:mm").parse(horario.get("HORARIO_FIM").toString());
-					} catch (Exception e) {
-						throw new Exception("Dados de horario inválidos, entre em contato com o suporte.");
-					}
+					
+					Date dataini = Utilitario.testeHora("HH:mm", horario.get("HORARIO_INI").toString(),"");//tempo de entrega da distri
+					Date datafim = Utilitario.testeHora("HH:mm", horario.get("HORARIO_FIM").toString(),"");;//tempo de entrega do usuario
+					
+					
+					
 
 					// teste de conflito de horario
 
@@ -810,14 +800,9 @@ public class Parametros_ajax {
 						 String horariocompleto = faixa.get("HORARIO_"+dias[t]).toString();
 						 String[] horariosstr = horariocompleto.split(" - ");
 						 
-						    Date dataini;
-							Date datafim;
-							try {
-								dataini = new SimpleDateFormat("HH:mm").parse(horariosstr[0]);
-								datafim = new SimpleDateFormat("HH:mm").parse(horariosstr[1]);
-							} catch (Exception e) {
-								throw new Exception("Dados de horario inválidos, entre em contato com o suporte.");
-							}
+						 
+							Date dataini = Utilitario.testeHora("HH:mm", horariosstr[0],"");//tempo de entrega da distri
+							Date datafim = Utilitario.testeHora("HH:mm", horariosstr[1],"");;//tempo de entrega do usuario
 							
 							
 							

@@ -112,6 +112,8 @@ public class Utilitario {
 			return "Finalizado";
 		} else if (flag.equalsIgnoreCase("A")) {
 			return "Aberto";
+		}else if (flag.equalsIgnoreCase("S")) {
+			return "Em espera";
 		}
 
 		return "";
@@ -170,11 +172,18 @@ public class Utilitario {
 		obj.put("id", "E");
 		obj.put("desc", "Em envio");
 		retornoarray.add(obj);
+		
+//		obj = new JSONObject();
+//		obj.put("id", "S");
+//		obj.put("desc", "Em espera");
+//		retornoarray.add(obj);
 
 		obj = new JSONObject();
 		obj.put("id", "R");
 		obj.put("desc", "Recusado");
 		retornoarray.add(obj);
+		
+		
 
 		return retornoarray;
 	}
@@ -316,6 +325,68 @@ public class Utilitario {
 		return dia;
 	}
 
+	public static int getNextNumpad(Connection conn, int distribuidora) throws Exception {
+
+		String varname1 = " select coalesce(max(num_ped),0)+1 as num_ped from  pedido where id_distribuidora = ?  ";
+		PreparedStatement st = conn.prepareStatement(varname1);
+		st.setInt(1, distribuidora);
+		ResultSet rs2 = st.executeQuery();
+		if (rs2.next()) {
+			return rs2.getInt("NUM_PED");
+		}
+
+		return 0;
+	}
+	
+	
+	public static Date testeHora(String mask, String hora, String msg) throws Exception{
+		
+		
+		Date datatempoentregateste2;//tempo de entrega do usuario
+		try {
+			datatempoentregateste2 = new SimpleDateFormat(mask).parse(hora);
+		} catch (Exception e) {
+			if(msg.equalsIgnoreCase("")){
+				throw new Exception("Horario inválido");	
+			}else{
+				throw new Exception(msg);
+			}
+			
+		}
+		
+		if(mask.equalsIgnoreCase("HH:mm")){
+			
+			int t = Integer.parseInt(hora.substring(0, 2));
+			if (t > 24)
+				throw new Exception("As horas não pode ser maior que 24.");
+
+			t = Integer.parseInt(hora.substring(3, 5));
+			if (t > 59)
+				throw new Exception("Os minutos não podem ser maior que 59.");
+			
+		}
+		
+		
+		if(mask.equalsIgnoreCase("HHmm")){
+		
+			int t = Integer.parseInt(hora.substring(0, 2));
+			if (t > 24)
+				throw new Exception("As horas não pode ser maior que 24.");
+
+			t = Integer.parseInt(hora.substring(2, 4));
+			if (t > 59)
+				throw new Exception("Os minutos não podem ser maior que 59.");
+			
+		}
+		
+		
+		
+		return datatempoentregateste2;
+		
+		
+	}
+	
+	
 	public static String getDescDiaSemana(Connection conn, int cod_dia) throws Exception {
 
 		String varname1 = " select * from  dias_semana where cod_dia = ? ";

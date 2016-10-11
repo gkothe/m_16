@@ -23,6 +23,9 @@ public class Sys_parametros {
 	String sys_fromemail = "";
 	String sys_fromdesc = "";
 	boolean sys_tls = true;
+	int PED_HORASOKEY = 0;
+	
+	
 
 	public int getSys_smtp_port() {
 		return sys_smtp_port;
@@ -193,13 +196,21 @@ public class Sys_parametros {
 				this.setSys_fromdesc(rs.getString("sys_fromdesc"));
 				this.setSys_tls(rs.getString("sys_tls").equalsIgnoreCase("S") ? true : false);
 				this.setSys_id_visistante(rs.getLong("id_visitante"));
-
+				this.setPED_HORASOKEY(rs.getInt("PED_HORASOKEY"));
 			}
 
 		} catch (Exception e) {
 			// TODO: handle exception
 		}
 
+	}
+
+	public int getPED_HORASOKEY() {
+		return PED_HORASOKEY;
+	}
+
+	public void setPED_HORASOKEY(int pED_HORASOKEY) {
+		PED_HORASOKEY = pED_HORASOKEY;
 	}
 
 }

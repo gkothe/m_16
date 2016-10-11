@@ -18,7 +18,7 @@ import org.json.simple.parser.JSONParser;
 
 public class Pedidos_ajax {
 
-	public static int horas_fim_pedido = 6;
+	//public static int horas_fim_pedido = 6;
 
 	public static void carregaBairros(HttpServletRequest request, HttpServletResponse response, Connection conn, int coddistr) throws Exception {
 		JSONArray retorno = new JSONArray();
@@ -211,17 +211,19 @@ public class Pedidos_ajax {
 			objRetorno.put("qtdprod", qtdprod);
 			objRetorno.put("data_formatada", new SimpleDateFormat("dd/MM/yyyy HH:mm").format(rs.getTimestamp("DATA_PEDIDO")));
 			objRetorno.put("NUM_PED", rs.getString("NUM_PED"));
+			objRetorno.put("FLAG_STATUS", rs.getString("FLAG_STATUS"));
 
-
+			
 			if(rs.getString("FLAG_PEDIDO_RET_ENTRE").equalsIgnoreCase("L")){
 				objRetorno.put("DESC_BAIRRO", "Retirar no local");
+				objRetorno.put("FLAG_STATUS", rs.getString("FLAG_STATUS").equalsIgnoreCase("E")?"S":rs.getString("FLAG_STATUS"));
 			}else{
 				objRetorno.put("DESC_BAIRRO", rs.getString("DESC_BAIRRO"));
 			}
 			
 			
 			objRetorno.put("VAL_TOTALPROD", rs.getString("VAL_TOTALPROD"));
-			objRetorno.put("FLAG_STATUS", rs.getString("FLAG_STATUS"));
+			
 			objRetorno.put("ID_PEDIDO", rs.getString("ID_PEDIDO"));
 			objRetorno.put("flag_visu", rs.getString("flag_vizualizado"));
 			
@@ -509,6 +511,7 @@ public class Pedidos_ajax {
 	}
 
 	public static void carregaPedido_AbertoEnvio(HttpServletRequest request, HttpServletResponse response, Connection conn, int coddistr) throws Exception {
+	
 
 		PrintWriter out = response.getWriter();
 		JSONObject objRetorno = new JSONObject();
@@ -566,7 +569,7 @@ public class Pedidos_ajax {
 
 			objRetorno.put("prods", prods);
 			objRetorno.put("darok", false);
-
+			Sys_parametros sys = new Sys_parametros(conn); 
 			if (status.equalsIgnoreCase("E")) {
 
 				st2 = conn.prepareStatement("SELECT DESC_NOME, DESC_TELEFONE,DESC_ENDERECO, desc_bairro from usuario inner join bairros on bairros.cod_bairro = usuario.cod_bairro  where ID_usuario = ? and bairros.cod_cidade = " + request.getSession(false).getAttribute("cod_cidade").toString());
@@ -578,13 +581,23 @@ public class Pedidos_ajax {
 					objRetorno.put("DESC_NOME", rs2.getString("DESC_NOME"));
 					objRetorno.put("DESC_TELEFONE", rs2.getString("DESC_TELEFONE"));
 					objRetorno.put("DESC_ENDERECO", rs2.getString("DESC_ENDERECO"));
+					
+					objRetorno.put("tipo_servico", rs.getString("FLAG_PEDIDO_RET_ENTRE"));
+					if(rs.getString("FLAG_PEDIDO_RET_ENTRE").equalsIgnoreCase("L")){
+						objRetorno.put("desc_bairro_ret", "Retirar no local");
+					}else{
+						
+						objRetorno.put("desc_bairro_ret", rs2.getString("DESC_BAIRRO"));
+					}
+					
+					
 					objRetorno.put("desc_bairro", rs2.getString("desc_bairro"));
 					objRetorno.put("m_tempo_entrega", new SimpleDateFormat("HH:mm").format(rs.getTimestamp("TEMPO_ESTIMADO_ENTREGA")));
 					objRetorno.put("m_data_resposta", new SimpleDateFormat("dd/MM/yyyy HH:mm").format(rs.getTimestamp("DATA_PEDIDO_RESPOSTA")));
 
 					Calendar data6 = Calendar.getInstance();
 					data6.setTime(rs.getTimestamp("DATA_PEDIDO_RESPOSTA"));
-					data6.add(Calendar.HOUR_OF_DAY, horas_fim_pedido);
+					data6.add(Calendar.HOUR_OF_DAY, sys.getPED_HORASOKEY());
 
 					if (data6.getTime().before(new Date())) {
 						objRetorno.put("darok", true);
@@ -611,7 +624,7 @@ public class Pedidos_ajax {
 	}
 
 	public static void finalizandoPedido(HttpServletRequest request, HttpServletResponse response, Connection conn, int coddistr) throws Exception {
-
+		Sys_parametros sys = new Sys_parametros(conn);
 		PrintWriter out = response.getWriter();
 		JSONObject objRetorno = new JSONObject();
 
@@ -629,10 +642,10 @@ public class Pedidos_ajax {
 
 			Calendar data6 = Calendar.getInstance();
 			data6.setTime(rs.getTimestamp("DATA_PEDIDO_RESPOSTA"));
-			data6.add(Calendar.HOUR_OF_DAY, horas_fim_pedido);
+			data6.add(Calendar.HOUR_OF_DAY, sys.getPED_HORASOKEY());
 
 			if (data6.getTime().after(new Date())) {
-				throw new Exception("A hora atual deve exceder em " + horas_fim_pedido + "h a data de resposta para o pedido ser finalizado manualmente.");
+				throw new Exception("A hora atual deve exceder em " + sys.getPED_HORASOKEY() + "h a data de resposta para o pedido ser finalizado manualmente.");
 			}
 
 			sql = " update  pedido  set flag_status = 'O' where id_pedido = ? and ID_DISTRIBUIDORA = ? and flag_status = 'E' ";
@@ -699,19 +712,30 @@ public class Pedidos_ajax {
 				// pagamento acho
 				//String tempoentrega = hora_entrega + ":" + min_entrega;
 				
-				Date datatempoentregateste;//tempo de entrega da distri
-				Date datatempoentregateste2;//tempo de entrega do usuario
-				try {
-					datatempoentregateste = new SimpleDateFormat("HH:mm").parse(m_tempo_entrega_inp);
-					datatempoentregateste2 = new SimpleDateFormat("HH:mm").parse(rs.getString("TEMPO_ESTIMADO_DESEJADO"));
+				
+				
+				
+				
+			
+							
+				
+				
+				if(rs.getString("FLAG_PEDIDO_RET_ENTRE").equalsIgnoreCase("L")){
+				
+					m_tempo_entrega_inp = "00:00";
 					
-				} catch (Exception e) {
-					throw new Exception("Tempo de entrega inválidos!");
+					
+				}else{
+					Date datatempoentregateste = Utilitario.testeHora("HH:mm", m_tempo_entrega_inp,"Tempo de entrega inválido!");//tempo de entrega da distri
+					Date datatempoentregateste2 = Utilitario.testeHora("HH:mm", rs.getString("TEMPO_ESTIMADO_DESEJADO"),"");;//tempo de entrega do usuario
+				
+					
+					if(datatempoentregateste.after(datatempoentregateste2)){//;/
+						throw new Exception("Tempo de entrega é acima do desejado!");
+					}
 				}
 				
-				if(datatempoentregateste.after(datatempoentregateste2)){//;/
-					throw new Exception("Tempo de entrega é acima do desejado!");
-				}
+				
 				
 				
 				sql = "update  pedido  set flag_status = 'E', `TEMPO_ESTIMADO_ENTREGA` =  ? , `DATA_PEDIDO_RESPOSTA` = NOW()  where ID_DISTRIBUIDORA = ? and id_pedido = ? and flag_status = 'A' ";

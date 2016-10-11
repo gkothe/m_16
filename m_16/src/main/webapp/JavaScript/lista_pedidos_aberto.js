@@ -14,26 +14,22 @@ $(document).ready(function() {
 
 	$(".btn_filtrar_aberto").click(function() {
 		$("#modal_filtros_aberto").modal('hide');
-		
+
 		loadAbertos(true);
-		
+
 	});
-	
-	
-	
 
 	$('#msg_filtros').blink({
 		delay : 400
 	});
-	
+
 	$("#btn_maisfiltras_aberto").click(function() {
 		$("#modal_filtros_aberto").modal("show");
-	});	
-	
-	
+	});
+
 	$(".btn_filtros_limpar").click(function() {
 		$("#modal_filtros_aberto").modal('hide');
-		
+
 		$("#num_pedido_aberto").val("");
 		$("#id_produto").val("");
 		$("#desc_produto").val("");
@@ -47,14 +43,13 @@ $(document).ready(function() {
 		$("#flag_situacao").val("");
 		$("#flag_visu").val("");
 		$("#flag_pedido_ret_entre").val("")
-		
+
 		loadAbertos(true);
 	});
 
 	$("#val_ini_aberto").autoNumeric('init', numerico);
 	$("#val_fim_aberto").autoNumeric('init', numerico);
 	$("#id_produto").autoNumeric('init', inteiro);
-
 
 	setAutocomplete("id_produto", "desc_produto");
 
@@ -65,15 +60,14 @@ $(document).ready(function() {
 		daysOfWeekHighlighted : "0,6",
 	});
 
-	/*$('.hora').timepicker({
-		minuteStep : 1,
-		showSeconds : false,
-		showMeridian : false,
-		defaultTime : false
+	/*
+	 * $('.hora').timepicker({ minuteStep : 1, showSeconds : false, showMeridian :
+	 * false, defaultTime : false });
+	 */
+	$(".hora").inputmask("h:s", {
+		"placeholder" : "00:00"
 	});
-*/
-	 $(".hora").inputmask("h:s",{ "placeholder": "00:00" });
-	
+
 	$('.keep-open', $('.fixed-table-toolbar')).prependTo($('#colunas'));
 	$('.fixed-table-toolbar').remove();
 	$('#colunas').addClass("fixed-table-toolbar");
@@ -84,18 +78,15 @@ $(document).ready(function() {
 	var tabela = $('#table_pedidos_abertos');
 
 	$(tabela).bootstrapTable();
-	
-	
+
 	$(tabela).on('sort.bs.table reset-view.bs.table post-body.bs.table', function() {
 		$('th', $('#table_pedidos_abertos')).css('background-color', 'rgb(248, 248, 248)');
 	});
-	
-	
+
 	$(tabela).on('click-cell.bs.table', function(field, value, row, $element) {
 		visualizarPedido($element.ID_PEDIDO);
 	});
 
-	
 	$(tabela).on('page-change.bs.table', function() {
 		$(".openpedido").click(function() {
 			visualizarPedido($(this).attr("data-valor"));
@@ -104,12 +95,11 @@ $(document).ready(function() {
 
 	carregaBairros();
 	loadAbertos(true);
-	
-	
+
 	window.setInterval(function() {
 		loadAbertos(false);
 	}, 5000);
-	
+
 	loadAbertos();
 
 });
@@ -125,12 +115,10 @@ function btnFormater(value, row, index) {
 
 function qtdProdFormatter(value, row, index) {
 	var html = "";
-	html = html + "<label style=\"font-weight: normal;\" data-toggle=\"tooltip\" title='"+value+"'  > "+row.qtdprod +" tipo(s) de produto(s). </label>";
+	html = html + "<label style=\"font-weight: normal;\" data-toggle=\"tooltip\" title='" + value + "'  > " + row.qtdprod + " tipo(s) de produto(s). </label>";
 
 	return html;
 }
-
-
 
 function statusFormater(value, row, index) {
 
@@ -138,17 +126,15 @@ function statusFormater(value, row, index) {
 	if (value == "A") {
 
 		html = html + "<label style='color:red'>Aberto<label>";
-		
-	
+
 	} else if (value == "E") {
 		html = html + "<label style='color:green'>Em Envio<label>";
+	} else if (value == "S") {
+		html = html + "<label style='color:green'>Em Espera<label>";
 	}
-
-	
 
 	return html;
 }
-
 
 function visuFormater(value, row, index) {
 
@@ -156,16 +142,13 @@ function visuFormater(value, row, index) {
 	if (value == "N") {
 
 		html = html + "<label style='color:red'>Não<label>";
-	
+
 	} else if (value == "S") {
 		html = html + "<label >Sim<label>";
 	}
 
-	
-
 	return html;
 }
-
 
 function carregaBairros() {
 
@@ -205,8 +188,6 @@ function carregaBairros() {
 
 }
 
-
-
 function loadAbertos(blockui) {
 
 	var num_pedido_aberto = $("#num_pedido_aberto").val();
@@ -221,10 +202,8 @@ function loadAbertos(blockui) {
 	var flag_situacao = $("#flag_situacao").val();
 	var flag_visu = $("#flag_visu").val();
 	var flag_pedido_ret_entre = $("#flag_pedido_ret_entre").val();
-	
-	
-	
-	if(blockui){
+
+	if (blockui) {
 		$.blockUI({
 			message : 'Carregando...'
 		});
@@ -246,53 +225,50 @@ function loadAbertos(blockui) {
 			data_pedido_fim_hora : data_pedido_fim_hora,
 			val_ini_aberto : val_ini_aberto,
 			val_fim_aberto : val_fim_aberto,
-			flag_situacao:flag_situacao,
-			flag_visu:flag_visu,
-			flag_pedido_ret_entre:flag_pedido_ret_entre
-				 
+			flag_situacao : flag_situacao,
+			flag_visu : flag_visu,
+			flag_pedido_ret_entre : flag_pedido_ret_entre
+
 		},
 		success : function(data) {
 
 			if (data.errologin != undefined) {
-			    window.location.href="" ;
+				window.location.href = "";
 			}
-			
-			
-			
-				if(data.temfiltro=='S'){
-					$("#msg_filtros").show();
-				}else{
-					$("#msg_filtros").hide();
-				}
-				
-			
-			
+
+			if (data.temfiltro == 'S') {
+				$("#msg_filtros").show();
+			} else {
+				$("#msg_filtros").hide();
+			}
+
 			$('#table_pedidos_abertos').bootstrapTable('load', data.pedidos);
 			$('#table_pedidos_abertos').bootstrapTable('resetView');
 			$('[data-toggle="tooltip"]').tooltip();
 
-			$(".openpedido").click(function() { //EVENTO RESOLVIDO PELO CLICK ON CELL
-				
-				//visualizarPedido($(this).attr("data-valor"));
+			$(".openpedido").click(function() { // EVENTO RESOLVIDO PELO CLICK
+												// ON CELL
+
+				// visualizarPedido($(this).attr("data-valor"));
 			});
 			$(".th-inner").css("text-align", "center");
 
-			if(blockui){
+			if (blockui) {
 				$.unblockUI();
 			}
 		},
 		error : function(msg) {
-			
-			if(blockui){
+
+			if (blockui) {
 				$.unblockUI();
 			}
-			if(msg.status == 0 ){
-			
-			}else{
+			if (msg.status == 0) {
+
+			} else {
 				alert("Erro: " + msg.msg);
-				
+
 			}
-			
+
 		}
 	});
 

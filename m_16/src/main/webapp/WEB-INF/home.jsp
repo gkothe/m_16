@@ -306,7 +306,7 @@ input:focus {
 							</button>
 							<h4 class="modal-title" id="">
 								<label style="font-size: 40px; color: green" id="m_lbl_titulo"></label>
-
+								<input type="hidden" id="m_flag_pedido_ret_entre">
 							</h4>
 						</div>
 						<div class="modal-body" style="max-height: 800px">
