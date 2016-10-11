@@ -46,6 +46,7 @@ $(document).ready(function() {
 		$("#val_fim_aberto").autoNumeric('set', "");
 		$("#flag_situacao").val("");
 		$("#flag_visu").val("");
+		$("#flag_pedido_ret_entre").val("")
 		
 		loadAbertos(true);
 	});
@@ -219,6 +220,8 @@ function loadAbertos(blockui) {
 	var val_fim_aberto = $("#val_fim_aberto").autoNumeric('get');
 	var flag_situacao = $("#flag_situacao").val();
 	var flag_visu = $("#flag_visu").val();
+	var flag_pedido_ret_entre = $("#flag_pedido_ret_entre").val();
+	
 	
 	
 	if(blockui){
@@ -244,8 +247,9 @@ function loadAbertos(blockui) {
 			val_ini_aberto : val_ini_aberto,
 			val_fim_aberto : val_fim_aberto,
 			flag_situacao:flag_situacao,
-			flag_visu:flag_visu
-
+			flag_visu:flag_visu,
+			flag_pedido_ret_entre:flag_pedido_ret_entre
+				 
 		},
 		success : function(data) {
 

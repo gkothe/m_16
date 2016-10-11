@@ -65,6 +65,9 @@ public class Pedidos_ajax {
 		String val_fim_aberto = request.getParameter("val_fim_aberto") == null ? "" : request.getParameter("val_fim_aberto");
 		String flag_situacao = request.getParameter("flag_situacao") == null ? "" : request.getParameter("flag_situacao");
 		String flag_visu = request.getParameter("flag_visu") == null ? "" : request.getParameter("flag_visu");
+		String flag_pedido_ret_entre = request.getParameter("flag_pedido_ret_entre") == null ? "" : request.getParameter("flag_pedido_ret_entre");
+		
+		
 
 		String temfiltro = "N";
 		
@@ -115,6 +118,12 @@ public class Pedidos_ajax {
 			sql = sql + "  and  flag_vizualizado = ? ";
 			temfiltro = "S";
 		}
+		
+		if (!flag_pedido_ret_entre.equalsIgnoreCase("")) {
+			sql = sql + "  and  flag_pedido_ret_entre = ? ";
+			temfiltro = "S";
+		}
+		
 		
 		
 		PreparedStatement st = conn.prepareStatement(sql);
@@ -169,6 +178,14 @@ public class Pedidos_ajax {
 			st.setString(contparam, (flag_visu));
 			contparam++;
 		}
+		
+		
+		if (!flag_pedido_ret_entre.equalsIgnoreCase("")) {
+			st.setString(contparam, (flag_pedido_ret_entre));
+			contparam++;
+		}
+		
+		
 
 		ResultSet rs = st.executeQuery();
 		PreparedStatement st2;
@@ -194,7 +211,15 @@ public class Pedidos_ajax {
 			objRetorno.put("qtdprod", qtdprod);
 			objRetorno.put("data_formatada", new SimpleDateFormat("dd/MM/yyyy HH:mm").format(rs.getTimestamp("DATA_PEDIDO")));
 			objRetorno.put("NUM_PED", rs.getString("NUM_PED"));
-			objRetorno.put("DESC_BAIRRO", rs.getString("DESC_BAIRRO"));
+
+
+			if(rs.getString("FLAG_PEDIDO_RET_ENTRE").equalsIgnoreCase("L")){
+				objRetorno.put("DESC_BAIRRO", "Retirar no local");
+			}else{
+				objRetorno.put("DESC_BAIRRO", rs.getString("DESC_BAIRRO"));
+			}
+			
+			
 			objRetorno.put("VAL_TOTALPROD", rs.getString("VAL_TOTALPROD"));
 			objRetorno.put("FLAG_STATUS", rs.getString("FLAG_STATUS"));
 			objRetorno.put("ID_PEDIDO", rs.getString("ID_PEDIDO"));
@@ -225,6 +250,9 @@ public class Pedidos_ajax {
 		String val_ini_historico = request.getParameter("val_ini_historico") == null ? "" : request.getParameter("val_ini_historico");
 		String val_fim_historico = request.getParameter("val_fim_historico") == null ? "" : request.getParameter("val_fim_historico");
 		String flag_situacao = request.getParameter("flag_situacao") == null ? "" : request.getParameter("flag_situacao");
+		String flag_pedido_ret_entre = request.getParameter("flag_pedido_ret_entre") == null ? "" : request.getParameter("flag_pedido_ret_entre");
+		
+		
 		String sql = "select * from pedido inner join bairros on bairros.cod_bairro = pedido.cod_bairro where ID_DISTRIBUIDORA = ? and (flag_status = 'O' or flag_status = 'R') ";
 
 		if (!num_pedido_historico.equalsIgnoreCase("")) {
@@ -266,6 +294,12 @@ public class Pedidos_ajax {
 		if (!val_fim_historico.equalsIgnoreCase("")) {
 			sql = sql + "  and  VAL_TOTALPROD <= ? ";
 		}
+		
+		if (!flag_pedido_ret_entre.equalsIgnoreCase("")) {
+			sql = sql + "  and  flag_pedido_ret_entre = ? ";
+			
+		}
+		
 		PreparedStatement st = conn.prepareStatement(sql);
 		st.setInt(1, coddistr);
 
@@ -328,6 +362,11 @@ public class Pedidos_ajax {
 			contparam++;
 		}
 
+		if (!flag_pedido_ret_entre.equalsIgnoreCase("")) {
+			st.setString(contparam, (flag_pedido_ret_entre));
+			contparam++;
+		}
+		
 		ResultSet rs = st.executeQuery();
 		PreparedStatement st2;
 		ResultSet rs2;
@@ -353,7 +392,15 @@ public class Pedidos_ajax {
 			objRetorno.put("data_formatada", new SimpleDateFormat("dd/MM/yyyy HH:mm").format(rs.getTimestamp("DATA_PEDIDO")));
 			objRetorno.put("data_formatada_resposta", new SimpleDateFormat("dd/MM/yyyy HH:mm").format(rs.getTimestamp("DATA_PEDIDO_RESPOSTA")));
 			objRetorno.put("NUM_PED", rs.getString("NUM_PED"));
-			objRetorno.put("DESC_BAIRRO", rs.getString("DESC_BAIRRO"));
+			
+			if(rs.getString("FLAG_PEDIDO_RET_ENTRE").equalsIgnoreCase("L")){
+				objRetorno.put("DESC_BAIRRO", "Retirar no local");
+			}else{
+				
+				objRetorno.put("DESC_BAIRRO", rs.getString("DESC_BAIRRO"));
+			}
+			
+			
 			objRetorno.put("VAL_TOTALPROD", rs.getString("VAL_TOTALPROD"));
 			objRetorno.put("FLAG_STATUS", rs.getString("FLAG_STATUS"));
 			objRetorno.put("ID_PEDIDO", rs.getString("ID_PEDIDO"));

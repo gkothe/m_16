@@ -32,7 +32,8 @@ $(document).ready(function() {
 		$("#val_ini_historico").autoNumeric('set', "");
 		$("#val_fim_historico").autoNumeric('set', "");
 		$("#flag_situacao").val("");
-
+		$("#flag_pedido_ret_entre").val("");
+		
 		loadhistoricos();
 	});
 
@@ -289,7 +290,8 @@ function loadhistoricos() {
 	var val_ini_historico = $("#val_ini_historico").autoNumeric('get');
 	var val_fim_historico = $("#val_fim_historico").autoNumeric('get');
 	var flag_situacao = $("#flag_situacao").val();
-
+	var flag_pedido_ret_entre = $("#flag_pedido_ret_entre").val();
+	
 	$.blockUI({
 		message : 'Carregando...'
 	});
@@ -310,7 +312,8 @@ function loadhistoricos() {
 			data_reposta_fim : data_reposta_fim,
 			val_ini_historico : val_ini_historico,
 			val_fim_historico : val_fim_historico,
-			flag_situacao : flag_situacao
+			flag_situacao : flag_situacao,
+			flag_pedido_ret_entre:flag_pedido_ret_entre
 
 		},
 		success : function(data) {
