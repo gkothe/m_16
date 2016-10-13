@@ -955,11 +955,17 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 		String valfim = request.getParameter("valfim") == null ? "" : request.getParameter("valfim");
 		String idproddistr = request.getParameter("idproddistr") == null ? "" : request.getParameter("idproddistr");
 		String fp_flag_entre_ret = request.getParameter("fp_flag_entre_ret") == null ? "" : request.getParameter("fp_flag_entre_ret");
+		String fp_ordem = request.getParameter("fp_ordem") == null ? "" : request.getParameter("fp_ordem");
 
 		if (!fp_flag_entre_ret.equals("T") && !fp_flag_entre_ret.equals("L")) {
 			throw new Exception("Você deve escolher um tipo de serviço!");
 		}
 
+		if (!fp_ordem.equals("N") && !fp_ordem.equals("P")) {
+			fp_ordem = "P";
+		}
+		
+		
 		if (fp_flag_entre_ret.equalsIgnoreCase("T")) {
 			if (cod_bairro.equalsIgnoreCase("")) {
 				throw new Exception("Nenhum bairro informado!");
@@ -1128,7 +1134,12 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 			sql.append("  and  (tab.flag_entre_ret = ? or tab.flag_entre_ret='A')");
 		}
 
-		sql.append(" order by tab.DESC_PROD desc limit 20");
+		if(fp_ordem.equalsIgnoreCase("P")){
+			sql.append(" order by tab.val_prod asc limit 20");
+		}else if(fp_ordem.equalsIgnoreCase("N")){
+			sql.append(" order by tab.DESC_PROD desc limit 20");	
+		}
+		
 
 		Calendar cal = Calendar.getInstance();
 

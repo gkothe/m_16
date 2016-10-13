@@ -1,7 +1,5 @@
-opção na tela de localização para escolher o tipo de serviço.
-Qdo escolhe, manda pra tela de pesquisa com este filtro setado, e o habilitar este filtro tb na aba de filtros. Qdo for do tipo pegar no local, mostra todos os produtos independente de bairro. Remover label que mostra o bairro, mudar para "mostrando tudo".
 
-Quem cancelou?
+Quem cancelou? 
 
 
 tarefa
