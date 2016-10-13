@@ -1,13 +1,53 @@
+opção na tela de localização para escolher o tipo de serviço.
+Qdo escolhe, manda pra tela de pesquisa com este filtro setado, e o habilitar este filtro tb na aba de filtros. Qdo for do tipo pegar no local, mostra todos os produtos independente de bairro. Remover label que mostra o bairro, mudar para "mostrando tudo".
+
+Quem cancelou?
+
+
+tarefa
+
+
+
+Situação:
+cliente chama pedido , 1 fardo
+distribuidora aceita
+manda motoboy
+motoboy chega e entrega
+
+
+
+case 1 -cliente chama pedido , 1 fardo -> se cancela, ta ok
+distribuidora aceita
+manda motoboy
+motoboy chega e entrega
+
+
+
+cliente chama pedido 
+distribuidora aceita ->  usuario pelo cancela pelo aplicativo,  manda o motivo por uma tela, que vai aparecer na distribuidora.  Dexar numero da distribuidora disponivel, caso queria ligar para ter certeza.
+manda motoboy 
+motoboy chega e entrega
 
 
 
 
 
+Se a distribuidora pede pra cancela.
+	Caso com cartao
+		Liga pro cliente, e pede para ele cancelar o pedido via applicativo. o cliente vai marcar na tela cancelamento que foi a distribuidora que pediu para ele cancelar(uma opção de checkbox).
+		compra de 100 pila, 98 pila na nossa conta. 95 iria pra distribuira.  
+		
+	Caso com dinheiro
+		Liga pro cliente, e pede para ele cancelar o pedido via applicativo. o cliente vai marcar na tela cancelamento que foi a distribuidora que pediu para ele cancelar(uma opção de checkbox).
+
+
+pop cancelamnto
+recebe um aviso com o cancelamento do pedido, marca na listagem como cancelado, e a distribuidora tem abrir ele e marcar como finalizado para ir para o historico.
 
 
 
 
-
+		
 
 
 

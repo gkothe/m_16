@@ -50,20 +50,20 @@ public class Utilitario {
 	public static JSONArray FlagEntreRet() {
 		JSONArray payids = new JSONArray();
 		JSONObject obj = new JSONObject();
-
+/*
 		obj = new JSONObject();
 		obj.put("flag_entre_ret", "A");
 		obj.put("desc", "Todos - Retirada no local e entrega");
 		payids.add(obj);
-
+*/
 		obj = new JSONObject();
 		obj.put("flag_entre_ret", "L");
-		obj.put("desc", "Somente retirada no local");
+		obj.put("desc", "Retirada no local");
 		payids.add(obj);
 
 		obj = new JSONObject();
 		obj.put("flag_entre_ret", "T");
-		obj.put("desc", "Somente entrega");
+		obj.put("desc", "Entrega");
 		payids.add(obj);
 
 		return payids;
