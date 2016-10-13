@@ -546,15 +546,21 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 
 		String codbairro = request.getParameter("codbairro") == null ? "" : request.getParameter("codbairro");
 		String codcidade = request.getParameter("codcidade") == null ? "" : request.getParameter("codcidade");
+		String servico = request.getParameter("servico") == null ? "" : request.getParameter("servico");
 
 		if (codcidade.equalsIgnoreCase("")) {
 			throw new Exception("Cidade inválida.");
 		}
 
-		if (codbairro.equalsIgnoreCase("")) {
-			throw new Exception("Bairro inválido.");
+		if (!servico.equals("T") && !servico.equals("L")) {
+			throw new Exception("Você deve escolher um serviço.");
 		}
+		if (servico.equalsIgnoreCase("T")) {
 
+			if (codbairro.equalsIgnoreCase("")) {
+				throw new Exception("Bairro inválido.");
+			}
+		}
 		String sql = "SELECT COD_CIDADE from  cidade where COD_CIDADE  = ? ";
 		PreparedStatement st = conn.prepareStatement(sql);
 		st.setLong(1, Long.parseLong(codcidade));
@@ -562,28 +568,38 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 		if (!rs.next()) {
 			throw new Exception("Cidade não encontrada. Você deve escolher uma cidade válida.");
 		}
+		if (servico.equalsIgnoreCase("T")) {
+			st = conn.prepareStatement("SELECT * from bairros where cod_cidade  = ? and cod_bairro = ? ");
+			st.setLong(1, Long.parseLong(codcidade));
+			st.setLong(2, Long.parseLong(codbairro));
+			rs = st.executeQuery();
 
-		st = conn.prepareStatement("SELECT * from bairros where cod_cidade  = ? and cod_bairro = ? ");
-		st.setLong(1, Long.parseLong(codcidade));
-		st.setLong(2, Long.parseLong(codbairro));
-		rs = st.executeQuery();
-
-		if (!rs.next()) {
-			throw new Exception("Bairro não encontrado. Você deve escolher um bairro válido.");
+			if (!rs.next()) {
+				throw new Exception("Bairro não encontrado. Você deve escolher um bairro válido.");
+			}
 		}
-
 		StringBuffer sql2 = new StringBuffer();
 		sql2.append("UPDATE usuario ");
 		sql2.append("   SET  ");
-		sql2.append("       `COD_BAIRRO` = ?, ");
+		if (servico.equalsIgnoreCase("T")) {
+			sql2.append("       `COD_BAIRRO` = ?, ");
+		}
 		sql2.append("       `COD_CIDADE` = ? ");
 		sql2.append("WHERE  `ID_USUARIO` = ?;");
 
 		st = conn.prepareStatement(sql2.toString());
-		st.setLong(2, Long.parseLong(codcidade));
-		st.setLong(1, Long.parseLong(codbairro));
-		st.setLong(3, cod_usuario);
+		int contparam = 1;
 
+		if (servico.equalsIgnoreCase("T")) {
+			st.setLong(contparam, Long.parseLong(codbairro));
+			contparam++;
+		}
+		
+		st.setLong(contparam, Long.parseLong(codcidade));
+		contparam++;
+
+		st.setLong(contparam, cod_usuario);
+		contparam++;
 		st.executeUpdate();
 
 		objRetorno.put("msg", "ok");
@@ -1414,12 +1430,11 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 					prod.put("FLAG_STATUS", Utilitario.returnStatusPedidoFlag(rs.getString("FLAG_STATUS")));
 				}
 				prod.put("desc_bairro", "Retirar no local");
-				
+
 			}
 
 			prod.put("DESC_NOME_ABREV", rs.getString("DESC_NOME_ABREV"));
 			prod.put("id_pedido", rs.getString("id_pedido"));
-		
 
 			prods.add(prod);
 		}
