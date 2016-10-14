@@ -47,7 +47,12 @@ recebe um aviso com o cancelamento do pedido, marca na listagem como cancelado, 
 
 		
 
-
+no historico do pedido, mostar que esta cancelado(lisatgem). Dentro do pedido, informações do cancelamento.
+Na hora de cancelar, testar:
+	Se pedido esta aberto, ou em envio. etc
+	testar se o pedido é do usuario logado.
+	
+	
 
 
 

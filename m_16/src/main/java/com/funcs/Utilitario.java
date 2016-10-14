@@ -114,6 +114,8 @@ public class Utilitario {
 			return "Aberto";
 		}else if (flag.equalsIgnoreCase("S")) {
 			return "Em espera";
+		}else if (flag.equalsIgnoreCase("C")) {
+			return "Cancelado";
 		}
 
 		return "";

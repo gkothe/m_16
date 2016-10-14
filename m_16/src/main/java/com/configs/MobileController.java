@@ -220,6 +220,10 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 					limparCarrinho(request, response, conn, cod_usuario);
 				} else if (cmd.equalsIgnoreCase("carregaEnderecos")) {
 					carregaEnderecos(request, response, conn, cod_usuario);
+				} else if (cmd.equalsIgnoreCase("carregaMotivosCancelamento")) {
+					carregaMotivosCancelamento(request, response, conn, cod_usuario);
+				} else if (cmd.equalsIgnoreCase("cancelaPedido")) {
+					cancelaPedido(request, response, conn, cod_usuario);
 				} else {
 					throw new Exception("Ação inválida");
 				}
@@ -594,7 +598,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 			st.setLong(contparam, Long.parseLong(codbairro));
 			contparam++;
 		}
-		
+
 		st.setLong(contparam, Long.parseLong(codcidade));
 		contparam++;
 
@@ -705,6 +709,137 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 			st.setLong(13, cod_usuario);
 
 			st.executeUpdate();
+
+			objRetorno.put("msg", "ok");
+
+		}
+
+		out.print(objRetorno.toJSONString());
+
+	}
+
+	private static void cancelaPedido(HttpServletRequest request, HttpServletResponse response, Connection conn, long cod_usuario) throws Exception {
+
+		PrintWriter out = response.getWriter();
+		JSONObject objRetorno = new JSONObject();
+		// if (cod_usuario.equalsIgnoreCase("") || cod_usuario == null || cod_usuario.equalsIgnoreCase("0")) {
+		// throw new Exception("Usuário inválido.");
+		// } else
+		{
+
+			String id_pedido = request.getParameter("id_pedido") == null ? "" : request.getParameter("id_pedido");
+			String descobs = request.getParameter("descobs") == null ? "" : request.getParameter("descobs");
+			String motivo = request.getParameter("motivo") == null ? "" : request.getParameter("motivo");
+
+			if (id_pedido.equalsIgnoreCase("")) {
+				throw new Exception("Pedido inválido");
+			}
+
+			if (motivo.equalsIgnoreCase("")) {
+				throw new Exception("Motivo inválido");
+			}
+
+			String sql2 = "SELECT * from  motivos_cancelamento where cod_motivo  = ? ";
+			PreparedStatement st = conn.prepareStatement(sql2);
+			st.setLong(1, Long.parseLong(motivo));
+			ResultSet rs = st.executeQuery();
+			if (!rs.next()) {
+				throw new Exception("Motivo inválido.");
+			}
+
+			sql2 = "SELECT * from  pedido where id_pedido  = ? and ID_USUARIO = " + cod_usuario;
+			st = conn.prepareStatement(sql2);
+			st.setLong(1, Long.parseLong(id_pedido));
+			rs = st.executeQuery();
+
+			if (!rs.next()) {
+				throw new Exception("Pedido inválido.");
+			} else {
+				String statuspedido = rs.getString("FLAG_STATUS");
+
+				if (statuspedido.equalsIgnoreCase("F")) {
+					throw new Exception("Este pedido já foi finanalizado.");
+				}
+				if (statuspedido.equalsIgnoreCase("C")) {
+					throw new Exception("Este pedido já foi cancelado.");
+				}
+				if (statuspedido.equalsIgnoreCase("C")) {
+					throw new Exception("Este pedido já foi recusado.");
+				}
+
+				StringBuffer sql = new StringBuffer();
+				sql.append("UPDATE pedido ");
+				sql.append("   SET FLAG_STATUS = 'C', ");
+				sql.append("   SET PAG_TOKEN = null ");
+				sql.append("WHERE  id_pedido = " + id_pedido);
+
+				st = conn.prepareStatement(sql.toString());
+				st.executeUpdate();
+				
+				if (statuspedido.equalsIgnoreCase("A")) {// em aberto
+
+		
+
+					sql = new StringBuffer();
+					StringBuffer varname1 = new StringBuffer();
+					varname1.append("INSERT INTO pedido_motivo_cancelamento ");
+					varname1.append("  (`ID_PEDIDO`, `COD_MOTIVO`, `DESC_OBS`, `DATA_CANCELAMENTO`,FLAG_CONFIRMADO_DISTRIBUIDORA,FLAG_POPUPINICIAL) ");
+					varname1.append("VALUES ");
+					varname1.append("  (?,?,?,now(),'S','S')");//seta como sim pq ainda estava em aberto. entao a distribuidora nem vai perceber que foi cancelado.
+
+					st = conn.prepareStatement(sql.toString());
+					st.setLong(1, Long.parseLong(id_pedido));
+					st.setLong(2, Long.parseLong(motivo));
+					st.setString(3, descobs);
+					st.executeUpdate();
+
+				}
+
+				if (statuspedido.equalsIgnoreCase("E") || statuspedido.equalsIgnoreCase("S")) {// em envio
+
+					if(rs.getString("FLAG_MODOPAGAMENTO").equalsIgnoreCase("D")){//cancelamento em pagamento por dinhero. só cancelar e avisar a distribuidora.
+						
+						sql = new StringBuffer();
+						StringBuffer varname1 = new StringBuffer();
+						varname1.append("INSERT INTO pedido_motivo_cancelamento ");
+						varname1.append("  (`ID_PEDIDO`, `COD_MOTIVO`, `DESC_OBS`, `DATA_CANCELAMENTO`,FLAG_CONFIRMADO_DISTRIBUIDORA,FLAG_POPUPINICIAL) ");
+						varname1.append("VALUES ");
+						varname1.append("  (?,?,?,now(),'N','N')");
+
+						st = conn.prepareStatement(sql.toString());
+						st.setLong(1, Long.parseLong(id_pedido));
+						st.setLong(2, Long.parseLong(motivo));
+						st.setString(3, descobs);
+						st.executeUpdate();
+						
+					}
+					
+					if(rs.getString("FLAG_MODOPAGAMENTO").equalsIgnoreCase("C")){//cancelamento em pagamento por cartao.
+						//TODO
+						sql = new StringBuffer();
+						StringBuffer varname1 = new StringBuffer();
+						varname1.append("INSERT INTO pedido_motivo_cancelamento ");
+						varname1.append("  (`ID_PEDIDO`, `COD_MOTIVO`, `DESC_OBS`, `DATA_CANCELAMENTO`,FLAG_CONFIRMADO_DISTRIBUIDORA,FLAG_POPUPINICIAL) ");
+						varname1.append("VALUES ");
+						varname1.append("  (?,?,?,now(),'N','N')");
+
+						st = conn.prepareStatement(sql.toString());
+						st.setLong(1, Long.parseLong(id_pedido));
+						st.setLong(2, Long.parseLong(motivo));
+						st.setString(3, descobs);
+						st.executeUpdate();
+						
+					}
+					
+					
+					
+				}
+
+				
+
+			}
+
+			
 
 			objRetorno.put("msg", "ok");
 
@@ -964,8 +1099,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 		if (!fp_ordem.equals("N") && !fp_ordem.equals("P")) {
 			fp_ordem = "P";
 		}
-		
-		
+
 		if (fp_flag_entre_ret.equalsIgnoreCase("T")) {
 			if (cod_bairro.equalsIgnoreCase("")) {
 				throw new Exception("Nenhum bairro informado!");
@@ -1134,12 +1268,11 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 			sql.append("  and  (tab.flag_entre_ret = ? or tab.flag_entre_ret='A')");
 		}
 
-		if(fp_ordem.equalsIgnoreCase("P")){
+		if (fp_ordem.equalsIgnoreCase("P")) {
 			sql.append(" order by tab.val_prod asc limit 20");
-		}else if(fp_ordem.equalsIgnoreCase("N")){
-			sql.append(" order by tab.DESC_PROD desc limit 20");	
+		} else if (fp_ordem.equalsIgnoreCase("N")) {
+			sql.append(" order by tab.DESC_PROD desc limit 20");
 		}
-		
 
 		Calendar cal = Calendar.getInstance();
 
@@ -1196,7 +1329,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 			contparam++;
 
 		}
-		System.out.println(sql.toString());
+
 		rs = st.executeQuery();
 
 		if (listagem) {
@@ -1735,6 +1868,32 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 		}
 
 		retorno.put("enderecos", enderecos);
+
+		out.print(retorno.toJSONString());
+	}
+
+	private static void carregaMotivosCancelamento(HttpServletRequest request, HttpServletResponse response, Connection conn, long cod_usuario) throws Exception {
+		PrintWriter out = response.getWriter();
+		JSONObject retorno = new JSONObject();
+
+		StringBuffer sql = new StringBuffer();
+		sql.append(" select * from motivos_cancelamento order by DESC_MOTIVO");
+
+		PreparedStatement st = conn.prepareStatement(sql.toString());
+
+		ResultSet rs = st.executeQuery();
+		JSONArray enderecos = new JSONArray();
+		while (rs.next()) {
+			JSONObject obj = new JSONObject();
+
+			obj.put("cod_motivo", rs.getString("cod_motivo"));
+			obj.put("desc_motivo", rs.getString("desc_motivo"));
+
+			enderecos.add(obj);
+
+		}
+
+		retorno.put("motivos", enderecos);
 
 		out.print(retorno.toJSONString());
 	}

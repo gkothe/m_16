@@ -1,6 +1,6 @@
 /*==============================================================*/
 /* DBMS name:      MySQL 5.0                                    */
-/* Created on:     11/10/2016 9:58:43 AM                        */
+/* Created on:     14/10/2016 5:03:33 PM                        */
 /*==============================================================*/
 
 
@@ -22,6 +22,8 @@ drop table if exists DISTRIBUIDORA_BAIRRO_ENTREGA;
 
 drop table if exists DISTRIBUIDORA_HORARIO_DIA_ENTRE;
 
+drop table if exists MOTIVOS_CANCELAMENTO;
+
 drop table if exists MOTIVOS_RECUSA;
 
 drop table if exists PEDIDO;
@@ -29,6 +31,8 @@ drop table if exists PEDIDO;
 drop table if exists PEDIDO_ITEM;
 
 drop table if exists PEDIDO_MOTIVOS_RECUSA;
+
+drop table if exists PEDIDO_MOTIVO_CANCELAMENTO;
 
 drop table if exists PRODUTOS;
 
@@ -167,6 +171,17 @@ create table DISTRIBUIDORA_HORARIO_DIA_ENTRE
 auto_increment = 1;
 
 /*==============================================================*/
+/* Table: MOTIVOS_CANCELAMENTO                                  */
+/*==============================================================*/
+create table MOTIVOS_CANCELAMENTO
+(
+   COD_MOTIVO           INT4 not null auto_increment,
+   DESC_MOTIVO          TEXT not null,
+   primary key (COD_MOTIVO)
+)
+auto_increment = 1;
+
+/*==============================================================*/
 /* Table: MOTIVOS_RECUSA                                        */
 /*==============================================================*/
 create table MOTIVOS_RECUSA
@@ -236,6 +251,20 @@ create table PEDIDO_MOTIVOS_RECUSA
    primary key (ID_PEDIDO_MOTIVO_RECUSA)
 )
 auto_increment = 1;
+
+/*==============================================================*/
+/* Table: PEDIDO_MOTIVO_CANCELAMENTO                            */
+/*==============================================================*/
+create table PEDIDO_MOTIVO_CANCELAMENTO
+(
+   ID_PEDIDO            INT8 not null,
+   COD_MOTIVO           INT4,
+   DESC_OBS             text,
+   DATA_CANCELAMENTO    datetime,
+   FLAG_CONFIRMADO_DISTRIBUIDORA char(1),
+   FLAG_POPUPINICIAL    char(1),
+   primary key (ID_PEDIDO)
+);
 
 /*==============================================================*/
 /* Table: PRODUTOS                                              */
@@ -375,6 +404,12 @@ alter table PEDIDO_MOTIVOS_RECUSA add constraint FK_REFERENCE_18 foreign key (CO
 
 alter table PEDIDO_MOTIVOS_RECUSA add constraint FK_REFERENCE_19 foreign key (ID_PEDIDO)
       references PEDIDO (ID_PEDIDO) on delete restrict on update restrict;
+
+alter table PEDIDO_MOTIVO_CANCELAMENTO add constraint FK_REFERENCE_28 foreign key (ID_PEDIDO)
+      references PEDIDO (ID_PEDIDO) on delete restrict on update restrict;
+
+alter table PEDIDO_MOTIVO_CANCELAMENTO add constraint FK_REFERENCE_29 foreign key (COD_MOTIVO)
+      references MOTIVOS_CANCELAMENTO (COD_MOTIVO) on delete restrict on update restrict;
 
 alter table PRODUTOS_DISTRIBUIDORA add constraint FK_REFERENCE_1 foreign key (ID_PROD)
       references PRODUTOS (ID_PROD) on delete restrict on update restrict;
