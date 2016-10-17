@@ -18,7 +18,7 @@ import org.json.simple.parser.JSONParser;
 
 public class Pedidos_ajax {
 
-	//public static int horas_fim_pedido = 6;
+	// public static int horas_fim_pedido = 6;
 
 	public static void carregaBairros(HttpServletRequest request, HttpServletResponse response, Connection conn, int coddistr) throws Exception {
 		JSONArray retorno = new JSONArray();
@@ -66,13 +66,10 @@ public class Pedidos_ajax {
 		String flag_situacao = request.getParameter("flag_situacao") == null ? "" : request.getParameter("flag_situacao");
 		String flag_visu = request.getParameter("flag_visu") == null ? "" : request.getParameter("flag_visu");
 		String flag_pedido_ret_entre = request.getParameter("flag_pedido_ret_entre") == null ? "" : request.getParameter("flag_pedido_ret_entre");
-		
-		
 
 		String temfiltro = "N";
-		
-		
-		String sql = "select * from pedido inner join bairros on bairros.cod_bairro = pedido.cod_bairro where ID_DISTRIBUIDORA = ? and (flag_status = 'A' or flag_status = 'E') ";
+
+		String sql = "select * from pedido inner join bairros on bairros.cod_bairro = pedido.cod_bairro left join pedido_motivo_cancelamento on pedido_motivo_cancelamento.id_pedido = pedido.id_pedido  where ID_DISTRIBUIDORA = ? and (flag_status = 'A' or flag_status = 'E' or (flag_status = 'C' and FLAG_CONFIRMADO_DISTRIBUIDORA = 'N' ) ) ";
 
 		if (!num_pedido_aberto.equalsIgnoreCase("")) {
 			sql = sql + " and NUM_PED  = ? ";
@@ -113,19 +110,17 @@ public class Pedidos_ajax {
 			sql = sql + "  and  VAL_TOTALPROD <= ? ";
 			temfiltro = "S";
 		}
-		
+
 		if (!flag_visu.equalsIgnoreCase("")) {
 			sql = sql + "  and  flag_vizualizado = ? ";
 			temfiltro = "S";
 		}
-		
+
 		if (!flag_pedido_ret_entre.equalsIgnoreCase("")) {
 			sql = sql + "  and  flag_pedido_ret_entre = ? ";
 			temfiltro = "S";
 		}
-		
-		
-		
+
 		PreparedStatement st = conn.prepareStatement(sql);
 		st.setInt(1, coddistr);
 
@@ -173,19 +168,16 @@ public class Pedidos_ajax {
 			st.setDouble(contparam, Double.parseDouble(val_fim_aberto));
 			contparam++;
 		}
-		
+
 		if (!flag_visu.equalsIgnoreCase("")) {
 			st.setString(contparam, (flag_visu));
 			contparam++;
 		}
-		
-		
+
 		if (!flag_pedido_ret_entre.equalsIgnoreCase("")) {
 			st.setString(contparam, (flag_pedido_ret_entre));
 			contparam++;
 		}
-		
-		
 
 		ResultSet rs = st.executeQuery();
 		PreparedStatement st2;
@@ -213,21 +205,25 @@ public class Pedidos_ajax {
 			objRetorno.put("NUM_PED", rs.getString("NUM_PED"));
 			objRetorno.put("FLAG_STATUS", rs.getString("FLAG_STATUS"));
 
-			
-			if(rs.getString("FLAG_PEDIDO_RET_ENTRE").equalsIgnoreCase("L")){
+			if (rs.getString("FLAG_PEDIDO_RET_ENTRE").equalsIgnoreCase("L")) {
 				objRetorno.put("DESC_BAIRRO", "Retirar no local");
-				objRetorno.put("FLAG_STATUS", rs.getString("FLAG_STATUS").equalsIgnoreCase("E")?"S":rs.getString("FLAG_STATUS"));
-			}else{
+				objRetorno.put("FLAG_STATUS", rs.getString("FLAG_STATUS").equalsIgnoreCase("E") ? "S" : rs.getString("FLAG_STATUS"));
+			} else {
 				objRetorno.put("DESC_BAIRRO", rs.getString("DESC_BAIRRO"));
 			}
-			
-			
+
 			objRetorno.put("VAL_TOTALPROD", rs.getString("VAL_TOTALPROD"));
-			
+
 			objRetorno.put("ID_PEDIDO", rs.getString("ID_PEDIDO"));
-			objRetorno.put("flag_visu", rs.getString("flag_vizualizado"));
-			
-			
+
+			if (rs.getString("FLAG_POPUPINICIAL") != null && !rs.getString("FLAG_POPUPINICIAL").equalsIgnoreCase("")) {
+				if (rs.getString("FLAG_POPUPINICIAL").equalsIgnoreCase("N")) {
+					retorno.put("canc_vizu", true);
+				}
+				objRetorno.put("flag_visu", rs.getString("FLAG_POPUPINICIAL"));
+			} else {
+				objRetorno.put("flag_visu", rs.getString("flag_vizualizado"));
+			}
 
 			pedidos.add(objRetorno);
 		}
@@ -253,8 +249,7 @@ public class Pedidos_ajax {
 		String val_fim_historico = request.getParameter("val_fim_historico") == null ? "" : request.getParameter("val_fim_historico");
 		String flag_situacao = request.getParameter("flag_situacao") == null ? "" : request.getParameter("flag_situacao");
 		String flag_pedido_ret_entre = request.getParameter("flag_pedido_ret_entre") == null ? "" : request.getParameter("flag_pedido_ret_entre");
-		
-		
+
 		String sql = "select * from pedido inner join bairros on bairros.cod_bairro = pedido.cod_bairro where ID_DISTRIBUIDORA = ? and (flag_status = 'O' or flag_status = 'R') ";
 
 		if (!num_pedido_historico.equalsIgnoreCase("")) {
@@ -296,12 +291,12 @@ public class Pedidos_ajax {
 		if (!val_fim_historico.equalsIgnoreCase("")) {
 			sql = sql + "  and  VAL_TOTALPROD <= ? ";
 		}
-		
+
 		if (!flag_pedido_ret_entre.equalsIgnoreCase("")) {
 			sql = sql + "  and  flag_pedido_ret_entre = ? ";
-			
+
 		}
-		
+
 		PreparedStatement st = conn.prepareStatement(sql);
 		st.setInt(1, coddistr);
 
@@ -368,7 +363,7 @@ public class Pedidos_ajax {
 			st.setString(contparam, (flag_pedido_ret_entre));
 			contparam++;
 		}
-		
+
 		ResultSet rs = st.executeQuery();
 		PreparedStatement st2;
 		ResultSet rs2;
@@ -394,15 +389,14 @@ public class Pedidos_ajax {
 			objRetorno.put("data_formatada", new SimpleDateFormat("dd/MM/yyyy HH:mm").format(rs.getTimestamp("DATA_PEDIDO")));
 			objRetorno.put("data_formatada_resposta", new SimpleDateFormat("dd/MM/yyyy HH:mm").format(rs.getTimestamp("DATA_PEDIDO_RESPOSTA")));
 			objRetorno.put("NUM_PED", rs.getString("NUM_PED"));
-			
-			if(rs.getString("FLAG_PEDIDO_RET_ENTRE").equalsIgnoreCase("L")){
+
+			if (rs.getString("FLAG_PEDIDO_RET_ENTRE").equalsIgnoreCase("L")) {
 				objRetorno.put("DESC_BAIRRO", "Retirar no local");
-			}else{
-				
+			} else {
+
 				objRetorno.put("DESC_BAIRRO", rs.getString("DESC_BAIRRO"));
 			}
-			
-			
+
 			objRetorno.put("VAL_TOTALPROD", rs.getString("VAL_TOTALPROD"));
 			objRetorno.put("FLAG_STATUS", rs.getString("FLAG_STATUS"));
 			objRetorno.put("ID_PEDIDO", rs.getString("ID_PEDIDO"));
@@ -429,17 +423,14 @@ public class Pedidos_ajax {
 		ResultSet rs = st.executeQuery();
 		if (rs.next()) {
 
-			
 			objRetorno.put("tipo_servico", rs.getString("FLAG_PEDIDO_RET_ENTRE"));
-			if(rs.getString("FLAG_PEDIDO_RET_ENTRE").equalsIgnoreCase("L")){
+			if (rs.getString("FLAG_PEDIDO_RET_ENTRE").equalsIgnoreCase("L")) {
 				objRetorno.put("desc_bairro", "Retirar no local");
-			}else{
+			} else {
 				objRetorno.put("m_tempo_max", new SimpleDateFormat("HH:mm").format(rs.getTimestamp("TEMPO_ESTIMADO_DESEJADO")));
 				objRetorno.put("desc_bairro", rs.getString("DESC_BAIRRO"));
 			}
-			
-			
-			
+
 			objRetorno.put("data_pedido", new SimpleDateFormat("dd/MM/yyyy HH:mm").format(rs.getTimestamp("DATA_PEDIDO")));
 			objRetorno.put("VAL_TOTALPROD", rs.getString("VAL_TOTALPROD"));
 			objRetorno.put("VAL_ENTREGA", rs.getString("VAL_ENTREGA"));
@@ -474,20 +465,26 @@ public class Pedidos_ajax {
 
 			if (status.equalsIgnoreCase("O")) {
 
-				st2 = conn.prepareStatement("SELECT DESC_NOME, DESC_TELEFONE,DESC_ENDERECO, desc_bairro from usuario inner join bairros on bairros.cod_bairro = usuario.cod_bairro  where ID_usuario = ? and bairros.cod_cidade = " + request.getSession(false).getAttribute("cod_cidade").toString());
-				st2.setInt(1, (user));
-				rs2 = st2.executeQuery();
+				objRetorno.put("DESC_NOME", rs.getString("NOME_PESSOA"));
+				objRetorno.put("DESC_TELEFONE", rs.getString("NUM_TELEFONECONTATO_CLIENTE"));
+				String end = rs.getString("desc_endereco_entrega") == null ? "" : rs.getString("desc_endereco_entrega");
+				String num = rs.getString("desc_endereco_num_entrega") == null ? "" : rs.getString("desc_endereco_num_entrega");
+				String compl = rs.getString("desc_endereco_complemento_entrega") == null ? "" : rs.getString("desc_endereco_complemento_entrega");
 
-				while (rs2.next()) {
+				objRetorno.put("DESC_ENDERECO", end + " " + num + " " + compl);
 
-					objRetorno.put("DESC_NOME", rs2.getString("DESC_NOME"));
-					objRetorno.put("DESC_TELEFONE", rs2.getString("DESC_TELEFONE"));
-					objRetorno.put("DESC_ENDERECO", rs2.getString("DESC_ENDERECO"));
-					objRetorno.put("desc_bairro", rs2.getString("desc_bairro"));
-					objRetorno.put("m_tempo_entrega", new SimpleDateFormat("HH:mm").format(rs.getTimestamp("TEMPO_ESTIMADO_ENTREGA")));
-					objRetorno.put("m_data_resposta", new SimpleDateFormat("dd/MM/yyyy HH:mm").format(rs.getTimestamp("DATA_PEDIDO_RESPOSTA")));
+				objRetorno.put("tipo_servico", rs.getString("FLAG_PEDIDO_RET_ENTRE"));
+				if (rs.getString("FLAG_PEDIDO_RET_ENTRE").equalsIgnoreCase("L")) {
+					objRetorno.put("desc_bairro_ret", "Retirar no local");
+				} else {
 
+					objRetorno.put("desc_bairro_ret", Utilitario.getNomeBairro(conn, rs.getInt("cod_bairro"), 0));
 				}
+
+//				objRetorno.put("desc_bairro", Utilitario.getNomeBairro(conn, rs.getInt("cod_bairro"), 0));
+
+				objRetorno.put("m_tempo_entrega", new SimpleDateFormat("HH:mm").format(rs.getTimestamp("TEMPO_ESTIMADO_ENTREGA")));
+				objRetorno.put("m_data_resposta", new SimpleDateFormat("dd/MM/yyyy HH:mm").format(rs.getTimestamp("DATA_PEDIDO_RESPOSTA")));
 
 			}
 			if (status.equalsIgnoreCase("R")) {
@@ -511,35 +508,45 @@ public class Pedidos_ajax {
 	}
 
 	public static void carregaPedido_AbertoEnvio(HttpServletRequest request, HttpServletResponse response, Connection conn, int coddistr) throws Exception {
-	
 
 		PrintWriter out = response.getWriter();
 		JSONObject objRetorno = new JSONObject();
 
 		String id_pedido = request.getParameter("id") == null ? "" : request.getParameter("id"); //
 
-		String sql = "select * from pedido inner join bairros on bairros.cod_bairro = pedido.cod_bairro where ID_DISTRIBUIDORA = ? and id_pedido = ? and  (flag_status = 'A' or flag_status = 'E')  ";
+		StringBuffer varname1 = new StringBuffer();
+		varname1.append("SELECT * ");
+		varname1.append("FROM   pedido ");
+		varname1.append("       INNER JOIN bairros ");
+		varname1.append("               ON bairros.cod_bairro = pedido.cod_bairro ");
+		varname1.append("       LEFT JOIN pedido_motivo_cancelamento ");
+		varname1.append("              ON pedido_motivo_cancelamento.id_pedido = pedido.id_pedido ");
+		varname1.append("WHERE  id_distribuidora = ? ");
+		varname1.append("       AND pedido.id_pedido = ? ");
+		varname1.append("       AND ( flag_status = 'A' ");
+		varname1.append("              OR flag_status = 'E' ");
+		varname1.append("              OR ( flag_status = 'C' ");
+		varname1.append("                   AND flag_confirmado_distribuidora = 'N' ) )");
 
-		PreparedStatement st = conn.prepareStatement(sql);
+		String sql = "";
+		PreparedStatement st = conn.prepareStatement(varname1.toString());
 		st.setInt(1, coddistr);
 		st.setInt(2, Integer.parseInt(id_pedido));
 		ResultSet rs = st.executeQuery();
 		if (rs.next()) {
 
 			objRetorno.put("tipo_servico", rs.getString("FLAG_PEDIDO_RET_ENTRE"));
-			if(rs.getString("FLAG_PEDIDO_RET_ENTRE").equalsIgnoreCase("L")){
+			if (rs.getString("FLAG_PEDIDO_RET_ENTRE").equalsIgnoreCase("L")) {
 				objRetorno.put("desc_bairro", "Retirar no local");
-			}else{
+			} else {
 				objRetorno.put("m_tempo_max", new SimpleDateFormat("HH:mm").format(rs.getTimestamp("TEMPO_ESTIMADO_DESEJADO")));
 				objRetorno.put("desc_bairro", rs.getString("DESC_BAIRRO"));
 			}
-			
-			
-			
-			
+
 			objRetorno.put("data_pedido", new SimpleDateFormat("dd/MM/yyyy HH:mm").format(rs.getTimestamp("DATA_PEDIDO")));
 			objRetorno.put("VAL_TOTALPROD", rs.getString("VAL_TOTALPROD"));
 			objRetorno.put("VAL_ENTREGA", rs.getString("VAL_ENTREGA"));
+
 			objRetorno.put("ID_PEDIDO", rs.getString("ID_PEDIDO"));
 
 			int user = rs.getInt("id_usuario");
@@ -569,55 +576,60 @@ public class Pedidos_ajax {
 
 			objRetorno.put("prods", prods);
 			objRetorno.put("darok", false);
-			Sys_parametros sys = new Sys_parametros(conn); 
-			if (status.equalsIgnoreCase("E")) {
+			Sys_parametros sys = new Sys_parametros(conn);
+			if (status.equalsIgnoreCase("E") || status.equalsIgnoreCase("C")) {
 
-				st2 = conn.prepareStatement("SELECT DESC_NOME, DESC_TELEFONE,DESC_ENDERECO, desc_bairro from usuario inner join bairros on bairros.cod_bairro = usuario.cod_bairro  where ID_usuario = ? and bairros.cod_cidade = " + request.getSession(false).getAttribute("cod_cidade").toString());
-				st2.setInt(1, (user));
-				rs2 = st2.executeQuery();
+				objRetorno.put("DESC_NOME", rs.getString("NOME_PESSOA"));
+				objRetorno.put("DESC_TELEFONE", rs.getString("NUM_TELEFONECONTATO_CLIENTE"));
+				String end = rs.getString("desc_endereco_entrega") == null ? "" : rs.getString("desc_endereco_entrega");
+				String num = rs.getString("desc_endereco_num_entrega") == null ? "" : rs.getString("desc_endereco_num_entrega");
+				String compl = rs.getString("desc_endereco_complemento_entrega") == null ? "" : rs.getString("desc_endereco_complemento_entrega");
 
-				while (rs2.next()) {
+				objRetorno.put("DESC_ENDERECO", end + " " + num + " " + compl);
 
-					objRetorno.put("DESC_NOME", rs2.getString("DESC_NOME"));
-					objRetorno.put("DESC_TELEFONE", rs2.getString("DESC_TELEFONE"));
-					objRetorno.put("DESC_ENDERECO", rs2.getString("DESC_ENDERECO"));
-					
-					objRetorno.put("tipo_servico", rs.getString("FLAG_PEDIDO_RET_ENTRE"));
-					if(rs.getString("FLAG_PEDIDO_RET_ENTRE").equalsIgnoreCase("L")){
-						objRetorno.put("desc_bairro_ret", "Retirar no local");
-					}else{
-						
-						objRetorno.put("desc_bairro_ret", rs2.getString("DESC_BAIRRO"));
-					}
-					
-					
-					objRetorno.put("desc_bairro", rs2.getString("desc_bairro"));
-					objRetorno.put("m_tempo_entrega", new SimpleDateFormat("HH:mm").format(rs.getTimestamp("TEMPO_ESTIMADO_ENTREGA")));
-					objRetorno.put("m_data_resposta", new SimpleDateFormat("dd/MM/yyyy HH:mm").format(rs.getTimestamp("DATA_PEDIDO_RESPOSTA")));
+				objRetorno.put("tipo_servico", rs.getString("FLAG_PEDIDO_RET_ENTRE"));
+				if (rs.getString("FLAG_PEDIDO_RET_ENTRE").equalsIgnoreCase("L")) {
+					objRetorno.put("desc_bairro", "Retirar no local");
+				} else {
 
-					Calendar data6 = Calendar.getInstance();
-					data6.setTime(rs.getTimestamp("DATA_PEDIDO_RESPOSTA"));
-					data6.add(Calendar.HOUR_OF_DAY, sys.getPED_HORASOKEY());
+					objRetorno.put("desc_bairro", Utilitario.getNomeBairro(conn, rs.getInt("cod_bairro"), 0));
+				}
 
-					if (data6.getTime().before(new Date())) {
-						objRetorno.put("darok", true);
+//				objRetorno.put("desc_bairro", Utilitario.getNomeBairro(conn, rs.getInt("cod_bairro"), 0));
 
-					}
+				objRetorno.put("m_tempo_entrega", new SimpleDateFormat("HH:mm").format(rs.getTimestamp("TEMPO_ESTIMADO_ENTREGA")));
+				objRetorno.put("m_data_resposta", new SimpleDateFormat("dd/MM/yyyy HH:mm").format(rs.getTimestamp("DATA_PEDIDO_RESPOSTA")));
+
+				Calendar data6 = Calendar.getInstance();
+				data6.setTime(rs.getTimestamp("DATA_PEDIDO_RESPOSTA"));
+				data6.add(Calendar.HOUR_OF_DAY, sys.getPED_HORASOKEY());
+
+				if (data6.getTime().before(new Date())) {
+					objRetorno.put("darok", true);
 
 				}
 
 			}
-			
-			
+
+			if (status.equalsIgnoreCase("C")) {
+
+				sql = " update  pedido_motivo_cancelamento  set FLAG_POPUPINICIAL = 'S' where id_pedido = ?  ";
+				st = conn.prepareStatement(sql);
+				st.setInt(1, Integer.parseInt(id_pedido));
+				st.executeUpdate();
+
+				objRetorno.put("DATA_CANCELAMENTO", new SimpleDateFormat("dd/MM/yyyy HH:mm").format(rs.getTimestamp("DATA_CANCELAMENTO")));
+
+				objRetorno.put("darok", true);
+
+			}
+
 			sql = " update  pedido  set flag_vizualizado = 'S' where id_pedido = ?  ";
 			st = conn.prepareStatement(sql);
 			st.setInt(1, Integer.parseInt(id_pedido));
 			st.executeUpdate();
 
 		}
-		
-		
-	
 
 		out.print(objRetorno.toJSONString());
 
@@ -630,7 +642,7 @@ public class Pedidos_ajax {
 
 		String id_pedido = request.getParameter("id_pedido") == null ? "" : request.getParameter("id_pedido"); //
 
-		String sql = " select * from  pedido where id_pedido = ? and ID_DISTRIBUIDORA = ? and flag_status = 'E'  ";
+		String sql = " select * from  pedido  left join pedido_motivo_cancelamento on pedido_motivo_cancelamento.id_pedido = pedido.id_pedido  where pedido.id_pedido = ? and ID_DISTRIBUIDORA = ? and (flag_status = 'E' or flag_status = 'S' or (flag_status = 'C' and FLAG_CONFIRMADO_DISTRIBUIDORA = 'N' ) ) ";
 
 		PreparedStatement st = conn.prepareStatement(sql);
 		st.setInt(1, Integer.parseInt(id_pedido));
@@ -644,15 +656,29 @@ public class Pedidos_ajax {
 			data6.setTime(rs.getTimestamp("DATA_PEDIDO_RESPOSTA"));
 			data6.add(Calendar.HOUR_OF_DAY, sys.getPED_HORASOKEY());
 
-			if (data6.getTime().after(new Date())) {
-				throw new Exception("A hora atual deve exceder em " + sys.getPED_HORASOKEY() + "h a data de resposta para o pedido ser finalizado manualmente.");
+			
+			if(rs.getString("flag_status").equalsIgnoreCase("C")){
+				
+				sql = " update  pedido_motivo_cancelamento  set FLAG_CONFIRMADO_DISTRIBUIDORA = 'S' where id_pedido = ?  ";
+				st = conn.prepareStatement(sql);
+				st.setInt(1, Integer.parseInt(id_pedido));
+				st.executeUpdate();
+				
+			}else{
+			
+				if (data6.getTime().after(new Date())) {
+					throw new Exception("A hora atual deve exceder em " + sys.getPED_HORASOKEY() + "h a data de resposta para o pedido ser finalizado manualmente.");
+				}
+				
+				sql = " update  pedido  set flag_status = 'O' where id_pedido = ? and ID_DISTRIBUIDORA = ? and flag_status = 'E' ";
+				st = conn.prepareStatement(sql);
+				st.setInt(1, Integer.parseInt(id_pedido));
+				st.setInt(2, coddistr);
+				st.executeUpdate();
+				
+				
 			}
-
-			sql = " update  pedido  set flag_status = 'O' where id_pedido = ? and ID_DISTRIBUIDORA = ? and flag_status = 'E' ";
-			st = conn.prepareStatement(sql);
-			st.setInt(1, Integer.parseInt(id_pedido));
-			st.setInt(2, coddistr);
-			st.executeUpdate();
+			
 
 		}
 
@@ -669,18 +695,16 @@ public class Pedidos_ajax {
 
 		String id_pedido = request.getParameter("id") == null ? "" : request.getParameter("id"); //
 		String motivos_json = request.getParameter("motivos_json") == null ? "" : request.getParameter("motivos_json");
-	//	String hora_entrega = request.getParameter("hora_entrega") == null ? "" : request.getParameter("hora_entrega");
-	//	String min_entrega = request.getParameter("min_entrega") == null ? "" : request.getParameter("min_entrega");
+		// String hora_entrega = request.getParameter("hora_entrega") == null ? "" : request.getParameter("hora_entrega");
+		// String min_entrega = request.getParameter("min_entrega") == null ? "" : request.getParameter("min_entrega");
 		String resposta = request.getParameter("resposta") == null ? "" : request.getParameter("resposta");
 		String m_tempo_entrega_inp = request.getParameter("m_tempo_entrega_inp") == null ? "" : request.getParameter("m_tempo_entrega_inp");
-		
-	/*	if (hora_entrega.equalsIgnoreCase("")) {
-			hora_entrega = "0";
-		}
 
-		if (min_entrega.equalsIgnoreCase("")) {
-			min_entrega = "0";
-		}*/
+		/*
+		 * if (hora_entrega.equalsIgnoreCase("")) { hora_entrega = "0"; }
+		 * 
+		 * if (min_entrega.equalsIgnoreCase("")) { min_entrega = "0"; }
+		 */
 
 		String sql = " 	select * from pedido  where ID_DISTRIBUIDORA = ? and id_pedido = ? and flag_status = 'A'  ";
 
@@ -689,55 +713,48 @@ public class Pedidos_ajax {
 		st.setInt(2, Integer.parseInt(id_pedido));
 		ResultSet rs = st.executeQuery();
 
-		
-		if(!resposta.equalsIgnoreCase("A") && !resposta.equalsIgnoreCase("R")){
+		if (!resposta.equalsIgnoreCase("A") && !resposta.equalsIgnoreCase("R")) {
 			throw new Exception("Tipo de reposta inválida.");
 		}
-		
+
 		if (!rs.next()) {
 			throw new Exception("Pedido inválido, contate o suporte.");
 		} else {
-
+			String status = "";
+		
+			if(status.equalsIgnoreCase("E") || status.equalsIgnoreCase("R") || status.equalsIgnoreCase("S")){
+				throw new Exception("Pedido já respondido");
+			}
+			if(status.equalsIgnoreCase("C")){
+				throw new Exception("Este pedido foi cancelado.");
+			}
+			
 			if (resposta.equalsIgnoreCase("A")) {
 
-			/*	if (hora_entrega == "0" && min_entrega == "0") {
-					throw new Exception("Você deve preencher o(s) campo(s) de tempo estimado para poder responder o pedido.");
-				}
-
-				if (!Utilitario.isNumeric(hora_entrega) || !Utilitario.isNumeric(min_entrega)) {
-					throw new Exception("Você deve preencher o(s) campo(s) de tempo estimado corretamente poder responder o pedido.");
-				}*/
+				/*
+				 * if (hora_entrega == "0" && min_entrega == "0") { throw new Exception("Você deve preencher o(s) campo(s) de tempo estimado para poder responder o pedido."); }
+				 * 
+				 * if (!Utilitario.isNumeric(hora_entrega) || !Utilitario.isNumeric(min_entrega)) { throw new Exception("Você deve preencher o(s) campo(s) de tempo estimado corretamente poder responder o pedido."); }
+				 */
 
 				// fazer whatever tem q fazer e setar o pedido para E //TODO
 				// pagamento acho
-				//String tempoentrega = hora_entrega + ":" + min_entrega;
-				
-				
-				
-				
-				
-			
-							
-				
-				
-				if(rs.getString("FLAG_PEDIDO_RET_ENTRE").equalsIgnoreCase("L")){
-				
+				// String tempoentrega = hora_entrega + ":" + min_entrega;
+
+				if (rs.getString("FLAG_PEDIDO_RET_ENTRE").equalsIgnoreCase("L")) {
+
 					m_tempo_entrega_inp = "00:00";
-					
-					
-				}else{
-					Date datatempoentregateste = Utilitario.testeHora("HH:mm", m_tempo_entrega_inp,"Tempo de entrega inválido!");//tempo de entrega da distri
-					Date datatempoentregateste2 = Utilitario.testeHora("HH:mm", rs.getString("TEMPO_ESTIMADO_DESEJADO"),"");;//tempo de entrega do usuario
-				
-					
-					if(datatempoentregateste.after(datatempoentregateste2)){//;/
+
+				} else {
+					Date datatempoentregateste = Utilitario.testeHora("HH:mm", m_tempo_entrega_inp, "Tempo de entrega inválido!");// tempo de entrega da distri
+					Date datatempoentregateste2 = Utilitario.testeHora("HH:mm", rs.getString("TEMPO_ESTIMADO_DESEJADO"), "");
+					;// tempo de entrega do usuario
+
+					if (datatempoentregateste.after(datatempoentregateste2)) {// ;/
 						throw new Exception("Tempo de entrega é acima do desejado!");
 					}
 				}
-				
-				
-				
-				
+
 				sql = "update  pedido  set flag_status = 'E', `TEMPO_ESTIMADO_ENTREGA` =  ? , `DATA_PEDIDO_RESPOSTA` = NOW()  where ID_DISTRIBUIDORA = ? and id_pedido = ? and flag_status = 'A' ";
 				st = conn.prepareStatement(sql);
 				st.setString(1, m_tempo_entrega_inp);

@@ -1,9 +1,4 @@
 
-Quem cancelou? 
-
-
-tarefa
-
 
 
 Situação:
@@ -46,8 +41,6 @@ recebe um aviso com o cancelamento do pedido, marca na listagem como cancelado, 
 
 
 		
-
-no historico do pedido, mostar que esta cancelado(lisatgem). Dentro do pedido, informações do cancelamento.
 Na hora de cancelar, testar:
 	Se pedido esta aberto, ou em envio. etc
 	testar se o pedido é do usuario logado.
@@ -55,7 +48,28 @@ Na hora de cancelar, testar:
 	
 
 
+não pode aceitar pedido cancelado. - testar
+filtros	
+listar no historico.	
+	
+	
+	
+blink com aviso "você possui pedidos cancelados não vizualizados". se o kra clika, ativa filtro de cancelados.
+Mudar vizualizado para não,(que na verdade vai ser o vizualiado do cancelament). 
+Quando abre, seta o vizualiado pra sim.
+E se encerrar movo pro historico.
 
 
 
 
+
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	

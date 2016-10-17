@@ -222,8 +222,12 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 					carregaEnderecos(request, response, conn, cod_usuario);
 				} else if (cmd.equalsIgnoreCase("carregaMotivosCancelamento")) {
 					carregaMotivosCancelamento(request, response, conn, cod_usuario);
+				} else if (cmd.equalsIgnoreCase("loadInfoCanc")) {
+					carregaMotivosCancelamento(request, response, conn, cod_usuario);
 				} else if (cmd.equalsIgnoreCase("cancelaPedido")) {
 					cancelaPedido(request, response, conn, cod_usuario);
+				} else if (cmd.equalsIgnoreCase("infosCancel")) {
+					infosCancel(request, response, conn, cod_usuario);
 				} else {
 					throw new Exception("Ação inválida");
 				}
@@ -718,6 +722,51 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 
 	}
 
+	private static void infosCancel(HttpServletRequest request, HttpServletResponse response, Connection conn, long cod_usuario) throws Exception {
+
+		PrintWriter out = response.getWriter();
+		JSONObject objRetorno = new JSONObject();
+		// if (cod_usuario.equalsIgnoreCase("") || cod_usuario == null || cod_usuario.equalsIgnoreCase("0")) {
+		// throw new Exception("Usuário inválido.");
+		// } else
+		{
+
+			String id_pedido = request.getParameter("id_pedido") == null ? "" : request.getParameter("id_pedido");
+
+			if (id_pedido.equalsIgnoreCase("")) {
+				throw new Exception("Pedido inválido");
+			}
+
+			String sql2 = "SELECT * from  pedido where id_pedido  = ? and ID_USUARIO = " + cod_usuario;
+			PreparedStatement st = conn.prepareStatement(sql2);
+			st.setLong(1, Long.parseLong(id_pedido));
+			ResultSet rs = st.executeQuery();
+
+			if (!rs.next()) {
+				throw new Exception("Pedido inválido.");
+			} else {
+				objRetorno.put("flag_status", rs.getString("flag_status"));
+
+				sql2 = "SELECT * from  pedido_motivo_cancelamento where id_pedido  = ? ";
+				PreparedStatement st2 = conn.prepareStatement(sql2);
+				st2.setLong(1, Long.parseLong(id_pedido));
+				ResultSet rs2 = st2.executeQuery();
+				if (rs2.next()) {
+
+					objRetorno.put("motivo", rs2.getLong("cod_motivo"));
+					objRetorno.put("desc_obs", rs2.getString("desc_obs"));
+					objRetorno.put("data_cancelamento", new SimpleDateFormat("dd/MM/yyyy HH:mm").format(rs2.getTimestamp("DATA_CANCELAMENTO")));
+				}
+			}
+
+			objRetorno.put("msg", "ok");
+
+		}
+
+		out.print(objRetorno.toJSONString());
+
+	}
+
 	private static void cancelaPedido(HttpServletRequest request, HttpServletResponse response, Connection conn, long cod_usuario) throws Exception {
 
 		PrintWriter out = response.getWriter();
@@ -768,24 +817,22 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 				}
 
 				StringBuffer sql = new StringBuffer();
-				sql.append("UPDATE pedido ");
-				sql.append("   SET FLAG_STATUS = 'C', ");
-				sql.append("   SET PAG_TOKEN = null ");
-				sql.append("WHERE  id_pedido = " + id_pedido);
+				sql.append(" UPDATE pedido ");
+				sql.append("   SET FLAG_STATUS = 'C' , ");
+				sql.append("   PAG_TOKEN = NULL ");
+				sql.append(" WHERE  id_pedido = " + id_pedido);
 
 				st = conn.prepareStatement(sql.toString());
 				st.executeUpdate();
-				
+
 				if (statuspedido.equalsIgnoreCase("A")) {// em aberto
 
-		
-
 					sql = new StringBuffer();
-					StringBuffer varname1 = new StringBuffer();
-					varname1.append("INSERT INTO pedido_motivo_cancelamento ");
-					varname1.append("  (`ID_PEDIDO`, `COD_MOTIVO`, `DESC_OBS`, `DATA_CANCELAMENTO`,FLAG_CONFIRMADO_DISTRIBUIDORA,FLAG_POPUPINICIAL) ");
-					varname1.append("VALUES ");
-					varname1.append("  (?,?,?,now(),'S','S')");//seta como sim pq ainda estava em aberto. entao a distribuidora nem vai perceber que foi cancelado.
+
+					sql.append("INSERT INTO pedido_motivo_cancelamento ");
+					sql.append("  (`ID_PEDIDO`, `COD_MOTIVO`, `DESC_OBS`, `DATA_CANCELAMENTO`,FLAG_CONFIRMADO_DISTRIBUIDORA,FLAG_POPUPINICIAL) ");
+					sql.append("VALUES ");
+					sql.append("  (?,?,?,now(),'S','S')");// seta como sim pq ainda estava em aberto. entao a distribuidora nem vai perceber que foi cancelado.
 
 					st = conn.prepareStatement(sql.toString());
 					st.setLong(1, Long.parseLong(id_pedido));
@@ -797,49 +844,41 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 
 				if (statuspedido.equalsIgnoreCase("E") || statuspedido.equalsIgnoreCase("S")) {// em envio
 
-					if(rs.getString("FLAG_MODOPAGAMENTO").equalsIgnoreCase("D")){//cancelamento em pagamento por dinhero. só cancelar e avisar a distribuidora.
-						
+					if (rs.getString("FLAG_MODOPAGAMENTO").equalsIgnoreCase("D")) {// cancelamento em pagamento por dinhero. só cancelar e avisar a distribuidora.
+
 						sql = new StringBuffer();
-						StringBuffer varname1 = new StringBuffer();
-						varname1.append("INSERT INTO pedido_motivo_cancelamento ");
-						varname1.append("  (`ID_PEDIDO`, `COD_MOTIVO`, `DESC_OBS`, `DATA_CANCELAMENTO`,FLAG_CONFIRMADO_DISTRIBUIDORA,FLAG_POPUPINICIAL) ");
-						varname1.append("VALUES ");
-						varname1.append("  (?,?,?,now(),'N','N')");
+						sql.append("INSERT INTO pedido_motivo_cancelamento ");
+						sql.append("  (`ID_PEDIDO`, `COD_MOTIVO`, `DESC_OBS`, `DATA_CANCELAMENTO`,FLAG_CONFIRMADO_DISTRIBUIDORA,FLAG_POPUPINICIAL) ");
+						sql.append("VALUES ");
+						sql.append("  (?,?,?,now(),'N','N')");
 
 						st = conn.prepareStatement(sql.toString());
 						st.setLong(1, Long.parseLong(id_pedido));
 						st.setLong(2, Long.parseLong(motivo));
 						st.setString(3, descobs);
 						st.executeUpdate();
-						
+
 					}
-					
-					if(rs.getString("FLAG_MODOPAGAMENTO").equalsIgnoreCase("C")){//cancelamento em pagamento por cartao.
-						//TODO
+
+					if (rs.getString("FLAG_MODOPAGAMENTO").equalsIgnoreCase("C")) {// cancelamento em pagamento por cartao.
+						// TODO como sera feito os refunds?
 						sql = new StringBuffer();
-						StringBuffer varname1 = new StringBuffer();
-						varname1.append("INSERT INTO pedido_motivo_cancelamento ");
-						varname1.append("  (`ID_PEDIDO`, `COD_MOTIVO`, `DESC_OBS`, `DATA_CANCELAMENTO`,FLAG_CONFIRMADO_DISTRIBUIDORA,FLAG_POPUPINICIAL) ");
-						varname1.append("VALUES ");
-						varname1.append("  (?,?,?,now(),'N','N')");
+						sql.append("INSERT INTO pedido_motivo_cancelamento ");
+						sql.append("  (`ID_PEDIDO`, `COD_MOTIVO`, `DESC_OBS`, `DATA_CANCELAMENTO`,FLAG_CONFIRMADO_DISTRIBUIDORA,FLAG_POPUPINICIAL) ");
+						sql.append("VALUES ");
+						sql.append("  (?,?,?,now(),'N','N')");
 
 						st = conn.prepareStatement(sql.toString());
 						st.setLong(1, Long.parseLong(id_pedido));
 						st.setLong(2, Long.parseLong(motivo));
 						st.setString(3, descobs);
 						st.executeUpdate();
-						
+
 					}
-					
-					
-					
+
 				}
 
-				
-
 			}
-
-			
 
 			objRetorno.put("msg", "ok");
 
@@ -1650,7 +1689,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 
 			}
 
-			ped.put("flag_status", Utilitario.returnStatusPedidoFlag(rs.getString("FLAG_STATUS")));
+			ped.put("flag_status2", (rs.getString("FLAG_STATUS")));
 
 			ped.put("tempo_entrega_max", rs.getTimestamp("TEMPO_ESTIMADO_DESEJADO") == null ? "" : new SimpleDateFormat("HH:mm").format(rs.getTimestamp("TEMPO_ESTIMADO_DESEJADO")));
 
@@ -2449,13 +2488,15 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 					st.setDouble(7, 0.0);
 				}
 				st.setLong(8, Utilitario.getNextNumpad(conn, rs.getInt("ID_DISTRIBUIDORA")));
-				st.setInt(9, rs.getInt("cod_bairro"));
+				
 				st.setString(10, rs.getString("DESC_TELEFONE"));
 				if (choiceserv.equalsIgnoreCase("T")) {
+					st.setInt(9, rs.getInt("cod_bairro"));
 					st.setString(11, desc_endereco);
 					st.setString(12, desc_endereco_num);
 					st.setString(13, desc_endereco_complemento);
 				} else {
+					st.setNull(9, java.sql.Types.INTEGER);
 					st.setString(11, "");
 					st.setString(12, "");
 					st.setString(13, "");
@@ -2590,10 +2631,6 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 
 				// payment(request, response, conn, cod_usuario,email);
 
-				else {
-					throw new Exception("Não há itens em seu carrinho!");
-				}
-
 				{
 					sql = new StringBuffer();// deleta item do carrinho se ele exister exite no carrinho, add depois
 					sql.append(" delete from carrinho_item where ID_CARRINHO = ? ");
@@ -2608,6 +2645,8 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 					st.executeUpdate();
 				}
 			}
+		} else {
+			throw new Exception("Não há itens em seu carrinho!");
 		}
 		retorno.put("msg", "ok");
 

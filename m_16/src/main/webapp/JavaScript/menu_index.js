@@ -239,6 +239,7 @@ function limpaModal() {
 	$("#m_tempo_entrega_inp").val("");
 	$("#desc_motivos2").html("");
 	$("#m_flag_pedido_ret_entre").val("");
+	$("#m_data_cancelamento").html("");
 
 	testaAceitaRecusa();
 
@@ -432,6 +433,7 @@ function visualizarPedido(id) {
 		async : false,
 		dataType : 'json',
 		success : function(data) {
+			$(".cancelamento").hide();
 			console.log(data);
 			audio.pause();
 			audio.currentTime = 0;
@@ -444,18 +446,18 @@ function visualizarPedido(id) {
 				$("#m_lbl_bairro").html("");
 			}
 			$("#m_flag_pedido_ret_entre").val(data.tipo_servico);
-			if(data.desc_bairro_ret !=undefined && data.desc_bairro_ret !== ""){
+			/*if(data.desc_bairro_ret !=undefined && data.desc_bairro_ret !== ""){
 				$("#m_desc_bairro").html(data.desc_bairro_ret);	
-			}else{
+			}else{*/
 				$("#m_desc_bairro").html(data.desc_bairro);
-			}
+		//	}
 			
 			$("#m_total_pedido").autoNumeric('set', parseFloat(data.VAL_ENTREGA) + parseFloat(data.VAL_TOTALPROD));
 			$("#m_total_tele").autoNumeric('set', data.VAL_ENTREGA);
 			$("#m_total_produtos").autoNumeric('set', data.VAL_TOTALPROD);
 			$("#m_data_pedido").html(data.data_pedido);
 			$("#m_id_pedido").val(data.ID_PEDIDO);
-
+			
 			if (data.flag_status == "A") {
 				$("#m_lbl_titulo").html("Pedido em aberto!");
 				$("#m_lbl_titulo").css("color", "green");
@@ -496,6 +498,33 @@ function visualizarPedido(id) {
 				$(".m_enviado").show();
 				$("#m_aberto").hide();
 
+			}else if (data.flag_status == "C") {
+				$("#m_lbl_titulo").css("color", "red");
+				
+					$("#m_lbl_titulo").html("Cancelado");
+				$(".cancelamento").show();
+				$("#m_responder").hide();
+				
+				
+				// setar os dados se estiver em envio
+
+				$("#envio_desc_nome").html(data.DESC_NOME);
+				$("#envio_desc_telefone").html(data.DESC_TELEFONE);
+				$("#envio_desc_bairro").html(data.desc_bairro);
+				$("#envio_desc_endereco").html(data.DESC_ENDERECO);
+				$("#m_resposta_motivos").hide();
+				$("#m_data_resposta").html(data.m_data_resposta);
+				$("#m_tempo_entrega").html(data.m_tempo_entrega);
+				$("#m_data_cancelamento").html(data.DATA_CANCELAMENTO);
+				if (data.darok == true) {
+					$("#m_finalizar").show();
+				} else {
+					$("#m_finalizar").hide();
+				}
+
+				$(".m_enviado").show();
+				$("#m_aberto").hide();
+
 			}
 
 			$('#m_table_produtos').bootstrapTable('load', data.prods);
@@ -516,12 +545,14 @@ function visualizarPedido(id) {
 
 function finalizarPedido() {
 
-	$.blockUI({
-		message : 'Finalizando...'
-	});
+	
 
-	if (confirm("Tem certeza que deseja finalizar este pedido? (Mudar a situação para Ok.)")) {
+	if (confirm("Tem certeza que deseja finalizar este pedido? Ele podera ser consultado futuramente na tela de histórico de pedidos.")) {
 
+		$.blockUI({
+			message : 'Finalizando...'
+		});
+		
 		var id_pedido = $("#m_id_pedido").val();
 
 		$.ajax({

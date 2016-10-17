@@ -22,6 +22,10 @@ $(document).ready(function() {
 	$('#msg_filtros').blink({
 		delay : 400
 	});
+	
+	$('#msg_cancelados').blink({
+		delay : 400
+	});
 
 	$("#btn_maisfiltras_aberto").click(function() {
 		$("#modal_filtros_aberto").modal("show");
@@ -131,6 +135,8 @@ function statusFormater(value, row, index) {
 		html = html + "<label style='color:green'>Em Envio<label>";
 	} else if (value == "S") {
 		html = html + "<label style='color:green'>Em Espera<label>";
+	} else if (value == "C") {
+		html = html + "<label style='color:red'>Cancelado<label>";
 	}
 
 	return html;
@@ -242,6 +248,13 @@ function loadAbertos(blockui) {
 				$("#msg_filtros").hide();
 			}
 
+			if (data.canc_vizu != undefined) {
+				$("#msg_cancholder").show();
+			} else {
+				$("#msg_cancholder").hide();
+			}
+			
+			
 			$('#table_pedidos_abertos').bootstrapTable('load', data.pedidos);
 			$('#table_pedidos_abertos').bootstrapTable('resetView');
 			$('[data-toggle="tooltip"]').tooltip();

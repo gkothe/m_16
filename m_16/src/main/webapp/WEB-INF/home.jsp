@@ -456,7 +456,7 @@ input:focus {
 
 
 							<div class="row">
-								<div class="col-xs-8 col-sm-8 col-md-8 col-lg-8" align="">
+								<div class="col-xs-6 col-sm-6 col-md-6 col-lg-6" align="">
 									<table>
 										<tr>
 											<td style="padding-right: 5px;"><label for="">Total
@@ -469,6 +469,19 @@ input:focus {
 									</table>
 
 								</div>
+								
+								<div class="col-xs-6 col-sm-6 col-md-6 col-lg-6 cancelamento"  align="">
+									<table>
+										<tr>
+											<td style="padding-right: 5px;"><label for="">Data de cancelamento: </label></td>
+											<td><label id=""> </label><label id="m_data_cancelamento"></label></td>
+
+										</tr>
+
+									</table>
+
+								</div>
+								
 							</div>
 							<div class="row" id="m_tempomax_div">
 								<div class="col-xs-8 col-sm-8 col-md-8 col-lg-8" align="">
@@ -637,7 +650,7 @@ input:focus {
 										<button type="button" id="m_responder" class="btn btn-primary">Responder</button>
 									</div>
 									<div id="div_finalizar">
-										<button type="button" id="m_finalizar" class="btn btn-primary">Finalizar(Ok)</button>
+										<button type="button" id="m_finalizar" class="btn btn-primary">Finalizar</button>
 									</div>
 
 								</div>
