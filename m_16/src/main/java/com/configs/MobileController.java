@@ -586,11 +586,12 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 				throw new Exception("Bairro não encontrado. Você deve escolher um bairro válido.");
 			}
 		}
+
 		StringBuffer sql2 = new StringBuffer();
 		sql2.append("UPDATE usuario ");
 		sql2.append("   SET  ");
 		if (servico.equalsIgnoreCase("T")) {
-			sql2.append("       `COD_BAIRRO` = ?, ");
+			// sql2.append(" `COD_BAIRRO` = ?, ");
 		}
 		sql2.append("       `COD_CIDADE` = ? ");
 		sql2.append("WHERE  `ID_USUARIO` = ?;");
@@ -599,8 +600,8 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 		int contparam = 1;
 
 		if (servico.equalsIgnoreCase("T")) {
-			st.setLong(contparam, Long.parseLong(codbairro));
-			contparam++;
+			// st.setLong(contparam, Long.parseLong(codbairro));
+			// contparam++;
 		}
 
 		st.setLong(contparam, Long.parseLong(codcidade));
@@ -2203,7 +2204,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 
 			ResultSet rs = st.executeQuery();
 			if (!rs.next()) {
-				throw new Exception("Distribuidora não se encontra disponível para o bairro escolhido.");
+				throw new Exception("Distribuidora que se encontra no seu carrinho não se encontra disponível para o bairro escolhido. Limpe seu carrinho ou escolha outro bairro!");
 			}
 		}
 
@@ -2304,76 +2305,87 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 		String novobairro = request.getParameter("novobairro") == null ? "" : request.getParameter("novobairro");
 
 		StringBuffer sql = new StringBuffer();
-		sql.append("UPDATE carrinho ");
-		sql.append("   SET cod_bairro = ? ");
+		sql.append("select * from carrinho ");
 		sql.append("WHERE  id_usuario = ? ");
 
 		PreparedStatement st = conn.prepareStatement(sql.toString());
-		st.setInt(1, Integer.parseInt(novobairro));
-		st.setLong(2, cod_usuario);
-		st.executeUpdate();
+		st.setLong(1, cod_usuario);
 
-		long idcarrinho = 0;
-
-		sql = new StringBuffer();
-		sql.append("select usuario.DESC_EMAIL, usuario. DESC_NOME, carrinho_item.id_carrinho,distribuidora.ID_DISTRIBUIDORA,carrinho.cod_bairro,usuario.DESC_TELEFONE,usuario.DESC_ENDERECO,DESC_ENDERECO_NUM,DESC_ENDERECO_COMPLEMENTO,sum(produtos_distribuidora.val_prod * carrinho_item.qtd ) as val_prod, ");
-		sql.append("  ");
-		sql.append("case when FLAG_TELEBAIRRO = 'S' then distribuidora_bairro_entrega.VAL_TELE_ENTREGA else distribuidora.VAL_TELE_ENTREGA end as VAL_TELE_ENTREGA ");
-		sql.append("  ");
-		sql.append("from carrinho ");
-		sql.append(" ");
-		sql.append("inner join carrinho_item ");
-		sql.append("on carrinho_item.id_carrinho = carrinho.id_carrinho ");
-		sql.append(" ");
-		sql.append("inner join produtos_distribuidora ");
-		sql.append("on produtos_distribuidora.ID_PROD_DIST = carrinho_item.ID_PROD_DIST ");
-		sql.append(" ");
-		sql.append("inner join produtos ");
-		sql.append("on produtos_distribuidora.ID_PROD = produtos.ID_PROD ");
-		sql.append("  ");
-		sql.append("inner join distribuidora ");
-		sql.append("on distribuidora.id_distribuidora = produtos_distribuidora.ID_DISTRIBUIDORA ");
-		sql.append("  ");
-		sql.append("left join bairros ");
-		sql.append("on bairros.cod_bairro = carrinho.cod_bairro ");
-		sql.append("");
-		sql.append("left join distribuidora_bairro_entrega ");
-		sql.append("on distribuidora_bairro_entrega.cod_bairro = bairros.cod_bairro and distribuidora_bairro_entrega.ID_DISTRIBUIDORA = distribuidora.ID_DISTRIBUIDORA ");
-		sql.append(" ");
-		sql.append("inner join usuario ");
-		sql.append("on usuario.id_usuario = carrinho.id_usuario ");
-		sql.append("  ");
-		sql.append("where usuario.id_usuario = ? ");
-		sql.append(" ");
-		sql.append("group by usuario.DESC_EMAIL, usuario. DESC_NOME, carrinho_item.id_carrinho,distribuidora_bairro_entrega.ID_DISTRIBUIDORA,carrinho.cod_bairro,usuario.DESC_TELEFONE,usuario.DESC_ENDERECO,DESC_ENDERECO_NUM,DESC_ENDERECO_COMPLEMENTO, VAL_TELE_ENTREGA");
-
-		st = conn.prepareStatement(sql.toString());
-		PreparedStatement st2 = null;
-
-		st.setLong(1, (cod_usuario));
 		ResultSet rs = st.executeQuery();
-		ResultSet rs2 = null;
 
 		if (rs.next()) {
-			idcarrinho = rs.getLong("id_carrinho");
-
-			validacaoFlagsDistribuidora(request, response, conn, rs.getInt("ID_DISTRIBUIDORA"));
-			validacaoDisBairroHora(request, response, conn, rs.getInt("cod_bairro"), rs.getInt("ID_DISTRIBUIDORA"));
-			validacaoTesteCarrinhoDistribuidora(request, response, conn, idcarrinho, rs.getInt("ID_DISTRIBUIDORA"));
 
 			sql = new StringBuffer();
-			sql.append("select * from carrinho_item inner join produtos_distribuidora on produtos_distribuidora.ID_PROD_DIST = carrinho_item.ID_PROD_DIST  where id_carrinho = ? ");
+			sql.append("UPDATE carrinho ");
+			sql.append("   SET cod_bairro = ? ");
+			sql.append("WHERE  id_usuario = ? ");
 
-			st2 = conn.prepareStatement(sql.toString());
-			st2.setLong(1, idcarrinho);
-			rs2 = st2.executeQuery();
-			while (rs2.next()) {
+			st = conn.prepareStatement(sql.toString());
+			st.setInt(1, Integer.parseInt(novobairro));
+			st.setLong(2, cod_usuario);
+			st.executeUpdate();
 
-				validacaoProdutoDistribuidora(request, response, conn, rs2.getLong("ID_PROD_DIST"), rs2.getDouble("VAL_PROD"));
+			long idcarrinho = 0;
 
+			sql = new StringBuffer();
+			sql.append("select usuario.DESC_EMAIL, usuario. DESC_NOME, carrinho_item.id_carrinho,distribuidora.ID_DISTRIBUIDORA,carrinho.cod_bairro,usuario.DESC_TELEFONE,usuario.DESC_ENDERECO,DESC_ENDERECO_NUM,DESC_ENDERECO_COMPLEMENTO,sum(produtos_distribuidora.val_prod * carrinho_item.qtd ) as val_prod, ");
+			sql.append("  ");
+			sql.append("case when FLAG_TELEBAIRRO = 'S' then distribuidora_bairro_entrega.VAL_TELE_ENTREGA else distribuidora.VAL_TELE_ENTREGA end as VAL_TELE_ENTREGA ");
+			sql.append("  ");
+			sql.append("from carrinho ");
+			sql.append(" ");
+			sql.append("inner join carrinho_item ");
+			sql.append("on carrinho_item.id_carrinho = carrinho.id_carrinho ");
+			sql.append(" ");
+			sql.append("inner join produtos_distribuidora ");
+			sql.append("on produtos_distribuidora.ID_PROD_DIST = carrinho_item.ID_PROD_DIST ");
+			sql.append(" ");
+			sql.append("inner join produtos ");
+			sql.append("on produtos_distribuidora.ID_PROD = produtos.ID_PROD ");
+			sql.append("  ");
+			sql.append("inner join distribuidora ");
+			sql.append("on distribuidora.id_distribuidora = produtos_distribuidora.ID_DISTRIBUIDORA ");
+			sql.append("  ");
+			sql.append("left join bairros ");
+			sql.append("on bairros.cod_bairro = carrinho.cod_bairro ");
+			sql.append("");
+			sql.append("left join distribuidora_bairro_entrega ");
+			sql.append("on distribuidora_bairro_entrega.cod_bairro = bairros.cod_bairro and distribuidora_bairro_entrega.ID_DISTRIBUIDORA = distribuidora.ID_DISTRIBUIDORA ");
+			sql.append(" ");
+			sql.append("inner join usuario ");
+			sql.append("on usuario.id_usuario = carrinho.id_usuario ");
+			sql.append("  ");
+			sql.append("where usuario.id_usuario = ? ");
+			sql.append(" ");
+			sql.append("group by usuario.DESC_EMAIL, usuario. DESC_NOME, carrinho_item.id_carrinho,distribuidora_bairro_entrega.ID_DISTRIBUIDORA,carrinho.cod_bairro,usuario.DESC_TELEFONE,usuario.DESC_ENDERECO,DESC_ENDERECO_NUM,DESC_ENDERECO_COMPLEMENTO, VAL_TELE_ENTREGA");
+
+			st = conn.prepareStatement(sql.toString());
+			PreparedStatement st2 = null;
+
+			st.setLong(1, (cod_usuario));
+			rs = st.executeQuery();
+			ResultSet rs2 = null;
+
+			if (rs.next()) {
+				idcarrinho = rs.getLong("id_carrinho");
+
+				validacaoFlagsDistribuidora(request, response, conn, rs.getInt("ID_DISTRIBUIDORA"));
+				validacaoDisBairroHora(request, response, conn, rs.getInt("cod_bairro"), rs.getInt("ID_DISTRIBUIDORA"));
+				validacaoTesteCarrinhoDistribuidora(request, response, conn, idcarrinho, rs.getInt("ID_DISTRIBUIDORA"));
+
+				sql = new StringBuffer();
+				sql.append("select * from carrinho_item inner join produtos_distribuidora on produtos_distribuidora.ID_PROD_DIST = carrinho_item.ID_PROD_DIST  where id_carrinho = ? ");
+
+				st2 = conn.prepareStatement(sql.toString());
+				st2.setLong(1, idcarrinho);
+				rs2 = st2.executeQuery();
+				while (rs2.next()) {
+
+					validacaoProdutoDistribuidora(request, response, conn, rs2.getLong("ID_PROD_DIST"), rs2.getDouble("VAL_PROD"));
+
+				}
 			}
 		}
-
 		retorno.put("msg", "ok");
 
 		out.print(retorno.toJSONString());
