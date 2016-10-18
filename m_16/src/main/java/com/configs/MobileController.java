@@ -1895,15 +1895,16 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 			String edereco = rs.getString("DESC_ENDERECO_ENTREGA") == null ? "" : rs.getString("DESC_ENDERECO_ENTREGA");
 			String desc_endereco_num = rs.getString("DESC_ENDERECO_NUM_ENTREGA") == null ? "" : rs.getString("DESC_ENDERECO_NUM_ENTREGA");
 			String desc_endereco_complemento = rs.getString("DESC_ENDERECO_COMPLEMENTO_ENTREGA") == null ? "" : rs.getString("DESC_ENDERECO_COMPLEMENTO_ENTREGA");
+			if (!edereco.equalsIgnoreCase("")) {
 
-			obj.put("descender", edereco + " " + desc_endereco_num + " " + desc_endereco_complemento);
+				obj.put("descender", edereco + " " + desc_endereco_num + " " + desc_endereco_complemento);
 
-			obj.put("desc_endereco_entrega", rs.getString("DESC_ENDERECO_ENTREGA") == null ? "" : rs.getString("DESC_ENDERECO_ENTREGA"));
-			obj.put("desc_endereco_num_entrega", rs.getString("DESC_ENDERECO_NUM_ENTREGA") == null ? "" : rs.getString("DESC_ENDERECO_NUM_ENTREGA"));
-			obj.put("desc_endereco_complemento_entrega", rs.getString("DESC_ENDERECO_COMPLEMENTO_ENTREGA") == null ? "" : rs.getString("DESC_ENDERECO_COMPLEMENTO_ENTREGA"));
+				obj.put("desc_endereco_entrega", rs.getString("DESC_ENDERECO_ENTREGA") == null ? "" : rs.getString("DESC_ENDERECO_ENTREGA"));
+				obj.put("desc_endereco_num_entrega", rs.getString("DESC_ENDERECO_NUM_ENTREGA") == null ? "" : rs.getString("DESC_ENDERECO_NUM_ENTREGA"));
+				obj.put("desc_endereco_complemento_entrega", rs.getString("DESC_ENDERECO_COMPLEMENTO_ENTREGA") == null ? "" : rs.getString("DESC_ENDERECO_COMPLEMENTO_ENTREGA"));
 
-			enderecos.add(obj);
-
+				enderecos.add(obj);
+			}
 		}
 
 		retorno.put("enderecos", enderecos);
@@ -2025,11 +2026,11 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 			st = conn.prepareStatement(sql.toString());
 			st.setLong(1, idcarrinho);
 			st.setLong(2, (cod_usuario));
-			if(choiceserv.equalsIgnoreCase("L"))
+			if (choiceserv.equalsIgnoreCase("L"))
 				st.setNull(3, java.sql.Types.ARRAY);
-			else if(choiceserv.equalsIgnoreCase("T"))
+			else if (choiceserv.equalsIgnoreCase("T"))
 				st.setLong(3, Long.parseLong(cod_bairro));
-			
+
 			st.executeUpdate();
 			jatemcarrinho = true;
 
@@ -2192,10 +2193,10 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 			sql.append(" where cod_bairro = ? and distribuidora_bairro_entrega.id_distribuidora  = ? and (now() between horario_ini and horario_fim) and cod_dia = ?  ");
 			PreparedStatement st = conn.prepareStatement(sql.toString());
 
-			if(cod_bairro==0){
+			if (cod_bairro == 0) {
 				throw new Exception("Bairro inválido.");
 			}
-			
+
 			st.setLong(1, (cod_bairro));
 			st.setLong(2, (id_distribuidora_prod));
 			st.setLong(3, Utilitario.diaSemana(conn, id_distribuidora_prod));
