@@ -240,7 +240,7 @@ function limpaModal() {
 	$("#desc_motivos2").html("");
 	$("#m_flag_pedido_ret_entre").val("");
 	$("#m_data_cancelamento").html("");
-
+	$("#m_finalizar").html("Finalizar");
 	testaAceitaRecusa();
 
 }
@@ -434,7 +434,7 @@ function visualizarPedido(id) {
 		dataType : 'json',
 		success : function(data) {
 			$(".cancelamento").hide();
-			console.log(data);
+			$("#m_finalizar").html("Finalizar");
 			audio.pause();
 			audio.currentTime = 0;
 			if(data.tipo_servico == "T"){
@@ -501,10 +501,10 @@ function visualizarPedido(id) {
 			}else if (data.flag_status == "C") {
 				$("#m_lbl_titulo").css("color", "red");
 				
-					$("#m_lbl_titulo").html("Cancelado");
+				$("#m_lbl_titulo").html("Cancelado");
 				$(".cancelamento").show();
 				$("#m_responder").hide();
-				
+				$("#m_finalizar").html("Mover para histórico");
 				
 				// setar os dados se estiver em envio
 

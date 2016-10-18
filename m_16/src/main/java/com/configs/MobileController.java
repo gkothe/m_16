@@ -1655,7 +1655,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 		sql.append(" FROM   pedido ");
 		sql.append("       INNER JOIN distribuidora ");
 		sql.append("               ON distribuidora.id_distribuidora = pedido.id_distribuidora ");
-		sql.append("       INNER JOIN bairros ");
+		sql.append("       left JOIN bairros ");
 		sql.append("               ON bairros.cod_bairro = pedido.cod_bairro ");
 		sql.append(" WHERE  id_pedido = ? ");
 		sql.append("       AND id_usuario = ?");
@@ -1767,7 +1767,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 		sql.append("inner join distribuidora ");
 		sql.append("on distribuidora.id_distribuidora = produtos_distribuidora.ID_DISTRIBUIDORA ");
 		sql.append(" ");
-		sql.append("inner join bairros ");
+		sql.append("left join bairros ");
 		sql.append("on bairros.cod_bairro = carrinho.cod_bairro ");
 		sql.append(" ");
 		sql.append("left join distribuidora_bairro_entrega ");
@@ -1946,7 +1946,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 		// String id_ditribuidora = request.getParameter("id_ditribuidora") == null ? "" : request.getParameter("id_ditribuidora");
 		String qtd = request.getParameter("qtd") == null ? "" : request.getParameter("qtd"); // precisa receber
 		String cod_bairro = request.getParameter("cod_bairro") == null ? "" : request.getParameter("cod_bairro"); // precisa receber
-
+		String choiceserv = request.getParameter("choiceserv") == null ? "" : request.getParameter("choiceserv");
 		boolean jatemcarrinho = false;
 		long idcarrinho = 0;
 		int id_distribuidora_prod = 0;
@@ -2003,8 +2003,9 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 			validacaoTesteCarrinhoDistribuidora(request, response, conn, idcarrinho, id_distribuidora_prod);
 
 		}
-
-		validacaoDisBairroHora(request, response, conn, Long.parseLong(cod_bairro), id_distribuidora_prod);
+		if (choiceserv.equalsIgnoreCase("T")) {
+			validacaoDisBairroHora(request, response, conn, Long.parseLong(cod_bairro), id_distribuidora_prod);
+		}
 
 		if (jatemcarrinho) {
 			sql = new StringBuffer();// deleta item do carrinho se ele exister exite no carrinho, add depois
@@ -2024,7 +2025,11 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 			st = conn.prepareStatement(sql.toString());
 			st.setLong(1, idcarrinho);
 			st.setLong(2, (cod_usuario));
-			st.setLong(3, Long.parseLong(cod_bairro));
+			if(choiceserv.equalsIgnoreCase("L"))
+				st.setNull(3, java.sql.Types.ARRAY);
+			else if(choiceserv.equalsIgnoreCase("T"))
+				st.setLong(3, Long.parseLong(cod_bairro));
+			
 			st.executeUpdate();
 			jatemcarrinho = true;
 
@@ -2187,6 +2192,10 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 			sql.append(" where cod_bairro = ? and distribuidora_bairro_entrega.id_distribuidora  = ? and (now() between horario_ini and horario_fim) and cod_dia = ?  ");
 			PreparedStatement st = conn.prepareStatement(sql.toString());
 
+			if(cod_bairro==0){
+				throw new Exception("Bairro inválido.");
+			}
+			
 			st.setLong(1, (cod_bairro));
 			st.setLong(2, (id_distribuidora_prod));
 			st.setLong(3, Utilitario.diaSemana(conn, id_distribuidora_prod));
@@ -2324,7 +2333,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 		sql.append("inner join distribuidora ");
 		sql.append("on distribuidora.id_distribuidora = produtos_distribuidora.ID_DISTRIBUIDORA ");
 		sql.append("  ");
-		sql.append("inner join bairros ");
+		sql.append("left join bairros ");
 		sql.append("on bairros.cod_bairro = carrinho.cod_bairro ");
 		sql.append("");
 		sql.append("left join distribuidora_bairro_entrega ");
@@ -2423,7 +2432,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 		sql.append("inner join distribuidora ");
 		sql.append("on distribuidora.id_distribuidora = produtos_distribuidora.ID_DISTRIBUIDORA ");
 		sql.append("  ");
-		sql.append("inner join bairros ");
+		sql.append("left join bairros ");
 		sql.append("on bairros.cod_bairro = carrinho.cod_bairro ");
 		sql.append("");
 		sql.append("left join distribuidora_bairro_entrega ");
@@ -2457,7 +2466,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 
 			}
 			if (!offline) {
-				validacaoDisBairroHora(request, response, conn, rs.getInt("cod_bairro"), rs.getInt("ID_DISTRIBUIDORA"));
+
 				validacaoTipoServico(request, response, conn, rs.getInt("ID_DISTRIBUIDORA"), choiceserv);
 				validacaoTesteCarrinhoDistribuidora(request, response, conn, idcarrinho, rs.getInt("ID_DISTRIBUIDORA"));// se um item do carrinho tiver uma distribuidora diferente, ele vai dar um erro
 
@@ -2488,9 +2497,10 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 					st.setDouble(7, 0.0);
 				}
 				st.setLong(8, Utilitario.getNextNumpad(conn, rs.getInt("ID_DISTRIBUIDORA")));
-				
+
 				st.setString(10, rs.getString("DESC_TELEFONE"));
 				if (choiceserv.equalsIgnoreCase("T")) {
+					validacaoDisBairroHora(request, response, conn, rs.getInt("cod_bairro"), rs.getInt("ID_DISTRIBUIDORA"));
 					st.setInt(9, rs.getInt("cod_bairro"));
 					st.setString(11, desc_endereco);
 					st.setString(12, desc_endereco_num);

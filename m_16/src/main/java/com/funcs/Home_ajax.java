@@ -45,7 +45,7 @@ public class Home_ajax {
 		objRetorno.put("flag_vizualizado", "S");
 		if (objRetorno.get("tem").toString().equalsIgnoreCase("true")) {
 
-			sql = "" + "SELECT " + "           COALESCE(flag_vizualizado,'N') AS flag_vizualizado " + "FROM       pedido " + "INNER JOIN bairros " + "ON         bairros.cod_bairro = pedido.cod_bairro " + "WHERE      id_distribuidora = ? " + "AND        flag_status = 'A' " + "AND        bairros.cod_cidade = " + request.getSession(false).getAttribute("cod_cidade").toString() + " and  COALESCE(flag_vizualizado,'N') = 'N' group by COALESCE(flag_vizualizado,'N');";
+			sql = "" + "SELECT " + "           COALESCE(flag_vizualizado,'N') AS flag_vizualizado " + "FROM       pedido " + " inner join distribuidora on pedido.id_distribuidora = distribuidora.id_distribuidora left JOIN bairros " + "ON         bairros.cod_bairro = pedido.cod_bairro " + "WHERE     distribuidora.id_distribuidora = ? " + "AND        flag_status = 'A' " + "AND        Coalesce(bairros.cod_cidade,distribuidora.cod_cidade) = " + request.getSession(false).getAttribute("cod_cidade").toString() + " and  COALESCE(flag_vizualizado,'N') = 'N' group by COALESCE(flag_vizualizado,'N');";
 
 			st = conn.prepareStatement(sql);
 			st.setInt(1, coddistr);
@@ -57,7 +57,7 @@ public class Home_ajax {
 				}
 			}
 
-			sql = "select id_pedido,DESC_BAIRRO,NUM_PED,VAL_TOTALPROD,DATA_PEDIDO, NOW() as agora, Coalesce(flag_vizualizado,'N') as flag_vizualizado  from pedido inner join bairros on bairros.cod_bairro = pedido.cod_bairro where ID_DISTRIBUIDORA = ? and flag_status = \'A\' and bairros.cod_cidade = " + request.getSession(false).getAttribute("cod_cidade").toString() + "  order by data_pedido asc limit 5";
+			sql = "select id_pedido,DESC_BAIRRO,NUM_PED,VAL_TOTALPROD,DATA_PEDIDO, NOW() as agora, Coalesce(flag_vizualizado,'N') as flag_vizualizado  from pedido inner join distribuidora on pedido.id_distribuidora = distribuidora.id_distribuidora left join bairros on bairros.cod_bairro = pedido.cod_bairro where distribuidora.ID_DISTRIBUIDORA = ? and flag_status = \'A\' and Coalesce(bairros.cod_cidade,distribuidora.cod_cidade) = " + request.getSession(false).getAttribute("cod_cidade").toString() + "  order by data_pedido asc limit 5";
 
 			st = conn.prepareStatement(sql);
 			st.setInt(1, coddistr);

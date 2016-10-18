@@ -69,7 +69,7 @@ public class Pedidos_ajax {
 
 		String temfiltro = "N";
 
-		String sql = "select * from pedido inner join bairros on bairros.cod_bairro = pedido.cod_bairro left join pedido_motivo_cancelamento on pedido_motivo_cancelamento.id_pedido = pedido.id_pedido  where ID_DISTRIBUIDORA = ? and (flag_status = 'A' or flag_status = 'E' or (flag_status = 'C' and FLAG_CONFIRMADO_DISTRIBUIDORA = 'N' ) ) ";
+		String sql = "select * from pedido left join bairros on bairros.cod_bairro = pedido.cod_bairro left join pedido_motivo_cancelamento on pedido_motivo_cancelamento.id_pedido = pedido.id_pedido  where ID_DISTRIBUIDORA = ? and (flag_status = 'A' or flag_status = 'E' or (flag_status = 'C' and FLAG_CONFIRMADO_DISTRIBUIDORA = 'N' ) ) ";
 
 		if (!num_pedido_aberto.equalsIgnoreCase("")) {
 			sql = sql + " and NUM_PED  = ? ";
@@ -112,7 +112,11 @@ public class Pedidos_ajax {
 		}
 
 		if (!flag_visu.equalsIgnoreCase("")) {
-			sql = sql + "  and  flag_vizualizado = ? ";
+			if(flag_visu.equalsIgnoreCase("N"))
+				sql = sql + "  and  (flag_vizualizado = ? or FLAG_POPUPINICIAL = ?) ";
+			else if(flag_visu.equalsIgnoreCase("S")){
+				sql = sql + "  and  flag_vizualizado = ? and Coalesce(FLAG_POPUPINICIAL,'S') = ?  ";
+			}
 			temfiltro = "S";
 		}
 
@@ -169,6 +173,11 @@ public class Pedidos_ajax {
 			contparam++;
 		}
 
+		if (!flag_visu.equalsIgnoreCase("")) {
+			st.setString(contparam, (flag_visu));
+			contparam++;
+		}
+		
 		if (!flag_visu.equalsIgnoreCase("")) {
 			st.setString(contparam, (flag_visu));
 			contparam++;
@@ -250,7 +259,7 @@ public class Pedidos_ajax {
 		String flag_situacao = request.getParameter("flag_situacao") == null ? "" : request.getParameter("flag_situacao");
 		String flag_pedido_ret_entre = request.getParameter("flag_pedido_ret_entre") == null ? "" : request.getParameter("flag_pedido_ret_entre");
 
-		String sql = "select * from pedido inner join bairros on bairros.cod_bairro = pedido.cod_bairro where ID_DISTRIBUIDORA = ? and (flag_status = 'O' or flag_status = 'R') ";
+		String sql = "select * from pedido inner join bairros on bairros.cod_bairro = pedido.cod_bairro left join pedido_motivo_cancelamento on pedido_motivo_cancelamento.id_pedido = pedido.id_pedido where ID_DISTRIBUIDORA = ? and (flag_status = 'O' or flag_status = 'R' or (flag_status = 'C' and FLAG_CONFIRMADO_DISTRIBUIDORA = 'S' )) ";
 
 		if (!num_pedido_historico.equalsIgnoreCase("")) {
 			sql = sql + " and NUM_PED  = ? ";
@@ -415,7 +424,7 @@ public class Pedidos_ajax {
 
 		String id_pedido = request.getParameter("id") == null ? "" : request.getParameter("id"); //
 
-		String sql = "select * from pedido inner join bairros on bairros.cod_bairro = pedido.cod_bairro where ID_DISTRIBUIDORA = ? and id_pedido = ? and (flag_status = 'O' or flag_status = 'R')  ";
+		String sql = "select * from pedido left join pedido_motivo_cancelamento on pedido_motivo_cancelamento.id_pedido = pedido.id_pedido left join bairros on bairros.cod_bairro = pedido.cod_bairro where ID_DISTRIBUIDORA = ? and pedido.id_pedido = ? and (flag_status = 'O' or flag_status = 'R' or (flag_status = 'C' and FLAG_CONFIRMADO_DISTRIBUIDORA = 'S' ) )  ";
 
 		PreparedStatement st = conn.prepareStatement(sql);
 		st.setInt(1, coddistr);
@@ -463,7 +472,7 @@ public class Pedidos_ajax {
 
 			objRetorno.put("prods", prods);
 
-			if (status.equalsIgnoreCase("O")) {
+			if (status.equalsIgnoreCase("O") || status.equalsIgnoreCase("C")) {
 
 				objRetorno.put("DESC_NOME", rs.getString("NOME_PESSOA"));
 				objRetorno.put("DESC_TELEFONE", rs.getString("NUM_TELEFONECONTATO_CLIENTE"));
@@ -485,7 +494,8 @@ public class Pedidos_ajax {
 
 				objRetorno.put("m_tempo_entrega", new SimpleDateFormat("HH:mm").format(rs.getTimestamp("TEMPO_ESTIMADO_ENTREGA")));
 				objRetorno.put("m_data_resposta", new SimpleDateFormat("dd/MM/yyyy HH:mm").format(rs.getTimestamp("DATA_PEDIDO_RESPOSTA")));
-
+				if( status.equalsIgnoreCase("C"))
+					objRetorno.put("DATA_CANCELAMENTO", new SimpleDateFormat("dd/MM/yyyy HH:mm").format(rs.getTimestamp("DATA_CANCELAMENTO")));
 			}
 			if (status.equalsIgnoreCase("R")) {
 
@@ -517,7 +527,7 @@ public class Pedidos_ajax {
 		StringBuffer varname1 = new StringBuffer();
 		varname1.append("SELECT * ");
 		varname1.append("FROM   pedido ");
-		varname1.append("       INNER JOIN bairros ");
+		varname1.append("       left JOIN bairros ");
 		varname1.append("               ON bairros.cod_bairro = pedido.cod_bairro ");
 		varname1.append("       LEFT JOIN pedido_motivo_cancelamento ");
 		varname1.append("              ON pedido_motivo_cancelamento.id_pedido = pedido.id_pedido ");

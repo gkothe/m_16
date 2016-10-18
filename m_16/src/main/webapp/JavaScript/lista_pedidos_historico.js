@@ -33,7 +33,7 @@ $(document).ready(function() {
 		$("#val_fim_historico").autoNumeric('set', "");
 		$("#flag_situacao").val("");
 		$("#flag_pedido_ret_entre").val("");
-		
+
 		loadhistoricos();
 	});
 
@@ -80,19 +80,16 @@ $(document).ready(function() {
 	$(tabela).on('check.bs.table uncheck.bs.table check-all.bs.table uncheck-all.bs.table', function() {
 		$('#table_pedidos_historico').bootstrapTable('updateFooter');
 	});
-	
-	
+
 	$(tabela).on('click-cell.bs.table', function(field, value, row, $element) {
-		visualizarPedido($element.ID_PEDIDO);
+		visualizarPedidoHistorico($element.ID_PEDIDO);
 	});
 
-	
 	$(tabela).on('page-change.bs.table', function() {
 		$(".openpedido").click(function() {
-			visualizarPedido($(this).attr("data-valor"));
+			visualizarPedidoHistorico($(this).attr("data-valor"));
 		});
 	});
-	
 
 	loadhistoricos();
 	carregaBairros();
@@ -108,12 +105,6 @@ function btnFormater(value, row, index) {
 	return html;
 }
 
-
-
-
-
-
-
 function statusFormater(value, row, index) {
 
 	var html = "";
@@ -123,6 +114,8 @@ function statusFormater(value, row, index) {
 
 	} else if (value == "O") {
 		html = html + "<label style='color:green'>Finalizado<label>";
+	} else if (value == "C") {
+		html = html + "<label style='color:red'>Cancelado<label>";
 	}
 
 	return html;
@@ -179,16 +172,19 @@ function visualizarPedidoHistorico(id) {
 		async : false,
 		dataType : 'json',
 		success : function(data) {
-
-			
-			if(data.tipo_servico == "T"){
+			$(".cancelamento").hide();
+			if (data.tipo_servico == "T") {
 				$("#m_lbl_bairro").html("Bairro:");
 				$("#m_tempo_max").html(data.m_tempo_max);
 				$("#m_tempomax_div").show();
-			}else{
+			} else {
 				$("#m_tempomax_div").hide();
 				$("#m_lbl_bairro").html("");
 			}
+			
+			
+			
+			
 			
 			$("#m_desc_bairro").html(data.desc_bairro);
 			$("#m_total_pedido").autoNumeric('set', parseFloat(data.VAL_ENTREGA) + parseFloat(data.VAL_TOTALPROD));
@@ -201,7 +197,6 @@ function visualizarPedidoHistorico(id) {
 				$("#m_lbl_titulo").html("Pedido Finalizado");
 				$("#m_lbl_titulo").css("color", "green");
 
-
 				$("#envio_desc_nome").html(data.DESC_NOME);
 				$("#envio_desc_telefone").html(data.DESC_TELEFONE);
 				$("#envio_desc_bairro").html(data.desc_bairro);
@@ -209,14 +204,12 @@ function visualizarPedidoHistorico(id) {
 
 				$("#m_data_resposta").html(data.m_data_resposta);
 				$("#m_tempo_entrega").html(data.m_tempo_entrega);
-				
+
 				$("#m_resposta_motivos").hide();
 				$(".m_enviado").show();
 				$("#m_aberto").hide();
 				$("#m_responder").hide();
 				$("#m_finalizar").hide();
-				
-				
 
 			} else if (data.flag_status == "R") {
 				$("#m_lbl_titulo").css("color", "red");
@@ -224,9 +217,8 @@ function visualizarPedidoHistorico(id) {
 
 				$("#m_responder").hide();
 				$("#m_finalizar").hide();
-				//setar os valores 
-				
-				
+				// setar os valores
+
 				var html = "";
 				var html = [];
 
@@ -234,31 +226,56 @@ function visualizarPedidoHistorico(id) {
 
 					html.push(" <tr> <td style=\"padding-right: 10px; width 40% \"> ");
 					html.push("<div class=\"checkbox\" style=\"margin-top: 0px; margin-bottom: 0px;\">");
-					html.push("<label>  "+(t+1)+" - " + data.motivos[t] + "</label> </div> 	</td>");
+					html.push("<label>  " + (t + 1) + " - " + data.motivos[t] + "</label> </div> 	</td>");
 
 					if (data.motivos[t + 1] != undefined) {
 
 						html.push("<td style=\"padding-right: 10px; width 40%\"> ");
 						html.push("<div class=\"checkbox\" style=\"margin-top: 0px; margin-bottom: 0px;\">");
-						html.push("<label> "+(t+2)+" - " + data.motivos[t + 1] + "</label> </div> 	</td>");
+						html.push("<label> " + (t + 2) + " - " + data.motivos[t + 1] + "</label> </div> 	</td>");
 						t++;
 					}
 
-					
 					html.push(" </tr>");
 
 				}
 
 				$("#desc_motivos2").html(html);
-				
-				
+
 				$("#m_resposta_motivos").show();
-				
+
 				$('#m_tempo_entrega_box').hide();
 				$('#m_motivos_recusa_box').show();
 
 				$(".m_enviado").hide();
 				$("#m_aberto").hide();
+			} else if (data.flag_status == "C") {
+
+				$("#m_lbl_titulo").css("color", "red");
+
+				$("#m_lbl_titulo").html("Cancelado");
+				$(".cancelamento").show();
+				$("#m_responder").hide();
+
+				// setar os dados se estiver em envio
+
+				$("#envio_desc_nome").html(data.DESC_NOME);
+				$("#envio_desc_telefone").html(data.DESC_TELEFONE);
+				$("#envio_desc_bairro").html(data.desc_bairro);
+				$("#envio_desc_endereco").html(data.DESC_ENDERECO);
+				$("#m_resposta_motivos").hide();
+				$("#m_data_resposta").html(data.m_data_resposta);
+				$("#m_tempo_entrega").html(data.m_tempo_entrega);
+				$("#m_data_cancelamento").html(data.DATA_CANCELAMENTO);
+				if (data.darok == true) {
+					$("#m_finalizar").show();
+				} else {
+					$("#m_finalizar").hide();
+				}
+
+				$(".m_enviado").show();
+				$("#m_aberto").hide();
+
 			}
 
 			$('#m_table_produtos').bootstrapTable('load', data.prods);
@@ -291,7 +308,7 @@ function loadhistoricos() {
 	var val_fim_historico = $("#val_fim_historico").autoNumeric('get');
 	var flag_situacao = $("#flag_situacao").val();
 	var flag_pedido_ret_entre = $("#flag_pedido_ret_entre").val();
-	
+
 	$.blockUI({
 		message : 'Carregando...'
 	});
@@ -313,7 +330,7 @@ function loadhistoricos() {
 			val_ini_historico : val_ini_historico,
 			val_fim_historico : val_fim_historico,
 			flag_situacao : flag_situacao,
-			flag_pedido_ret_entre:flag_pedido_ret_entre
+			flag_pedido_ret_entre : flag_pedido_ret_entre
 
 		},
 		success : function(data) {
@@ -322,9 +339,9 @@ function loadhistoricos() {
 			$('#table_pedidos_historico').bootstrapTable('resetView');
 			$('[data-toggle="tooltip"]').tooltip();
 
-			$(".openpedido").click(function() {
+		/*	$(".openpedido").click(function() {
 				visualizarPedidoHistorico($(this).attr("data-valor"));
-			});
+			});*/
 			$(".th-inner").css("text-align", "center");
 
 			$.unblockUI();

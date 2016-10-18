@@ -259,11 +259,11 @@ function loadAbertos(blockui) {
 			$('#table_pedidos_abertos').bootstrapTable('resetView');
 			$('[data-toggle="tooltip"]').tooltip();
 
-			$(".openpedido").click(function() { // EVENTO RESOLVIDO PELO CLICK
+		//	$(".openpedido").click(function() { // EVENTO RESOLVIDO PELO CLICK
 												// ON CELL
 
 				// visualizarPedido($(this).attr("data-valor"));
-			});
+			//});
 			$(".th-inner").css("text-align", "center");
 
 			if (blockui) {
