@@ -61,7 +61,8 @@ public class Thread_ext extends Thread {
 	private void testeDistribuidorasonline(Connection conn) {
 
 		try {
-			// flag_ativo = 'S' significa que estava online, flag_ativo = 'F' significa que apesar de estar marcada como online, a empresa esta com o browser fechado e nao esta vendo so pedidos
+			// flag_ativo = 'S' significa que estava online, flag_ativo = 'F' significa que apesar de estar marcada como online, a empresa esta com o browser fechado e nao esta vendo os pedidos, e nem  os usuarios estão vendo os produtos disponiveis. 
+			//Uma empresa no estado F , não poderia receber pedidos. Sera avisado para o usuario que ela está offline.
 			st = conn.prepareStatement(" select ID_DISTRIBUIDORA,FLAG_ATIVO,DATE_LASTAJAX from distribuidora where FLAG_ATIVO_MASTER = 'S' and (FLAG_ATIVO='S' or  FLAG_ATIVO='F') ");
 			rs = st.executeQuery();
 			while (rs.next()) {

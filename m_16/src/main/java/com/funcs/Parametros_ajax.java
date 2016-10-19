@@ -302,7 +302,7 @@ public class Parametros_ajax {
 			obj.put("VAL_TELE_ENTREGA", rs.getString("VAL_TELE_ENTREGA"));
 			obj.put("flag_custom", rs.getString("flag_custom"));
 			obj.put("desc_mail", rs.getString("desc_mail"));
-			obj.put("flag_ativo", rs.getString("flag_ativo"));
+			obj.put("flag_ativo", rs.getString("flag_ativo").equalsIgnoreCase("F") ? "S" : rs.getString("flag_ativo"));
 			obj.put("flag_modopag", rs.getString("FLAG_MODOPAGAMENTO"));
 			obj.put("flag_entre_ret", rs.getString("flag_entre_ret"));
 			
