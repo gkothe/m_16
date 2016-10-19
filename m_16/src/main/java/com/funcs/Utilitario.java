@@ -437,8 +437,10 @@ public class Utilitario {
 	public static String getNomeProd(Connection conn, long id_prod, boolean abreviado) throws Exception {
 
 		String desc_produto = "";
-		String varname1 = " select * from produtos where id_prod =  " + id_prod;
+		String varname1 = " select * from produtos where id_prod = ?";
+	
 		PreparedStatement st = conn.prepareStatement(varname1);
+		st.setLong(1, id_prod);
 		ResultSet rs2 = st.executeQuery();
 		if (rs2.next()) {
 
@@ -457,8 +459,9 @@ public class Utilitario {
 	public static String getNomeProdIdProdDistr(Connection conn, long ID_PROD_DIST, boolean abreviado) throws Exception {
 
 		String desc_produto = "";
-		String varname1 = " select DESC_ABREVIADO,DESC_PROD from produtos inner join produtos_distribuidora on produtos_distribuidora.id_prod = produtos.id_prod where ID_PROD_DIST =  " + ID_PROD_DIST;
+		String varname1 = " select DESC_ABREVIADO,DESC_PROD from produtos inner join produtos_distribuidora on produtos_distribuidora.id_prod = produtos.id_prod where ID_PROD_DIST =  ? ";
 		PreparedStatement st = conn.prepareStatement(varname1);
+		st.setLong(1, ID_PROD_DIST);
 		ResultSet rs2 = st.executeQuery();
 		if (rs2.next()) {
 
@@ -472,6 +475,27 @@ public class Utilitario {
 		}
 
 		return desc_produto;
+	}
+	
+	public static String getNomeDistr(Connection conn, long id_distribuidora, boolean abreviado) throws Exception {
+
+		String desc_nome = "";
+		String varname1 = " select * from distribuidora where id_distribuidora = ? ";
+		PreparedStatement st = conn.prepareStatement(varname1);
+		st.setLong(1, id_distribuidora);
+		ResultSet rs2 = st.executeQuery();
+		if (rs2.next()) {
+
+			if (!abreviado) {
+				desc_nome = rs2.getString("DESC_RAZAO_SOCIAL");
+			} else {
+				desc_nome = rs2.getString("DESC_NOME_ABREV");
+			}
+		} else {
+			throw new Exception("Distribuidora não existe.");
+		}
+
+		return desc_nome;
 	}
 
 	public static java.sql.Timestamp getTimeStamp(Date data) {

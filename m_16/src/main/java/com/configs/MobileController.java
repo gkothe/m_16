@@ -228,7 +228,14 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 					cancelaPedido(request, response, conn, cod_usuario);
 				} else if (cmd.equalsIgnoreCase("infosCancel")) {
 					infosCancel(request, response, conn, cod_usuario);
-				} else {
+				} else if (cmd.equalsIgnoreCase("testesMudaServico")) {
+					testesMudaServico(request, response, conn, cod_usuario);
+				} else if (cmd.equalsIgnoreCase("servicoCarrinho")) {
+					servicoCarrinho(request, response, conn, cod_usuario);
+				} 
+				
+				
+				else {
 					throw new Exception("Ação inválida");
 				}
 
@@ -2204,7 +2211,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 
 			ResultSet rs = st.executeQuery();
 			if (!rs.next()) {
-				throw new Exception("Distribuidora que se encontra no seu carrinho não se encontra disponível para o bairro escolhido. Limpe seu carrinho ou escolha outro bairro!");
+				throw new Exception("A Distribuidora '"+Utilitario.getNomeDistr(conn, id_distribuidora_prod, true)+"', que se encontra no seu carrinho, não se encontra disponível para o bairro escolhido. Limpe seu carrinho ou escolha outro bairro!");
 			}
 		}
 
@@ -2298,12 +2305,106 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 
 	}
 
+	
+	private static void servicoCarrinho(HttpServletRequest request, HttpServletResponse response, Connection conn, long cod_usuario) throws Exception {
+
+		PrintWriter out = response.getWriter();
+		JSONObject retorno = new JSONObject();
+		retorno.put("serv", "T");//padrao
+		StringBuffer sql = new StringBuffer();
+		sql = new StringBuffer();
+		sql.append("select *  ");
+		sql.append("  ");
+		sql.append("from carrinho ");
+		sql.append(" ");
+		sql.append("where carrinho.id_usuario = ? ");
+		sql.append(" ");
+	
+		PreparedStatement st = conn.prepareStatement(sql.toString());
+		st.setLong(1, (cod_usuario));
+		ResultSet rs = st.executeQuery();
+		if (rs.next()) {
+			long bairro = rs.getLong("cod_bairro");
+			if(bairro!=0){
+				retorno.put("serv", "T");
+			}else{
+				retorno.put("serv", "L");
+			}
+			
+		}
+		retorno.put("msg", "ok");
+		out.print(retorno.toJSONString());
+
+	}
+	
+	private static void testesMudaServico(HttpServletRequest request, HttpServletResponse response, Connection conn, long cod_usuario) throws Exception {
+
+		PrintWriter out = response.getWriter();
+		JSONObject retorno = new JSONObject();
+		String choiceserv = request.getParameter("choiceserv") == null ? "" : request.getParameter("choiceserv");
+		
+		
+		if (!choiceserv.equals("T") && !choiceserv.equals("L")) {
+			throw new Exception("Tipo de serviço inválido.");
+		}
+		StringBuffer sql = new StringBuffer();
+		sql = new StringBuffer();
+		sql.append("select flag_entre_ret,distribuidora.DESC_NOME_ABREV  ");
+		sql.append("  ");
+		sql.append("from carrinho ");
+		sql.append(" ");
+		sql.append("inner join carrinho_item ");
+		sql.append("on carrinho_item.id_carrinho = carrinho.id_carrinho ");
+		sql.append(" ");
+		sql.append("inner join produtos_distribuidora ");
+		sql.append("on produtos_distribuidora.ID_PROD_DIST = carrinho_item.ID_PROD_DIST ");
+		sql.append(" ");
+		sql.append("inner join produtos ");
+		sql.append("on produtos_distribuidora.ID_PROD = produtos.ID_PROD ");
+		sql.append("  ");
+		sql.append("inner join distribuidora ");
+		sql.append("on distribuidora.id_distribuidora = produtos_distribuidora.ID_DISTRIBUIDORA ");
+		sql.append("  ");
+		sql.append("  ");
+		sql.append("where carrinho.id_usuario = ? ");
+		sql.append(" ");
+		sql.append("group by flag_entre_ret,distribuidora.DESC_NOME_ABREV");
+		PreparedStatement st = conn.prepareStatement(sql.toString());
+		st.setLong(1, (cod_usuario));
+		ResultSet rs = st.executeQuery();
+		if (rs.next()) {
+			String servico = rs.getString("flag_entre_ret");
+			if (servico.equals("T") && choiceserv.equals("L")) {
+				throw new Exception("A distribuidora '" + rs.getString("DESC_NOME_ABREV") + "' atualmente só está trabalhando com entrega. Para mudar de serviço, por favor limpe seu carrinho.");
+			}
+			if (servico.equals("L") && choiceserv.equals("T")) {
+				throw new Exception("A distribuidora '" + rs.getString("DESC_NOME_ABREV") + "' atualmente só está trabalhando com retirada no local. Para mudar de serviço, por favor limpe seu carrinho.");
+			}
+			
+			
+			
+		}
+		retorno.put("msg", "ok");
+		out.print(retorno.toJSONString());
+
+	}
+
 	private static void testesMudaBairroCarrinho(HttpServletRequest request, HttpServletResponse response, Connection conn, long cod_usuario) throws Exception {
 		PrintWriter out = response.getWriter();
 		JSONObject retorno = new JSONObject();
 
 		String novobairro = request.getParameter("novobairro") == null ? "" : request.getParameter("novobairro");
+		String choiceserv = request.getParameter("choiceserv") == null ? "" : request.getParameter("choiceserv");
 
+		if (!choiceserv.equals("T") && !choiceserv.equals("L")) {
+			throw new Exception("Tipo de serviço inválido.");
+		}
+
+		
+		if(novobairro.equalsIgnoreCase("") || !Utilitario.isNumeric(novobairro)){
+			throw new Exception("Bairro inválido.");
+		}
+		
 		StringBuffer sql = new StringBuffer();
 		sql.append("select * from carrinho ");
 		sql.append("WHERE  id_usuario = ? ");
@@ -2328,7 +2429,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 			long idcarrinho = 0;
 
 			sql = new StringBuffer();
-			sql.append("select usuario.DESC_EMAIL, usuario. DESC_NOME, carrinho_item.id_carrinho,distribuidora.ID_DISTRIBUIDORA,carrinho.cod_bairro,usuario.DESC_TELEFONE,usuario.DESC_ENDERECO,DESC_ENDERECO_NUM,DESC_ENDERECO_COMPLEMENTO,sum(produtos_distribuidora.val_prod * carrinho_item.qtd ) as val_prod, ");
+			sql.append("select distribuidora.DESC_NOME_ABREV,distribuidora.flag_entre_ret,usuario.DESC_EMAIL, usuario. DESC_NOME, carrinho_item.id_carrinho,distribuidora.ID_DISTRIBUIDORA,carrinho.cod_bairro,usuario.DESC_TELEFONE,usuario.DESC_ENDERECO,DESC_ENDERECO_NUM,DESC_ENDERECO_COMPLEMENTO,sum(produtos_distribuidora.val_prod * carrinho_item.qtd ) as val_prod, ");
 			sql.append("  ");
 			sql.append("case when FLAG_TELEBAIRRO = 'S' then distribuidora_bairro_entrega.VAL_TELE_ENTREGA else distribuidora.VAL_TELE_ENTREGA end as VAL_TELE_ENTREGA ");
 			sql.append("  ");
@@ -2357,7 +2458,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 			sql.append("  ");
 			sql.append("where usuario.id_usuario = ? ");
 			sql.append(" ");
-			sql.append("group by usuario.DESC_EMAIL, usuario. DESC_NOME, carrinho_item.id_carrinho,distribuidora_bairro_entrega.ID_DISTRIBUIDORA,carrinho.cod_bairro,usuario.DESC_TELEFONE,usuario.DESC_ENDERECO,DESC_ENDERECO_NUM,DESC_ENDERECO_COMPLEMENTO, VAL_TELE_ENTREGA");
+			sql.append("group by distribuidora.DESC_NOME_ABREV,distribuidora.flag_entre_ret,usuario.DESC_EMAIL, usuario. DESC_NOME, carrinho_item.id_carrinho,distribuidora_bairro_entrega.ID_DISTRIBUIDORA,carrinho.cod_bairro,usuario.DESC_TELEFONE,usuario.DESC_ENDERECO,DESC_ENDERECO_NUM,DESC_ENDERECO_COMPLEMENTO, VAL_TELE_ENTREGA");
 
 			st = conn.prepareStatement(sql.toString());
 			PreparedStatement st2 = null;
@@ -2367,6 +2468,17 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 			ResultSet rs2 = null;
 
 			if (rs.next()) {
+
+				String servico = rs.getString("flag_entre_ret");
+
+				if (servico.equals("T") && choiceserv.equals("L")) {
+					throw new Exception("A distribuidora " + rs.getString("DESC_NOME_ABREV") + " atualmente só está trabalhando com entrega.");
+				}
+
+				if (servico.equals("L") && choiceserv.equals("T")) {
+					throw new Exception("A distribuidora " + rs.getString("DESC_NOME_ABREV") + " atualmente só está trabalhando com retirada no local.");
+				}
+
 				idcarrinho = rs.getLong("id_carrinho");
 
 				validacaoFlagsDistribuidora(request, response, conn, rs.getInt("ID_DISTRIBUIDORA"));
@@ -2403,7 +2515,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 		String tempomax = request.getParameter("tempo_estimado_desejado") == null ? "" : request.getParameter("tempo_estimado_desejado");
 		String choiceserv = request.getParameter("choiceserv") == null ? "" : request.getParameter("choiceserv");
 
-		if (!choiceserv.equalsIgnoreCase("T") && !choiceserv.equalsIgnoreCase("L")) {
+		if (!choiceserv.equals("T") && !choiceserv.equals("L")) {
 			throw new Exception("Tipo de serviço inválido.");
 		}
 
