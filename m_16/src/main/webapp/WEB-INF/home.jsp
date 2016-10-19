@@ -64,6 +64,11 @@ input:focus {
 	border-color: #9ecaed !important;
 	box-shadow: 0 0 10px #9ecaed !important;
 }
+
+.table_header {
+	display: table-cell !important;
+	width: 70% !important;
+}
 </style>
 
 
@@ -108,8 +113,9 @@ input:focus {
 										class="fa fa-home clickmenu2"></i> Pedidos <span
 										class="fa fa-chevron-down clickmenu"></span></a>
 									<ul class="nav child_menu">
-										<li><a linkmenu="listaped" onclick="trocaPag(this,'N',event);"
-											class="clickmenu">Abertos</a></li>
+
+										<li><a linkmenu="listaped"
+											onclick="trocaPag(this,'N',event);" class="clickmenu">Abertos</a></li>
 										<li><a linkmenu="listapedfechado"
 											onclick="trocaPag(this,'N',event);" class="clickmenu">Histórico</a></li>
 									</ul></li>
@@ -151,12 +157,15 @@ input:focus {
 				<div class="nav_menu">
 
 					<nav class="" role="navigation">
-						<div class="nav toggle">
-							<a id="menu_toggle""><i class="fa fa-bars"></i></a>
 
-						</div>
+						<ul class="nav navbar-nav navbar-right" style="width: 100%";>
 
-						<ul class="nav navbar-nav navbar-right">
+						
+
+							<li class=""><div style="width: 30px"> &nbsp;</div>
+							</li>
+
+
 							<li class=""><a href="javascript:;"
 								class="user-profile dropdown-toggle" data-toggle="dropdown"
 								aria-expanded="false"> Opções <span
@@ -171,8 +180,11 @@ input:focus {
 											min. </a></li>
 									<li><a href="home?ac=logout"><i
 											class="fa fa-sign-out pull-right"></i> Sair</a></li>
-								</ul></li>
-
+								</ul>
+							</li>
+							
+							
+							
 							<li role="presentation" class="dropdown"><a
 								href="javascript:;" class="dropdown-toggle info-number"
 								data-toggle="dropdown" aria-expanded="false"> <i
@@ -184,24 +196,47 @@ input:focus {
 
 
 								</ul></li>
+							
+							<li style="margin-top: 15px; width: 70%">
+								<table style="width: 100%">
+									<tr>
 
-							<li style="margin-top: 15px;">
+										<td width="25%" align="left">
+											<div style="cursor: pointer; id="msg_cancholder">
+												<a onclick="trocaPag(this,'N');" linkmenu="listaped"> <span
+													class="label label-primary " id="msg_cancelados"
+													style="font-size: 145%;">Pedidos cancelados! </span>
+												</a>
+											</div>
+										</td>
 
-								<div style="cursor: pointer; display: none;" id="msg_holder">
-									<a onclick="trocaPag(this,'N');" linkmenu="listaped"><span
-										class="label label-danger aviso_pedido" id="msg_nao_vizu"
-										style="font-size: 195%;">Você tem pedidos não
-											respondidos! </span></a>
+										<td width="5%">&nbsp; </td>
 
-								</div>
-								<div style="cursor: pointer; display: none;" id="msg_holder2">
-									<a><span class="label label-warning aviso_pedido"
-										id="msg_offline" style="font-size: 195%;">O servidor
-											TragoAqui está offline! </span></a>
+										<td align="right" class="table_header">
+											<div style="cursor: pointer; display: none;" id="msg_holder">
+												<a onclick="trocaPag(this,'N');" linkmenu="listaped"><span
+													class="label label-danger aviso_pedido" id="msg_nao_vizu"
+													style="font-size: 195%;">Pedidos não respondidos! </span></a>
 
-								</div>
+											</div>
+											<div style="cursor: pointer; display: none;" id="msg_holder2">
+												<a><span class="label label-warning aviso_pedido"
+													id="msg_offline" style="font-size: 195%;">O servidor
+														TragoAqui está offline! </span></a>
+
+											</div>
+										</td>
+									</tr>
+
+								</table>
+
 
 							</li>
+							
+							<div class="nav toggle">
+									<a id="menu_toggle"><i class="fa fa-bars"></i></a>
+							</div>
+							
 
 						</ul>
 					</nav>
@@ -249,7 +284,7 @@ input:focus {
 							<div class="row">
 
 								<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 ">
-									<strong>Bem-vindo ao S.O.S Trago!</strong><br> Para
+									<strong>Bem-vindo ao TragoAqui!</strong><br> Para
 									visualizar pedidos abertos vá no menu no lado esquerdo da tela,
 									clique em "Pedidos" e em seguida "Abertos". <br> Para
 									visualizar o histórico de pedidos vá no menu no lado esquerdo
@@ -320,8 +355,8 @@ input:focus {
 									<table style="font-size: 120%">
 
 										<tr>
-											<td style="padding-right: 5px;"><label id="m_lbl_bairro" for="">Bairro:
-											</label></td>
+											<td style="padding-right: 5px;"><label id="m_lbl_bairro"
+												for="">Bairro: </label></td>
 											<td><label id="m_desc_bairro"> </label></td>
 
 										</tr>
@@ -469,25 +504,29 @@ input:focus {
 									</table>
 
 								</div>
-								
-								<div class="col-xs-6 col-sm-6 col-md-6 col-lg-6 cancelamento"  align="">
+
+								<div class="col-xs-6 col-sm-6 col-md-6 col-lg-6 cancelamento"
+									align="">
 									<table>
 										<tr>
-											<td style="padding-right: 5px;"><label for="">Data de cancelamento: </label></td>
-											<td><label id=""> </label><label id="m_data_cancelamento"></label></td>
+											<td style="padding-right: 5px;"><label for="">Data
+													de cancelamento: </label></td>
+											<td><label id=""> </label><label
+												id="m_data_cancelamento"></label></td>
 
 										</tr>
 
 									</table>
 
 								</div>
-								
+
 							</div>
 							<div class="row" id="m_tempomax_div">
 								<div class="col-xs-8 col-sm-8 col-md-8 col-lg-8" align="">
 									<table>
 										<tr>
-											<td style="padding-right: 5px;"><label for="">Tempo máximo desejado para a entrega: </label></td>
+											<td style="padding-right: 5px;"><label for="">Tempo
+													máximo desejado para a entrega: </label></td>
 											<td><label id="m_tempo_max"></label></td>
 
 
@@ -579,8 +618,8 @@ input:focus {
 												<!-- 												<td style="padding-right: 5px;">&nbsp;<label for="">Minutos(s)</label></td> -->
 												<td><input data-toggle="tooltip"
 													title="Aqui você preenche o tempo previsto que levará para realizar a entrega do pedido. Por exemplo, se você acha que vai levar 30 minutos para entregar. Você deve escrever 0:30 "
-													class='hora form-control' id="m_tempo_entrega_inp" style="width: 100px"
-													placeholder="Ex: 0:30"></td>
+													class='hora form-control' id="m_tempo_entrega_inp"
+													style="width: 100px" placeholder="Ex: 0:30"></td>
 											</tr>
 
 										</table>
@@ -642,7 +681,7 @@ input:focus {
 								<div class="col-xs-1 col-sm-1 col-md-1 col-lg-1 "></div>
 								<div class="col-xs-1 col-sm-1 col-md-1 col-lg-1 "></div>
 								<div class="col-xs-1 col-sm-1 col-md-1 col-lg-1 "></div>
-								
+
 
 
 								<div class="col-xs-3 col-sm-3 col-md-3 col-lg-3 " align="right">

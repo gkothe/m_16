@@ -193,6 +193,13 @@ $(document).ready(function() {
 	$('#msg_offline').blink({
 		delay : 400
 	})
+	
+	$('#msg_cancelados').blink({
+		delay : 400
+	});
+	
+	
+	
 
 	window.setInterval(function() {
 		checarPedidos();
@@ -315,6 +322,14 @@ function checarPedidos() {
 				if (data.flag_vizualizado == "N") {
 					playAudioPedido();
 				}
+				
+				console.log("oi");
+				if (data.canc_vizu == true) {
+					$("#msg_cancholder").show();
+				} else {
+					$("#msg_cancholder").hide();
+				}
+				
 
 			} else if (data.tem == "false") {
 				$("#msg_holder").hide();

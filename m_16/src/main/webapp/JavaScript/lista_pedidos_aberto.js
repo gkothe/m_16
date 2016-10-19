@@ -23,9 +23,7 @@ $(document).ready(function() {
 		delay : 400
 	});
 	
-	$('#msg_cancelados').blink({
-		delay : 400
-	});
+	
 
 	$("#btn_maisfiltras_aberto").click(function() {
 		$("#modal_filtros_aberto").modal("show");
@@ -248,11 +246,7 @@ function loadAbertos(blockui) {
 				$("#msg_filtros").hide();
 			}
 
-			if (data.canc_vizu != undefined) {
-				$("#msg_cancholder").show();
-			} else {
-				$("#msg_cancholder").hide();
-			}
+		
 			
 			
 			$('#table_pedidos_abertos').bootstrapTable('load', data.pedidos);
