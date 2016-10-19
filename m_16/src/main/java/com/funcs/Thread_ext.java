@@ -16,7 +16,7 @@ public class Thread_ext extends Thread {
 	Date agora = null;
 	long secs_param = 0;
 	long seconds = 0;
-
+	long rodateste = 0;
 	public void run() {
 
 		try {
@@ -24,10 +24,16 @@ public class Thread_ext extends Thread {
 			conn = Conexao.getConexao();
 			Sys_parametros sys = new Sys_parametros(conn);
 			secs_param = sys.getSegs_teste_ajax();
-
+			rodateste = 0;
+			if(secs_param*100> 1000)
+				rodateste = 10000; //testa de 10 em 10 segs
+			else
+				rodateste = secs_param*100;  //se o tempo de teste for menor q 10, fazeoms a thread rodar no mesmo tempo
+			
+			
 			while (true) {
 				testeDistribuidorasonline(conn);
-				this.sleep(10000);
+				this.sleep(rodateste);
 			}
 
 		} catch (Exception e) {
@@ -70,6 +76,7 @@ public class Thread_ext extends Thread {
 						st = conn.prepareStatement("update distribuidora set FLAG_ATIVO = 'F' where id_distribuidora = ? ");
 						st.setInt(1, rs.getInt("ID_DISTRIBUIDORA"));
 						st.executeUpdate();
+					
 					} else if (seconds < secs_param && rs.getString("FLAG_ATIVO").equalsIgnoreCase("F")) {
 					
 						st = conn.prepareStatement("update distribuidora set FLAG_ATIVO = 'S' where id_distribuidora = ? ");

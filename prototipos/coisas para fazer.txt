@@ -49,22 +49,16 @@ Na hora de cancelar, testar:
 
 
 não pode aceitar pedido cancelado. - testar
-filtros	
-listar no historico.	
 	
 	
-	
-blink com aviso "você possui pedidos cancelados não vizualizados". se o kra clika, ativa filtro de cancelados.
-Mudar vizualizado para não,(que na verdade vai ser o vizualiado do cancelament). 
-Quando abre, seta o vizualiado pra sim.
-E se encerrar movo pro historico.
 
 
 
 
 
-	
-	
+Na info: Bairro: centro
+
+Localização: Pre seleciona o centro, se bairro temporario for undefined (este bairro se encontra no utilitario.)
 	
 	
 	

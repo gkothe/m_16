@@ -227,7 +227,7 @@ public class Pedidos_ajax {
 
 			if (rs.getString("FLAG_POPUPINICIAL") != null && !rs.getString("FLAG_POPUPINICIAL").equalsIgnoreCase("")) {
 				if (rs.getString("FLAG_POPUPINICIAL").equalsIgnoreCase("N")) {
-					retorno.put("canc_vizu", true);
+					//retorno.put("canc_vizu", true);
 				}
 				objRetorno.put("flag_visu", rs.getString("FLAG_POPUPINICIAL"));
 			} else {

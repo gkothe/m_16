@@ -323,17 +323,19 @@ function checarPedidos() {
 					playAudioPedido();
 				}
 				
-				console.log("oi");
-				if (data.canc_vizu == true) {
-					$("#msg_cancholder").show();
-				} else {
-					$("#msg_cancholder").hide();
-				}
+				  
+			
 				
 
 			} else if (data.tem == "false") {
 				$("#msg_holder").hide();
 
+			}
+			
+			if (data.canc_vizu == true) {
+				$("#msg_cancholder").show();
+			} else {
+				$("#msg_cancholder").hide();
 			}
 
 		},

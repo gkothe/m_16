@@ -162,7 +162,7 @@ input:focus {
 
 						
 
-							<li class=""><div style="width: 30px"> &nbsp;</div>
+							<li class=""><div style="width: 10px"> </div>
 							</li>
 
 
@@ -196,13 +196,13 @@ input:focus {
 
 
 								</ul></li>
-							
+							<li class=""><div style="width: 10px"> &nbsp;&nbsp;</div>
 							<li style="margin-top: 15px; width: 70%">
 								<table style="width: 100%">
 									<tr>
 
 										<td width="25%" align="left">
-											<div style="cursor: pointer; id="msg_cancholder">
+											<div style="cursor: pointer;" id="msg_cancholder">
 												<a onclick="trocaPag(this,'N');" linkmenu="listaped"> <span
 													class="label label-primary " id="msg_cancelados"
 													style="font-size: 145%;">Pedidos cancelados! </span>
