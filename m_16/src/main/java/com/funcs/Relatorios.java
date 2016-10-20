@@ -110,7 +110,7 @@ public class Relatorios {
 			List listaReport = new LinkedList();
 			Map hmParams = new HashMap();
 
-			hmParams.put("representante", "Balba");
+			hmParams.put("nome_distribuidora", Utilitario.getNomeDistr(conn, coddistr, false));
 
 			JasperReport objRelJasper_ordemprod = null;
 			objRelJasper_ordemprod = JasperCompileManager.compileReport("D:/phonegap_projects/m_16/m_16/src/main/webapp/rels/rel_gradehorario.jrxml");
@@ -131,7 +131,8 @@ public class Relatorios {
 			response.setDateHeader("Expires", 0);
 			response.setHeader("Pragma", "no-cache");
 			response.addHeader("Cache-Control", "max-age=0");
-			response.setHeader("Content-Disposition", "inline; filename=" + file.getName());
+			response.setHeader("Content-Disposition", "inline; filename=oi" + file.getName());
+			
 
 			ServletOutputStream ouputStream = response.getOutputStream();
 

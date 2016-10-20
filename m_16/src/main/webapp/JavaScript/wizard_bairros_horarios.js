@@ -23,13 +23,12 @@ $(document).ready(function() {
 		});
 
 	});
-
 	$("#btn_getgrade").click(function() {
 
-		window.open("home?ac=rel_gradehorarios", '_blank');
-
+		var nome = "Grade de horários"
+		var w = window.open("home/"+nome+".pdf?ac=rel_gradehorarios", '_blank');
+	    
 	});
-
 	$('[data-toggle="tooltip"]').tooltip();
 
 	$("#desmarca_bairros").click(function() {

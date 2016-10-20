@@ -40,7 +40,7 @@ import com.funcs.Relatorios;
 import com.funcs.Utilitario;
 
 @SuppressWarnings("unchecked")
-@WebServlet(urlPatterns = { "/home" })
+@WebServlet(urlPatterns = { "/home/*" })
 public class HomeController extends javax.servlet.http.HttpServlet {
 	;
 	private final SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
