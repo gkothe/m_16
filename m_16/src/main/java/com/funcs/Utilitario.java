@@ -1,5 +1,9 @@
 package com.funcs;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.math.BigInteger;
 import java.security.SecureRandom;
@@ -8,9 +12,15 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -21,6 +31,13 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import com.configs.Conexao;
+
+import net.sf.jasperreports.engine.JasperCompileManager;
+import net.sf.jasperreports.engine.JasperFillManager;
+import net.sf.jasperreports.engine.JasperReport;
+import net.sf.jasperreports.engine.data.JRMapCollectionDataSource;
+import net.sf.jasperreports.engine.export.JRPdfExporter;
+import net.sf.jasperreports.engine.export.JRPdfExporterParameter;
 
 public class Utilitario {
 
@@ -502,6 +519,29 @@ public class Utilitario {
 		return new java.sql.Timestamp(data.getTime());
 	}
 
+	public static void copiaStream(InputStream in, OutputStream out, boolean blnFecharIn, boolean blnFecharOut ) throws IOException {
+		synchronized (in) {
+			synchronized (out) {
+				byte[] buffer = new byte[256];
+				while (true) {
+					int bytesRead = in.read(buffer);
+					if (bytesRead == -1) break;
+					out.write(buffer, 0, bytesRead);
+				}
+			}
+		}
+		if ( blnFecharIn ){
+		    in.close();
+		}
+		if ( blnFecharOut ){
+		    out.close();
+		}
+	}
+	
+	public static void copiaStream(InputStream in, OutputStream out) throws IOException {
+	    copiaStream(in, out, false, false );
+	}
+	
 	public static int retornaIdinsertChaveSecundaria(String tabela, String nomechaveprimaria, String valchaveprimaria, String coluna, Connection conn) throws Exception {
 		String varname1 = "";
 		// so funciona para pk single
@@ -528,7 +568,7 @@ public class Utilitario {
 
 		return id;
 	}
-
+/*
 	public static void main(String[] args) {
 
 		Connection conn =null;
@@ -582,6 +622,7 @@ public class Utilitario {
 		} catch (Exception e) {
 			// TODO: handle exception
 		}
-	}
+	}*/
+
 
 }

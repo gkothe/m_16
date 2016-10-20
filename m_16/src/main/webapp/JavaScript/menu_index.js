@@ -67,7 +67,7 @@ var active_menu;
 $(document).ready(function() {
 
 	$('#mainpage').load('home?ac=' + url);
-
+	$("#msg_cancholder").hide();
 	$("[linkmenu=" + url + "]").parent().addClass("current-page");
 	$("[linkmenu=" + url + "]").parent().parent().css("display", "block");
 	$("[linkmenu=" + url + "]").parent().parent().parent().addClass("active");

@@ -36,6 +36,7 @@ import org.json.simple.parser.JSONParser;
 import com.funcs.Home_ajax;
 import com.funcs.Parametros_ajax;
 import com.funcs.Pedidos_ajax;
+import com.funcs.Relatorios;
 import com.funcs.Utilitario;
 
 @SuppressWarnings("unchecked")
@@ -91,6 +92,8 @@ public class HomeController extends javax.servlet.http.HttpServlet {
 					wizardhorarios(request, response);
 				} else if (strTipo.equalsIgnoreCase("home")) {
 					home(request, response);
+				} else if (strTipo.equalsIgnoreCase("rel_gradehorarios")) {
+					rel_gradehorarios(request, response);
 				} else if (strTipo.equalsIgnoreCase("logout")) {
 					request.getSession().invalidate();
 					response.sendRedirect(request.getContextPath() + "/");
@@ -229,6 +232,17 @@ public class HomeController extends javax.servlet.http.HttpServlet {
 
 	}
 
+	private void rel_gradehorarios(HttpServletRequest request, HttpServletResponse response) throws Exception {
+		try {
+			int coddistr = Integer.parseInt(request.getSession(false).getAttribute("coddis").toString());
+			Relatorios.relGradeHorarios(request, response, coddistr);			
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw e;
+		} finally {
+		}
+	}
+	
 	private void listapedfechado(HttpServletRequest request, HttpServletResponse response) throws Exception {
 		try {
 			request.getRequestDispatcher("/WEB-INF/lista_pedidos_historico.html").forward(request, response);
