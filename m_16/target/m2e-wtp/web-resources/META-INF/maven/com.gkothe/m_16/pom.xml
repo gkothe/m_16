@@ -13,7 +13,12 @@
 			<url>https://github.com/mercadopago/sdk-java/raw/master/releases</url>
 		</repository>
 	</repositories>
+	<properties>
 
+
+		<jackson.version>2.7.0</jackson.version>
+
+	</properties>
 	<dependencies>
 		<dependency>
 			<groupId>junit</groupId>
@@ -70,6 +75,21 @@
 			<groupId>net.sf.jasperreports</groupId>
 			<artifactId>jasperreports-fonts</artifactId>
 			<version>6.0.0</version>
+		</dependency>
+		<dependency>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-databind</artifactId>
+			<version>${jackson.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-annotations</artifactId>
+			<version>${jackson.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-core</artifactId>
+			<version>${jackson.version}</version>
 		</dependency>
 
 

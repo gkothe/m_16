@@ -1,6 +1,6 @@
 /*==============================================================*/
 /* DBMS name:      MySQL 5.0                                    */
-/* Created on:     14/10/2016 5:03:33 PM                        */
+/* Created on:     21/10/2016 9:21:16 AM                        */
 /*==============================================================*/
 
 
@@ -137,6 +137,7 @@ create table DISTRIBUIDORA
    FLAG_MODOPAGAMENTO   char(1),
    DATE_LASTAJAX        datetime,
    FLAG_ENTRE_RET       char(1),
+   PERC_PAGAMENTO       numeric(12,2),
    primary key (ID_DISTRIBUIDORA)
 )
 auto_increment = 1;
