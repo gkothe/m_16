@@ -1326,7 +1326,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 		if (fp_ordem.equalsIgnoreCase("P")) {
 			sql.append(" order by tab.val_prod asc limit 20");
 		} else if (fp_ordem.equalsIgnoreCase("N")) {
-			sql.append(" order by tab.DESC_PROD desc limit 20");
+			sql.append(" order by tab.DESC_PROD asc limit 20");
 		}
 
 		Calendar cal = Calendar.getInstance();

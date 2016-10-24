@@ -55,12 +55,12 @@ public class HomeController extends javax.servlet.http.HttpServlet {
 
 	public void processaRequisicoes(HttpServletRequest request, HttpServletResponse response) {
 
-	/*	System.out.println("--------entro home");
+		System.out.println("--------entro home");
 		Map map = request.getParameterMap();
 		for (Iterator iterator = map.keySet().iterator(); iterator.hasNext();) {
 			String type = (String) iterator.next();
 			System.out.println(type + " : " + request.getParameter(type));
-		}*/
+		}
 
 		try {
 
@@ -92,6 +92,10 @@ public class HomeController extends javax.servlet.http.HttpServlet {
 					wizardhorarios(request, response);
 				} else if (strTipo.equalsIgnoreCase("home")) {
 					home(request, response);
+				} else if (strTipo.equalsIgnoreCase("rel_pedidos")) {
+					relPedidos(request, response);
+				} else if (strTipo.equalsIgnoreCase("rel_pedidospdf")) {
+					Relatorios.relPedidos(request, response,Integer.parseInt(request.getSession(false).getAttribute("coddis").toString()));
 				} else if (strTipo.equalsIgnoreCase("rel_gradehorarios")) {
 					rel_gradehorarios(request, response);
 				} else if (strTipo.equalsIgnoreCase("logout")) {
@@ -154,7 +158,7 @@ public class HomeController extends javax.servlet.http.HttpServlet {
 			conn = Conexao.getConexao();
 			conn.setAutoCommit(false);
 			String cmd = request.getParameter("cmd");
-			System.out.println(cmd);
+//			System.out.println(cmd);
 			atualizaLastAjax(coddistr, conn);
 
 			if (cmd.equalsIgnoreCase("checkPedidos")) {
@@ -246,6 +250,16 @@ public class HomeController extends javax.servlet.http.HttpServlet {
 	private void listapedfechado(HttpServletRequest request, HttpServletResponse response) throws Exception {
 		try {
 			request.getRequestDispatcher("/WEB-INF/lista_pedidos_historico.html").forward(request, response);
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw e;
+		} finally {
+		}
+	}
+	
+	private void relPedidos(HttpServletRequest request, HttpServletResponse response) throws Exception {
+		try {
+			request.getRequestDispatcher("/WEB-INF/rel_pedidos.html").forward(request, response);
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw e;

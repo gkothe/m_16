@@ -137,6 +137,8 @@ input:focus {
 										class="fa fa-chevron-down clickmenu"></span></a>
 									<ul class="nav child_menu">
 										<li><a href="form.html">The void is here</a></li>
+										<li><a linkmenu="rel_pedidos"
+											onclick="trocaPag(this,'N',event);" class="clickmenu">Pedidos</a></li>
 									</ul></li>
 
 							</ul>

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="rel_gradehorario" pageWidth="842" pageHeight="595" orientation="Landscape" columnWidth="802" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="4e56c072-32bc-4521-b4c2-2f64501d11e8">
 	<property name="ireport.zoom" value="1.4641000000000015"/>
-	<property name="ireport.x" value="194"/>
+	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
 	<parameter name="nome_distribuidora" class="java.lang.String"/>
 	<queryString>
@@ -29,7 +29,7 @@
 				</textElement>
 				<text><![CDATA[GRADE DE BAIRROS E HORÁRIOS DE ATENDIMENTO]]></text>
 			</staticText>
-			<textField pattern="MM/dd/yyyy HH:mm:ss">
+			<textField pattern="dd/MM//yyyy HH:mm:ss">
 				<reportElement x="705" y="20" width="95" height="15" uuid="7c074f4e-e1a8-40a0-bf31-ea60f0c7eeb0"/>
 				<textElement>
 					<font size="10"/>
@@ -170,8 +170,7 @@
 		<band height="20" splitType="Stretch">
 			<rectangle>
 				<reportElement stretchType="RelativeToTallestObject" mode="Opaque" x="0" y="0" width="802" height="20" backcolor="#F1F1F1" uuid="993231f8-ffee-4a40-b4cd-ba90877f76cd">
-					<printWhenExpression><![CDATA[
-($V{REPORT_COUNT}.intValue() % 2) == 0]]></printWhenExpression>
+					<printWhenExpression><![CDATA[($V{REPORT_COUNT}.intValue() % 2) == 0]]></printWhenExpression>
 				</reportElement>
 				<graphicElement>
 					<pen lineWidth="0.0"/>
