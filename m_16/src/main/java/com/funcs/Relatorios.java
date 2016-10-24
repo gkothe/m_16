@@ -119,6 +119,9 @@ public class Relatorios {
 			String cod_bairro = request.getParameter("cod_bairro") == null ? "" : request.getParameter("cod_bairro");
 			String flag_servico = request.getParameter("flag_servico") == null ? "" : request.getParameter("flag_servico");
 			
+			hmParams.put("dataini", "");
+			hmParams.put("datafim", "");
+			
 			StringBuffer  sql = new StringBuffer();
 			
 			sql.append("SELECT desc_prod, ");
@@ -168,10 +171,13 @@ public class Relatorios {
 
 			if (!(dataini.equalsIgnoreCase(""))) {
 				sql.append("  and  data_pedido >= ?");
+				hmParams.put("dataini", dataini);
+				
 			}
 
 			if (!(datafim.equalsIgnoreCase("")) && datafim != null) {
 				sql.append(" and  data_pedido <= ?");
+				hmParams.put("datafim", datafim);
 			}
 
 			if (!flag_situacao.equalsIgnoreCase("")) {
@@ -231,6 +237,11 @@ public class Relatorios {
 			
 			ResultSet rs = st.executeQuery();
 			HashMap<String, Object> hmFat = new HashMap<String, Object>();
+			double val_totalprod = 0;
+			double val_total = 0;
+			double val_entrega = 0;
+			double tragoaqui_perc = 0;
+			long id_ped = 0;
 			while (rs.next()) {
 				hmFat = new HashMap<String, Object>();
 				hmFat.put("flag_status", (rs.getString("flag_status")));
@@ -239,7 +250,6 @@ public class Relatorios {
 				hmFat.put("data_pedido_resposta", rs.getTimestamp("DATA_PEDIDO_RESPOSTA"));
 				hmFat.put("num_ped", rs.getLong("NUM_PED"));
 				hmFat.put("val_totalprod", new BigDecimal(rs.getDouble("VAL_TOTALPROD")));
-				hmFat.put("val_entrega", new BigDecimal(rs.getDouble("VAL_ENTREGA")));
 				hmFat.put("flag_modopagamento", rs.getString("FLAG_MODOPAGAMENTO"));
 				hmFat.put("flag_pedido_ret_entre", rs.getString("FLAG_PEDIDO_RET_ENTRE"));
 				hmFat.put("tragoaqui_perc", new BigDecimal(rs.getDouble("tragoaqui_perc")));
@@ -249,16 +259,30 @@ public class Relatorios {
 				hmFat.put("val_unit", new BigDecimal(rs.getDouble("val_unit")));
 				hmFat.put("qtd_prod", rs.getLong("QTD_PROD"));
 				hmFat.put("val_subtotalprod", new BigDecimal(rs.getDouble("VAL_SUBTOTALPROD")));
+				hmFat.put("val_entrega", new BigDecimal(rs.getDouble("VAL_ENTREGA")));
 				hmFat.put("nome_pessoa", rs.getString("NOME_PESSOA"));
 				hmFat.put("desc_endereco_entrega", rs.getString("DESC_ENDERECO_ENTREGA"));
 				hmFat.put("desc_endereco_num_entrega", rs.getString("DESC_ENDERECO_NUM_ENTREGA") == null ? "" : rs.getString("DESC_ENDERECO_NUM_ENTREGA"));
 				hmFat.put("desc_endereco_complemento_entrega", rs.getString("DESC_ENDERECO_COMPLEMENTO_ENTREGA") == null ? "" : rs.getString("DESC_ENDERECO_COMPLEMENTO_ENTREGA"));
 				hmFat.put("num_telefonecontato_cliente", rs.getString("NUM_TELEFONECONTATO_CLIENTE") == null ? "" : rs.getString("NUM_TELEFONECONTATO_CLIENTE"));
-				
 				hmFat.put("data_cancelamento", rs.getTimestamp("data_cancelamento"));
 				hmFat.put("desc_obs", rs.getString("desc_obs"));
 				hmFat.put("desc_motivo", rs.getString("desc_motivo"));
+			
+				if(rs.getLong("id_pedido")!=id_ped){
 				
+					val_totalprod = val_totalprod + rs.getDouble("VAL_TOTALPROD");
+					val_entrega = val_entrega + rs.getDouble("val_entrega");
+					tragoaqui_perc = tragoaqui_perc + rs.getDouble("tragoaqui_perc");
+					
+					id_ped = rs.getLong("id_pedido");
+				}
+				
+				
+				hmFat.put("summary_prodtotal",new BigDecimal( val_totalprod));
+				hmFat.put("summary_fretetotal",new BigDecimal( val_entrega));
+				hmFat.put("summary_total",new BigDecimal( val_totalprod + val_entrega));
+				hmFat.put("summary_perc",new BigDecimal( tragoaqui_perc));
 				
 				arrLinhas.add(hmFat);
 			}
