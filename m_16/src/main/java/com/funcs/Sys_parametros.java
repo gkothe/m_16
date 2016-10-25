@@ -24,8 +24,16 @@ public class Sys_parametros {
 	String sys_fromdesc = "";
 	boolean sys_tls = true;
 	int PED_HORASOKEY = 0;
+	int NUM_TEMPOMAXCANC_MINUTO = 0;
 	
-	
+
+	public int getNUM_TEMPOMAXCANC_MINUTO() {
+		return NUM_TEMPOMAXCANC_MINUTO;
+	}
+
+	public void setNUM_TEMPOMAXCANC_MINUTO(int nUM_TEMPOMAXCANC_MINUTO) {
+		NUM_TEMPOMAXCANC_MINUTO = nUM_TEMPOMAXCANC_MINUTO;
+	}
 
 	public int getSys_smtp_port() {
 		return sys_smtp_port;
@@ -197,6 +205,7 @@ public class Sys_parametros {
 				this.setSys_tls(rs.getString("sys_tls").equalsIgnoreCase("S") ? true : false);
 				this.setSys_id_visistante(rs.getLong("id_visitante"));
 				this.setPED_HORASOKEY(rs.getInt("PED_HORASOKEY"));
+				this.setNUM_TEMPOMAXCANC_MINUTO(rs.getInt("NUM_TEMPOMAXCANC_MINUTO"));
 			}
 
 		} catch (Exception e) {

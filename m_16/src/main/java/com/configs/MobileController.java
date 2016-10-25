@@ -234,7 +234,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 				} else if (cmd.equalsIgnoreCase("loadInfoCanc")) {
 					carregaMotivosCancelamento(request, response, conn, cod_usuario);
 				} else if (cmd.equalsIgnoreCase("cancelaPedido")) {
-					cancelaPedido(request, response, conn, cod_usuario);
+					cancelaPedido(request, response, conn, cod_usuario,sys);
 				} else if (cmd.equalsIgnoreCase("infosCancel")) {
 					infosCancel(request, response, conn, cod_usuario);
 				} else if (cmd.equalsIgnoreCase("testesMudaServico")) {
@@ -783,7 +783,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 
 	}
 
-	private static void cancelaPedido(HttpServletRequest request, HttpServletResponse response, Connection conn, long cod_usuario) throws Exception {
+	private static void cancelaPedido(HttpServletRequest request, HttpServletResponse response, Connection conn, long cod_usuario, Sys_parametros sys) throws Exception {
 
 		PrintWriter out = response.getWriter();
 		JSONObject objRetorno = new JSONObject();
@@ -812,7 +812,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 				throw new Exception("Motivo inválido.");
 			}
 
-			sql2 = "SELECT * from  pedido where id_pedido  = ? and ID_USUARIO = " + cod_usuario;
+			sql2 = "SELECT now() as agora,ADDTIME(DATA_PEDIDO, TEMPO_ESTIMADO_DESEJADO) as tempocanc, pedido.* from  pedido where id_pedido  = ? and ID_USUARIO = " + cod_usuario;
 			st = conn.prepareStatement(sql2);
 			st.setLong(1, Long.parseLong(id_pedido));
 			rs = st.executeQuery();
@@ -828,10 +828,25 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 				if (statuspedido.equalsIgnoreCase("C")) {
 					throw new Exception("Este pedido já foi cancelado.");
 				}
-				if (statuspedido.equalsIgnoreCase("C")) {
+				if (statuspedido.equalsIgnoreCase("R")) {
 					throw new Exception("Este pedido já foi recusado.");
 				}
 
+				if(statuspedido.equalsIgnoreCase("E") || statuspedido.equalsIgnoreCase("S") ){
+
+					Calendar data6 = Calendar.getInstance();
+					data6.setTime(rs.getTimestamp("tempocanc"));
+					data6.add(Calendar.MINUTE, sys.getNUM_TEMPOMAXCANC_MINUTO());
+					
+					if (data6.getTime().before(new Date())) {
+						throw new Exception("Tempo para cancelamento esgotado. Você tem "+sys.getNUM_TEMPOMAXCANC_MINUTO()+" minutos após o tempo maximo desejado de entrega para cancelar o pedido. Se você realmente deseja cancelar este pedido, entre em contato com o " + sys.getSys_fromdesc());
+					}
+					
+				}
+				
+				
+				//datateste =now -  (datapedido + tempo desjada de entrega)
+				
 				StringBuffer sql = new StringBuffer();
 				sql.append(" UPDATE pedido ");
 				sql.append("   SET FLAG_STATUS = 'C' , ");

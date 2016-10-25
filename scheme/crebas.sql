@@ -1,6 +1,6 @@
 /*==============================================================*/
 /* DBMS name:      MySQL 5.0                                    */
-/* Created on:     25/10/2016 8:22:39 AM                        */
+/* Created on:     25/10/2016 11:03:05 AM                       */
 /*==============================================================*/
 
 
@@ -264,7 +264,7 @@ create table PEDIDO_MOTIVO_CANCELAMENTO
    DATA_CANCELAMENTO    datetime,
    FLAG_CONFIRMADO_DISTRIBUIDORA char(1),
    FLAG_POPUPINICIAL    char(1),
-   FLAG_VIZUALIZADO     char(1),
+   FLAG_VIZUALIZADO_CANC char(1),
    primary key (ID_PEDIDO)
 );
 
@@ -320,7 +320,8 @@ create table SYS_PARAMETROS
    SYS_FROMEMAIL        text,
    SYS_FROMDESC         text,
    SYS_TLS              char(1),
-   PED_HORASOKEY        int
+   PED_HORASOKEY        int,
+   NUM_TEMPOMAXCANC_MINUTO int
 );
 
 /*==============================================================*/
