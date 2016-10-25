@@ -331,6 +331,8 @@ input:focus {
 				</div>
 			</div>
 
+			<div id="modal_cancelamentos"></div>
+
 
 			<div class="modal fade bs-example-modal-lg" tabindex="-5"
 				role="dialog" id="modal_pedido" aria-hidden="true">

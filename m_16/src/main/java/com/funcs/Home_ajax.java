@@ -47,6 +47,24 @@ public class Home_ajax {
 		st = conn.prepareStatement(sql);
 		st.setInt(1, coddistr);
 		rs = st.executeQuery();
+		objRetorno.put("canc_pop", false);
+		
+		if (rs.next()) {
+			objRetorno.put("canc_pop", true);
+			objRetorno.put("id_pedpop", rs.getString("id_pedido"));
+			objRetorno.put("num_pedpop", rs.getString("num_ped"));
+			
+			sql  = " UPDATE pedido_motivo_cancelamento  SET FLAG_POPUPINICIAL = 'S'  where   id_pedido = " + rs.getString("id_pedido");
+
+			st = conn.prepareStatement(sql.toString());
+			st.executeUpdate();
+		}
+		
+		
+		sql = "select * from pedido join pedido_motivo_cancelamento on pedido_motivo_cancelamento.id_pedido = pedido.id_pedido  where ID_DISTRIBUIDORA = ? and (flag_status = 'C' and FLAG_VIZUALIZADO_CANC = 'N')  ";
+		st = conn.prepareStatement(sql);
+		st.setInt(1, coddistr);
+		rs = st.executeQuery();
 		objRetorno.put("canc_vizu", false);
 		if (rs.next()) {
 			objRetorno.put("canc_vizu", true);

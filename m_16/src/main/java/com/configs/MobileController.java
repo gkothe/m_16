@@ -846,9 +846,9 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 					sql = new StringBuffer();
 
 					sql.append("INSERT INTO pedido_motivo_cancelamento ");
-					sql.append("  (`ID_PEDIDO`, `COD_MOTIVO`, `DESC_OBS`, `DATA_CANCELAMENTO`,FLAG_CONFIRMADO_DISTRIBUIDORA,FLAG_POPUPINICIAL) ");
+					sql.append("  (`ID_PEDIDO`, `COD_MOTIVO`, `DESC_OBS`, `DATA_CANCELAMENTO`,FLAG_CONFIRMADO_DISTRIBUIDORA,FLAG_POPUPINICIAL,FLAG_VIZUALIZADO_CANC) ");
 					sql.append("VALUES ");
-					sql.append("  (?,?,?,now(),'S','S')");// seta como sim pq ainda estava em aberto. entao a distribuidora nem vai perceber que foi cancelado.
+					sql.append("  (?,?,?,now(),'S','S','S')");// seta como sim pq ainda estava em aberto. entao a distribuidora nem vai perceber que foi cancelado.
 
 					st = conn.prepareStatement(sql.toString());
 					st.setLong(1, Long.parseLong(id_pedido));
@@ -864,9 +864,9 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 
 						sql = new StringBuffer();
 						sql.append("INSERT INTO pedido_motivo_cancelamento ");
-						sql.append("  (`ID_PEDIDO`, `COD_MOTIVO`, `DESC_OBS`, `DATA_CANCELAMENTO`,FLAG_CONFIRMADO_DISTRIBUIDORA,FLAG_POPUPINICIAL) ");
+						sql.append("  (`ID_PEDIDO`, `COD_MOTIVO`, `DESC_OBS`, `DATA_CANCELAMENTO`,FLAG_CONFIRMADO_DISTRIBUIDORA,FLAG_POPUPINICIAL,FLAG_VIZUALIZADO_CANC) ");
 						sql.append("VALUES ");
-						sql.append("  (?,?,?,now(),'N','N')");
+						sql.append("  (?,?,?,now(),'N','N','N')");
 
 						st = conn.prepareStatement(sql.toString());
 						st.setLong(1, Long.parseLong(id_pedido));
@@ -879,10 +879,10 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 					if (rs.getString("FLAG_MODOPAGAMENTO").equalsIgnoreCase("C")) {// cancelamento em pagamento por cartao.
 						// TODO como sera feito os refunds?
 						sql = new StringBuffer();
-						sql.append("INSERT INTO pedido_motivo_cancelamento ");
-						sql.append("  (`ID_PEDIDO`, `COD_MOTIVO`, `DESC_OBS`, `DATA_CANCELAMENTO`,FLAG_CONFIRMADO_DISTRIBUIDORA,FLAG_POPUPINICIAL) ");
-						sql.append("VALUES ");
-						sql.append("  (?,?,?,now(),'N','N')");
+						sql.append(" INSERT INTO pedido_motivo_cancelamento ");
+						sql.append("  (`ID_PEDIDO`, `COD_MOTIVO`, `DESC_OBS`, `DATA_CANCELAMENTO`,FLAG_CONFIRMADO_DISTRIBUIDORA,FLAG_POPUPINICIAL,FLAG_VIZUALIZADO_CANC) ");
+						sql.append(" VALUES ");
+						sql.append("  (?,?,?,now(),'N','N','N')");
 
 						st = conn.prepareStatement(sql.toString());
 						st.setLong(1, Long.parseLong(id_pedido));

@@ -69,7 +69,7 @@ public class Pedidos_ajax {
 
 		String temfiltro = "N";
 
-		String sql = "select * from pedido left join bairros on bairros.cod_bairro = pedido.cod_bairro left join pedido_motivo_cancelamento on pedido_motivo_cancelamento.id_pedido = pedido.id_pedido  where ID_DISTRIBUIDORA = ? and (flag_status = 'A' or flag_status = 'E' or (flag_status = 'C' and FLAG_CONFIRMADO_DISTRIBUIDORA = 'N' ) ) ";
+		String sql = "select * from pedido left join bairros on bairros.cod_bairro = pedido.cod_bairro left join pedido_motivo_cancelamento on pedido_motivo_cancelamento.id_pedido = pedido.id_pedido  where ID_DISTRIBUIDORA = ? and (flag_status = 'A' or flag_status = 'E' or (flag_status = 'C' and FLAG_CONFIRMADO_DISTRIBUIDORA = 'N' ) )  order by flag_status asc , data_pedido asc";
 
 		if (!num_pedido_aberto.equalsIgnoreCase("")) {
 			sql = sql + " and NUM_PED  = ? ";
@@ -113,9 +113,9 @@ public class Pedidos_ajax {
 
 		if (!flag_visu.equalsIgnoreCase("")) {
 			if(flag_visu.equalsIgnoreCase("N"))
-				sql = sql + "  and  (flag_vizualizado = ? or FLAG_POPUPINICIAL = ?) ";
+				sql = sql + "  and  (flag_vizualizado = ? or FLAG_VIZUALIZADO_CANC = ?) ";
 			else if(flag_visu.equalsIgnoreCase("S")){
-				sql = sql + "  and  flag_vizualizado = ? and Coalesce(FLAG_POPUPINICIAL,'S') = ?  ";
+//				sql = sql + "  and  flag_vizualizado = ? and Coalesce(FLAG_VIZUALIZADO_CANC,'S') = ?  ";
 			}
 			temfiltro = "S";
 		}
@@ -225,11 +225,11 @@ public class Pedidos_ajax {
 
 			objRetorno.put("ID_PEDIDO", rs.getString("ID_PEDIDO"));
 
-			if (rs.getString("FLAG_POPUPINICIAL") != null && !rs.getString("FLAG_POPUPINICIAL").equalsIgnoreCase("")) {
-				if (rs.getString("FLAG_POPUPINICIAL").equalsIgnoreCase("N")) {
+			if (rs.getString("FLAG_VIZUALIZADO_CANC") != null && !rs.getString("FLAG_VIZUALIZADO_CANC").equalsIgnoreCase("")) {
+				if (rs.getString("FLAG_VIZUALIZADO_CANC").equalsIgnoreCase("N")) {
 					//retorno.put("canc_vizu", true);
 				}
-				objRetorno.put("flag_visu", rs.getString("FLAG_POPUPINICIAL"));
+				objRetorno.put("flag_visu", rs.getString("FLAG_VIZUALIZADO_CANC"));
 			} else {
 				objRetorno.put("flag_visu", rs.getString("flag_vizualizado"));
 			}
@@ -444,7 +444,7 @@ public class Pedidos_ajax {
 			objRetorno.put("VAL_TOTALPROD", rs.getString("VAL_TOTALPROD"));
 			objRetorno.put("VAL_ENTREGA", rs.getString("VAL_ENTREGA"));
 			objRetorno.put("ID_PEDIDO", rs.getString("ID_PEDIDO"));
-
+			objRetorno.put("num_ped", rs.getString("num_ped"));
 			int user = rs.getInt("id_usuario");
 			String status = rs.getString("FLAG_STATUS");
 
@@ -556,7 +556,7 @@ public class Pedidos_ajax {
 			objRetorno.put("data_pedido", new SimpleDateFormat("dd/MM/yyyy HH:mm").format(rs.getTimestamp("DATA_PEDIDO")));
 			objRetorno.put("VAL_TOTALPROD", rs.getString("VAL_TOTALPROD"));
 			objRetorno.put("VAL_ENTREGA", rs.getString("VAL_ENTREGA"));
-
+			objRetorno.put("num_ped", rs.getString("num_ped"));
 			objRetorno.put("ID_PEDIDO", rs.getString("ID_PEDIDO"));
 
 			int user = rs.getInt("id_usuario");
@@ -623,7 +623,7 @@ public class Pedidos_ajax {
 
 			if (status.equalsIgnoreCase("C")) {
 
-				sql = " update  pedido_motivo_cancelamento  set FLAG_POPUPINICIAL = 'S' where id_pedido = ?  ";
+				sql = " update  pedido_motivo_cancelamento  set FLAG_VIZUALIZADO_CANC = 'S' where id_pedido = ?  ";
 				st = conn.prepareStatement(sql);
 				st.setInt(1, Integer.parseInt(id_pedido));
 				st.executeUpdate();

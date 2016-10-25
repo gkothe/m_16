@@ -192,9 +192,9 @@ function visualizarPedidoHistorico(id) {
 			$("#m_total_produtos").autoNumeric('set', data.VAL_TOTALPROD);
 			$("#m_data_pedido").html(data.data_pedido);
 			$("#m_id_pedido").val(data.ID_PEDIDO);
-
+			var   num_ped = data.num_ped;
 			if (data.flag_status == "O") {
-				$("#m_lbl_titulo").html("Pedido Finalizado");
+				$("#m_lbl_titulo").html("Pedido Finalizado - Número: "  + num_ped );
 				$("#m_lbl_titulo").css("color", "green");
 
 				$("#envio_desc_nome").html(data.DESC_NOME);
@@ -213,7 +213,7 @@ function visualizarPedidoHistorico(id) {
 
 			} else if (data.flag_status == "R") {
 				$("#m_lbl_titulo").css("color", "red");
-				$("#m_lbl_titulo").html("Pedido Recusado");
+				$("#m_lbl_titulo").html("Pedido Recusado Número: "  + num_ped);
 
 				$("#m_responder").hide();
 				$("#m_finalizar").hide();
@@ -253,7 +253,7 @@ function visualizarPedidoHistorico(id) {
 
 				$("#m_lbl_titulo").css("color", "red");
 
-				$("#m_lbl_titulo").html("Cancelado");
+				$("#m_lbl_titulo").html("Cancelado -  Número: "  + num_ped);
 				$(".cancelamento").show();
 				$("#m_responder").hide();
 
