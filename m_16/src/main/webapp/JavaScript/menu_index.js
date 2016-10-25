@@ -563,9 +563,14 @@ function visualizarPedido(id) {
 				$("#envio_desc_bairro").html(data.desc_bairro);
 				$("#envio_desc_endereco").html(data.DESC_ENDERECO);
 				$("#m_resposta_motivos").hide();
+				
+				$("#m_data_cancelamento").html(data.DATA_CANCELAMENTO);
+				$("#m_motivo").html(data.DESC_MOTIVO);
+				$("#m_observ").html(data.DESC_OBS);
+				
 				$("#m_data_resposta").html(data.m_data_resposta);
 				$("#m_tempo_entrega").html(data.m_tempo_entrega);
-				$("#m_data_cancelamento").html(data.DATA_CANCELAMENTO);
+				
 				if (data.darok == true) {
 					$("#m_finalizar").show();
 				} else {

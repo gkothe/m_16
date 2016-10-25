@@ -162,10 +162,9 @@ input:focus {
 
 						<ul class="nav navbar-nav navbar-right" style="width: 100%";>
 
-						
 
-							<li class=""><div style="width: 10px"> </div>
-							</li>
+
+							<li class=""><div style="width: 10px"></div></li>
 
 
 							<li class=""><a href="javascript:;"
@@ -182,11 +181,10 @@ input:focus {
 											min. </a></li>
 									<li><a href="home?ac=logout"><i
 											class="fa fa-sign-out pull-right"></i> Sair</a></li>
-								</ul>
-							</li>
-							
-							
-							
+								</ul></li>
+
+
+
 							<li role="presentation" class="dropdown"><a
 								href="javascript:;" class="dropdown-toggle info-number"
 								data-toggle="dropdown" aria-expanded="false"> <i
@@ -198,7 +196,7 @@ input:focus {
 
 
 								</ul></li>
-							<li class=""><div style="width: 10px"> &nbsp;&nbsp;</div>
+							<li class=""><div style="width: 10px">&nbsp;&nbsp;</div>
 							<li style="margin-top: 15px; width: 70%">
 								<table style="width: 100%">
 									<tr>
@@ -212,7 +210,7 @@ input:focus {
 											</div>
 										</td>
 
-										<td width="5%">&nbsp; </td>
+										<td width="5%">&nbsp;</td>
 
 										<td align="right" class="table_header">
 											<div style="cursor: pointer; display: none;" id="msg_holder">
@@ -234,11 +232,11 @@ input:focus {
 
 
 							</li>
-							
+
 							<div class="nav toggle">
-									<a id="menu_toggle"><i class="fa fa-bars"></i></a>
+								<a id="menu_toggle"><i class="fa fa-bars"></i></a>
 							</div>
-							
+
 
 						</ul>
 					</nav>
@@ -492,8 +490,6 @@ input:focus {
 
 							</div>
 
-
-
 							<div class="row">
 								<div class="col-xs-6 col-sm-6 col-md-6 col-lg-6" align="">
 									<table>
@@ -502,6 +498,19 @@ input:focus {
 													pedido: </label></td>
 											<td><label id=""> </label><label id="m_total_pedido"></label></td>
 
+										</tr>
+
+									</table>
+
+								</div>
+
+								<div id="m_tempomax_div"
+									class="col-xs-6 col-sm-6 col-md-6 col-lg-6" align="">
+									<table>
+										<tr>
+											<td style="padding-right: 5px;"><label for="">Tempo
+													máximo desejado para a entrega: </label></td>
+											<td><label id="m_tempo_max"></label></td>
 
 										</tr>
 
@@ -509,8 +518,12 @@ input:focus {
 
 								</div>
 
-								<div class="col-xs-6 col-sm-6 col-md-6 col-lg-6 cancelamento"
-									align="">
+
+
+							</div>
+							<div class="row cancelamento">
+
+								<div class="col-xs-6 col-sm-6 col-md-6 col-lg-6 " align="">
 									<table>
 										<tr>
 											<td style="padding-right: 5px;"><label for="">Data
@@ -524,23 +537,39 @@ input:focus {
 
 								</div>
 
-							</div>
-							<div class="row" id="m_tempomax_div">
-								<div class="col-xs-8 col-sm-8 col-md-8 col-lg-8" align="">
+
+								<div class="col-xs-6 col-sm-6 col-md-6 col-lg-6 " align="">
 									<table>
 										<tr>
-											<td style="padding-right: 5px;"><label for="">Tempo
-													máximo desejado para a entrega: </label></td>
-											<td><label id="m_tempo_max"></label></td>
-
+											<td style="padding-right: 5px;"><label for="">Motivo:
+											</label></td>
+											<td><label id=""> </label><label id="m_motivo"></label></td>
 
 										</tr>
 
 									</table>
 
 								</div>
+
 							</div>
 
+							<div class="row cancelamento">
+
+								<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 " align="">
+									<table>
+										<tr>
+											<td style="padding-right: 5px;"><label for="">Observação:
+											</label></td>
+											<td><label id=""> </label><label id="m_observ"></label></td>
+										</tr>
+
+									</table>
+
+								</div>
+
+
+
+							</div>
 
 							<DIV class="m_enviado">
 
