@@ -291,7 +291,7 @@ public class Parametros_ajax {
 		PrintWriter out = response.getWriter();
 		JSONArray ret = new JSONArray();
 
-		String sql = " SELECT `ID_DISTRIBUIDORA`, " + "    `COD_CIDADE`," + "    `DESC_RAZAO_SOCIAL`," + "   `DESC_NOME_ABREV`," + "  `VAL_ENTREGA_MIN`," + " `DESC_TELEFONE`," + " `DESC_ENDERECO`," + " `NUM_ENDEREC`," + " `DESC_COMPLEMENTO`," + " `VAL_TELE_ENTREGA`," + " flag_custom," + " desc_mail, " + " coalesce(flag_ativo,'N') as flag_ativo,FLAG_MODOPAGAMENTO, flag_entre_ret from distribuidora  where	 ID_DISTRIBUIDORA = ? ";
+		String sql = " SELECT TXT_OBS_HORA, `ID_DISTRIBUIDORA`, " + "    `COD_CIDADE`," + "    `DESC_RAZAO_SOCIAL`," + "   `DESC_NOME_ABREV`," + "  `VAL_ENTREGA_MIN`," + " `DESC_TELEFONE`," + " `DESC_ENDERECO`," + " `NUM_ENDEREC`," + " `DESC_COMPLEMENTO`," + " `VAL_TELE_ENTREGA`," + " flag_custom," + " desc_mail, " + " coalesce(flag_ativo,'N') as flag_ativo,FLAG_MODOPAGAMENTO, flag_entre_ret from distribuidora  where	 ID_DISTRIBUIDORA = ? ";
 
 		PreparedStatement st = conn.prepareStatement(sql);
 		st.setInt(1, coddistr);
@@ -324,6 +324,7 @@ public class Parametros_ajax {
 			obj.put("flag_ativo", rs.getString("flag_ativo").equalsIgnoreCase("F") ? "S" : rs.getString("flag_ativo"));
 			obj.put("flag_modopag", rs.getString("FLAG_MODOPAGAMENTO"));
 			obj.put("flag_entre_ret", rs.getString("flag_entre_ret"));
+			obj.put("txt_obs_hora", rs.getString("txt_obs_hora"));
 			
 
 			ret.add(obj);
@@ -352,6 +353,7 @@ public class Parametros_ajax {
 		String desc_mail = request.getParameter("desc_mail") == null ? "" : request.getParameter("desc_mail"); //
 		String flag_modopag = request.getParameter("flag_modopag") == null ? "" : request.getParameter("flag_modopag"); //
 		String flag_entre_ret = request.getParameter("flag_entre_ret") == null ? "" : request.getParameter("flag_entre_ret"); //
+		String txt_obs_hora = request.getParameter("txt_obs_hora") == null ? "" : request.getParameter("txt_obs_hora"); //
 		
 		
 		
@@ -365,7 +367,7 @@ public class Parametros_ajax {
 
 		JSONArray bairros = (JSONArray) new JSONParser().parse(bairrosjson);
 
-		String sql = " UPDATE distribuidora SET `COD_CIDADE` = ?, `DESC_RAZAO_SOCIAL` = ?, `DESC_NOME_ABREV` = ?, `VAL_ENTREGA_MIN` = ?, `DESC_TELEFONE` = ?, `DESC_ENDERECO` = ?, `NUM_ENDEREC` = ?, `DESC_COMPLEMENTO` = ?, `VAL_TELE_ENTREGA` = ? , flag_custom = ? , flag_ativo = ?, desc_mail =?, FLAG_MODOPAGAMENTO = ? , flag_entre_ret = ? WHERE `ID_DISTRIBUIDORA` = ? ";
+		String sql = " UPDATE distribuidora SET `COD_CIDADE` = ?, `DESC_RAZAO_SOCIAL` = ?, `DESC_NOME_ABREV` = ?, `VAL_ENTREGA_MIN` = ?, `DESC_TELEFONE` = ?, `DESC_ENDERECO` = ?, `NUM_ENDEREC` = ?, `DESC_COMPLEMENTO` = ?, `VAL_TELE_ENTREGA` = ? , flag_custom = ? , flag_ativo = ?, desc_mail =?, FLAG_MODOPAGAMENTO = ? , flag_entre_ret = ? , txt_obs_hora = ?  WHERE `ID_DISTRIBUIDORA` = ? ";
 
 		PreparedStatement st = conn.prepareStatement(sql);
 		st.setInt(1, Integer.parseInt(cod_cidade));
@@ -382,7 +384,10 @@ public class Parametros_ajax {
 		st.setString(12, desc_mail);
 		st.setString(13, flag_modopag);
 		st.setString(14, flag_entre_ret);
-		st.setInt(15, coddistr);  
+		st.setString(15, txt_obs_hora);
+		st.setInt(16, coddistr);  
+		
+		
 
 		st.executeUpdate();
 

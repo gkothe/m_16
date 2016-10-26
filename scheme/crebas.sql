@@ -1,6 +1,6 @@
 /*==============================================================*/
 /* DBMS name:      MySQL 5.0                                    */
-/* Created on:     25/10/2016 11:03:05 AM                       */
+/* Created on:     26/10/2016 9:47:53 AM                        */
 /*==============================================================*/
 
 
@@ -138,6 +138,7 @@ create table DISTRIBUIDORA
    DATE_LASTAJAX        datetime,
    FLAG_ENTRE_RET       char(1),
    PERC_PAGAMENTO       numeric(12,2),
+   TXT_OBS_HORA         text,
    primary key (ID_DISTRIBUIDORA)
 )
 auto_increment = 1;

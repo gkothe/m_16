@@ -241,6 +241,8 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 					testesMudaServico(request, response, conn, cod_usuario);
 				} else if (cmd.equalsIgnoreCase("servicoCarrinho")) {
 					servicoCarrinho(request, response, conn, cod_usuario);
+				} else if (cmd.equalsIgnoreCase("txt_obs_hora")) {
+					txtObsHora(request, response, conn, cod_usuario,sys);
 				}
 
 				else {
@@ -334,6 +336,45 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 		out.print(objRetorno.toJSONString());
 
 	}
+	
+	public static void txtObsHora(HttpServletRequest request, HttpServletResponse response, Connection conn, long cod_usuario, Sys_parametros sys) throws Exception {
+
+		PrintWriter out = response.getWriter();
+
+		JSONObject objRetorno = new JSONObject();
+
+		StringBuffer  sql = new StringBuffer();
+		sql.append("select txt_obs_hora from carrinho ");
+		sql.append(" ");
+		sql.append(" inner join carrinho_item ");
+		sql.append(" on carrinho_item.id_carrinho = carrinho.id_carrinho ");
+		sql.append(" ");
+		sql.append(" inner join produtos_distribuidora ");
+		sql.append(" on produtos_distribuidora.ID_PROD_DIST = carrinho_item.ID_PROD_DIST ");
+		sql.append(" ");
+		sql.append(" inner join distribuidora ");
+		sql.append(" on distribuidora.id_distribuidora = produtos_distribuidora.id_distribuidora");
+		sql.append(" ");
+		sql.append(" where id_usuario  = ? ");
+		sql.append(" ");
+		sql.append(" limit 1");
+
+		PreparedStatement st = conn.prepareStatement(sql.toString());
+		st.setLong(1, cod_usuario);
+		ResultSet rs = st.executeQuery();
+		objRetorno.put("txt_obs_hora", "");
+		
+		if (rs.next()) {
+			objRetorno.put("txt_obs_hora", rs.getString("txt_obs_hora"));
+		}
+		
+		
+		objRetorno.put("msg", "ok");
+		out.print(objRetorno.toJSONString());
+
+	}
+	
+	
 
 	private static void recSenha(HttpServletRequest request, HttpServletResponse response, Connection conn) throws Exception {
 
