@@ -234,7 +234,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 				} else if (cmd.equalsIgnoreCase("loadInfoCanc")) {
 					carregaMotivosCancelamento(request, response, conn, cod_usuario);
 				} else if (cmd.equalsIgnoreCase("cancelaPedido")) {
-					cancelaPedido(request, response, conn, cod_usuario,sys);
+					cancelaPedido(request, response, conn, cod_usuario, sys);
 				} else if (cmd.equalsIgnoreCase("infosCancel")) {
 					infosCancel(request, response, conn, cod_usuario);
 				} else if (cmd.equalsIgnoreCase("testesMudaServico")) {
@@ -242,7 +242,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 				} else if (cmd.equalsIgnoreCase("servicoCarrinho")) {
 					servicoCarrinho(request, response, conn, cod_usuario);
 				} else if (cmd.equalsIgnoreCase("txt_obs_hora")) {
-					txtObsHora(request, response, conn, cod_usuario,sys);
+					txtObsHora(request, response, conn, cod_usuario, sys);
 				}
 
 				else {
@@ -336,14 +336,14 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 		out.print(objRetorno.toJSONString());
 
 	}
-	
+
 	public static void txtObsHora(HttpServletRequest request, HttpServletResponse response, Connection conn, long cod_usuario, Sys_parametros sys) throws Exception {
 
 		PrintWriter out = response.getWriter();
 
 		JSONObject objRetorno = new JSONObject();
 
-		StringBuffer  sql = new StringBuffer();
+		StringBuffer sql = new StringBuffer();
 		sql.append("select txt_obs_hora from carrinho ");
 		sql.append(" ");
 		sql.append(" inner join carrinho_item ");
@@ -363,18 +363,15 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 		st.setLong(1, cod_usuario);
 		ResultSet rs = st.executeQuery();
 		objRetorno.put("txt_obs_hora", "");
-		
+
 		if (rs.next()) {
 			objRetorno.put("txt_obs_hora", rs.getString("txt_obs_hora"));
 		}
-		
-		
+
 		objRetorno.put("msg", "ok");
 		out.print(objRetorno.toJSONString());
 
 	}
-	
-	
 
 	private static void recSenha(HttpServletRequest request, HttpServletResponse response, Connection conn) throws Exception {
 
@@ -873,21 +870,20 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 					throw new Exception("Este pedido já foi recusado.");
 				}
 
-				if(statuspedido.equalsIgnoreCase("E") || statuspedido.equalsIgnoreCase("S") ){
+				if (statuspedido.equalsIgnoreCase("E") || statuspedido.equalsIgnoreCase("S")) {
 
 					Calendar data6 = Calendar.getInstance();
 					data6.setTime(rs.getTimestamp("tempocanc"));
 					data6.add(Calendar.MINUTE, sys.getNUM_TEMPOMAXCANC_MINUTO());
-					
+
 					if (data6.getTime().before(new Date())) {
-						throw new Exception("Tempo para cancelamento esgotado. Você tem "+sys.getNUM_TEMPOMAXCANC_MINUTO()+" minutos após o tempo maximo desejado de entrega para cancelar o pedido. Se você realmente deseja cancelar este pedido, entre em contato com o " + sys.getSys_fromdesc());
+						throw new Exception("Tempo para cancelamento esgotado. Você tem " + sys.getNUM_TEMPOMAXCANC_MINUTO() + " minutos após o tempo maximo desejado de entrega para cancelar o pedido. Se você realmente deseja cancelar este pedido, entre em contato com o " + sys.getSys_fromdesc());
 					}
-					
+
 				}
-				
-				
-				//datateste =now -  (datapedido + tempo desjada de entrega)
-				
+
+				// datateste =now - (datapedido + tempo desjada de entrega)
+
 				StringBuffer sql = new StringBuffer();
 				sql.append(" UPDATE pedido ");
 				sql.append("   SET FLAG_STATUS = 'C' , ");
@@ -2330,7 +2326,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 		return 0;
 	}
 
-	private static void validacaoProdutoDistribuidora(HttpServletRequest request, HttpServletResponse response, Connection conn, long id_distribuidora_prod, double valprod_carrinho) throws Exception {
+	private static boolean validacaoProdutoDistribuidora(HttpServletRequest request, HttpServletResponse response, Connection conn, long id_distribuidora_prod, double valprod_carrinho, boolean telapag) throws Exception {
 
 		StringBuffer sql = new StringBuffer();// teste para ver se o valor do carrinho é igual ao valor do produto.
 		sql.append("select  * from produtos_distribuidora  where  ID_PROD_DIST = ? and flag_ativo = 'S' ");
@@ -2339,12 +2335,16 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 		ResultSet rs3 = st3.executeQuery();
 		if (rs3.next()) {
 			if (rs3.getDouble("VAL_PROD") != valprod_carrinho) {
-				throw new Exception("O produto " + Utilitario.getNomeProdIdProdDistr(conn, id_distribuidora_prod, true) + " que está no carrinho tem um valor diferente que se encontra na distribuida. Isto pode acontecer quando a distribuidora modifica o valor de um produto durante sua compra. Por favor clique em recalcular carrinho.");
+				if (telapag) {
+					return false;
+				} else {
+					throw new Exception("O produto " + Utilitario.getNomeProdIdProdDistr(conn, id_distribuidora_prod, true) + " que está no carrinho tem um valor diferente que se encontra na distribuidora. Isto pode acontecer quando a distribuidora modifica o valor de um produto durante sua compra. Por favor clique em recalcular carrinho.");
+				}
 			}
 		} else {
 			throw new Exception("O produto " + Utilitario.getNomeProdIdProdDistr(conn, id_distribuidora_prod, true) + " não se encontra disponível. Por favor remova-o de seu carrinho.");
 		}
-
+		return true;
 	}
 
 	private static void validacaoTesteCarrinhoDistribuidora(HttpServletRequest request, HttpServletResponse response, Connection conn, long id_carrinho, int id_distribuidora_prod) throws Exception {
@@ -2463,10 +2463,6 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 
 	}
 
-	
-	
-
-	
 	private static void testesMudaBairroCarrinho(HttpServletRequest request, HttpServletResponse response, Connection conn, long cod_usuario) throws Exception {
 		PrintWriter out = response.getWriter();
 		JSONObject retorno = new JSONObject();
@@ -2572,7 +2568,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 				rs2 = st2.executeQuery();
 				while (rs2.next()) {
 
-					validacaoProdutoDistribuidora(request, response, conn, rs2.getLong("ID_PROD_DIST"), rs2.getDouble("VAL_PROD"));
+					//validacaoProdutoDistribuidora(request, response, conn, rs2.getLong("ID_PROD_DIST"), rs2.getDouble("VAL_PROD"), false);
 
 				}
 			}
@@ -2736,9 +2732,10 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 				st2 = conn.prepareStatement(sql.toString());
 				st2.setLong(1, idcarrinho);
 				rs2 = st2.executeQuery();
+				boolean valores_carrinho_ok = true;
 				while (rs2.next()) {
 
-					validacaoProdutoDistribuidora(request, response, conn, rs2.getLong("ID_PROD_DIST"), rs2.getDouble("VAL_PROD"));
+					valores_carrinho_ok = validacaoProdutoDistribuidora(request, response, conn, rs2.getLong("ID_PROD_DIST"), rs2.getDouble("VAL_PROD"), true);
 
 					sql = new StringBuffer();
 					sql.append(" INSERT INTO pedido_item ");
@@ -2757,106 +2754,111 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 
 				}
 
-				if (choiceserv.equalsIgnoreCase("T")) {
-					if (valmin_entrgega > subtotal) {
-						throw new Exception("Sua pedido não atingiu o valor mínimo de entrega da distribuidora. O valor mínimo é de R$ " + df2.format(valmin_entrgega));
+				if (!valores_carrinho_ok) {
+					retorno.put("relcaccarrinho", true);
+					conn.rollback();
+				} else {
+					retorno.put("relcaccarrinho", false);
+					if (choiceserv.equalsIgnoreCase("T")) {
+						if (valmin_entrgega > subtotal) {
+							throw new Exception("Sua pedido não atingiu o valor mínimo de entrega da distribuidora. O valor mínimo é de R$ " + df2.format(valmin_entrgega));
+						}
 					}
-				}
+					if (tipo_pagamento.equalsIgnoreCase("C")) {// se for do tipo cartao de credito , tem que salvar as infos
 
-				if (tipo_pagamento.equalsIgnoreCase("C")) {// se for do tipo cartao de credito , tem que salvar as infos
+						String token = request.getParameter("token") == null ? "" : request.getParameter("token");
+						String paymentMethodId = request.getParameter("pay_id") == null ? "" : request.getParameter("pay_id");
 
-					String token = request.getParameter("token") == null ? "" : request.getParameter("token");
-					String paymentMethodId = request.getParameter("pay_id") == null ? "" : request.getParameter("pay_id");
+						if (paymentMethodId.equalsIgnoreCase("")) {
+							throw new Exception("Seu bandeira de cartão não foi escolhida.");
+						}
 
-					if (paymentMethodId.equalsIgnoreCase("")) {
-						throw new Exception("Seu bandeira de cartão não foi escolhida.");
-					}
+						if (token.equalsIgnoreCase("")) {
+							throw new Exception("Erro durante criação do pedido. Token inválida.");
+						}
 
-					if (token.equalsIgnoreCase("")) {
-						throw new Exception("Erro durante criação do pedido. Token inválida.");
-					}
-
-					if (email.equalsIgnoreCase("")) {
-						throw new Exception("Email em branco.");
-					}
-
-					sql = new StringBuffer();
-					sql.append("UPDATE pedido ");
-					sql.append("   SET `PAG_TOKEN` = ?, ");
-					sql.append("       `PAG_MAIL` = ?, ");
-					sql.append("       `PAG_PAYID_TIPOCARTAO` = ? ");
-					sql.append("WHERE  `ID_PEDIDO` = ? ");
-
-					st = conn.prepareStatement(sql.toString());
-					st.setString(1, token);
-					st.setString(2, email);
-					st.setString(3, paymentMethodId);
-					st.setLong(4, idped);
-
-					st.executeUpdate();
-
-					String salvarinfos = request.getParameter("salvarinfos") == null ? "" : request.getParameter("salvarinfos");
-
-					if (salvarinfos.equalsIgnoreCase("true")) {
-
-						String data_exp_ano = request.getParameter("data_exp_ano") == null ? "" : request.getParameter("data_exp_ano");
-						String data_exp_mes = request.getParameter("data_exp_mes") == null ? "" : request.getParameter("data_exp_mes");
-						String desc_cardholdername = request.getParameter("desc_cardholdername") == null ? "" : request.getParameter("desc_cardholdername");
-						String desc_cpf = request.getParameter("desc_cpf") == null ? "" : request.getParameter("desc_cpf");
-						String desc_cartao = request.getParameter("desc_cartao") == null ? "" : request.getParameter("desc_cartao");
-						String pay_id = request.getParameter("pay_id") == null ? "" : request.getParameter("pay_id");
+						if (email.equalsIgnoreCase("")) {
+							throw new Exception("Email em branco.");
+						}
 
 						sql = new StringBuffer();
-						sql.append("UPDATE usuario ");
-						sql.append("   SET  ");
-						sql.append("       `DESC_CARTAO` = ?, ");
-						sql.append("       `DESC_CARDHOLDERNAME` = ?, ");
-						sql.append("       `DATA_EXP_MES` = ?, ");
-						sql.append("       `DATA_EXP_ANO` = ?, ");
-						sql.append("       `PAY_ID` = ?, ");
-						sql.append("       `DESC_CPF` = ? ");
-						sql.append("WHERE  `ID_USUARIO` = ?;");
+						sql.append("UPDATE pedido ");
+						sql.append("   SET `PAG_TOKEN` = ?, ");
+						sql.append("       `PAG_MAIL` = ?, ");
+						sql.append("       `PAG_PAYID_TIPOCARTAO` = ? ");
+						sql.append("WHERE  `ID_PEDIDO` = ? ");
 
 						st = conn.prepareStatement(sql.toString());
-						st.setString(1, desc_cartao);
-						st.setString(2, desc_cardholdername);
-
-						if (data_exp_mes.equalsIgnoreCase(""))
-							st.setNull(3, java.sql.Types.INTEGER);
-						else
-							st.setInt(3, Integer.parseInt(data_exp_mes));
-
-						if (data_exp_ano.equalsIgnoreCase(""))
-							st.setNull(4, java.sql.Types.INTEGER);
-						else
-							st.setInt(4, Integer.parseInt(data_exp_ano));
-
-						st.setString(5, pay_id);
-						st.setString(6, desc_cpf);
-						st.setLong(7, cod_usuario);
+						st.setString(1, token);
+						st.setString(2, email);
+						st.setString(3, paymentMethodId);
+						st.setLong(4, idped);
 
 						st.executeUpdate();
 
+						String salvarinfos = request.getParameter("salvarinfos") == null ? "" : request.getParameter("salvarinfos");
+
+						if (salvarinfos.equalsIgnoreCase("true")) {
+
+							String data_exp_ano = request.getParameter("data_exp_ano") == null ? "" : request.getParameter("data_exp_ano");
+							String data_exp_mes = request.getParameter("data_exp_mes") == null ? "" : request.getParameter("data_exp_mes");
+							String desc_cardholdername = request.getParameter("desc_cardholdername") == null ? "" : request.getParameter("desc_cardholdername");
+							String desc_cpf = request.getParameter("desc_cpf") == null ? "" : request.getParameter("desc_cpf");
+							String desc_cartao = request.getParameter("desc_cartao") == null ? "" : request.getParameter("desc_cartao");
+							String pay_id = request.getParameter("pay_id") == null ? "" : request.getParameter("pay_id");
+
+							sql = new StringBuffer();
+							sql.append("UPDATE usuario ");
+							sql.append("   SET  ");
+							sql.append("       `DESC_CARTAO` = ?, ");
+							sql.append("       `DESC_CARDHOLDERNAME` = ?, ");
+							sql.append("       `DATA_EXP_MES` = ?, ");
+							sql.append("       `DATA_EXP_ANO` = ?, ");
+							sql.append("       `PAY_ID` = ?, ");
+							sql.append("       `DESC_CPF` = ? ");
+							sql.append("WHERE  `ID_USUARIO` = ?;");
+
+							st = conn.prepareStatement(sql.toString());
+							st.setString(1, desc_cartao);
+							st.setString(2, desc_cardholdername);
+
+							if (data_exp_mes.equalsIgnoreCase(""))
+								st.setNull(3, java.sql.Types.INTEGER);
+							else
+								st.setInt(3, Integer.parseInt(data_exp_mes));
+
+							if (data_exp_ano.equalsIgnoreCase(""))
+								st.setNull(4, java.sql.Types.INTEGER);
+							else
+								st.setInt(4, Integer.parseInt(data_exp_ano));
+
+							st.setString(5, pay_id);
+							st.setString(6, desc_cpf);
+							st.setLong(7, cod_usuario);
+
+							st.executeUpdate();
+
+						}
+
 					}
 
-				}
+					// realizar pagamento, pensar TODO
 
-				// realizar pagamento, pensar TODO
+					// payment(request, response, conn, cod_usuario,email);
 
-				// payment(request, response, conn, cod_usuario,email);
+					{
+						sql = new StringBuffer();// deleta item do carrinho se ele exister exite no carrinho, add depois
+						sql.append(" delete from carrinho_item where ID_CARRINHO = ? ");
+						st = conn.prepareStatement(sql.toString());
+						st.setLong(1, (idcarrinho));
+						st.executeUpdate();
 
-				{
-					sql = new StringBuffer();// deleta item do carrinho se ele exister exite no carrinho, add depois
-					sql.append(" delete from carrinho_item where ID_CARRINHO = ? ");
-					st = conn.prepareStatement(sql.toString());
-					st.setLong(1, (idcarrinho));
-					st.executeUpdate();
-
-					sql = new StringBuffer();// deleta item do carrinho se ele exister exite no carrinho, add depois
-					sql.append(" delete from carrinho  where ID_CARRINHO = ? ");
-					st = conn.prepareStatement(sql.toString());
-					st.setLong(1, (idcarrinho));
-					st.executeUpdate();
+						sql = new StringBuffer();// deleta item do carrinho se ele exister exite no carrinho, add depois
+						sql.append(" delete from carrinho  where ID_CARRINHO = ? ");
+						st = conn.prepareStatement(sql.toString());
+						st.setLong(1, (idcarrinho));
+						st.executeUpdate();
+					}
 				}
 			}
 		} else {
