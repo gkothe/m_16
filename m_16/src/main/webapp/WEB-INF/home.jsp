@@ -6,7 +6,8 @@
 <meta charset="utf-8" />
 <meta content="width=device-width, initial-scale=1.0" name="viewport" />
 
-<title>Nameless! |</title>
+<title>TragoAqui! </title>
+<link rel="shortcut icon" href="images/favicon.png" type="image/x-icon">
 <!-- Bootstrap -->
 <link href="gentelella-master/vendors/bootstrap/dist/css/bootstrap.css"
 	rel="stylesheet">
