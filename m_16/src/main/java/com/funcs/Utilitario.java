@@ -1,5 +1,9 @@
 package com.funcs;
 
+import java.awt.AlphaComposite;
+import java.awt.Graphics2D;
+import java.awt.RenderingHints;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -22,6 +26,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -67,12 +72,9 @@ public class Utilitario {
 	public static JSONArray FlagEntreRet() {
 		JSONArray payids = new JSONArray();
 		JSONObject obj = new JSONObject();
-/*
-		obj = new JSONObject();
-		obj.put("flag_entre_ret", "A");
-		obj.put("desc", "Todos - Retirada no local e entrega");
-		payids.add(obj);
-*/
+		/*
+		 * obj = new JSONObject(); obj.put("flag_entre_ret", "A"); obj.put("desc", "Todos - Retirada no local e entrega"); payids.add(obj);
+		 */
 		obj = new JSONObject();
 		obj.put("flag_entre_ret", "L");
 		obj.put("desc", "Retirada no local");
@@ -129,9 +131,9 @@ public class Utilitario {
 			return "Finalizado";
 		} else if (flag.equalsIgnoreCase("A")) {
 			return "Aberto";
-		}else if (flag.equalsIgnoreCase("S")) {
+		} else if (flag.equalsIgnoreCase("S")) {
 			return "Em espera";
-		}else if (flag.equalsIgnoreCase("C")) {
+		} else if (flag.equalsIgnoreCase("C")) {
 			return "Cancelado";
 		}
 
@@ -191,18 +193,16 @@ public class Utilitario {
 		obj.put("id", "E");
 		obj.put("desc", "Em envio");
 		retornoarray.add(obj);
-		
-//		obj = new JSONObject();
-//		obj.put("id", "S");
-//		obj.put("desc", "Em espera");
-//		retornoarray.add(obj);
+
+		// obj = new JSONObject();
+		// obj.put("id", "S");
+		// obj.put("desc", "Em espera");
+		// retornoarray.add(obj);
 
 		obj = new JSONObject();
 		obj.put("id", "R");
 		obj.put("desc", "Recusado");
 		retornoarray.add(obj);
-		
-		
 
 		return retornoarray;
 	}
@@ -356,25 +356,23 @@ public class Utilitario {
 
 		return 0;
 	}
-	
-	
-	public static Date testeHora(String mask, String hora, String msg) throws Exception{
-		
-		
-		Date datatempoentregateste2;//tempo de entrega do usuario
+
+	public static Date testeHora(String mask, String hora, String msg) throws Exception {
+
+		Date datatempoentregateste2;// tempo de entrega do usuario
 		try {
 			datatempoentregateste2 = new SimpleDateFormat(mask).parse(hora);
 		} catch (Exception e) {
-			if(msg.equalsIgnoreCase("")){
-				throw new Exception("Horario inválido");	
-			}else{
+			if (msg.equalsIgnoreCase("")) {
+				throw new Exception("Horario inválido");
+			} else {
 				throw new Exception(msg);
 			}
-			
+
 		}
-		
-		if(mask.equalsIgnoreCase("HH:mm")){
-			
+
+		if (mask.equalsIgnoreCase("HH:mm")) {
+
 			int t = Integer.parseInt(hora.substring(0, 2));
 			if (t > 24)
 				throw new Exception("As horas não pode ser maior que 24.");
@@ -382,12 +380,11 @@ public class Utilitario {
 			t = Integer.parseInt(hora.substring(3, 5));
 			if (t > 59)
 				throw new Exception("Os minutos não podem ser maior que 59.");
-			
+
 		}
-		
-		
-		if(mask.equalsIgnoreCase("HHmm")){
-		
+
+		if (mask.equalsIgnoreCase("HHmm")) {
+
 			int t = Integer.parseInt(hora.substring(0, 2));
 			if (t > 24)
 				throw new Exception("As horas não pode ser maior que 24.");
@@ -395,17 +392,13 @@ public class Utilitario {
 			t = Integer.parseInt(hora.substring(2, 4));
 			if (t > 59)
 				throw new Exception("Os minutos não podem ser maior que 59.");
-			
+
 		}
-		
-		
-		
+
 		return datatempoentregateste2;
-		
-		
+
 	}
-	
-	
+
 	public static String getDescDiaSemana(Connection conn, int cod_dia) throws Exception {
 
 		String varname1 = " select * from  dias_semana where cod_dia = ? ";
@@ -455,7 +448,7 @@ public class Utilitario {
 
 		String desc_produto = "";
 		String varname1 = " select * from produtos where id_prod = ?";
-	
+
 		PreparedStatement st = conn.prepareStatement(varname1);
 		st.setLong(1, id_prod);
 		ResultSet rs2 = st.executeQuery();
@@ -493,7 +486,7 @@ public class Utilitario {
 
 		return desc_produto;
 	}
-	
+
 	public static String getNomeDistr(Connection conn, long id_distribuidora, boolean abreviado) throws Exception {
 
 		String desc_nome = "";
@@ -519,29 +512,30 @@ public class Utilitario {
 		return new java.sql.Timestamp(data.getTime());
 	}
 
-	public static void copiaStream(InputStream in, OutputStream out, boolean blnFecharIn, boolean blnFecharOut ) throws IOException {
+	public static void copiaStream(InputStream in, OutputStream out, boolean blnFecharIn, boolean blnFecharOut) throws IOException {
 		synchronized (in) {
 			synchronized (out) {
 				byte[] buffer = new byte[256];
 				while (true) {
 					int bytesRead = in.read(buffer);
-					if (bytesRead == -1) break;
+					if (bytesRead == -1)
+						break;
 					out.write(buffer, 0, bytesRead);
 				}
 			}
 		}
-		if ( blnFecharIn ){
-		    in.close();
+		if (blnFecharIn) {
+			in.close();
 		}
-		if ( blnFecharOut ){
-		    out.close();
+		if (blnFecharOut) {
+			out.close();
 		}
 	}
-	
+
 	public static void copiaStream(InputStream in, OutputStream out) throws IOException {
-	    copiaStream(in, out, false, false );
+		copiaStream(in, out, false, false);
 	}
-	
+
 	public static int retornaIdinsertChaveSecundaria(String tabela, String nomechaveprimaria, String valchaveprimaria, String coluna, Connection conn) throws Exception {
 		String varname1 = "";
 		// so funciona para pk single
@@ -568,53 +562,70 @@ public class Utilitario {
 
 		return id;
 	}
-/*
-	public static void main(String[] args) {
 
-		Connection conn =null;
+	private static final int maxsize = 100;
+
+	public static void sizeimage(String cod) {
 		try {
-			// sendEmail("g.kothe@hotmail.com", "aaaa", "Recuperação de senha");
-			conn = Conexao.getConexao();
-			// String validacao = Utilitario.StringGen(1000, 32).substring(0, 99);
-			// Sys_parametros sys = new Sys_parametros(Conexao.getConexao());
-			// String texto = " Bem vindo ao TragoAqui, para validar seu e-mail clique no link abaixo: <br> " + sys.getUrl_system() + "mobile/ac=validar&token=" + validacao;
-			// Utilitario.sendEmail("g.kothe@hotmail.com", texto, "Ativação da sua conta no TragoAqui!");
+//mudei direitorio para o m16_/***/produtos
+			BufferedImage originalImage = ImageIO.read(new File("D:\\Program Files\\Mydocs\\Visual Studio 2015\\Projects\\chamaTrago\\chamaTrago\\www\\img\\prods\\" + cod + ".jpg"));
+			int type = originalImage.getType() == 0 ? BufferedImage.TYPE_INT_ARGB : originalImage.getType();
+			Double IMG_WIDTH = new Double(maxsize);
+			Double IMG_HEIGHT = new Double(maxsize);
 
-			// System.out.println("Horario_1".toString().substring("Horario_1".toString().length() - 1, "Horario_1".toString().length()));
-			// String hora = "1234";
+			BufferedImage resizedImage = ImageIO.read(new File("D:\\Program Files\\Mydocs\\Visual Studio 2015\\Projects\\chamaTrago\\chamaTrago\\www\\img\\prods\\" + cod + ".jpg"));
+			int width = resizedImage.getWidth();
+			int height = resizedImage.getHeight();
 
-			// System.out.println(hora.substring(0, 2));
-			// System.out.println(hora.substring(2, 4));
+			if (width > maxsize || height > maxsize) {
+				if (height > width) {
 
-			String sql = " 	select * from pedido  where id_pedido = 1   ";
+					double perc = (width * 100) / height;
+					IMG_WIDTH = (maxsize * perc) / 100;
 
-			PreparedStatement st = conn.prepareStatement(sql);
+				} else if (height < width) {
 
-			ResultSet rs = st.executeQuery();
+					double perc = (height * 100) / width;
+					IMG_HEIGHT = (maxsize * perc) / 100;
 
-			if (rs.next()) {
-
-				Date datatempoentregateste;
-				Date datatempoentregateste2;
-				try {
-					datatempoentregateste = new SimpleDateFormat("HH:mm").parse("01:00");
-					datatempoentregateste2 = new SimpleDateFormat("HH:mm").parse(rs.getString("TEMPO_ESTIMADO_DESEJADO"));
-					System.out.println(datatempoentregateste);
-					System.out.println(datatempoentregateste2);	
-					
-					
-				} catch (Exception e) {
-					throw new Exception("Tempo de entrega inválidos!");
 				}
-				
-				if(datatempoentregateste.after(datatempoentregateste2)){
-					throw new Exception("Tempo de entrega é acima do desejado!");
-				}
-				
+				resizedImage = new BufferedImage(IMG_WIDTH.intValue(), IMG_HEIGHT.intValue(), type);
+
+				Graphics2D g = resizedImage.createGraphics();
+				g.drawImage(originalImage, 0, 0, IMG_WIDTH.intValue(), IMG_HEIGHT.intValue(), null);
+				g.dispose();
+
+				ImageIO.write(resizedImage, "jpg", new File("D:\\Program Files\\Mydocs\\Visual Studio 2015\\Projects\\chamaTrago\\chamaTrago\\www\\img\\prodsmin\\" + cod + "_min.jpg"));
+
 			}
+
 		} catch (Exception e) {
-			// TODO: handle exception
 			e.printStackTrace();
+			// TODO: handle exception
+		}
+
+	}
+
+	public static void resizeAllimage() throws Exception {
+		Connection conn = null;
+		try {
+			conn = Conexao.getConexao();
+			String varname1 = "";
+
+			varname1 = " select * from produtos ";
+
+			PreparedStatement st = conn.prepareStatement(varname1);
+			ResultSet rs2 = st.executeQuery();
+			while (rs2.next()) {
+				try {
+					sizeimage(rs2.getInt("ID_PROD") + "");
+				} catch (Exception e) {
+				}
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			// TODO: handle exception
 		}
 
 		try {
@@ -622,7 +633,44 @@ public class Utilitario {
 		} catch (Exception e) {
 			// TODO: handle exception
 		}
-	}*/
 
+	}
+
+	public static void main(String[] args) {
+		try {
+			resizeAllimage();
+		} catch (Exception e) {
+		}
+
+	}
+
+	/*
+	 * public static void main(String[] args) {
+	 * 
+	 * Connection conn =null; try { // sendEmail("g.kothe@hotmail.com", "aaaa", "Recuperação de senha"); conn = Conexao.getConexao(); // String validacao = Utilitario.StringGen(1000, 32).substring(0, 99); // Sys_parametros sys = new Sys_parametros(Conexao.getConexao()); // String texto = " Bem vindo ao TragoAqui, para validar seu e-mail clique no link abaixo: <br> " + sys.getUrl_system() + "mobile/ac=validar&token=" + validacao; // Utilitario.sendEmail("g.kothe@hotmail.com", texto, "Ativação da sua conta no TragoAqui!");
+	 * 
+	 * // System.out.println("Horario_1".toString().substring("Horario_1".toString().length() - 1, "Horario_1".toString().length())); // String hora = "1234";
+	 * 
+	 * // System.out.println(hora.substring(0, 2)); // System.out.println(hora.substring(2, 4));
+	 * 
+	 * String sql = " 	select * from pedido  where id_pedido = 1   ";
+	 * 
+	 * PreparedStatement st = conn.prepareStatement(sql);
+	 * 
+	 * ResultSet rs = st.executeQuery();
+	 * 
+	 * if (rs.next()) {
+	 * 
+	 * Date datatempoentregateste; Date datatempoentregateste2; try { datatempoentregateste = new SimpleDateFormat("HH:mm").parse("01:00"); datatempoentregateste2 = new SimpleDateFormat("HH:mm").parse(rs.getString("TEMPO_ESTIMADO_DESEJADO")); System.out.println(datatempoentregateste); System.out.println(datatempoentregateste2);
+	 * 
+	 * 
+	 * } catch (Exception e) { throw new Exception("Tempo de entrega inválidos!"); }
+	 * 
+	 * if(datatempoentregateste.after(datatempoentregateste2)){ throw new Exception("Tempo de entrega é acima do desejado!"); }
+	 * 
+	 * } } catch (Exception e) { // TODO: handle exception e.printStackTrace(); }
+	 * 
+	 * try { conn.close(); } catch (Exception e) { // TODO: handle exception } }
+	 */
 
 }

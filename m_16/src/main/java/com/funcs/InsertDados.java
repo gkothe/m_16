@@ -149,15 +149,14 @@ public class InsertDados {
 			conn = Conexao.getConexao();
 			conn.setAutoCommit(false);
 
-			
-		String	sql = "delete from produtos_distribuidora ";
-		PreparedStatement st = conn.prepareStatement(sql);
-		st.executeUpdate();
-		
-		sql = "delete from produtos ";
-		st = conn.prepareStatement(sql);
-		st.executeUpdate();
-			
+			String sql = "delete from produtos_distribuidora ";
+			PreparedStatement st = conn.prepareStatement(sql);
+			st.executeUpdate();
+
+			sql = "delete from produtos ";
+			st = conn.prepareStatement(sql);
+			st.executeUpdate();
+
 			int embranco = 0;
 
 			JSONArray erro = new JSONArray();
@@ -181,15 +180,15 @@ public class InsertDados {
 					String descabrev = addCellXLS(row, 2);
 
 					System.out.println(cod + "," + "" + descfull + "," + descabrev);
-
-					 sql = "INSERT INTO produtos (`ID_PROD`, `DESC_PROD`, `DESC_ABREVIADO`, `FLAG_ATIVO`) VALUES (?, ?, ?, ?);";
-					st3 = conn.prepareStatement(sql);
-					st3.setInt(1, Integer.parseInt(cod));
-					st3.setString(2, descfull);
-					st3.setString(3, descfull);
-					st3.setString(4, "S");
-					st3.executeUpdate();
-
+					if (!descfull.trim().equalsIgnoreCase("")) {
+						sql = "INSERT INTO produtos (`ID_PROD`, `DESC_PROD`, `DESC_ABREVIADO`, `FLAG_ATIVO`) VALUES (?, ?, ?, ?);";
+						st3 = conn.prepareStatement(sql);
+						st3.setInt(1, Integer.parseInt(cod));
+						st3.setString(2, descfull);
+						st3.setString(3, descfull);
+						st3.setString(4, "S");
+						st3.executeUpdate();
+					}
 				}
 			}
 
@@ -220,9 +219,9 @@ public class InsertDados {
 			PreparedStatement st = conn.prepareStatement(sql);
 			ResultSet rs = st.executeQuery();
 			while (rs.next()) {
-				
+
 				sql = "INSERT INTO produtos_distribuidora ( `ID_PROD`, `ID_DISTRIBUIDORA`, `VAL_PROD`, `FLAG_ATIVO`) VALUES ( ?, ?, ?, ?)";
-				
+
 				st = conn.prepareStatement(sql);
 				st.setInt(1, rs.getInt("ID_PROD"));
 				st.setInt(2, iddistr);
@@ -231,7 +230,7 @@ public class InsertDados {
 				st.setDouble(3, randomValue);
 				st.setString(4, "S");
 				st.executeUpdate();
-				
+
 			}
 
 			conn.commit();

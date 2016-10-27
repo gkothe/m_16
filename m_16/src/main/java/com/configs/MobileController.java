@@ -1178,7 +1178,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 			retorno.put("DESC_NOME_ABREV", rs.getString("DESC_NOME_ABREV"));/// abreviado da distribuidora
 			retorno.put("val_minentrega", rs.getString("VAL_ENTREGA_MIN"));///
 			retorno.put("valcar", df2.format(retornaValCarrinho(cod_usuario, conn) - (rs.getInt("QTD") * rs.getDouble("VAL_PROD"))));
-
+			retorno.put("img",  rs.getString("ID_PROD")+".jpg"); 
 		}
 
 		retorno.put("msg", "ok");
@@ -1438,7 +1438,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 		}
 
 		rs = st.executeQuery();
-
+//carrega produto unico foi para outra função
 		if (listagem) {
 
 			JSONArray prods = new JSONArray();
@@ -1452,6 +1452,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 				prod.put("VAL_PROD", "R$ " + df2.format(rs.getDouble("VAL_PROD")));//
 				prod.put("ID_DISTRIBUIDORA", rs.getString("ID_DISTRIBUIDORA"));
 				prod.put("DESC_NOME_ABREV", rs.getString("DESC_NOME_ABREV"));/// abreviado da distribuidora
+				prod.put("img",  rs.getString("ID_PROD")+"_min.jpg");/// abreviado da distribuidora
 				prods.add(prod);
 			}
 			double valcar = retornaValCarrinho(cod_usuario, conn);
@@ -1478,6 +1479,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 				retorno.put("DESC_NOME_ABREV", rs.getString("DESC_NOME_ABREV"));/// abreviado da distribuidora
 				retorno.put("val_minentrega", rs.getString("VAL_ENTREGA_MIN"));///
 				retorno.put("valcar", df2.format(retornaValCarrinho(cod_usuario, conn) - (rs.getInt("QTD") * rs.getDouble("VAL_PROD"))));
+				retorno.put("img",  rs.getString("ID_PROD")+".jpg");///
 			}
 
 		}
