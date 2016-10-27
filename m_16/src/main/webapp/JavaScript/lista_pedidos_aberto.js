@@ -117,7 +117,7 @@ function btnFormater(value, row, index) {
 
 function qtdProdFormatter(value, row, index) {
 	var html = "";
-	html = html + "<label style=\"font-weight: normal;\" data-toggle=\"tooltip\" title='" + value + "'  > " + row.qtdprod + " tipo(s) de produto(s). </label>";
+	html = html + "<label style=\"font-weight: normal;cursor: pointer;\" data-toggle=\"tooltip\" title='" + value + "'  > " + row.qtdprod + " tipo(s) de produto(s). </label>";
 
 	return html;
 }

@@ -42,6 +42,7 @@ import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
 import org.json.simple.parser.JSONParser;
 
+import com.funcs.Pedidos_ajax;
 import com.funcs.Sys_parametros;
 import com.funcs.Utilitario;
 import com.mercadopago.MP;
@@ -243,6 +244,8 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 					servicoCarrinho(request, response, conn, cod_usuario);
 				} else if (cmd.equalsIgnoreCase("txt_obs_hora")) {
 					txtObsHora(request, response, conn, cod_usuario, sys);
+				} else if (cmd.equalsIgnoreCase("finalizandoPedidoMobile")) {
+					Pedidos_ajax.finalizandoPedidoMobile(request, response, conn, cod_usuario);
 				}
 
 				else {

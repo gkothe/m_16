@@ -695,7 +695,7 @@ public class Pedidos_ajax {
 					throw new Exception("A hora atual deve exceder em " + sys.getPED_HORASOKEY() + "h a data de resposta para o pedido ser finalizado manualmente.");
 				}
 
-				sql = " update  pedido  set flag_status = 'O' where id_pedido = ? and ID_DISTRIBUIDORA = ? and flag_status = 'E' ";
+				sql = " update  pedido  set flag_status = 'O' where id_pedido = ? and ID_DISTRIBUIDORA = ?  ";
 				st = conn.prepareStatement(sql);
 				st.setInt(1, Integer.parseInt(id_pedido));
 				st.setInt(2, coddistr);
@@ -706,6 +706,38 @@ public class Pedidos_ajax {
 		}
 
 		objRetorno.put("msg", "ok");
+
+		out.print(objRetorno.toJSONString());
+
+	}
+	
+	
+	public static void finalizandoPedidoMobile(HttpServletRequest request, HttpServletResponse response, Connection conn, long idusario) throws Exception {
+		PrintWriter out = response.getWriter();
+		JSONObject objRetorno = new JSONObject();
+
+		String id_pedido = request.getParameter("id_pedido") == null ? "" : request.getParameter("id_pedido"); //
+
+		String sql = " select * from  pedido  left join pedido_motivo_cancelamento on pedido_motivo_cancelamento.id_pedido = pedido.id_pedido  where pedido.id_pedido = ? and ID_USUARIO = ? and (flag_status = 'E' or flag_status = 'S'  ) ";
+
+		PreparedStatement st = conn.prepareStatement(sql);
+		st.setInt(1, Integer.parseInt(id_pedido));
+		st.setLong(2, idusario);
+		ResultSet rs = st.executeQuery();
+		if (!rs.next()) {
+				throw new Exception("Pedido inválido! Entre em contato com o suporte");
+		} else {
+
+				sql = " update  pedido  set flag_status = 'O' where id_pedido = ? and ID_USUARIO = ?  ";
+				st = conn.prepareStatement(sql);
+				st.setInt(1, Integer.parseInt(id_pedido));
+				st.setLong(2, idusario);
+				st.executeUpdate();
+
+				objRetorno.put("msg", "ok");
+
+		}
+
 
 		out.print(objRetorno.toJSONString());
 

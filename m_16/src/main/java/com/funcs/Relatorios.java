@@ -121,7 +121,14 @@ public class Relatorios {
 			
 			hmParams.put("dataini", "");
 			hmParams.put("datafim", "");
-			
+			hmParams.put("situacao", Utilitario.returnStatusPedidoFlag(flag_situacao));
+			hmParams.put("servico", Utilitario.returnDistrTiposPedido(flag_servico));
+			hmParams.put("modo_pay", Utilitario.returnModoPagamento(flag_pagamento));
+			if(!cod_bairro.equalsIgnoreCase(""))
+				hmParams.put("bairro", Utilitario.getNomeBairro(conn, Integer.parseInt(cod_bairro), 0));
+			else
+				hmParams.put("bairro", "Todos");
+		
 			StringBuffer  sql = new StringBuffer();
 			
 			sql.append("SELECT desc_prod, ");
@@ -238,10 +245,13 @@ public class Relatorios {
 			ResultSet rs = st.executeQuery();
 			HashMap<String, Object> hmFat = new HashMap<String, Object>();
 			double val_totalprod = 0;
-			double val_total = 0;
+			
 			double val_entrega = 0;
 			double tragoaqui_perc = 0;
 			long id_ped = 0;
+			long qtd_ped = 0;
+			
+			
 			while (rs.next()) {
 				hmFat = new HashMap<String, Object>();
 				hmFat.put("flag_status", (rs.getString("flag_status")));
@@ -270,7 +280,7 @@ public class Relatorios {
 				hmFat.put("desc_motivo", rs.getString("desc_motivo"));
 			
 				if(rs.getLong("id_pedido")!=id_ped){
-				
+					qtd_ped++;
 					val_totalprod = val_totalprod + rs.getDouble("VAL_TOTALPROD");
 					val_entrega = val_entrega + rs.getDouble("val_entrega");
 					tragoaqui_perc = tragoaqui_perc + rs.getDouble("tragoaqui_perc");
@@ -278,7 +288,7 @@ public class Relatorios {
 					id_ped = rs.getLong("id_pedido");
 				}
 				
-				
+				hmFat.put("qtd_pedido",qtd_ped);
 				hmFat.put("summary_prodtotal",new BigDecimal( val_totalprod));
 				hmFat.put("summary_fretetotal",new BigDecimal( val_entrega));
 				hmFat.put("summary_total",new BigDecimal( val_totalprod + val_entrega));
@@ -381,9 +391,11 @@ public class Relatorios {
 			if(flag_opc.equalsIgnoreCase("A")){
 				hmParams.put("show_prods", true);
 				hmParams.put("show_info", true);
+				hmParams.put("opcao_exib", "Analítica");
 			}else{
 				hmParams.put("show_prods", false);
 				hmParams.put("show_info", false);
+				hmParams.put("opcao_exib", "Sintética");
 			}
 			
 			hmParams.put("nome_distribuidora", Utilitario.getNomeDistr(conn, coddistr, false));

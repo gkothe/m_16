@@ -135,6 +135,8 @@ public class Utilitario {
 			return "Em espera";
 		} else if (flag.equalsIgnoreCase("C")) {
 			return "Cancelado";
+		} else if (flag.equalsIgnoreCase("")) {
+			return "Todas";
 		}
 
 		return "";
@@ -148,6 +150,8 @@ public class Utilitario {
 			return "Entrega";
 		} else if (flag.equalsIgnoreCase("A")) {
 			return "Ambos - Retirada no local e tele-entrega";
+		} else if (flag.equalsIgnoreCase("")) {
+			return "Todos";
 		}
 
 		return "";
@@ -161,6 +165,8 @@ public class Utilitario {
 		} else if (flag.equalsIgnoreCase("T")) {
 			// return "Somente tele-entrega";
 			return "Entrega";
+		}else if (flag.equalsIgnoreCase("")) {
+			return "Todos";
 		}
 
 		return "";
@@ -215,6 +221,8 @@ public class Utilitario {
 			return "Cartão";
 		} else if (flag.equalsIgnoreCase("A")) {
 			return "Ambos";
+		}else if (flag.equalsIgnoreCase("")) {
+			return "Todos";
 		}
 
 		return "";

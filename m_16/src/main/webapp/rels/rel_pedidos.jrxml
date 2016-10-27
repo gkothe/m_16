@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="rel_gradehorario" pageWidth="842" pageHeight="595" orientation="Landscape" columnWidth="802" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="4e56c072-32bc-4521-b4c2-2f64501d11e8">
-	<property name="ireport.zoom" value="1.771561000000011"/>
-	<property name="ireport.x" value="446"/>
-	<property name="ireport.y" value="2"/>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="rel_gradehorario" pageWidth="842" pageHeight="595" orientation="Landscape" whenNoDataType="AllSectionsNoDetail" columnWidth="802" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="4e56c072-32bc-4521-b4c2-2f64501d11e8">
+	<property name="ireport.zoom" value="1.2100000000000073"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="4"/>
 	<subDataset name="PRODUTOS" uuid="8915ee26-d983-4741-84f8-37606df93cd9">
 		<property name="id_pedido" value="$F{id_pedido}"/>
 		<queryString language="SQL">
@@ -14,6 +14,11 @@
 	<parameter name="show_info" class="java.lang.Boolean"/>
 	<parameter name="dataini" class="java.lang.String"/>
 	<parameter name="datafim" class="java.lang.String"/>
+	<parameter name="servico" class="java.lang.String"/>
+	<parameter name="situacao" class="java.lang.String"/>
+	<parameter name="modo_pay" class="java.lang.String"/>
+	<parameter name="opcao_exib" class="java.lang.String"/>
+	<parameter name="bairro" class="java.lang.String"/>
 	<queryString>
 		<![CDATA[SELECT desc_prod,
        pedido_item.val_unit,
@@ -132,6 +137,9 @@ FROM   pedido
 	<field name="summary_prodtotal" class="java.math.BigDecimal"/>
 	<field name="summary_fretetotal" class="java.math.BigDecimal"/>
 	<field name="summary_perc" class="java.math.BigDecimal"/>
+	<field name="qtd_pedido" class="java.lang.Long">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
 	<variable name="variable1" class="java.lang.Integer" incrementType="Group" incrementGroup="A" calculation="Count">
 		<variableExpression><![CDATA[1]]></variableExpression>
 		<initialValueExpression><![CDATA[0]]></initialValueExpression>
@@ -152,7 +160,7 @@ FROM   pedido
 						<pen lineWidth="0.0"/>
 					</graphicElement>
 				</rectangle>
-				<textField pattern="dd/MM/yyyy HH:mm">
+				<textField pattern="dd/MM/yyyy HH:mm" isBlankWhenNull="true">
 					<reportElement x="236" y="0" width="65" height="15" uuid="360c12c8-3a62-441c-b627-009538c1a8d7"/>
 					<textElement textAlignment="Center">
 						<font size="8"/>
@@ -167,49 +175,49 @@ FROM   pedido
 					</textElement>
 					<textFieldExpression><![CDATA[$F{val_entrega}]]></textFieldExpression>
 				</textField>
-				<textField pattern="dd/MM/yyyy HH:mm">
+				<textField pattern="dd/MM/yyyy HH:mm" isBlankWhenNull="true">
 					<reportElement x="488" y="0" width="72" height="15" uuid="9c32b116-5571-4bf0-863f-75b8e689d133"/>
 					<textElement textAlignment="Center">
 						<font size="8"/>
 					</textElement>
 					<textFieldExpression><![CDATA[$F{flag_modopagamento}.equalsIgnoreCase("C") ? "C. Crédito" : "Dinheiro"]]></textFieldExpression>
 				</textField>
-				<textField>
+				<textField isBlankWhenNull="true">
 					<reportElement x="0" y="0" width="52" height="15" uuid="e7d98b41-9efd-43d0-bb96-d97aef078a4b"/>
 					<textElement textAlignment="Center">
 						<font size="8"/>
 					</textElement>
 					<textFieldExpression><![CDATA[$F{num_ped}]]></textFieldExpression>
 				</textField>
-				<textField pattern="dd/MM/yyyy HH:mm">
+				<textField pattern="dd/MM/yyyy HH:mm" isBlankWhenNull="true">
 					<reportElement x="366" y="0" width="122" height="15" uuid="f4db59f8-78f7-4470-937e-3edc10c37d36"/>
 					<textElement textAlignment="Center">
 						<font size="8"/>
 					</textElement>
 					<textFieldExpression><![CDATA[$F{desc_bairro}]]></textFieldExpression>
 				</textField>
-				<textField pattern="R$ #,##0.00">
+				<textField pattern="R$ #,##0.00" isBlankWhenNull="true">
 					<reportElement x="737" y="0" width="65" height="15" uuid="6fb1aed3-d3e1-474c-a1f7-179345a4c757"/>
 					<textElement textAlignment="Right">
 						<font size="8"/>
 					</textElement>
 					<textFieldExpression><![CDATA[$F{tragoaqui_perc}]]></textFieldExpression>
 				</textField>
-				<textField pattern="dd/MM/yyyy HH:mm">
+				<textField pattern="dd/MM/yyyy HH:mm" isBlankWhenNull="true">
 					<reportElement x="144" y="0" width="92" height="15" uuid="a0982ebb-bac6-40c2-8378-78f815590b5d"/>
 					<textElement textAlignment="Center">
 						<font size="8"/>
 					</textElement>
 					<textFieldExpression><![CDATA[$F{data_pedido_resposta}]]></textFieldExpression>
 				</textField>
-				<textField pattern="dd/MM/yyyy HH:mm">
+				<textField pattern="dd/MM/yyyy HH:mm" isBlankWhenNull="true">
 					<reportElement x="52" y="0" width="92" height="15" uuid="a0116790-cdea-466c-b48e-b9dce14164c6"/>
 					<textElement textAlignment="Center">
 						<font size="8"/>
 					</textElement>
 					<textFieldExpression><![CDATA[$F{data_pedido}]]></textFieldExpression>
 				</textField>
-				<textField pattern="R$ #,##0.00">
+				<textField pattern="R$ #,##0.00" isBlankWhenNull="true">
 					<reportElement x="560" y="0" width="62" height="15" uuid="77dd4c0a-b6bb-4fab-be63-1f0920585f0e"/>
 					<box leftPadding="0" rightPadding="2"/>
 					<textElement textAlignment="Right">
@@ -217,7 +225,7 @@ FROM   pedido
 					</textElement>
 					<textFieldExpression><![CDATA[$F{val_totalprod}]]></textFieldExpression>
 				</textField>
-				<textField pattern="dd/MM/yyyy HH:mm">
+				<textField pattern="dd/MM/yyyy HH:mm" isBlankWhenNull="true">
 					<reportElement x="301" y="0" width="65" height="15" uuid="7bdf6dae-72a4-4fd5-ac02-4b00c9332610"/>
 					<textElement textAlignment="Center">
 						<font size="8"/>
@@ -237,12 +245,17 @@ FROM   pedido
 		<groupFooter>
 			<band height="40" splitType="Prevent">
 				<printWhenExpression><![CDATA[$P{show_info}]]></printWhenExpression>
-				<textField>
+				<textField isBlankWhenNull="true">
 					<reportElement x="342" y="15" width="457" height="15" uuid="97289f67-96dc-41ae-95a0-7aedfd8583fc"/>
 					<textElement textAlignment="Center">
 						<font size="8"/>
 					</textElement>
-					<textFieldExpression><![CDATA[$F{desc_endereco_entrega} + " " + $F{desc_endereco_num_entrega} + " " + $F{desc_endereco_complemento_entrega}]]></textFieldExpression>
+					<textFieldExpression><![CDATA[($F{desc_endereco_entrega} == null ? "" : $F{desc_endereco_entrega})
++ " " +
+($F{desc_endereco_num_entrega} == null ? "" : $F{desc_endereco_num_entrega}) +
+" " +
+($F{desc_endereco_complemento_entrega} == null ? "" : $F{desc_endereco_complemento_entrega})
+]]></textFieldExpression>
 				</textField>
 				<staticText>
 					<reportElement x="0" y="0" width="173" height="15" uuid="4022999b-95ac-4e9e-a95c-cad07f2dd87b"/>
@@ -268,7 +281,7 @@ FROM   pedido
 					</textElement>
 					<text><![CDATA[Telefone]]></text>
 				</staticText>
-				<textField>
+				<textField isBlankWhenNull="true">
 					<reportElement x="190" y="15" width="111" height="15" uuid="8151e53f-0835-4b39-8ea8-d57df8655b4f"/>
 					<textElement textAlignment="Center">
 						<font size="8"/>
@@ -278,7 +291,7 @@ FROM   pedido
 				<line>
 					<reportElement x="0" y="34" width="802" height="1" uuid="4af1b547-1c15-406d-83a2-2c3d6177060d"/>
 				</line>
-				<textField>
+				<textField isBlankWhenNull="true">
 					<reportElement x="0" y="15" width="173" height="15" uuid="ca2b39fe-1df6-4888-850a-27545569889d"/>
 					<textElement textAlignment="Center">
 						<font size="8"/>
@@ -294,42 +307,6 @@ FROM   pedido
 			<band height="45" splitType="Prevent">
 				<printWhenExpression><![CDATA[$P{show_prods}]]></printWhenExpression>
 				<staticText>
-					<reportElement mode="Opaque" x="52" y="30" width="373" height="15" forecolor="#FFFFFF" backcolor="#CCCCCC" uuid="87b56914-f96d-4f93-988d-cd4651a0070f"/>
-					<box topPadding="0" leftPadding="0">
-						<pen lineWidth="0.25"/>
-						<topPen lineWidth="0.25"/>
-						<leftPen lineWidth="0.25"/>
-						<bottomPen lineWidth="0.25"/>
-						<rightPen lineWidth="0.25"/>
-					</box>
-					<textElement textAlignment="Center"/>
-					<text><![CDATA[Produto]]></text>
-				</staticText>
-				<staticText>
-					<reportElement mode="Opaque" x="424" y="30" width="64" height="15" forecolor="#FFFFFF" backcolor="#CCCCCC" uuid="831b6d89-9586-4439-9932-fdd45bfd04c3"/>
-					<box topPadding="0" leftPadding="0">
-						<pen lineWidth="0.25"/>
-						<topPen lineWidth="0.25"/>
-						<leftPen lineWidth="0.25"/>
-						<bottomPen lineWidth="0.25"/>
-						<rightPen lineWidth="0.25"/>
-					</box>
-					<textElement textAlignment="Center"/>
-					<text><![CDATA[Val. Unit]]></text>
-				</staticText>
-				<staticText>
-					<reportElement mode="Opaque" x="488" y="30" width="72" height="15" forecolor="#FFFFFF" backcolor="#CCCCCC" uuid="3019967c-ec5b-4a1c-9724-b54bb0b5f388"/>
-					<box topPadding="0" leftPadding="0">
-						<pen lineWidth="0.25"/>
-						<topPen lineWidth="0.25"/>
-						<leftPen lineWidth="0.25"/>
-						<bottomPen lineWidth="0.25"/>
-						<rightPen lineWidth="0.25"/>
-					</box>
-					<textElement textAlignment="Center"/>
-					<text><![CDATA[Quantidade]]></text>
-				</staticText>
-				<staticText>
 					<reportElement mode="Opaque" x="560" y="30" width="62" height="15" forecolor="#FFFFFF" backcolor="#CCCCCC" uuid="44b65a27-d39e-418a-818a-d7f31aeee592"/>
 					<box topPadding="0" leftPadding="0">
 						<pen lineWidth="0.25"/>
@@ -341,7 +318,7 @@ FROM   pedido
 					<textElement textAlignment="Center"/>
 					<text><![CDATA[Total]]></text>
 				</staticText>
-				<textField>
+				<textField isBlankWhenNull="true">
 					<reportElement x="0" y="15" width="52" height="15" uuid="70292c3d-43f2-4543-bf79-9bbcbeb78ea6"/>
 					<textElement textAlignment="Center">
 						<font size="8"/>
@@ -360,7 +337,7 @@ FROM   pedido
 					<textElement textAlignment="Center"/>
 					<text><![CDATA[Número]]></text>
 				</staticText>
-				<textField pattern="dd/MM/yyyy HH:mm">
+				<textField pattern="dd/MM/yyyy HH:mm" isBlankWhenNull="true">
 					<reportElement x="52" y="15" width="92" height="15" uuid="e9e251ee-45fd-4a62-a4cc-903653f3d777"/>
 					<textElement textAlignment="Center">
 						<font size="8"/>
@@ -379,7 +356,7 @@ FROM   pedido
 					<textElement textAlignment="Center"/>
 					<text><![CDATA[Data Pedido]]></text>
 				</staticText>
-				<textField pattern="dd/MM/yyyy HH:mm">
+				<textField pattern="dd/MM/yyyy HH:mm" isBlankWhenNull="true">
 					<reportElement x="144" y="15" width="92" height="15" uuid="7ab468c9-4f19-4f74-a7d4-436bbfc8e67e"/>
 					<textElement textAlignment="Center">
 						<font size="8"/>
@@ -398,7 +375,7 @@ FROM   pedido
 					<textElement textAlignment="Center"/>
 					<text><![CDATA[Data Resposta]]></text>
 				</staticText>
-				<textField pattern="dd/MM/yyyy HH:mm">
+				<textField pattern="dd/MM/yyyy HH:mm" isBlankWhenNull="true">
 					<reportElement x="236" y="15" width="65" height="15" uuid="3435db3b-03b0-480d-8888-3a085c09acea"/>
 					<textElement textAlignment="Center">
 						<font size="8"/>
@@ -417,7 +394,7 @@ FROM   pedido
 					<textElement textAlignment="Center"/>
 					<text><![CDATA[Status]]></text>
 				</staticText>
-				<textField pattern="dd/MM/yyyy HH:mm">
+				<textField pattern="dd/MM/yyyy HH:mm" isBlankWhenNull="true">
 					<reportElement x="301" y="15" width="65" height="15" uuid="5aa175e8-c92a-4617-b5ec-438fd568ad83"/>
 					<textElement textAlignment="Center">
 						<font size="8"/>
@@ -436,7 +413,7 @@ FROM   pedido
 					<textElement textAlignment="Center"/>
 					<text><![CDATA[Serviço]]></text>
 				</staticText>
-				<textField pattern="dd/MM/yyyy HH:mm">
+				<textField pattern="dd/MM/yyyy HH:mm" isBlankWhenNull="true">
 					<reportElement x="366" y="15" width="122" height="15" uuid="b0bdf4b8-360a-4620-92fd-b2080b4a6c05"/>
 					<textElement textAlignment="Center">
 						<font size="8"/>
@@ -455,7 +432,7 @@ FROM   pedido
 					<textElement textAlignment="Center"/>
 					<text><![CDATA[Bairro]]></text>
 				</staticText>
-				<textField pattern="dd/MM/yyyy HH:mm">
+				<textField pattern="dd/MM/yyyy HH:mm" isBlankWhenNull="true">
 					<reportElement x="488" y="15" width="72" height="15" uuid="79487b04-fba7-446d-af70-e514f6958a87"/>
 					<textElement textAlignment="Center">
 						<font size="8"/>
@@ -474,7 +451,7 @@ FROM   pedido
 					<textElement textAlignment="Center"/>
 					<text><![CDATA[Pagamento]]></text>
 				</staticText>
-				<textField pattern="R$ #,##0.00">
+				<textField pattern="R$ #,##0.00" isBlankWhenNull="true">
 					<reportElement x="560" y="15" width="62" height="15" uuid="861583b5-c8f9-4880-a986-ee53fb7aa3d5"/>
 					<box leftPadding="0" rightPadding="2"/>
 					<textElement textAlignment="Right">
@@ -526,7 +503,7 @@ FROM   pedido
 					<textElement textAlignment="Center"/>
 					<text><![CDATA[% TragoAqui]]></text>
 				</staticText>
-				<textField pattern="R$ #,##0.00">
+				<textField pattern="R$ #,##0.00" isBlankWhenNull="true">
 					<reportElement x="737" y="15" width="65" height="15" uuid="d8578adb-0bd8-4dcd-8ed3-3c38cc375498"/>
 					<textElement textAlignment="Right">
 						<font size="8"/>
@@ -553,6 +530,42 @@ FROM   pedido
 					</textElement>
 					<textFieldExpression><![CDATA[new BigDecimal( $F{val_totalprod}.doubleValue() + $F{val_entrega}.doubleValue())]]></textFieldExpression>
 				</textField>
+				<staticText>
+					<reportElement mode="Opaque" x="52" y="30" width="373" height="15" forecolor="#FFFFFF" backcolor="#CCCCCC" uuid="87b56914-f96d-4f93-988d-cd4651a0070f"/>
+					<box topPadding="0" leftPadding="0">
+						<pen lineWidth="0.25"/>
+						<topPen lineWidth="0.25"/>
+						<leftPen lineWidth="0.25"/>
+						<bottomPen lineWidth="0.25"/>
+						<rightPen lineWidth="0.25"/>
+					</box>
+					<textElement textAlignment="Center"/>
+					<text><![CDATA[Produto]]></text>
+				</staticText>
+				<staticText>
+					<reportElement mode="Opaque" x="424" y="30" width="64" height="15" forecolor="#FFFFFF" backcolor="#CCCCCC" uuid="831b6d89-9586-4439-9932-fdd45bfd04c3"/>
+					<box topPadding="0" leftPadding="0">
+						<pen lineWidth="0.25"/>
+						<topPen lineWidth="0.25"/>
+						<leftPen lineWidth="0.25"/>
+						<bottomPen lineWidth="0.25"/>
+						<rightPen lineWidth="0.25"/>
+					</box>
+					<textElement textAlignment="Center"/>
+					<text><![CDATA[Val. Unit]]></text>
+				</staticText>
+				<staticText>
+					<reportElement mode="Opaque" x="488" y="30" width="72" height="15" forecolor="#FFFFFF" backcolor="#CCCCCC" uuid="3019967c-ec5b-4a1c-9724-b54bb0b5f388"/>
+					<box topPadding="0" leftPadding="0">
+						<pen lineWidth="0.25"/>
+						<topPen lineWidth="0.25"/>
+						<leftPen lineWidth="0.25"/>
+						<bottomPen lineWidth="0.25"/>
+						<rightPen lineWidth="0.25"/>
+					</box>
+					<textElement textAlignment="Center"/>
+					<text><![CDATA[Quantidade]]></text>
+				</staticText>
 			</band>
 		</groupHeader>
 		<groupFooter>
@@ -574,14 +587,14 @@ FROM   pedido
 					</textElement>
 					<text><![CDATA[Observação:]]></text>
 				</staticText>
-				<textField pattern="dd/MM/yyyy HH:mm">
+				<textField pattern="dd/MM/yyyy HH:mm" isBlankWhenNull="true">
 					<reportElement x="190" y="20" width="111" height="15" uuid="78777e9a-f606-4479-b3b1-caf7051765ee"/>
 					<textElement textAlignment="Center">
 						<font size="8"/>
 					</textElement>
 					<textFieldExpression><![CDATA[$F{data_cancelamento}]]></textFieldExpression>
 				</textField>
-				<textField isStretchWithOverflow="true" pattern="dd/MM/yyyy HH:mm">
+				<textField isStretchWithOverflow="true" pattern="dd/MM/yyyy HH:mm" isBlankWhenNull="true">
 					<reportElement x="342" y="20" width="457" height="15" uuid="f88b515b-6747-4764-9bbd-670400790cde"/>
 					<textElement textAlignment="Center">
 						<font size="8"/>
@@ -596,7 +609,7 @@ FROM   pedido
 					</textElement>
 					<text><![CDATA[Motivo]]></text>
 				</staticText>
-				<textField>
+				<textField isBlankWhenNull="true">
 					<reportElement x="0" y="20" width="173" height="15" uuid="27ea0a70-fbfb-465d-b9a0-8c174c39ac12"/>
 					<textElement textAlignment="Center">
 						<font size="8"/>
@@ -610,7 +623,7 @@ FROM   pedido
 		<band splitType="Stretch"/>
 	</background>
 	<title>
-		<band height="70" splitType="Stretch">
+		<band height="98" splitType="Stretch">
 			<staticText>
 				<reportElement x="0" y="0" width="802" height="20" uuid="aa689b7b-3ba5-4faf-8dd0-9c8c3b5513bc"/>
 				<textElement textAlignment="Center">
@@ -648,8 +661,63 @@ FROM   pedido
 				<text><![CDATA[Data final:]]></text>
 			</staticText>
 			<textField>
-				<reportElement x="55" y="50" width="100" height="15" uuid="6bcd26aa-3c1d-41bd-ae32-7b769444776c"/>
+				<reportElement x="52" y="50" width="100" height="15" uuid="6bcd26aa-3c1d-41bd-ae32-7b769444776c"/>
 				<textFieldExpression><![CDATA[$P{datafim}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="287" y="35" width="41" height="15" uuid="c20e73e9-a019-4e7e-9117-54bcdf175c6c"/>
+				<textElement>
+					<font isBold="true" isPdfEmbedded="true"/>
+				</textElement>
+				<text><![CDATA[Serviço:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="520" y="35" width="103" height="15" uuid="73a6efad-b532-4588-b71a-4be89f783ff5"/>
+				<textElement>
+					<font isBold="true" isPdfEmbedded="true"/>
+				</textElement>
+				<text><![CDATA[Modo de pagamento:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="287" y="50" width="47" height="15" uuid="f73d42f6-9f59-4db2-9ec9-bd612683d1ab"/>
+				<textElement>
+					<font isBold="true" isPdfEmbedded="true"/>
+				</textElement>
+				<text><![CDATA[Situação:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="520" y="50" width="93" height="15" uuid="d30402d8-53ca-43ea-a8b5-77d4b31796c6"/>
+				<textElement>
+					<font isBold="true" isPdfEmbedded="true"/>
+				</textElement>
+				<text><![CDATA[Opção de exibição:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="65" width="35" height="15" uuid="bf706c3d-061b-4b49-8ad4-e98cc0075909"/>
+				<textElement>
+					<font isBold="true" isPdfEmbedded="true"/>
+				</textElement>
+				<text><![CDATA[Bairro:]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="35" y="65" width="228" height="15" uuid="e2f96d8d-d029-4f30-8268-be2d6a2209db"/>
+				<textFieldExpression><![CDATA[$P{bairro}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="328" y="35" width="154" height="15" uuid="3d520dcc-1354-43e2-a1cd-f6f90c5e8b5d"/>
+				<textFieldExpression><![CDATA[$P{servico}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="334" y="50" width="154" height="15" uuid="d0fbd4b1-72fb-452d-a5bd-1c77ac62a685"/>
+				<textFieldExpression><![CDATA[$P{situacao}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="623" y="35" width="166" height="15" uuid="377fc8dd-a7f6-45a6-98f5-4ca75832fcf9"/>
+				<textFieldExpression><![CDATA[$P{modo_pay}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="613" y="50" width="166" height="15" uuid="914b17d7-782b-4542-bb52-331dec6a8b0b"/>
+				<textFieldExpression><![CDATA[$P{opcao_exib}]]></textFieldExpression>
 			</textField>
 		</band>
 	</title>
@@ -806,6 +874,7 @@ FROM   pedido
 			</rectangle>
 			<textField>
 				<reportElement x="52" y="0" width="373" height="15" uuid="76ec29a2-14cd-4a02-9c53-94d43e01bca3"/>
+				<box leftPadding="2"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>
@@ -862,7 +931,7 @@ FROM   pedido
 	</pageFooter>
 	<summary>
 		<band height="50" splitType="Stretch">
-			<textField pattern="R$ #,##0.00">
+			<textField pattern="R$ #,##0.00" isBlankWhenNull="true">
 				<reportElement x="675" y="34" width="62" height="15" uuid="df6e56d7-c30c-4806-83cc-7c94bfbeb63b"/>
 				<box leftPadding="0" rightPadding="2"/>
 				<textElement textAlignment="Right">
@@ -870,7 +939,7 @@ FROM   pedido
 				</textElement>
 				<textFieldExpression><![CDATA[$F{summary_total}]]></textFieldExpression>
 			</textField>
-			<textField pattern="R$ #,##0.00">
+			<textField pattern="R$ #,##0.00" isBlankWhenNull="true">
 				<reportElement x="737" y="34" width="62" height="15" uuid="354bbcbe-c4e6-4c78-9f5e-ba804e969b0b"/>
 				<box leftPadding="0" rightPadding="2"/>
 				<textElement textAlignment="Right">
@@ -878,7 +947,7 @@ FROM   pedido
 				</textElement>
 				<textFieldExpression><![CDATA[$F{summary_perc}]]></textFieldExpression>
 			</textField>
-			<textField pattern="R$ #,##0.00">
+			<textField pattern="R$ #,##0.00" isBlankWhenNull="true">
 				<reportElement x="560" y="35" width="62" height="15" uuid="f25bd379-e335-454a-bec6-6283281c5033"/>
 				<box leftPadding="0" rightPadding="2"/>
 				<textElement textAlignment="Right">
@@ -922,7 +991,7 @@ FROM   pedido
 				<textElement textAlignment="Center"/>
 				<text><![CDATA[Frete]]></text>
 			</staticText>
-			<textField pattern="R$ #,##0.00">
+			<textField pattern="R$ #,##0.00" isBlankWhenNull="true">
 				<reportElement x="622" y="35" width="53" height="15" uuid="72ac0cff-1b6b-45b3-969a-ac111fe0dff5"/>
 				<box leftPadding="0" rightPadding="2"/>
 				<textElement textAlignment="Right">
@@ -943,12 +1012,32 @@ FROM   pedido
 				<text><![CDATA[Val. Produtos]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="560" y="5" width="239" height="15" uuid="9cfa9606-0b83-4289-aee7-d36943fd4cf4"/>
+				<reportElement x="445" y="5" width="354" height="15" uuid="9cfa9606-0b83-4289-aee7-d36943fd4cf4"/>
 				<textElement textAlignment="Center">
 					<font size="8" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Totais]]></text>
 			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="445" y="20" width="115" height="15" forecolor="#FFFFFF" backcolor="#CCCCCC" uuid="ca83ffb2-7f50-4ad5-8a12-960116c74e66"/>
+				<box topPadding="0" leftPadding="0">
+					<pen lineWidth="0.25"/>
+					<topPen lineWidth="0.25"/>
+					<leftPen lineWidth="0.25"/>
+					<bottomPen lineWidth="0.25"/>
+					<rightPen lineWidth="0.25"/>
+				</box>
+				<textElement textAlignment="Center"/>
+				<text><![CDATA[Quantidade de pedidos]]></text>
+			</staticText>
+			<textField pattern="#,##0" isBlankWhenNull="true">
+				<reportElement x="445" y="34" width="115" height="15" uuid="000dbd66-c57a-4df9-a9a3-2cc4db4e2be6"/>
+				<box leftPadding="0" rightPadding="2"/>
+				<textElement textAlignment="Center">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{qtd_pedido}]]></textFieldExpression>
+			</textField>
 		</band>
 	</summary>
 </jasperReport>
