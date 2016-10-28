@@ -743,12 +743,13 @@ input:focus {
 	<!-- Bootstrap -->
 	<script
 		src="gentelella-master/vendors/bootstrap/dist/js/bootstrap.min.js"></script>
-	<!-- Custom Theme Scripts  tem que ter-->
-	<script src="gentelella-master/production/js/custom.js"></script>
+	
+	
 <!-- Chart.js -->
 	<script src="gentelella-master/vendors/Chart.js/dist/Chart.min.js"></script>
-
-
+<!-- Custom Theme Scripts  tem que ter-->
+<!-- 	<script src="gentelella-master/production/js/custom.js"></script> -->
+	<script src="gentelella-master/build/js/custom.js"></script>
 
 	<script type="text/javascript"
 		src="JavaScript/jquery-ui-1.10.4.custom/js/jquery-ui-1.10.4.custom.min.js"></script>
@@ -794,7 +795,7 @@ input:focus {
 		src="JavaScript/inputmask/inputmask.date.extensions.js"></script>
 	<script type="text/javascript"
 		src="JavaScript/inputmask/jquery.inputmask.js"></script>
-
+	
 
 </body>
 

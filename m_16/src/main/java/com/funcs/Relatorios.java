@@ -54,14 +54,15 @@ public class Relatorios {
 		JSONArray retorno = new JSONArray();
 		PrintWriter out = response.getWriter();
 
-		String sql = "select distinct FLAG_PEDIDO_RET_ENTRE, count(FLAG_PEDIDO_RET_ENTRE) as qtd from pedido  where id_distribuidora = ? group by FLAG_PEDIDO_RET_ENTRE ;";
+		String sql = "select distinct FLAG_PEDIDO_RET_ENTRE, count(FLAG_PEDIDO_RET_ENTRE) as qtd from pedido  where id_distribuidora = ? and flag_status = 'O' group by FLAG_PEDIDO_RET_ENTRE ;";
 		PreparedStatement st = conn.prepareStatement(sql);
 		st.setInt(1, coddistr);
 		ResultSet rs = st.executeQuery();
 		while (rs.next()) {
 			JSONObject obj = new JSONObject();	
-			obj.put("servico", rs.getString("FLAG_PEDIDO_RET_ENTRE").equalsIgnoreCase("T") ? "Entrega" : "Retirada em local");
+			obj.put("desc", rs.getString("FLAG_PEDIDO_RET_ENTRE").equalsIgnoreCase("T") ? "Entrega" : "Retirada");
 			obj.put("qtd", rs.getInt("qtd"));
+			obj.put("qtddf",df.format( rs.getInt("qtd")));
 			retorno.add(obj);
 		}
 
@@ -83,6 +84,41 @@ public class Relatorios {
 		out.print(retorno.toJSONString());
 	}
 
+	
+	public static void dashPagamento(HttpServletRequest request, HttpServletResponse response, Connection conn, int coddistr) throws Exception {
+		JSONArray retorno = new JSONArray();
+		PrintWriter out = response.getWriter();
+
+		String sql = "select distinct FLAG_MODOPAGAMENTO, count(FLAG_MODOPAGAMENTO) as qtd from pedido  where id_distribuidora = ?  and flag_status = 'O' group by FLAG_MODOPAGAMENTO ;";
+		PreparedStatement st = conn.prepareStatement(sql);
+		st.setInt(1, coddistr);
+		ResultSet rs = st.executeQuery();
+		while (rs.next()) {
+			JSONObject obj = new JSONObject();	
+			obj.put("desc", rs.getString("FLAG_MODOPAGAMENTO").equalsIgnoreCase("C") ? "Cartão Créd." : "Dinheiro");
+			obj.put("qtd", rs.getInt("qtd"));
+			obj.put("qtddf",df.format( rs.getInt("qtd")));
+			retorno.add(obj);
+		}
+
+		double total = 0;
+		for (int i = 0; i < retorno.size(); i++) {
+			JSONObject obj = (JSONObject)retorno.get(i);
+			total = total + (Integer)obj.get("qtd");
+		}
+		
+		for (int i = 0; i < retorno.size(); i++) {
+			JSONObject obj = (JSONObject)retorno.get(i);
+			int qtd =  (Integer)obj.get("qtd");
+			obj.put("perc", df3.format((100 * qtd )  / total ));
+			
+		}
+		
+		System.out.println(retorno.toJSONString());
+
+		out.print(retorno.toJSONString());
+	}
+	
 	
 	
 	public static JRMapCollectionDataSource relGradeHorariosDataSource(int coddistr, Connection conn) throws Exception {

@@ -210,8 +210,12 @@ public class HomeController extends javax.servlet.http.HttpServlet {
 				Parametros_ajax.salvarConfigsHorariosBairrosNovo(request, response, conn, coddistr);
 			} else if (cmd.equalsIgnoreCase("dashServico")) {
 				Relatorios.dashServico(request, response, conn, coddistr);
+			} else if (cmd.equalsIgnoreCase("dashPagamento")) {
+				Relatorios.dashPagamento(request, response, conn, coddistr);
 			}
 
+			
+			
 			conn.commit();
 		} catch (Exception ex) {
 			if (ex.getMessage() == null || ex.getMessage().equals("")) {
