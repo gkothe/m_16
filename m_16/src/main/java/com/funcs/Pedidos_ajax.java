@@ -259,7 +259,7 @@ public class Pedidos_ajax {
 		String flag_situacao = request.getParameter("flag_situacao") == null ? "" : request.getParameter("flag_situacao");
 		String flag_pedido_ret_entre = request.getParameter("flag_pedido_ret_entre") == null ? "" : request.getParameter("flag_pedido_ret_entre");
 
-		String sql = "select * from pedido inner join bairros on bairros.cod_bairro = pedido.cod_bairro left join pedido_motivo_cancelamento on pedido_motivo_cancelamento.id_pedido = pedido.id_pedido where ID_DISTRIBUIDORA = ? and (flag_status = 'O' or flag_status = 'R' or (flag_status = 'C' and FLAG_CONFIRMADO_DISTRIBUIDORA = 'S' )) ";
+		String sql = "select * from pedido LEFT join bairros on bairros.cod_bairro = pedido.cod_bairro left join pedido_motivo_cancelamento on pedido_motivo_cancelamento.id_pedido = pedido.id_pedido where ID_DISTRIBUIDORA = ? and (flag_status = 'O' or flag_status = 'R' or (flag_status = 'C' and FLAG_CONFIRMADO_DISTRIBUIDORA = 'S' )) ";
 
 		if (!num_pedido_historico.equalsIgnoreCase("")) {
 			sql = sql + " and NUM_PED  = ? ";

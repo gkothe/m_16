@@ -140,6 +140,8 @@ input:focus {
 										<li><a href="form.html">The void is here</a></li>
 										<li><a linkmenu="rel_pedidos"
 											onclick="trocaPag(this,'N',event);" class="clickmenu">Pedidos</a></li>
+										<li><a linkmenu="dashpedidos"
+											onclick="trocaPag(this,'N',event);" class="clickmenu">Dashboard Pedidos</a></li>	
 									</ul></li>
 
 							</ul>
@@ -743,6 +745,10 @@ input:focus {
 		src="gentelella-master/vendors/bootstrap/dist/js/bootstrap.min.js"></script>
 	<!-- Custom Theme Scripts  tem que ter-->
 	<script src="gentelella-master/production/js/custom.js"></script>
+<!-- Chart.js -->
+	<script src="gentelella-master/vendors/Chart.js/dist/Chart.min.js"></script>
+
+
 
 	<script type="text/javascript"
 		src="JavaScript/jquery-ui-1.10.4.custom/js/jquery-ui-1.10.4.custom.min.js"></script>

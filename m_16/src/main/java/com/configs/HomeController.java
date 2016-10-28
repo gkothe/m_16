@@ -92,7 +92,12 @@ public class HomeController extends javax.servlet.http.HttpServlet {
 					wizardhorarios(request, response);
 				} else if (strTipo.equalsIgnoreCase("home")) {
 					home(request, response);
-				} else if (strTipo.equalsIgnoreCase("rel_pedidos")) {
+				} else if (strTipo.equalsIgnoreCase("dashpedidos")) {
+					dashpedidos(request, response);
+				}
+
+				
+				else if (strTipo.equalsIgnoreCase("rel_pedidos")) {
 					relPedidos(request, response);
 				} else if (strTipo.equalsIgnoreCase("rel_pedidospdf")) {
 					Relatorios.relPedidos(request, response,Integer.parseInt(request.getSession(false).getAttribute("coddis").toString()));
@@ -203,6 +208,8 @@ public class HomeController extends javax.servlet.http.HttpServlet {
 				Parametros_ajax.loadBairrosWizard(request, response, conn, coddistr);
 			} else if (cmd.equalsIgnoreCase("salvarConfigsHorariosBairros")) {
 				Parametros_ajax.salvarConfigsHorariosBairrosNovo(request, response, conn, coddistr);
+			} else if (cmd.equalsIgnoreCase("dashServico")) {
+				Relatorios.dashServico(request, response, conn, coddistr);
 			}
 
 			conn.commit();
@@ -246,6 +253,18 @@ public class HomeController extends javax.servlet.http.HttpServlet {
 		} finally {
 		}
 	}
+	
+	private void dashpedidos(HttpServletRequest request, HttpServletResponse response) throws Exception {
+		try {
+			request.getRequestDispatcher("/WEB-INF/dash1_pedidos.html").forward(request, response);
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw e;
+		} finally {
+		}
+	}
+	
+	
 	
 	private void listapedfechado(HttpServletRequest request, HttpServletResponse response) throws Exception {
 		try {

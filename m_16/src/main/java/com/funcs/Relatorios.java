@@ -9,6 +9,9 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
+import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -40,8 +43,48 @@ import net.sf.jasperreports.engine.export.JRPdfExporterParameter;
 
 public class Relatorios {
 
-	// Dias são fixos, 1 segunda feira ate 7 domingo, 8=custom
 
+	public static DecimalFormatSymbols dfs = new DecimalFormatSymbols(new Locale("pt", "BR"));
+	public static NumberFormat df = new DecimalFormat("###,###.#", dfs);
+	public static NumberFormat df2 = new DecimalFormat("#,###,##0.00", dfs);
+	public static NumberFormat df3 = new DecimalFormat("#,###,##0.0", dfs);
+	
+
+	public static void dashServico(HttpServletRequest request, HttpServletResponse response, Connection conn, int coddistr) throws Exception {
+		JSONArray retorno = new JSONArray();
+		PrintWriter out = response.getWriter();
+
+		String sql = "select distinct FLAG_PEDIDO_RET_ENTRE, count(FLAG_PEDIDO_RET_ENTRE) as qtd from pedido  where id_distribuidora = ? group by FLAG_PEDIDO_RET_ENTRE ;";
+		PreparedStatement st = conn.prepareStatement(sql);
+		st.setInt(1, coddistr);
+		ResultSet rs = st.executeQuery();
+		while (rs.next()) {
+			JSONObject obj = new JSONObject();	
+			obj.put("servico", rs.getString("FLAG_PEDIDO_RET_ENTRE").equalsIgnoreCase("T") ? "Entrega" : "Retirada em local");
+			obj.put("qtd", rs.getInt("qtd"));
+			retorno.add(obj);
+		}
+
+		double total = 0;
+		for (int i = 0; i < retorno.size(); i++) {
+			JSONObject obj = (JSONObject)retorno.get(i);
+			total = total + (Integer)obj.get("qtd");
+		}
+		
+		for (int i = 0; i < retorno.size(); i++) {
+			JSONObject obj = (JSONObject)retorno.get(i);
+			int qtd =  (Integer)obj.get("qtd");
+			obj.put("perc", df3.format((100 * qtd )  / total ));
+			
+		}
+		
+		System.out.println(retorno.toJSONString());
+
+		out.print(retorno.toJSONString());
+	}
+
+	
+	
 	public static JRMapCollectionDataSource relGradeHorariosDataSource(int coddistr, Connection conn) throws Exception {
 
 		Collection<Map<String, ?>> arrLinhas = new ArrayList<Map<String, ?>>();
