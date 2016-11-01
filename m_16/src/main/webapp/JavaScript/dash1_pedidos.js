@@ -440,7 +440,6 @@ function dashInfosBasicas() {
 	var dias_semana = $("#dias_semana").val();
 	dias_semana = JSON.stringify(dias_semana);
 	
-	
 	$.blockUI({
 		message : 'Carregando...'
 	});
@@ -451,7 +450,7 @@ function dashInfosBasicas() {
 		dataType : "json",
 		async : true,
 		data : {
-			cmd : 'dashInfosBasicas',
+			cmd : 'dashHoraPed',
 			data_pedido_ini : data_pedido_ini,
 			data_pedido_fim : data_pedido_fim,
 			cod_bairro : cod_bairro,

@@ -265,6 +265,46 @@ public class Relatorios {
 
 		out.print(retorno.toJSONString());
 	}
+	
+	
+	
+	public static void dashHoraPed(HttpServletRequest request, HttpServletResponse response, Connection conn, int coddistr) throws Exception {
+		JSONArray retorno = new JSONArray();
+		PrintWriter out = response.getWriter();
+
+		String data_pedido_ini = request.getParameter("data_pedido_ini") == null ? "" : request.getParameter("data_pedido_ini");
+		String data_pedido_fim = request.getParameter("data_pedido_fim") == null ? "" : request.getParameter("data_pedido_fim");
+		String cod_bairro = request.getParameter("cod_bairro") == null ? "" : request.getParameter("cod_bairro");
+		String hora_final = request.getParameter("hora_final") == null ? "" : request.getParameter("hora_final");
+		String hora_inicial = request.getParameter("hora_inicial") == null ? "" : request.getParameter("hora_inicial");
+		String flag_servico = request.getParameter("flag_servico") == null ? "" : request.getParameter("flag_servico");
+		String dias_semana = request.getParameter("dias_semana") == null ? "" : request.getParameter("dias_semana");
+
+		String sql = "SELECT  HOUR(DATA_PEDIDO) as hora , TIME_FORMAT(DATA_PEDIDO,'%H:00' ) as horaformated , COUNT(*) FROM pedido where id_distribuidora = ?  and flag_status = 'O'  ";
+
+		sql = parametrosDash(sql, hora_inicial, hora_final, dias_semana, cod_bairro, data_pedido_ini, data_pedido_fim, flag_servico);
+
+		sql = sql + " group by  HOUR(DATA_PEDIDO) ";
+
+		PreparedStatement st = conn.prepareStatement(sql);
+		st.setInt(1, coddistr);
+		int contparam = 2;
+
+		parametrosDashSt(st, contparam, hora_inicial, hora_final, dias_semana, cod_bairro, data_pedido_ini, data_pedido_fim, flag_servico);
+
+		ResultSet rs = st.executeQuery();
+		while (rs.next()) {
+			JSONObject obj = new JSONObject();
+			obj.put("hora", rs.getString("hora"));
+			obj.put("horaformated", rs.getString("horaformated"));
+			retorno.add(obj);
+		}
+
+	
+
+		out.print(retorno.toJSONString());
+	}
+	
 
 	public static void dashProdutos(HttpServletRequest request, HttpServletResponse response, Connection conn, int coddistr) throws Exception {
 		JSONArray retorno = new JSONArray();
@@ -293,7 +333,6 @@ public class Relatorios {
 
 		sql.append(" group by pedido_item.id_prod ,desc_prod order by sum(QTD_PROD) desc limit 20 ;");
 
-		System.out.println(sql.toString());
 
 		PreparedStatement st = conn.prepareStatement(sql.toString());
 		st.setInt(1, coddistr);
@@ -313,6 +352,53 @@ public class Relatorios {
 		out.print(retorno.toJSONString());
 	}
 
+	public static void dashProdutosVal(HttpServletRequest request, HttpServletResponse response, Connection conn, int coddistr) throws Exception {
+		JSONArray retorno = new JSONArray();
+		PrintWriter out = response.getWriter();
+
+		String data_pedido_ini = request.getParameter("data_pedido_ini") == null ? "" : request.getParameter("data_pedido_ini");
+		String data_pedido_fim = request.getParameter("data_pedido_fim") == null ? "" : request.getParameter("data_pedido_fim");
+		String cod_bairro = request.getParameter("cod_bairro") == null ? "" : request.getParameter("cod_bairro");
+		String hora_final = request.getParameter("hora_final") == null ? "" : request.getParameter("hora_final");
+		String hora_inicial = request.getParameter("hora_inicial") == null ? "" : request.getParameter("hora_inicial");
+		String flag_servico = request.getParameter("flag_servico") == null ? "" : request.getParameter("flag_servico");
+		String dias_semana = request.getParameter("dias_semana") == null ? "" : request.getParameter("dias_semana");
+
+		StringBuffer sql = new StringBuffer();
+		sql.append("SELECT pedido_item.id_prod, ");
+		sql.append("       Sum(val_unit * qtd_prod ) as valsold,  ");
+		sql.append("       DESC_ABREVIADO as desc_prod ");
+		sql.append("FROM   pedido_item ");
+		sql.append("       INNER JOIN pedido ");
+		sql.append("               ON pedido.id_pedido = pedido_item.id_pedido ");
+		sql.append("       INNER JOIN produtos ");
+		sql.append("               ON produtos.id_prod = pedido_item.id_prod ");
+		sql.append("         where id_distribuidora = ?  and flag_status = 'O'  ");
+
+		sql = new StringBuffer(parametrosDash(sql.toString(), hora_inicial, hora_final, dias_semana, cod_bairro, data_pedido_ini, data_pedido_fim, flag_servico));
+
+		sql.append(" group by pedido_item.id_prod ,desc_prod order by sum(val_unit * qtd_prod ) desc limit 20 ;");
+
+
+		PreparedStatement st = conn.prepareStatement(sql.toString());
+		st.setInt(1, coddistr);
+		int contparam = 2;
+
+		parametrosDashSt(st, contparam, hora_inicial, hora_final, dias_semana, cod_bairro, data_pedido_ini, data_pedido_fim, flag_servico);
+
+		ResultSet rs = st.executeQuery();
+		while (rs.next()) {
+			JSONObject obj = new JSONObject();
+			obj.put("desc", rs.getString("desc_prod"));
+			obj.put("valsold", rs.getInt("valsold"));
+			obj.put("valsold", df2.format(rs.getInt("valsold")));
+			retorno.add(obj);
+		}
+
+		out.print(retorno.toJSONString());
+	}
+	
+	
 	public static void dashPagamento(HttpServletRequest request, HttpServletResponse response, Connection conn, int coddistr) throws Exception {
 		JSONArray retorno = new JSONArray();
 		PrintWriter out = response.getWriter();

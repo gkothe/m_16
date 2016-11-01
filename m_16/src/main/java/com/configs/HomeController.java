@@ -96,11 +96,10 @@ public class HomeController extends javax.servlet.http.HttpServlet {
 					dashpedidos(request, response);
 				}
 
-				
 				else if (strTipo.equalsIgnoreCase("rel_pedidos")) {
 					relPedidos(request, response);
 				} else if (strTipo.equalsIgnoreCase("rel_pedidospdf")) {
-					Relatorios.relPedidos(request, response,Integer.parseInt(request.getSession(false).getAttribute("coddis").toString()));
+					Relatorios.relPedidos(request, response, Integer.parseInt(request.getSession(false).getAttribute("coddis").toString()));
 				} else if (strTipo.equalsIgnoreCase("rel_gradehorarios")) {
 					rel_gradehorarios(request, response);
 				} else if (strTipo.equalsIgnoreCase("logout")) {
@@ -163,7 +162,7 @@ public class HomeController extends javax.servlet.http.HttpServlet {
 			conn = Conexao.getConexao();
 			conn.setAutoCommit(false);
 			String cmd = request.getParameter("cmd");
-//			System.out.println(cmd);
+			// System.out.println(cmd);
 			atualizaLastAjax(coddistr, conn);
 
 			if (cmd.equalsIgnoreCase("checkPedidos")) {
@@ -215,11 +214,14 @@ public class HomeController extends javax.servlet.http.HttpServlet {
 			} else if (cmd.equalsIgnoreCase("dashProdutos")) {
 				Relatorios.dashProdutos(request, response, conn, coddistr);
 			} else if (cmd.equalsIgnoreCase("dashInfosBasicas")) {
-				Relatorios	.dashInfosBasicas(request, response, conn, coddistr);
+				Relatorios.dashInfosBasicas(request, response, conn, coddistr);
+			} else if (cmd.equalsIgnoreCase("dashProdutosVal")) {
+				Relatorios.dashProdutosVal(request, response, conn, coddistr);
+			} else if (cmd.equalsIgnoreCase("dashHoraPed")) {
+				Relatorios.dashHoraPed(request, response, conn, coddistr);
 			}
+					
 
-			
-			
 			conn.commit();
 		} catch (Exception ex) {
 			if (ex.getMessage() == null || ex.getMessage().equals("")) {
@@ -254,14 +256,14 @@ public class HomeController extends javax.servlet.http.HttpServlet {
 	private void rel_gradehorarios(HttpServletRequest request, HttpServletResponse response) throws Exception {
 		try {
 			int coddistr = Integer.parseInt(request.getSession(false).getAttribute("coddis").toString());
-			Relatorios.relGradeHorarios(request, response, coddistr);			
+			Relatorios.relGradeHorarios(request, response, coddistr);
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw e;
 		} finally {
 		}
 	}
-	
+
 	private void dashpedidos(HttpServletRequest request, HttpServletResponse response) throws Exception {
 		try {
 			request.getRequestDispatcher("/WEB-INF/dash1_pedidos.html").forward(request, response);
@@ -271,9 +273,7 @@ public class HomeController extends javax.servlet.http.HttpServlet {
 		} finally {
 		}
 	}
-	
-	
-	
+
 	private void listapedfechado(HttpServletRequest request, HttpServletResponse response) throws Exception {
 		try {
 			request.getRequestDispatcher("/WEB-INF/lista_pedidos_historico.html").forward(request, response);
@@ -283,7 +283,7 @@ public class HomeController extends javax.servlet.http.HttpServlet {
 		} finally {
 		}
 	}
-	
+
 	private void relPedidos(HttpServletRequest request, HttpServletResponse response) throws Exception {
 		try {
 			request.getRequestDispatcher("/WEB-INF/rel_pedidos.html").forward(request, response);
