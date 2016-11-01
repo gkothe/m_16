@@ -1,5 +1,9 @@
 <html>
 <script type="text/javascript" src="JavaScript/dash1_pedidos.js"></script>
+<script src="gentelella-master/vendors/raphael/raphael.min.js"></script>
+<script src="gentelella-master/vendors/morris.js/morris.min.js"></script>
+<script src="gentelella-master/vendors/echarts/dist/echarts.min.js"></script>
+
 <div class="x_title">
 	<div class="row">
 		<div class="col-xs-12 col-md-12 col-lg-12">
@@ -12,81 +16,250 @@
 
 <div class="x_content">
 
-	<div style="width: 95%; height: 100%"
-		class="container bs-docs-container">
-		<div class="row rowpad">
-			<div class="col-md-12 col-sm-12 col-xs-12">
-				<div class="x_panel ">
-					<div class="x_title">
-						<h2>
-							Serviços realizados <small>Entrega/Retirada</small>
-						</h2>
-							<ul class="nav navbar-right panel_toolbox">
-							<li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a></li>
-						</ul>
-						<div class="clearfix"></div>
-					</div>
-					<div class="x_content">
-						<table class="" id="dash_servtable"
-							style="max-width: 600px !important; min-width: 600px !important;">
-							<tr>
-								<th style="width: 40%; text-align: center">
-									<p>Serviços</p>
-								</th>
-								<th style="text-align: center">Descrição</th>
-								<th style="text-align: center">Quantidade</th>
-								<th style="text-align: center">Percentual</th>
-							</tr>
-							<tr>
-								<td align="left" rowspan="10">
-									<canvas id="pie_servico" height="140" width="140"
-										style="margin: 15px 10px 10px 0"></canvas>
-								</td>
-							</tr>
 
-						</table>
+	<ul class="nav nav-pills" id="tabs_dash" role="tablist">
+		<li role="presentation" class="active"><a href="#filtros"
+			aria-controls="home" role="tab" data-toggle="tab">Filtros</a></li>
+		<li role="presentation"><a href="#dashboard1"
+			aria-controls="home" role="tab" data-toggle="tab">Dashboard</a></li>
+
+	</ul>
+
+	<div class="tab-content">
+
+		<div role="tabpanel" class="tab-pane active" id="filtros">
+
+			<div style="width: 95%; height: 100%"
+				class="container bs-docs-container">
+				<br>
+				<div class="row">
+
+					<div class="col-xs-4 col-md-4 col-lg-4 ">
+						<label for="">Período - De </label>
+						<div class="input-group">
+							<input type="text" class="form-control data" id="data_pedido_ini"
+								placeholder="Data inicial" /> <span
+								class="input-group-addon glyphicon glyphicon-calendar"> </span>
+						</div>
+					</div>
+
+					<div class="col-xs-1 col-sm-1 col-md-1 col-lg-1 " align="right"></div>
+
+					<div class="col-xs-4 col-md-4 col-lg-4 ">
+						<label for="">Período - Até </label>
+
+						<div class="input-group">
+							<input type="text" class="form-control data" id="data_pedido_fim"
+								placeholder="Data final" /> <span
+								class="input-group-addon glyphicon glyphicon-calendar"> </span>
+						</div>
+					</div>
+
+				</div>
+
+
+
+				<div class="row">
+					<div class="col-xs-8 col-sm-8 col-md-8 col-lg-8">
+						<label for=""> Dias da semana</label>
+						<div class="form-group">
+							<select id="dias_semana" multiple="multiple">
+								<option value="1">Segunda-feira</option>
+								<option value="2">Terça-feira</option>
+								<option value="3">Quarta-feira</option>
+								<option value="4">Quinta-feira</option>
+								<option value="5">Sexta-feira</option>
+								<option value="6">Sábado</option>
+								<option value="7">Domingo</option>
+							</select>
+						</div>
 					</div>
 				</div>
-			</div>
 
-		</div>
+				<div class="row rowpad">
 
-		<div class="row rowpad">
-			<div class="col-md-12 col-sm-12 col-xs-12">
-				<div class="x_panel">
-					<div class="x_title">
-						<h2>
-							Modo de Pagamento Usados <small>Dinheiro/Cartão Créd.</small>
-						</h2>
-						<ul class="nav navbar-right panel_toolbox">
-							<li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a></li>
-						</ul>
-						<div class="clearfix"></div>
+					<div class="col-xs-4 col-sm-4 col-md-4	 col-lg-4">
+						<label for=""> Hora inicial</label>
+						<div class="form-group">
+							<input type="text" maxlength="22" class="form-control hora"
+								id="hora_inicial" />
+						</div>
 					</div>
-					<div class="x_content">
-						<table class="" id="dash_pagtable"
-							style="max-width: 600px !important; min-width: 600px !important;">
-							<tr>
-								<th style="width: 40%; text-align: center">
-									<p>Modo</p>
-								</th>
-								<th style="text-align: center">Descrição</th>
-								<th style="text-align: center">Quantidade</th>
-								<th style="text-align: center">Percentual</th>
-							</tr>
-							<tr>
-								<td align="left" rowspan="10">
-									<canvas id="pie_pagamento" height="140" width="140"
-										style="margin: 15px 10px 10px 0"></canvas>
-								</td>
-							</tr>
+					<div class="col-xs-1 col-sm-1 col-md-1 col-lg-1 " align="right"></div>
 
-						</table>
+					<div class="col-xs-4 col-sm-4 col-md-4	 col-lg-4">
+						<label for=""> Hora final</label>
+						<div class="form-group">
+							<input type="text" maxlength="22" class="form-control hora"
+								id="hora_final" />
+						</div>
 					</div>
+
 				</div>
-			</div>
 
+				<div class="row ">
+
+					<div class="col-xs-4 col-md-4 col-lg-4 ">
+						<label for="">Bairro</label>
+						<div class="form-group">
+							<select id="cod_bairro" class="form-control" style="width: 100%"
+								name="cod_bairro">
+
+							</select>
+
+						</div>
+					</div>
+
+					<div class="col-xs-1 col-sm-1 col-md-1 col-lg-1 " align="right"></div>
+
+					<div class="col-xs-4 col-md-4 col-lg-4 ">
+						<label for="">Serviço </label>
+						<div class="form-group">
+							<select id="flag_servico" class="form-control"
+								style="width: 100%" name="flag_servico">
+								<option value="">Todos</option>
+								<option value="L">Retirar no local</option>
+								<option value="T">Entrega</option>
+							</select>
+						</div>
+					</div>
+
+				</div>
+				<br>
+				<div class="row ">
+					<div class="col-xs-8 col-md-8 col-lg-8 " align="center">
+						<button class="btn btn-primary " type="button" id="btn_filtrar">Continuar</button>
+					</div>
+
+				</div>
+
+			</div>
 		</div>
+
+		<div role="tabpanel" class="tab-pane active" id="dashboard1">
+			<div style="width: 95%; height: 100%"
+				class="container bs-docs-container">
+
+
+				<div class="row rowpad">
+					<div class="col-md-12 col-sm-12 col-xs-12">
+						<div class="x_panel ">
+							<div class="x_title">
+								<h2>
+									Serviços realizados <small>Entrega/Retirada</small>
+								</h2>
+								<ul class="nav navbar-right panel_toolbox">
+									<li><a class="collapse-link"><i
+											class="fa fa-chevron-up"></i></a></li>
+								</ul>
+								<div class="clearfix"></div>
+							</div>
+							<div class="x_content">
+								<table class="" id="dash_servtable"
+									style="max-width: 600px !important; min-width: 600px !important;">
+									<tr>
+										<th style="width: 40%; text-align: center">
+											<p>Serviços</p>
+										</th>
+										<th style="text-align: center">Descrição</th>
+										<th style="text-align: center">Quantidade</th>
+										<th style="text-align: center">Percentual</th>
+									</tr>
+									<tr>
+										<td align="left" rowspan="10">
+											<canvas id="pie_servico" height="140" width="140"
+												style="margin: 15px 10px 10px 0"></canvas>
+										</td>
+									</tr>
+
+								</table>
+							</div>
+						</div>
+					</div>
+
+				</div>
+
+
+
+				<div class="row rowpad">
+					<div class="col-md-12 col-sm-12 col-xs-12">
+						<div class="x_panel">
+							<div class="x_title">
+								<h2>
+									Modo de Pagamento Usados <small>Dinheiro/Cartão Créd.</small>
+								</h2>
+								<ul class="nav navbar-right panel_toolbox">
+									<li><a class="collapse-link"><i
+											class="fa fa-chevron-up"></i></a></li>
+								</ul>
+								<div class="clearfix"></div>
+							</div>
+							<div class="x_content">
+								<table class="" id="dash_pagtable"
+									style="max-width: 600px !important; min-width: 600px !important;">
+									<tr>
+										<th style="width: 40%; text-align: center">
+											<p>Modo</p>
+										</th>
+										<th style="text-align: center">Descrição</th>
+										<th style="text-align: center">Quantidade</th>
+										<th style="text-align: center">Percentual</th>
+									</tr>
+									<tr>
+										<td align="left" rowspan="10">
+											<canvas id="pie_pagamento" height="140" width="140"
+												style="margin: 15px 10px 10px 0"></canvas>
+										</td>
+									</tr>
+
+								</table>
+							</div>
+						</div>
+					</div>
+
+				</div>
+
+
+				<div class="row ">
+
+					<div class="col-md-12 col-sm-12 col-xs-12">
+						<div class="x_panel">
+							<div class="x_title">
+								<h2>Horizontal Bar</h2>
+								<ul class="nav navbar-right panel_toolbox">
+									<li><a class="collapse-link"><i
+											class="fa fa-chevron-up"></i></a></li>
+									<li class="dropdown"><a href="#" class="dropdown-toggle"
+										data-toggle="dropdown" role="button" aria-expanded="false"><i
+											class="fa fa-wrench"></i></a>
+										<ul class="dropdown-menu" role="menu">
+											<li><a href="#">Settings 1</a></li>
+											<li><a href="#">Settings 2</a></li>
+										</ul></li>
+									<li><a class="close-link"><i class="fa fa-close"></i></a>
+									</li>
+								</ul>
+								<div class="clearfix"></div>
+							</div>
+							<div class="x_content">
+
+								<div id="dash_vendasprod" style="height: 500px;"></div>
+
+							</div>
+						</div>
+					</div>
+
+
+				</div>
+
+
+
+
+
+
+			</div>
+		</div>
+
 
 
 
@@ -96,8 +269,8 @@
 
 		<br> <input id="sys_formatador" type="hidden">
 
+
 	</div>
-</div>
 </html>
 
 

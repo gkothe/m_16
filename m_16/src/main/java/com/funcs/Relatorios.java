@@ -43,84 +43,325 @@ import net.sf.jasperreports.engine.export.JRPdfExporterParameter;
 
 public class Relatorios {
 
-
 	public static DecimalFormatSymbols dfs = new DecimalFormatSymbols(new Locale("pt", "BR"));
 	public static NumberFormat df = new DecimalFormat("###,###.#", dfs);
 	public static NumberFormat df2 = new DecimalFormat("#,###,##0.00", dfs);
 	public static NumberFormat df3 = new DecimalFormat("#,###,##0.0", dfs);
-	
+
+	public static String parametrosDash(String sql, String hora_inicial, String hora_final, String dias_semana, String cod_bairro, String data_pedido_ini, String data_pedido_fim, String flag_servico) throws Exception {
+
+		if (!hora_inicial.equalsIgnoreCase(""))
+			Utilitario.testeHora("HH:mm", hora_inicial, "Tempo de entrega inválido!");// tempo de entrega da distri
+		if (!hora_final.equalsIgnoreCase(""))
+			Utilitario.testeHora("HH:mm", hora_final, "Tempo de entrega inválido!");
+
+		if (!dias_semana.equalsIgnoreCase("") && !dias_semana.equalsIgnoreCase("null")) {
+			String filtro = "";
+			JSONArray dias = (JSONArray) new JSONParser().parse(dias_semana);
+
+			if (dias != null)
+				for (int i = 0; i < dias.size(); i++) {
+					if (!Utilitario.isNumeric(dias.get(i).toString())) {
+						throw new Exception("Dia inválido.");
+					}
+				}
+
+			for (int i = 0; i < dias.size(); i++) {
+				String day = (Integer.parseInt(dias.get(i).toString())) + "";// Returns the weekday index for date (1 = Monday, 2 = Tuesday, … 7 = Sunday). , monday no sistema começa em 1.
+				filtro = filtro + "," + day;
+
+			}
+			filtro = filtro.replaceFirst(",", "");
+			sql = sql + ("  and  DAYOFWEEK(DATA_PEDIDO) in (" + filtro + ")  ");
+		}
+
+		if (!cod_bairro.equalsIgnoreCase("")) {
+			sql = sql + " and pedido. COD_BAIRRO = ? ";
+		}
+
+		if (!(data_pedido_ini.equalsIgnoreCase("")) && data_pedido_ini != null) {
+			sql = sql + "  and  data_pedido >= ? ";
+		}
+
+		if (!(data_pedido_fim.equalsIgnoreCase("")) && data_pedido_fim != null) {
+			sql = sql + "  and  data_pedido <= ? ";
+		}
+
+		if (!flag_servico.equalsIgnoreCase("")) {
+			sql = sql + "  and  flag_pedido_ret_entre = ? ";
+		}
+
+		if (!hora_inicial.equalsIgnoreCase("")) {
+			sql = sql + "  and   HOUR(DATA_PEDIDO) >= ?   ";
+		}
+
+		if (!hora_final.equalsIgnoreCase("")) {
+			sql = sql + "  and   HOUR(DATA_PEDIDO) <= ?   ";
+		}
+
+		return sql;
+	}
+
+	public static PreparedStatement parametrosDashSt(PreparedStatement st, int contparam, String hora_inicial, String hora_final, String dias_semana, String cod_bairro, String data_pedido_ini, String data_pedido_fim, String flag_servico) throws Exception {
+
+		if (!cod_bairro.equalsIgnoreCase("")) {
+			st.setInt(contparam, Integer.parseInt(cod_bairro));
+			contparam++;
+		}
+
+		if (!(data_pedido_ini.equalsIgnoreCase("")) && data_pedido_ini != null) {
+
+			Date data = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").parse(data_pedido_ini + " " + "00:00:00");
+			st.setString(contparam, new SimpleDateFormat("yyyy-MM-dd HH:mm").format(data));
+			contparam++;
+		}
+
+		if (!(data_pedido_fim.equalsIgnoreCase("")) && data_pedido_fim != null) {
+
+			Date data = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").parse(data_pedido_fim + " " + "23:59:59");
+			st.setString(contparam, new SimpleDateFormat("yyyy-MM-dd HH:mm").format(data));
+			contparam++;
+		}
+
+		if (!flag_servico.equalsIgnoreCase("")) {
+			st.setString(contparam, (flag_servico));
+			contparam++;
+		}
+
+		if (!hora_inicial.equalsIgnoreCase("")) {
+			st.setString(contparam, (hora_inicial));
+			contparam++;
+		}
+
+		if (!hora_final.equalsIgnoreCase("")) {
+			st.setString(contparam, (hora_final));
+			contparam++;
+		}
+
+		return st;
+	}
+
+	public static void dashInfosBasicas(HttpServletRequest request, HttpServletResponse response, Connection conn, int coddistr) throws Exception {
+		JSONObject retorno = new JSONObject();
+		PrintWriter out = response.getWriter();
+
+		String data_pedido_ini = request.getParameter("data_pedido_ini") == null ? "" : request.getParameter("data_pedido_ini");
+		String data_pedido_fim = request.getParameter("data_pedido_fim") == null ? "" : request.getParameter("data_pedido_fim");
+		String cod_bairro = request.getParameter("cod_bairro") == null ? "" : request.getParameter("cod_bairro");
+		String hora_final = request.getParameter("hora_final") == null ? "" : request.getParameter("hora_final");
+		String hora_inicial = request.getParameter("hora_inicial") == null ? "" : request.getParameter("hora_inicial");
+		String flag_servico = request.getParameter("flag_servico") == null ? "" : request.getParameter("flag_servico");
+		String dias_semana = request.getParameter("dias_semana") == null ? "" : request.getParameter("dias_semana");
+
+		String sql = "select count(id_pedido) as qtdped, sum(VAL_TOTALPROD) as val_total, sum(VAL_TOTALPROD)  / count(id_pedido)    as media from pedido   where id_distribuidora = ? and flag_status = 'O' ";
+
+		sql = parametrosDash(sql, hora_inicial, hora_final, dias_semana, cod_bairro, data_pedido_ini, data_pedido_fim, flag_servico);
+
+
+		PreparedStatement st = conn.prepareStatement(sql);
+		st.setInt(1, coddistr);
+		int contparam = 2;
+
+		parametrosDashSt(st, contparam, hora_inicial, hora_final, dias_semana, cod_bairro, data_pedido_ini, data_pedido_fim, flag_servico);
+
+		ResultSet rs = st.executeQuery();
+		if (rs.next()) {
+			retorno.put("qtdped", df.format(rs.getDouble("qtdped")));
+			retorno.put("val_total", df2.format(rs.getDouble("val_total")));
+			retorno.put("media", df2.format(rs.getDouble("media")));
+		}
+
+		sql = "select TIME_FORMAT(SEC_TO_TIME(AVG(TIME_TO_SEC(TEMPO_ESTIMADO_DESEJADO))),'%H:%i:%s' ) as TEMPO_ESTIMADO_DESEJADO_MEDIO  , TIME_FORMAT(SEC_TO_TIME(AVG(TIME_TO_SEC(TEMPO_ESTIMADO_ENTREGA))),'%H:%i:%s' ) as TEMPO_ESTIMADO_ENTREGA_MEDIO   from pedido  where FLAG_PEDIDO_RET_ENTRE = 'T'  and id_distribuidora = ? and flag_status = 'O' ";
+
+		sql = parametrosDash(sql, hora_inicial, hora_final, dias_semana, cod_bairro, data_pedido_ini, data_pedido_fim, flag_servico);
+
+
+		st = conn.prepareStatement(sql);
+		st.setInt(1, coddistr);
+		contparam = 2;
+
+		parametrosDashSt(st, contparam, hora_inicial, hora_final, dias_semana, cod_bairro, data_pedido_ini, data_pedido_fim, flag_servico);
+
+		rs = st.executeQuery();
+		if (rs.next()) {
+			retorno.put("tempo_estimado_desejado_medio", new SimpleDateFormat("HH:mm:ss").format(rs.getTimestamp("TEMPO_ESTIMADO_DESEJADO_MEDIO")));
+			retorno.put("tempo_estimado_entrega_medio", new SimpleDateFormat("HH:mm:ss").format(rs.getTimestamp("TEMPO_ESTIMADO_ENTREGA_MEDIO")));
+		}
+
+		sql = " Select TIMESTAMPDIFF(SECOND,DATA_PEDIDO,DATA_PEDIDO_RESPOSTA)  as secs from PEDIDO   where    id_distribuidora = ? and flag_status = 'O' ";
+
+		sql = parametrosDash(sql, hora_inicial, hora_final, dias_semana, cod_bairro, data_pedido_ini, data_pedido_fim, flag_servico);
+
+		st = conn.prepareStatement(sql);
+		st.setInt(1, coddistr);
+		contparam = 2;
+
+		parametrosDashSt(st, contparam, hora_inicial, hora_final, dias_semana, cod_bairro, data_pedido_ini, data_pedido_fim, flag_servico);
+
+		int secs = 0;
+		int qtdpeds = 0;
+		rs = st.executeQuery();
+		while (rs.next()) {
+			secs = secs + rs.getInt("secs");
+			qtdpeds++;
+		}
+
+		secs = secs / qtdpeds;
+		
+		int hours = secs / 3600;
+		int minutes = (secs % 3600) / 60;
+		int seconds = secs % 60;
+		retorno.put("tempo_resposta_ped", String.format("%02d:%02d:%02d", hours, minutes, seconds));
+
+		out.print(retorno.toJSONString());
+	}
+
 
 	public static void dashServico(HttpServletRequest request, HttpServletResponse response, Connection conn, int coddistr) throws Exception {
 		JSONArray retorno = new JSONArray();
 		PrintWriter out = response.getWriter();
 
-		String sql = "select distinct FLAG_PEDIDO_RET_ENTRE, count(FLAG_PEDIDO_RET_ENTRE) as qtd from pedido  where id_distribuidora = ? and flag_status = 'O' group by FLAG_PEDIDO_RET_ENTRE ;";
+		String data_pedido_ini = request.getParameter("data_pedido_ini") == null ? "" : request.getParameter("data_pedido_ini");
+		String data_pedido_fim = request.getParameter("data_pedido_fim") == null ? "" : request.getParameter("data_pedido_fim");
+		String cod_bairro = request.getParameter("cod_bairro") == null ? "" : request.getParameter("cod_bairro");
+		String hora_final = request.getParameter("hora_final") == null ? "" : request.getParameter("hora_final");
+		String hora_inicial = request.getParameter("hora_inicial") == null ? "" : request.getParameter("hora_inicial");
+		String flag_servico = request.getParameter("flag_servico") == null ? "" : request.getParameter("flag_servico");
+		String dias_semana = request.getParameter("dias_semana") == null ? "" : request.getParameter("dias_semana");
+
+		String sql = "select distinct FLAG_PEDIDO_RET_ENTRE, count(FLAG_PEDIDO_RET_ENTRE) as qtd from pedido  where id_distribuidora = ? and flag_status = 'O' ";
+
+		sql = parametrosDash(sql, hora_inicial, hora_final, dias_semana, cod_bairro, data_pedido_ini, data_pedido_fim, flag_servico);
+
+		sql = sql + " group by FLAG_PEDIDO_RET_ENTRE ;";
+
 		PreparedStatement st = conn.prepareStatement(sql);
 		st.setInt(1, coddistr);
+		int contparam = 2;
+
+		parametrosDashSt(st, contparam, hora_inicial, hora_final, dias_semana, cod_bairro, data_pedido_ini, data_pedido_fim, flag_servico);
+
 		ResultSet rs = st.executeQuery();
 		while (rs.next()) {
-			JSONObject obj = new JSONObject();	
+			JSONObject obj = new JSONObject();
 			obj.put("desc", rs.getString("FLAG_PEDIDO_RET_ENTRE").equalsIgnoreCase("T") ? "Entrega" : "Retirada");
 			obj.put("qtd", rs.getInt("qtd"));
-			obj.put("qtddf",df.format( rs.getInt("qtd")));
+			obj.put("qtddf", df.format(rs.getInt("qtd")));
 			retorno.add(obj);
 		}
 
 		double total = 0;
 		for (int i = 0; i < retorno.size(); i++) {
-			JSONObject obj = (JSONObject)retorno.get(i);
-			total = total + (Integer)obj.get("qtd");
+			JSONObject obj = (JSONObject) retorno.get(i);
+			total = total + (Integer) obj.get("qtd");
 		}
-		
+
 		for (int i = 0; i < retorno.size(); i++) {
-			JSONObject obj = (JSONObject)retorno.get(i);
-			int qtd =  (Integer)obj.get("qtd");
-			obj.put("perc", df3.format((100 * qtd )  / total ));
-			
+			JSONObject obj = (JSONObject) retorno.get(i);
+			int qtd = (Integer) obj.get("qtd");
+			obj.put("perc", df3.format((100 * qtd) / total));
+
 		}
-		
-		System.out.println(retorno.toJSONString());
 
 		out.print(retorno.toJSONString());
 	}
 
-	
+	public static void dashProdutos(HttpServletRequest request, HttpServletResponse response, Connection conn, int coddistr) throws Exception {
+		JSONArray retorno = new JSONArray();
+		PrintWriter out = response.getWriter();
+
+		String data_pedido_ini = request.getParameter("data_pedido_ini") == null ? "" : request.getParameter("data_pedido_ini");
+		String data_pedido_fim = request.getParameter("data_pedido_fim") == null ? "" : request.getParameter("data_pedido_fim");
+		String cod_bairro = request.getParameter("cod_bairro") == null ? "" : request.getParameter("cod_bairro");
+		String hora_final = request.getParameter("hora_final") == null ? "" : request.getParameter("hora_final");
+		String hora_inicial = request.getParameter("hora_inicial") == null ? "" : request.getParameter("hora_inicial");
+		String flag_servico = request.getParameter("flag_servico") == null ? "" : request.getParameter("flag_servico");
+		String dias_semana = request.getParameter("dias_semana") == null ? "" : request.getParameter("dias_semana");
+
+		StringBuffer sql = new StringBuffer();
+		sql.append("SELECT pedido_item.id_prod, ");
+		sql.append("       Sum(qtd_prod) as qtd, ");
+		sql.append("       DESC_ABREVIADO as desc_prod ");
+		sql.append("FROM   pedido_item ");
+		sql.append("       INNER JOIN pedido ");
+		sql.append("               ON pedido.id_pedido = pedido_item.id_pedido ");
+		sql.append("       INNER JOIN produtos ");
+		sql.append("               ON produtos.id_prod = pedido_item.id_prod ");
+		sql.append("         where id_distribuidora = ?  and flag_status = 'O'  ");
+
+		sql = new StringBuffer(parametrosDash(sql.toString(), hora_inicial, hora_final, dias_semana, cod_bairro, data_pedido_ini, data_pedido_fim, flag_servico));
+
+		sql.append(" group by pedido_item.id_prod ,desc_prod order by sum(QTD_PROD) desc limit 20 ;");
+
+		System.out.println(sql.toString());
+
+		PreparedStatement st = conn.prepareStatement(sql.toString());
+		st.setInt(1, coddistr);
+		int contparam = 2;
+
+		parametrosDashSt(st, contparam, hora_inicial, hora_final, dias_semana, cod_bairro, data_pedido_ini, data_pedido_fim, flag_servico);
+
+		ResultSet rs = st.executeQuery();
+		while (rs.next()) {
+			JSONObject obj = new JSONObject();
+			obj.put("desc", rs.getString("desc_prod"));
+			obj.put("qtd", rs.getInt("qtd"));
+			obj.put("qtddf", df.format(rs.getInt("qtd")));
+			retorno.add(obj);
+		}
+
+		out.print(retorno.toJSONString());
+	}
+
 	public static void dashPagamento(HttpServletRequest request, HttpServletResponse response, Connection conn, int coddistr) throws Exception {
 		JSONArray retorno = new JSONArray();
 		PrintWriter out = response.getWriter();
 
-		String sql = "select distinct FLAG_MODOPAGAMENTO, count(FLAG_MODOPAGAMENTO) as qtd from pedido  where id_distribuidora = ?  and flag_status = 'O' group by FLAG_MODOPAGAMENTO ;";
+		String data_pedido_ini = request.getParameter("data_pedido_ini") == null ? "" : request.getParameter("data_pedido_ini");
+		String data_pedido_fim = request.getParameter("data_pedido_fim") == null ? "" : request.getParameter("data_pedido_fim");
+		String cod_bairro = request.getParameter("cod_bairro") == null ? "" : request.getParameter("cod_bairro");
+		String hora_final = request.getParameter("hora_final") == null ? "" : request.getParameter("hora_final");
+		String hora_inicial = request.getParameter("hora_inicial") == null ? "" : request.getParameter("hora_inicial");
+		String flag_servico = request.getParameter("flag_servico") == null ? "" : request.getParameter("flag_servico");
+		String dias_semana = request.getParameter("dias_semana") == null ? "" : request.getParameter("dias_semana");
+
+		String sql = "select distinct FLAG_MODOPAGAMENTO, count(FLAG_MODOPAGAMENTO) as qtd from pedido  where id_distribuidora = ?  and flag_status = 'O' ";
+
+		sql = parametrosDash(sql, hora_inicial, hora_final, dias_semana, cod_bairro, data_pedido_ini, data_pedido_fim, flag_servico);
+
+		sql = sql + " group by FLAG_MODOPAGAMENTO ;";
+
 		PreparedStatement st = conn.prepareStatement(sql);
 		st.setInt(1, coddistr);
+		int contparam = 2;
+
+		parametrosDashSt(st, contparam, hora_inicial, hora_final, dias_semana, cod_bairro, data_pedido_ini, data_pedido_fim, flag_servico);
+
 		ResultSet rs = st.executeQuery();
 		while (rs.next()) {
-			JSONObject obj = new JSONObject();	
+			JSONObject obj = new JSONObject();
 			obj.put("desc", rs.getString("FLAG_MODOPAGAMENTO").equalsIgnoreCase("C") ? "Cartão Créd." : "Dinheiro");
 			obj.put("qtd", rs.getInt("qtd"));
-			obj.put("qtddf",df.format( rs.getInt("qtd")));
+			obj.put("qtddf", df.format(rs.getInt("qtd")));
 			retorno.add(obj);
 		}
 
 		double total = 0;
 		for (int i = 0; i < retorno.size(); i++) {
-			JSONObject obj = (JSONObject)retorno.get(i);
-			total = total + (Integer)obj.get("qtd");
+			JSONObject obj = (JSONObject) retorno.get(i);
+			total = total + (Integer) obj.get("qtd");
 		}
-		
+
 		for (int i = 0; i < retorno.size(); i++) {
-			JSONObject obj = (JSONObject)retorno.get(i);
-			int qtd =  (Integer)obj.get("qtd");
-			obj.put("perc", df3.format((100 * qtd )  / total ));
-			
+			JSONObject obj = (JSONObject) retorno.get(i);
+			int qtd = (Integer) obj.get("qtd");
+			obj.put("perc", df3.format((100 * qtd) / total));
+
 		}
-		
-		System.out.println(retorno.toJSONString());
 
 		out.print(retorno.toJSONString());
 	}
-	
-	
-	
+
 	public static JRMapCollectionDataSource relGradeHorariosDataSource(int coddistr, Connection conn) throws Exception {
 
 		Collection<Map<String, ?>> arrLinhas = new ArrayList<Map<String, ?>>();
@@ -179,7 +420,7 @@ public class Relatorios {
 
 	}
 
-	public static JRMapCollectionDataSource relPedidosDataSource(int coddistr, Connection conn, Map hmParams,HttpServletRequest request, HttpServletResponse response) throws Exception {
+	public static JRMapCollectionDataSource relPedidosDataSource(int coddistr, Connection conn, Map hmParams, HttpServletRequest request, HttpServletResponse response) throws Exception {
 
 		Collection<Map<String, ?>> arrLinhas = new ArrayList<Map<String, ?>>();
 		try {
@@ -197,19 +438,19 @@ public class Relatorios {
 			String flag_pagamento = request.getParameter("flag_pagamento") == null ? "" : request.getParameter("flag_pagamento");
 			String cod_bairro = request.getParameter("cod_bairro") == null ? "" : request.getParameter("cod_bairro");
 			String flag_servico = request.getParameter("flag_servico") == null ? "" : request.getParameter("flag_servico");
-			
+
 			hmParams.put("dataini", "");
 			hmParams.put("datafim", "");
 			hmParams.put("situacao", Utilitario.returnStatusPedidoFlag(flag_situacao));
 			hmParams.put("servico", Utilitario.returnDistrTiposPedido(flag_servico));
 			hmParams.put("modo_pay", Utilitario.returnModoPagamento(flag_pagamento));
-			if(!cod_bairro.equalsIgnoreCase(""))
+			if (!cod_bairro.equalsIgnoreCase(""))
 				hmParams.put("bairro", Utilitario.getNomeBairro(conn, Integer.parseInt(cod_bairro), 0));
 			else
 				hmParams.put("bairro", "Todos");
-		
-			StringBuffer  sql = new StringBuffer();
-			
+
+			StringBuffer sql = new StringBuffer();
+
 			sql.append("SELECT desc_prod, ");
 			sql.append("       pedido_item.val_unit, ");
 			sql.append("       qtd_prod, ");
@@ -251,14 +492,13 @@ public class Relatorios {
 			sql.append("       LEFT JOIN motivos_cancelamento ");
 			sql.append("              ON pedido_motivo_cancelamento.cod_motivo = ");
 			sql.append("                 motivos_cancelamento.cod_motivo");
-			
-			
+
 			sql.append("			where distribuidora.id_distribuidora =  " + coddistr);
 
 			if (!(dataini.equalsIgnoreCase(""))) {
 				sql.append("  and  data_pedido >= ?");
 				hmParams.put("dataini", dataini);
-				
+
 			}
 
 			if (!(datafim.equalsIgnoreCase("")) && datafim != null) {
@@ -273,7 +513,7 @@ public class Relatorios {
 			if (!cod_bairro.equalsIgnoreCase("")) {
 				sql.append("  and  pedido.cod_bairro = ? ");
 			}
-			
+
 			if (!flag_servico.equalsIgnoreCase("")) {
 				sql.append("  and  pedido.FLAG_PEDIDO_RET_ENTRE = ? ");
 			}
@@ -281,9 +521,9 @@ public class Relatorios {
 			if (!flag_pagamento.equalsIgnoreCase("")) {
 				sql.append("  and  pedido.FLAG_MODOPAGAMENTO = ? ");
 			}
-			
+
 			sql.append(" order by num_ped");
-			
+
 			PreparedStatement st = conn.prepareStatement(sql.toString());
 			int contparam = 1;
 
@@ -308,33 +548,30 @@ public class Relatorios {
 				st.setLong(contparam, Long.parseLong(cod_bairro));
 				contparam++;
 			}
-			
-			
+
 			if (!flag_servico.equalsIgnoreCase("")) {
 				st.setString(contparam, flag_servico);
 				contparam++;
 			}
-			
-			
+
 			if (!flag_pagamento.equalsIgnoreCase("")) {
 				st.setString(contparam, flag_pagamento);
 				contparam++;
 			}
-			
+
 			ResultSet rs = st.executeQuery();
 			HashMap<String, Object> hmFat = new HashMap<String, Object>();
 			double val_totalprod = 0;
-			
+
 			double val_entrega = 0;
 			double tragoaqui_perc = 0;
 			long id_ped = 0;
 			long qtd_ped = 0;
-			
-			
+
 			while (rs.next()) {
 				hmFat = new HashMap<String, Object>();
 				hmFat.put("flag_status", (rs.getString("flag_status")));
-				hmFat.put("desc_status", Utilitario .returnStatusPedidoFlag(rs.getString("flag_status")));
+				hmFat.put("desc_status", Utilitario.returnStatusPedidoFlag(rs.getString("flag_status")));
 				hmFat.put("data_pedido", rs.getTimestamp("DATA_PEDIDO"));
 				hmFat.put("data_pedido_resposta", rs.getTimestamp("DATA_PEDIDO_RESPOSTA"));
 				hmFat.put("num_ped", rs.getLong("NUM_PED"));
@@ -357,25 +594,25 @@ public class Relatorios {
 				hmFat.put("data_cancelamento", rs.getTimestamp("data_cancelamento"));
 				hmFat.put("desc_obs", rs.getString("desc_obs"));
 				hmFat.put("desc_motivo", rs.getString("desc_motivo"));
-			
-				if(rs.getLong("id_pedido")!=id_ped){
+
+				if (rs.getLong("id_pedido") != id_ped) {
 					qtd_ped++;
 					val_totalprod = val_totalprod + rs.getDouble("VAL_TOTALPROD");
 					val_entrega = val_entrega + rs.getDouble("val_entrega");
 					tragoaqui_perc = tragoaqui_perc + rs.getDouble("tragoaqui_perc");
-					
+
 					id_ped = rs.getLong("id_pedido");
 				}
-				
-				hmFat.put("qtd_pedido",qtd_ped);
-				hmFat.put("summary_prodtotal",new BigDecimal( val_totalprod));
-				hmFat.put("summary_fretetotal",new BigDecimal( val_entrega));
-				hmFat.put("summary_total",new BigDecimal( val_totalprod + val_entrega));
-				hmFat.put("summary_perc",new BigDecimal( tragoaqui_perc));
-				
+
+				hmFat.put("qtd_pedido", qtd_ped);
+				hmFat.put("summary_prodtotal", new BigDecimal(val_totalprod));
+				hmFat.put("summary_fretetotal", new BigDecimal(val_entrega));
+				hmFat.put("summary_total", new BigDecimal(val_totalprod + val_entrega));
+				hmFat.put("summary_perc", new BigDecimal(tragoaqui_perc));
+
 				arrLinhas.add(hmFat);
 			}
-			
+
 		} catch (Exception e) {
 			throw e;
 		} finally {
@@ -395,7 +632,7 @@ public class Relatorios {
 
 			JasperReport objRelJasper_ordemprod = null;
 			objRelJasper_ordemprod = JasperCompileManager.compileReport("D:/phonegap_projects/m_16/m_16/src/main/webapp/rels/" + nome + ".jrxml");
-			hmParams.put(JRParameter.REPORT_LOCALE, new Locale("pt", "BR")); 
+			hmParams.put(JRParameter.REPORT_LOCALE, new Locale("pt", "BR"));
 			listaReport.add(JasperFillManager.fillReport(objRelJasper_ordemprod, hmParams, datasource));
 
 			JRPdfExporter exporter = new JRPdfExporter();
@@ -460,26 +697,24 @@ public class Relatorios {
 		Connection conn = null;
 		try {
 
-			
 			String flag_opc = request.getParameter("flag_opc") == null ? "" : request.getParameter("flag_opc");
-			
-			
+
 			conn = Conexao.getConexao();
 			Map hmParams = new HashMap();
-			
-			if(flag_opc.equalsIgnoreCase("A")){
+
+			if (flag_opc.equalsIgnoreCase("A")) {
 				hmParams.put("show_prods", true);
 				hmParams.put("show_info", true);
 				hmParams.put("opcao_exib", "Analítica");
-			}else{
+			} else {
 				hmParams.put("show_prods", false);
 				hmParams.put("show_info", false);
 				hmParams.put("opcao_exib", "Sintética");
 			}
-			
+
 			hmParams.put("nome_distribuidora", Utilitario.getNomeDistr(conn, coddistr, false));
-			
-			rodaRel("rel_pedidos", relPedidosDataSource(coddistr, conn, hmParams,request,response), hmParams, request, response);
+
+			rodaRel("rel_pedidos", relPedidosDataSource(coddistr, conn, hmParams, request, response), hmParams, request, response);
 
 		} catch (Exception e) {
 

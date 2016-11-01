@@ -6,7 +6,7 @@
 <meta charset="utf-8" />
 <meta content="width=device-width, initial-scale=1.0" name="viewport" />
 
-<title>TragoAqui! </title>
+<title>TragoAqui!</title>
 <link rel="shortcut icon" href="images/favicon.png" type="image/x-icon">
 <!-- Bootstrap -->
 <link href="gentelella-master/vendors/bootstrap/dist/css/bootstrap.css"
@@ -35,6 +35,11 @@
 	href="JavaScript/bootstrap_date1.4.0/css/bootstrap-datepicker.css" />
 <link rel="stylesheet" type="text/css"
 	href="JavaScript/bootstrap-calendar-master/css/calendar.css" />
+
+
+<link rel="stylesheet" type="text/css"
+	href="JavaScript/boostrap_multiselect/bootstrap-multiselect.css"></link>
+
 <!-- Custom Theme Style -->
 <link href="gentelella-master/production/css/custom.css"
 	rel="stylesheet">
@@ -141,7 +146,8 @@ input:focus {
 										<li><a linkmenu="rel_pedidos"
 											onclick="trocaPag(this,'N',event);" class="clickmenu">Pedidos</a></li>
 										<li><a linkmenu="dashpedidos"
-											onclick="trocaPag(this,'N',event);" class="clickmenu">Dashboard Pedidos</a></li>	
+											onclick="trocaPag(this,'N',event);" class="clickmenu">Dashboard
+												Pedidos</a></li>
 									</ul></li>
 
 							</ul>
@@ -681,7 +687,6 @@ input:focus {
 								</div>
 							</div>
 
-
 							<div class="row" id="m_resposta_motivos"
 								style="margin-left: 0px; margin-right: 0px;">
 
@@ -697,8 +702,6 @@ input:focus {
 
 								</div>
 							</div>
-
-
 
 
 						</div>
@@ -743,14 +746,15 @@ input:focus {
 	<!-- Bootstrap -->
 	<script
 		src="gentelella-master/vendors/bootstrap/dist/js/bootstrap.min.js"></script>
-	
-	
-<!-- Chart.js -->
-	<script src="gentelella-master/vendors/Chart.js/dist/Chart.min.js"></script>
-<!-- Custom Theme Scripts  tem que ter-->
-<!-- 	<script src="gentelella-master/production/js/custom.js"></script> -->
-	<script src="gentelella-master/build/js/custom.js"></script>
 
+
+	<!-- Chart.js -->
+	<script src="gentelella-master/vendors/Chart.js/dist/Chart.min.js"></script>
+	<!-- Custom Theme Scripts  tem que ter-->
+	<!-- 	<script src="gentelella-master/production/js/custom.js"></script> -->
+	<script src="gentelella-master/build/js/custom.js"></script>
+    
+	
 	<script type="text/javascript"
 		src="JavaScript/jquery-ui-1.10.4.custom/js/jquery-ui-1.10.4.custom.min.js"></script>
 	<script type="text/javascript"
@@ -795,10 +799,12 @@ input:focus {
 		src="JavaScript/inputmask/inputmask.date.extensions.js"></script>
 	<script type="text/javascript"
 		src="JavaScript/inputmask/jquery.inputmask.js"></script>
-	
+	<script type="text/javascript"
+		src="JavaScript/boostrap_multiselect/bootstrap-multiselect.js"></script>
+		
 
+		
 </body>
-
 
 <script>
 	var url = "";
