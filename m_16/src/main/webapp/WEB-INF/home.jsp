@@ -75,6 +75,13 @@ input:focus {
 	display: table-cell !important;
 	width: 70% !important;
 }
+
+.field_dash{
+
+text-align: right;
+background-color: white !important;
+}
+
 </style>
 
 
@@ -749,7 +756,7 @@ input:focus {
 
 
 	<!-- Chart.js -->
-	<script src="gentelella-master/vendors/Chart.js/dist/Chart.min.js"></script>
+	
 	<!-- Custom Theme Scripts  tem que ter-->
 	<!-- 	<script src="gentelella-master/production/js/custom.js"></script> -->
 	<script src="gentelella-master/build/js/custom.js"></script>

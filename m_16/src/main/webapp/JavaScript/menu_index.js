@@ -14,6 +14,13 @@ var inteiro2 = {
 	vMin : 0
 };
 
+var inteiro3 = {
+		aSep : '.',
+		aDec : ',',
+		mDec : 0,
+		vMin : 0
+	};
+
 var numerico = {
 	aSep : '.',
 	aDec : ',',
@@ -21,6 +28,14 @@ var numerico = {
 	vMin : 0,
 	aSign : 'R$ '
 };
+
+var numerico2 = {
+		aSep : '.',
+		aDec : ',',
+		mDec : 2,
+		vMin : 0,
+		
+	};
 
 var delay = (function() {
 	var timer = 0;

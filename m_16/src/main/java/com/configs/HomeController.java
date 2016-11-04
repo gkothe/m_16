@@ -211,7 +211,7 @@ public class HomeController extends javax.servlet.http.HttpServlet {
 				Relatorios.dashServico(request, response, conn, coddistr);
 			} else if (cmd.equalsIgnoreCase("dashPagamento")) {
 				Relatorios.dashPagamento(request, response, conn, coddistr);
-			} else if (cmd.equalsIgnoreCase("dashProdutos")) {
+			} else if (cmd.equalsIgnoreCase("dashProdutosQtd")) {
 				Relatorios.dashProdutos(request, response, conn, coddistr);
 			} else if (cmd.equalsIgnoreCase("dashInfosBasicas")) {
 				Relatorios.dashInfosBasicas(request, response, conn, coddistr);
@@ -219,8 +219,17 @@ public class HomeController extends javax.servlet.http.HttpServlet {
 				Relatorios.dashProdutosVal(request, response, conn, coddistr);
 			} else if (cmd.equalsIgnoreCase("dashHoraPed")) {
 				Relatorios.dashHoraPed(request, response, conn, coddistr);
+			} else if (cmd.equalsIgnoreCase("dashDayPed")) {
+				Relatorios.dashDayPed(request, response, conn, coddistr);
+			}else if (cmd.equalsIgnoreCase("dashListaBairros")) {
+				Relatorios.dashListaBairros(request, response, conn, coddistr);
+			}else if (cmd.equalsIgnoreCase("dashProdBairroSingle")) {
+				Relatorios.dashProdBairro_single(request, response, conn, coddistr);
+			}else if (cmd.equalsIgnoreCase("dashProdHoraSingle")) {
+				Relatorios.dashProdHora_single(request, response, conn, coddistr);
+			}else if (cmd.equalsIgnoreCase("dashProdDiaSingle")) {
+				Relatorios.dashProdDia_single(request, response, conn, coddistr);
 			}
-					
 
 			conn.commit();
 		} catch (Exception ex) {
