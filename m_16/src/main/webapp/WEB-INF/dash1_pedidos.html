@@ -1,12 +1,13 @@
 <html>
 <script src="gentelella-master/vendors/raphael/raphael.min.js"></script>
 <script src="gentelella-master/vendors/morris.js/morris.min.js"></script>
-<script type="text/javascript" src="JavaScript/echarts-master/dist/echarts.js"></script>
+<script type="text/javascript"
+	src="JavaScript/echarts-master/dist/echarts.js"></script>
 <script src="gentelella-master/vendors/Chart.js/dist/Chart.min.js"></script>
 <script type="text/javascript" src="JavaScript/dash1_pedidos.js"></script>
 
 
-	
+
 
 
 
@@ -26,7 +27,9 @@
 	<li role="presentation" class="active"><a href="#filtros"
 		aria-controls="home" role="tab" data-toggle="tab">Filtros</a></li>
 	<li role="presentation"><a href="#dashboard1" aria-controls="home"
-		role="tab" data-toggle="tab">Dashboard</a></li>
+		role="tab" data-toggle="tab">Dashboard - 1 </a></li>
+	<li role="presentation"><a href="#dashboard2" aria-controls="home"
+		role="tab" data-toggle="tab">Dashboard - 2 </a></li>
 
 </ul>
 
@@ -216,7 +219,7 @@
 			</div>
 
 			<div class="row rowpad">
-				<div class="col-md-12 col-sm-12 col-xs-12">
+				<div class="col-md-12 col-sm-12 col-xs-12 col-lg-6">
 					<div class="x_panel ">
 						<div class="x_title">
 							<h2>
@@ -251,12 +254,7 @@
 					</div>
 				</div>
 
-			</div>
-
-
-
-			<div class="row rowpad">
-				<div class="col-md-12 col-sm-12 col-xs-12">
+				<div class="col-md-12 col-sm-12 col-xs-12 col-lg-6">
 					<div class="x_panel">
 						<div class="x_title">
 							<h2>
@@ -289,7 +287,12 @@
 						</div>
 					</div>
 				</div>
+
 			</div>
+
+
+
+			<div class="row rowpad"></div>
 			<div class="row ">
 				<div class="col-md-12 col-sm-12 col-xs-12">
 					<div class="x_panel">
@@ -359,12 +362,10 @@
 							</ul>
 							<div class="clearfix"></div>
 						</div>
-						<div class="x_content">
-							<canvas id="dash_pedhora"></canvas>
-						</div>
+						<div class="x_content" id="dash_pedhora_holder"></div>
 					</div>
 				</div>
-					<div class="col-md-12 col-sm-12 col-xs-12 col-lg-6">
+				<div class="col-md-12 col-sm-12 col-xs-12 col-lg-6">
 					<div class="x_panel">
 						<div class="x_title">
 							<h2>Pedidos por dia</h2>
@@ -382,20 +383,16 @@
 							</ul>
 							<div class="clearfix"></div>
 						</div>
-						<div  class="x_content">
-							<canvas  id="dash_peddia"></canvas>
-						</div>
+						<div class="x_content" id="dash_peddia_holder"></div>
 					</div>
 				</div>
 			</div>
-			<div class="row">
-			
-			</div>
+
 			<div class="row">
 				<div class="col-md-12 col-sm-12 col-xs-12">
 					<div class="x_panel">
 						<div class="x_title">
-							<h2>Pedidos por bairros</h2>
+							<h2>Pedidos por bairro</h2>
 							<ul class="nav navbar-right panel_toolbox">
 								<li><a class="collapse-link"><i
 										class="fa fa-chevron-up"></i></a></li>
@@ -416,20 +413,129 @@
 					</div>
 				</div>
 			</div>
-			<div></div>
+
+
+
 		</div>
 
 
 
-
-
-
-
-
-		<br> <input id="sys_formatador" type="hidden">
-
-
 	</div>
+	<div role="tabpanel" class="tab-pane active" id="dashboard2">
+
+		<div style="width: 95%; height: 100%"
+			class="container bs-docs-container">
+			<br>
+
+
+			<div class="row rowpad">
+
+				<div class="col-xs-1 col-sm-1 col-md-1 col-lg-1 filtros"
+					align="right">
+					<label for=""> Produto</label>
+				</div>
+				<div class="col-xs-5 col-sm-5 col-md-5 col-lg-5">
+
+					<div class="input-group" style="width: 100%">
+
+						<input id="id_produto_listagem" style="width: 20%"
+							class="form-control" type="text" maxlength="100" value=""
+							name="id_produto"> <input id="desc_produto_listagem"
+							style="width: 80%" class="form-control" type="text" maxlength=""
+							value="" name="desc_produto">
+					</div>
+				</div>
+				<div class="col-xs-5 col-sm-5 col-md-5 col-lg-5" align="left">
+					<button class="btn btn-primary " type="button" id="btn_filtrar2">Filtrar</button>
+				</div>
+
+
+			</div>
+
+
+
+			<br>
+
+			<div class="row">
+				<div class="col-md-12 col-sm-12 col-xs-12 col-lg-6">
+					<div class="x_panel">
+						<div class="x_title">
+							<h2>Quantidade por horário</h2>
+							<ul class="nav navbar-right panel_toolbox">
+								<li><a class="collapse-link"><i
+										class="fa fa-chevron-up"></i></a></li>
+								<li class="dropdown"><a href="#" class="dropdown-toggle"
+									data-toggle="dropdown" role="button" aria-expanded="false"><i
+										class="fa fa-wrench"></i></a>
+									<ul class="dropdown-menu" role="menu">
+										<li><a href="#">Settings 1</a></li>
+										<li><a href="#">Settings 2</a></li>
+									</ul></li>
+								<li><a class="close-link"><i class="fa fa-close"></i></a></li>
+							</ul>
+							<div class="clearfix"></div>
+						</div>
+						<div class="x_content" id="dash_prodhora_holder"></div>
+					</div>
+				</div>
+				<div class="col-md-12 col-sm-12 col-xs-12 col-lg-6">
+					<div class="x_panel">
+						<div class="x_title">
+							<h2>Quantidade por dia</h2>
+							<ul class="nav navbar-right panel_toolbox">
+								<li><a class="collapse-link"><i
+										class="fa fa-chevron-up"></i></a></li>
+								<li class="dropdown"><a href="#" class="dropdown-toggle"
+									data-toggle="dropdown" role="button" aria-expanded="false"><i
+										class="fa fa-wrench"></i></a>
+									<ul class="dropdown-menu" role="menu">
+										<li><a href="#">Settings 1</a></li>
+										<li><a href="#">Settings 2</a></li>
+									</ul></li>
+								<li><a class="close-link"><i class="fa fa-close"></i></a></li>
+							</ul>
+							<div class="clearfix"></div>
+						</div>
+						<div class="x_content" id="dash_proddia_holder"></div>
+					</div>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-md-12 col-sm-12 col-xs-12">
+					<div class="x_panel">
+						<div class="x_title">
+							<h2>Quantidade por local</h2>
+							<ul class="nav navbar-right panel_toolbox">
+								<li><a class="collapse-link"><i
+										class="fa fa-chevron-up"></i></a></li>
+								<li class="dropdown"><a href="#" class="dropdown-toggle"
+									data-toggle="dropdown" role="button" aria-expanded="false"><i
+										class="fa fa-wrench"></i></a>
+									<ul class="dropdown-menu" role="menu">
+										<li><a href="#">Settings 1</a></li>
+										<li><a href="#">Settings 2</a></li>
+									</ul></li>
+								<li><a class="close-link"><i class="fa fa-close"></i></a></li>
+							</ul>
+							<div class="clearfix"></div>
+						</div>
+						<div class="x_content">
+							<div id="dash_prodbairro" style="min-height: 800px;"></div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+		</div>
+	</div>
+
+
+
+	<br> <input id="sys_formatador" type="hidden"> <br> <input
+		id="sys_formatador2" type="hidden">
+
+
+</div>
 </html>
 
 

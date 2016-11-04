@@ -157,7 +157,6 @@ public class Relatorios {
 
 		sql = parametrosDash(sql, hora_inicial, hora_final, dias_semana, cod_bairro, data_pedido_ini, data_pedido_fim, flag_servico);
 
-
 		PreparedStatement st = conn.prepareStatement(sql);
 		st.setInt(1, coddistr);
 		int contparam = 2;
@@ -167,14 +166,13 @@ public class Relatorios {
 		ResultSet rs = st.executeQuery();
 		if (rs.next()) {
 			retorno.put("qtdped", df.format(rs.getDouble("qtdped")));
-			retorno.put("val_total", "R$ "+df2.format(rs.getDouble("val_total")));
-			retorno.put("media", "R$ "+df2.format(rs.getDouble("media")));
+			retorno.put("val_total", "R$ " + df2.format(rs.getDouble("val_total")));
+			retorno.put("media", "R$ " + df2.format(rs.getDouble("media")));
 		}
 
 		sql = "select TIME_FORMAT(SEC_TO_TIME(AVG(TIME_TO_SEC(TEMPO_ESTIMADO_DESEJADO))),'%H:%i:%s' ) as TEMPO_ESTIMADO_DESEJADO_MEDIO  , TIME_FORMAT(SEC_TO_TIME(AVG(TIME_TO_SEC(TEMPO_ESTIMADO_ENTREGA))),'%H:%i:%s' ) as TEMPO_ESTIMADO_ENTREGA_MEDIO   from pedido  where FLAG_PEDIDO_RET_ENTRE = 'T'  and id_distribuidora = ? and flag_status = 'O' ";
 
 		sql = parametrosDash(sql, hora_inicial, hora_final, dias_semana, cod_bairro, data_pedido_ini, data_pedido_fim, flag_servico);
-
 
 		st = conn.prepareStatement(sql);
 		st.setInt(1, coddistr);
@@ -207,7 +205,7 @@ public class Relatorios {
 		}
 
 		secs = secs / qtdpeds;
-		
+
 		int hours = secs / 3600;
 		int minutes = (secs % 3600) / 60;
 		int seconds = secs % 60;
@@ -215,7 +213,6 @@ public class Relatorios {
 
 		out.print(retorno.toJSONString());
 	}
-
 
 	public static void dashServico(HttpServletRequest request, HttpServletResponse response, Connection conn, int coddistr) throws Exception {
 		JSONArray retorno = new JSONArray();
@@ -265,9 +262,7 @@ public class Relatorios {
 
 		out.print(retorno.toJSONString());
 	}
-	
-	
-	
+
 	public static void dashHoraPed(HttpServletRequest request, HttpServletResponse response, Connection conn, int coddistr) throws Exception {
 		JSONArray retorno = new JSONArray();
 		PrintWriter out = response.getWriter();
@@ -281,7 +276,6 @@ public class Relatorios {
 		String dias_semana = request.getParameter("dias_semana") == null ? "" : request.getParameter("dias_semana");
 
 		String sql = "SELECT  HOUR(DATA_PEDIDO) as hora , TIME_FORMAT(DATA_PEDIDO,'%H:00' ) as horaformated ,TIME_FORMAT(DATE_ADD(DATA_PEDIDO,interval 1 HOUR ),'%H:00' )  as HORA2, COUNT(*) as qtd FROM pedido where id_distribuidora = ?  and flag_status = 'O'  ";
-		
 
 		sql = parametrosDash(sql, hora_inicial, hora_final, dias_semana, cod_bairro, data_pedido_ini, data_pedido_fim, flag_servico);
 
@@ -297,18 +291,14 @@ public class Relatorios {
 		while (rs.next()) {
 			JSONObject obj = new JSONObject();
 			obj.put("hora", rs.getString("hora"));
-			obj.put("horaformated", rs.getString("horaformated")+"-"+rs.getString("HORA2"));
+			obj.put("horaformated", rs.getString("horaformated") + "-" + rs.getString("HORA2"));
 			obj.put("qtd", rs.getInt("qtd"));
 			retorno.add(obj);
 		}
 
-	
-
 		out.print(retorno.toJSONString());
 	}
-	
-	
-	
+
 	public static void dashProdBairro_single(HttpServletRequest request, HttpServletResponse response, Connection conn, int coddistr) throws Exception {
 		JSONArray retorno = new JSONArray();
 		PrintWriter out = response.getWriter();
@@ -320,10 +310,10 @@ public class Relatorios {
 		String hora_inicial = request.getParameter("hora_inicial") == null ? "" : request.getParameter("hora_inicial");
 		String flag_servico = request.getParameter("flag_servico") == null ? "" : request.getParameter("flag_servico");
 		String dias_semana = request.getParameter("dias_semana") == null ? "" : request.getParameter("dias_semana");
-		
+
 		String id_prod = request.getParameter("id_prod") == null ? "" : request.getParameter("id_prod");
 
-		StringBuffer  sql = new StringBuffer();
+		StringBuffer sql = new StringBuffer();
 		sql.append("SELECT Count(id_prod) as qtd, ");
 		sql.append("       COALESCE(pedido.cod_bairro, 0)           AS cod_bairro, ");
 		sql.append("       COALESCE(desc_bairro, '* Distribuidora') AS desc_bairro ");
@@ -334,9 +324,9 @@ public class Relatorios {
 		sql.append("              ON bairros.cod_bairro = pedido.cod_bairro");
 		sql.append("            where id_distribuidora = ?  and flag_status = 'O'  and id_prod = ? ");
 
-		sql = new StringBuffer( parametrosDash(sql.toString(), hora_inicial, hora_final, dias_semana, cod_bairro, data_pedido_ini, data_pedido_fim, flag_servico));
+		sql = new StringBuffer(parametrosDash(sql.toString(), hora_inicial, hora_final, dias_semana, cod_bairro, data_pedido_ini, data_pedido_fim, flag_servico));
 
-		sql.append( "  group by cod_bairro order by desc_bairro");
+		sql.append("  group by cod_bairro order by desc_bairro");
 
 		PreparedStatement st = conn.prepareStatement(sql.toString());
 		st.setInt(1, coddistr);
@@ -348,15 +338,14 @@ public class Relatorios {
 		ResultSet rs = st.executeQuery();
 		while (rs.next()) {
 			JSONObject obj = new JSONObject();
-			obj.put("desc", rs.getString("desc_bairro") );
-			obj.put("qtd", df.format(rs.getInt("qtd")));
+			obj.put("desc", rs.getString("desc_bairro"));
+			obj.put("qtd", rs.getInt("qtd"));
 			retorno.add(obj);
 		}
 
 		out.print(retorno.toJSONString());
 	}
-	
-	
+
 	public static void dashProdDia_single(HttpServletRequest request, HttpServletResponse response, Connection conn, int coddistr) throws Exception {
 		JSONArray retorno = new JSONArray();
 		PrintWriter out = response.getWriter();
@@ -370,8 +359,8 @@ public class Relatorios {
 		String dias_semana = request.getParameter("dias_semana") == null ? "" : request.getParameter("dias_semana");
 
 		String id_prod = request.getParameter("id_prod") == null ? "" : request.getParameter("id_prod");
-		
-		StringBuffer  sql = new StringBuffer();
+
+		StringBuffer sql = new StringBuffer();
 		sql.append(" select  DAYOFWEEK(DATA_PEDIDO) as dia, COUNT(*) as qtd   from pedido");
 		sql.append(" ");
 		sql.append(" inner join pedido_item ");
@@ -381,7 +370,7 @@ public class Relatorios {
 		sql.append(" where id_distribuidora = ? and id_prod = ?  and flag_status = 'O'  ");
 		sql.append(" ");
 
-		sql =  new StringBuffer( parametrosDash(sql.toString(), hora_inicial, hora_final, dias_semana, cod_bairro, data_pedido_ini, data_pedido_fim, flag_servico));
+		sql = new StringBuffer(parametrosDash(sql.toString(), hora_inicial, hora_final, dias_semana, cod_bairro, data_pedido_ini, data_pedido_fim, flag_servico));
 
 		sql.append(" group by   DAYOFWEEK(DATA_PEDIDO)   order by  DAYOFWEEK(DATA_PEDIDO) ");
 
@@ -395,14 +384,14 @@ public class Relatorios {
 		ResultSet rs = st.executeQuery();
 		while (rs.next()) {
 			JSONObject obj = new JSONObject();
-			obj.put("dia", Utilitario.getDescDiaSemana(conn, rs.getInt("dia")) );
+			obj.put("dia", Utilitario.getDescDiaSemana(conn, rs.getInt("dia")));
 			obj.put("qtd", df.format(rs.getInt("qtd")));
 			retorno.add(obj);
 		}
 
 		out.print(retorno.toJSONString());
 	}
-	
+
 	public static void dashProdHora_single(HttpServletRequest request, HttpServletResponse response, Connection conn, int coddistr) throws Exception {
 		JSONArray retorno = new JSONArray();
 		PrintWriter out = response.getWriter();
@@ -416,9 +405,9 @@ public class Relatorios {
 		String dias_semana = request.getParameter("dias_semana") == null ? "" : request.getParameter("dias_semana");
 
 		String id_prod = request.getParameter("id_prod") == null ? "" : request.getParameter("id_prod");
-		
-		StringBuffer  sql = new StringBuffer();
-		sql.append("select HOUR(DATA_PEDIDO) as hora , TIME_FORMAT(DATA_PEDIDO,'%H:00' ) as horaformated , count(id_prod) as qtd from pedido ");
+
+		StringBuffer sql = new StringBuffer();
+		sql.append("select HOUR(DATA_PEDIDO) as hora , TIME_FORMAT(DATA_PEDIDO,'%H:00' ) as horaformated , TIME_FORMAT(DATE_ADD(DATA_PEDIDO,interval 1 HOUR ),'%H:00' )  as HORA2, count(id_prod) as qtd from pedido ");
 		sql.append(" ");
 		sql.append("inner join pedido_item ");
 		sql.append("on pedido_item .id_pedido = pedido.id_pedido ");
@@ -427,7 +416,7 @@ public class Relatorios {
 		sql.append("where id_distribuidora = ? and id_prod = ?  and flag_status = 'O'  ");
 		sql.append(" ");
 
-		sql =  new StringBuffer( parametrosDash(sql.toString(), hora_inicial, hora_final, dias_semana, cod_bairro, data_pedido_ini, data_pedido_fim, flag_servico));
+		sql = new StringBuffer(parametrosDash(sql.toString(), hora_inicial, hora_final, dias_semana, cod_bairro, data_pedido_ini, data_pedido_fim, flag_servico));
 
 		sql.append("group by  HOUR(DATA_PEDIDO)  order by HOUR(DATA_PEDIDO)");
 
@@ -442,14 +431,14 @@ public class Relatorios {
 		while (rs.next()) {
 			JSONObject obj = new JSONObject();
 			obj.put("hora", rs.getString("hora"));
-			obj.put("horaformated", rs.getString("horaformated"));
+			obj.put("horaformated", rs.getString("horaformated") + "-" + rs.getString("HORA2"));
 			obj.put("qtd", rs.getInt("qtd"));
 			retorno.add(obj);
 		}
 
 		out.print(retorno.toJSONString());
 	}
-	
+
 	public static void dashDayPed(HttpServletRequest request, HttpServletResponse response, Connection conn, int coddistr) throws Exception {
 		JSONArray retorno = new JSONArray();
 		PrintWriter out = response.getWriter();
@@ -477,14 +466,13 @@ public class Relatorios {
 		ResultSet rs = st.executeQuery();
 		while (rs.next()) {
 			JSONObject obj = new JSONObject();
-			obj.put("dia", Utilitario.getDescDiaSemana(conn, rs.getInt("dia")) );
+			obj.put("dia", Utilitario.getDescDiaSemana(conn, rs.getInt("dia")));
 			obj.put("qtd", df.format(rs.getInt("qtd")));
 			retorno.add(obj);
 		}
 
 		out.print(retorno.toJSONString());
 	}
-	
 
 	public static void dashListaBairros(HttpServletRequest request, HttpServletResponse response, Connection conn, int coddistr) throws Exception {
 		JSONArray retorno = new JSONArray();
@@ -498,8 +486,8 @@ public class Relatorios {
 		String flag_servico = request.getParameter("flag_servico") == null ? "" : request.getParameter("flag_servico");
 		String dias_semana = request.getParameter("dias_semana") == null ? "" : request.getParameter("dias_semana");
 
-		String sql = "select  count(id_pedido) as qtd, bairros.desc_bairro,sum(VAL_TOTALPROD) as valprod from pedido inner join bairros on bairros.cod_bairro = pedido.cod_bairro  where pedido.cod_bairro is not null  and id_distribuidora = ?  and flag_status = 'O'  ";
-
+		String sql = "select  count(id_pedido) as qtd,  COALESCE(desc_bairro, '* Distribuidora') AS desc_bairro ,sum(VAL_TOTALPROD) as valprod from pedido inner join bairros on bairros.cod_bairro = pedido.cod_bairro  where  id_distribuidora = ?  and flag_status = 'O'  ";
+		// se quiser trazer os pedidos retirados em local, coloar left join no bairro.
 		sql = parametrosDash(sql, hora_inicial, hora_final, dias_semana, cod_bairro, data_pedido_ini, data_pedido_fim, flag_servico);
 
 		sql = sql + "  group by pedido.cod_bairro order by   desc_bairro ";
@@ -513,7 +501,7 @@ public class Relatorios {
 		ResultSet rs = st.executeQuery();
 		while (rs.next()) {
 			JSONObject obj = new JSONObject();
-			obj.put("desc", rs.getString("desc_bairro") );
+			obj.put("desc", rs.getString("desc_bairro"));
 			obj.put("qtd_f", df.format(rs.getInt("qtd")));
 			obj.put("valtotal_f", df2.format(rs.getDouble("valprod")));
 			obj.put("qtd", (rs.getInt("qtd")));
@@ -523,14 +511,7 @@ public class Relatorios {
 
 		out.print(retorno.toJSONString());
 	}
-	
-	
-	
-	
 
-	
-
-	
 	public static void dashProdutos(HttpServletRequest request, HttpServletResponse response, Connection conn, int coddistr) throws Exception {
 		JSONArray retorno = new JSONArray();
 		PrintWriter out = response.getWriter();
@@ -557,7 +538,6 @@ public class Relatorios {
 		sql = new StringBuffer(parametrosDash(sql.toString(), hora_inicial, hora_final, dias_semana, cod_bairro, data_pedido_ini, data_pedido_fim, flag_servico));
 
 		sql.append(" group by pedido_item.id_prod ,desc_prod order by sum(QTD_PROD) desc limit 20 ;");
-
 
 		PreparedStatement st = conn.prepareStatement(sql.toString());
 		st.setInt(1, coddistr);
@@ -604,7 +584,6 @@ public class Relatorios {
 
 		sql.append(" group by pedido_item.id_prod ,desc_prod order by sum(val_unit * qtd_prod ) desc limit 20 ;");
 
-
 		PreparedStatement st = conn.prepareStatement(sql.toString());
 		st.setInt(1, coddistr);
 		int contparam = 2;
@@ -622,8 +601,7 @@ public class Relatorios {
 
 		out.print(retorno.toJSONString());
 	}
-	
-	
+
 	public static void dashPagamento(HttpServletRequest request, HttpServletResponse response, Connection conn, int coddistr) throws Exception {
 		JSONArray retorno = new JSONArray();
 		PrintWriter out = response.getWriter();

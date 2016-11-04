@@ -15,11 +15,11 @@ var inteiro2 = {
 };
 
 var inteiro3 = {
-		aSep : '.',
-		aDec : ',',
-		mDec : 0,
-		vMin : 0
-	};
+	aSep : '.',
+	aDec : ',',
+	mDec : 0,
+	vMin : 0
+};
 
 var numerico = {
 	aSep : '.',
@@ -30,12 +30,12 @@ var numerico = {
 };
 
 var numerico2 = {
-		aSep : '.',
-		aDec : ',',
-		mDec : 2,
-		vMin : 0,
-		
-	};
+	aSep : '.',
+	aDec : ',',
+	mDec : 2,
+	vMin : 0,
+
+};
 
 var delay = (function() {
 	var timer = 0;
@@ -358,28 +358,28 @@ function checarPedidos() {
 				$("#h_qtd_pedz").html("");
 
 			} else {
-				alert(data.statusText);
+				if (data.statusText != undefined)
+					alert(data.statusText);
 			}
 		}
 	});
 
 }
 
-
 var random = 0;
-function showPop(id,num_pedpop) {
+function showPop(id, num_pedpop) {
 	random++;
-	var html = '<div id="modalcanc_id_'+id+'_'+random+'" class="modal fade" tabindex="-1" role="dialog">';
+	var html = '<div id="modalcanc_id_' + id + '_' + random + '" class="modal fade" tabindex="-1" role="dialog">';
 	html = html + '<div class="modal-dialog" role="document">';
 	html = html + '	<div class="modal-content">';
 	html = html + '		<div class="modal-header">';
 	html = html + '			<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>';
-	html = html + '			<h4 style="color:red" class="modal-title">Pedido Número: '+num_pedpop+' foi cancelado!</h4>';
+	html = html + '			<h4 style="color:red" class="modal-title">Pedido Número: ' + num_pedpop + ' foi cancelado!</h4>';
 	html = html + '		</div>';
 	html = html + '		<div class="modal-body">';
 	html = html + '		   <div class="row">	';
 	html = html + '			   <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12" align="center">	';
-	html = html + '					<p>Atenção! O pedido número '+num_pedpop+' foi cancelado. <br> Clique em visualizar para conferir as informações do pedido. </p>';
+	html = html + '					<p>Atenção! O pedido número ' + num_pedpop + ' foi cancelado. <br> Clique em visualizar para conferir as informações do pedido. </p>';
 	html = html + '		      </div>';
 	html = html + '		  </div>';
 	html = html + '		</div>';
@@ -387,22 +387,19 @@ function showPop(id,num_pedpop) {
 	html = html + '		   <div class="row">	';
 	html = html + '			   <div class="col-xs-3 col-sm-3 col-md-3 col-lg-3" align="left"> <button type="button" class="btn btn-primary" data-dismiss="modal">Fechar</button>	</div>';
 	html = html + '		       <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6 ">   </div> ';
-	html = html + '		       <div class="col-xs-3 col-sm-3 col-md-3 col-lg-3 " align="right"><button type="button" idped='+id+'  id="btn_vizu_'+random+'" class="btn btn-primary" data-dismiss="modal">Visualizar</button> </div>';
+	html = html + '		       <div class="col-xs-3 col-sm-3 col-md-3 col-lg-3 " align="right"><button type="button" idped=' + id + '  id="btn_vizu_' + random + '" class="btn btn-primary" data-dismiss="modal">Visualizar</button> </div>';
 	html = html + '        </div>';
 	html = html + '	</div>';
 	html = html + '</div>';
 	html = html + '</div>';
 
-	
 	$("#modal_cancelamentos").append(html);
-	$('#modalcanc_id_'+id+'_'+random).modal('show');
+	$('#modalcanc_id_' + id + '_' + random).modal('show');
 
-	$("#btn_vizu_"+random).click(function() {
+	$("#btn_vizu_" + random).click(function() {
 		visualizarPedido($(this).attr('idped'));
 	});
-	
-	
-	
+
 }
 
 function testaAceitaRecusa() {
@@ -480,7 +477,8 @@ function loadMotivos() {
 
 		},
 		error : function(data) {
-			alert(data.responseText);
+			if (data.statusText != undefined)
+				alert(data.responseText);
 		}
 	});
 
@@ -524,9 +522,9 @@ function visualizarPedido(id) {
 			$("#m_total_produtos").autoNumeric('set', data.VAL_TOTALPROD);
 			$("#m_data_pedido").html(data.data_pedido);
 			$("#m_id_pedido").val(data.ID_PEDIDO);
-			var   num_ped = data.num_ped;
+			var num_ped = data.num_ped;
 			if (data.flag_status == "A") {
-				$("#m_lbl_titulo").html("Pedido em aberto! Número: "  + num_ped);
+				$("#m_lbl_titulo").html("Pedido em aberto! Número: " + num_ped);
 				$("#m_lbl_titulo").css("color", "green");
 
 				$(".m_enviado").hide();
@@ -539,9 +537,9 @@ function visualizarPedido(id) {
 				$("#m_lbl_titulo").css("color", "green");
 
 				if (data.tipo_servico == "T") {
-					$("#m_lbl_titulo").html("Em envio - Número: "  + num_ped  );
+					$("#m_lbl_titulo").html("Em envio - Número: " + num_ped);
 				} else {
-					$("#m_lbl_titulo").html("Em espera - Número: "  + num_ped);
+					$("#m_lbl_titulo").html("Em espera - Número: " + num_ped);
 				}
 
 				$("#m_responder").hide();
@@ -566,7 +564,7 @@ function visualizarPedido(id) {
 			} else if (data.flag_status == "C") {
 				$("#m_lbl_titulo").css("color", "red");
 
-				$("#m_lbl_titulo").html("Cancelado - Número: "  + num_ped);
+				$("#m_lbl_titulo").html("Cancelado - Número: " + num_ped);
 				$(".cancelamento").show();
 				$("#m_responder").hide();
 				$("#m_finalizar").html("Mover para histórico");
@@ -578,14 +576,14 @@ function visualizarPedido(id) {
 				$("#envio_desc_bairro").html(data.desc_bairro);
 				$("#envio_desc_endereco").html(data.DESC_ENDERECO);
 				$("#m_resposta_motivos").hide();
-				
+
 				$("#m_data_cancelamento").html(data.DATA_CANCELAMENTO);
 				$("#m_motivo").html(data.DESC_MOTIVO);
 				$("#m_observ").html(data.DESC_OBS);
-				
+
 				$("#m_data_resposta").html(data.m_data_resposta);
 				$("#m_tempo_entrega").html(data.m_tempo_entrega);
-				
+
 				if (data.darok == true) {
 					$("#m_finalizar").show();
 				} else {
@@ -607,7 +605,8 @@ function visualizarPedido(id) {
 
 		},
 		error : function(data) {
-			alert(data.responseText);
+			if (data.statusText != undefined)
+				alert(data.responseText);
 		}
 	});
 
@@ -658,7 +657,7 @@ function finalizarPedido() {
 			},
 			error : function(msg) {
 				$.unblockUI();
-				alert("Erro: " + msg.msg);
+
 			}
 		});
 
@@ -745,7 +744,7 @@ function responderPedido() {
 				},
 				error : function(msg) {
 					$.unblockUI();
-					alert("Erro: " + msg.msg);
+
 				}
 			});
 		}

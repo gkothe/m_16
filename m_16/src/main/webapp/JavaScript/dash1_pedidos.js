@@ -1,217 +1,10 @@
 //@ sourceURL=dash1_pedidos.js
-var theme = {
-	color : [ '#26B99A', '#34495E', '#BDC3C7', '#3498DB', '#9B59B6', '#8abb6f', '#759c6a', '#bfd3b7' ],
 
-	title : {
-		itemGap : 8,
-		textStyle : {
-			fontWeight : 'normal',
-			color : '#408829'
-		}
-	},
-
-	dataRange : {
-		color : [ '#1f610a', '#97b58d' ]
-	},
-
-	toolbox : {
-		color : [ '#408829', '#408829', '#408829', '#408829' ]
-	},
-
-	tooltip : {
-		backgroundColor : 'rgba(0,0,0,0.5)',
-		axisPointer : {
-			type : 'line',
-			lineStyle : {
-				color : '#408829',
-				type : 'dashed'
-			},
-			crossStyle : {
-				color : '#408829'
-			},
-			shadowStyle : {
-				color : 'rgba(200,200,200,0.3)'
-			}
-		}
-	},
-
-	dataZoom : {
-		dataBackgroundColor : '#eee',
-		fillerColor : 'rgba(64,136,41,0.2)',
-		handleColor : '#408829'
-	},
-	grid : {
-		borderWidth : 0
-	},
-
-	categoryAxis : {
-		axisLine : {
-			lineStyle : {
-				color : '#408829'
-			}
-		},
-		splitLine : {
-			lineStyle : {
-				color : [ '#eee' ]
-			}
-		}
-	},
-
-	valueAxis : {
-		axisLine : {
-			lineStyle : {
-				color : '#408829'
-			}
-		},
-		splitArea : {
-			show : true,
-			areaStyle : {
-				color : [ 'rgba(250,250,250,0.1)', 'rgba(200,200,200,0.1)' ]
-			}
-		},
-		splitLine : {
-			lineStyle : {
-				color : [ '#eee' ]
-			}
-		}
-	},
-	timeline : {
-		lineStyle : {
-			color : '#408829'
-		},
-		controlStyle : {
-			normal : {
-				color : '#408829'
-			},
-			emphasis : {
-				color : '#408829'
-			}
-		}
-	},
-
-	k : {
-		itemStyle : {
-			normal : {
-				color : '#68a54a',
-				color0 : '#a9cba2',
-				lineStyle : {
-					width : 1,
-					color : '#408829',
-					color0 : '#86b379'
-				}
-			}
-		}
-	},
-	map : {
-		itemStyle : {
-			normal : {
-				areaStyle : {
-					color : '#ddd'
-				},
-				label : {
-					textStyle : {
-						color : '#c12e34'
-					}
-				}
-			},
-			emphasis : {
-				areaStyle : {
-					color : '#99d2dd'
-				},
-				label : {
-					textStyle : {
-						color : '#c12e34'
-					}
-				}
-			}
-		}
-	},
-	force : {
-		itemStyle : {
-			normal : {
-				linkStyle : {
-					strokeColor : '#408829'
-				}
-			}
-		}
-	},
-	chord : {
-		padding : 4,
-		itemStyle : {
-			normal : {
-				lineStyle : {
-					width : 1,
-					color : 'rgba(128, 128, 128, 0.5)'
-				},
-				chordStyle : {
-					lineStyle : {
-						width : 1,
-						color : 'rgba(128, 128, 128, 0.5)'
-					}
-				}
-			},
-			emphasis : {
-				lineStyle : {
-					width : 1,
-					color : 'rgba(128, 128, 128, 0.5)'
-				},
-				chordStyle : {
-					lineStyle : {
-						width : 1,
-						color : 'rgba(128, 128, 128, 0.5)'
-					}
-				}
-			}
-		}
-	},
-	gauge : {
-		startAngle : 225,
-		endAngle : -45,
-		axisLine : {
-			show : true,
-			lineStyle : {
-				color : [ [ 0.2, '#86b379' ], [ 0.8, '#68a54a' ], [ 1, '#408829' ] ],
-				width : 8
-			}
-		},
-		axisTick : {
-			splitNumber : 10,
-			length : 12,
-			lineStyle : {
-				color : 'auto'
-			}
-		},
-		axisLabel : {
-			textStyle : {
-				color : 'auto'
-			}
-		},
-		splitLine : {
-			length : 18,
-			lineStyle : {
-				color : 'auto'
-			}
-		},
-		pointer : {
-			length : '90%',
-			color : 'auto'
-		},
-		title : {
-			textStyle : {
-				color : '#333'
-			}
-		},
-		detail : {
-			textStyle : {
-				color : 'auto'
-			}
-		}
-	},
-	textStyle : {
-		fontFamily : 'Arial, Verdana, sans-serif'
-	}
-};
-
+var x_bar = 200;
+var y_bar = 50;
+var x2_bar = 80;
+var y2_bar = 20;
+var widht_bar = "75%" 
 $(document).ready(function() {
 
 	$('#tabs_dash a[href="#dashboard1"]').tab('show')
@@ -232,7 +25,7 @@ $(document).ready(function() {
 
 		$ICON.toggleClass('fa-chevron-up fa-chevron-down');
 	});
-
+	setAutocomplete("id_produto_listagem", "desc_produto_listagem");
 	carregaBairros();
 	$('#dias_semana').multiselect();
 
@@ -254,6 +47,10 @@ $(document).ready(function() {
 		$('#tabs_dash a[href="#dashboard1"]').tab('show')
 	});
 
+	$("#btn_filtrar2").click(function() {
+		filtrarProds();
+	});
+
 	$('a[data-toggle="tab"]').on('shown.bs.tab', function(evt) {
 		$(window).trigger('resize');
 		filtrar(false)
@@ -272,10 +69,18 @@ function filtrar(troca) {
 	dashPedidoHora();
 	dashPedidoDia();
 	dashBairrosLista();
+	filtrarProds();
 	if (troca) {
 		$('#tabs_dash a[href="#dashboard1"]').tab('show')
 	}
 
+}
+
+function filtrarProds() {
+
+	dashProdHora_single();
+	dashProdDiaSingle();
+	dashProdBairroSingle();
 }
 
 function carregaBairros() {
@@ -325,6 +130,16 @@ function valorFormater(value) {
 
 	$("#sys_formatador").autoNumeric('set', value);
 	return $("#sys_formatador").val();
+}
+
+function valorFormater2(value) {
+	if (!$("#sys_formatador2").hasClass("autonumeric")) {
+		$("#sys_formatador2").autoNumeric('init', numerico2);
+		$("#sys_formatador2").addClass("autonumeric");
+	}
+
+	$("#sys_formatador2").autoNumeric('set', value);
+	return $("#sys_formatador2").val();
 }
 
 function dashVendaProdsQtd() {// Produtos mais vendidos
@@ -401,7 +216,7 @@ function dashVendaProdsQtd() {// Produtos mais vendidos
 					data : [ 'Produto' ]
 
 				},
-				
+
 				calculable : true,
 				xAxis : [ {
 					type : 'value',
@@ -413,6 +228,13 @@ function dashVendaProdsQtd() {// Produtos mais vendidos
 
 					}
 				} ],
+				grid : {
+					x : x_bar,
+					y : y_bar,
+					x2 : x2_bar,
+					y2 : y2_bar,
+					width : widht_bar
+				},
 				yAxis : [ {
 					type : 'category',
 					data : desc,
@@ -431,8 +253,7 @@ function dashVendaProdsQtd() {// Produtos mais vendidos
 					name : 'Quantidade',
 					type : 'bar',
 					data : qtd,
-					barMaxWidth:30,
-					barGap:"20%"
+					barGap : "20%"
 				} ]
 			});
 
@@ -500,18 +321,25 @@ function dashVendaProdsVal() {// Produtos com mais faturamento
 			desc.reverse();
 			qtd.reverse();
 
-			var echartBar = echarts.init(document.getElementById('dash_vendasprodval'), theme);
+			var echartBar = echarts.init(document.getElementById('dash_vendasprodval'));
 
 			echartBar.setOption({
+				color : [ '#26B99A' ],
 				title : {
 					text : 'Produtos ',
-					subtext : 'Produtos mais faturados'
+					show : true
+
 				},
 				tooltip : {
-					trigger : 'axis'
+					trigger : 'axis',
+					formatter : function(val) {
+
+						return val["0"].name + "<br>  Valor R$: " + valorFormater2(val["0"].value);
+					}
 				},
 				legend : {
-					x : 100,
+					x : 500,
+					show : true,
 					data : [ 'Produto' ]
 
 				},
@@ -519,16 +347,40 @@ function dashVendaProdsVal() {// Produtos com mais faturamento
 				calculable : true,
 				xAxis : [ {
 					type : 'value',
-					boundaryGap : [ 0, 0.01 ]
+					boundaryGap : [ 0, 0.01 ],
+					axisLabel : {
+						formatter : function(val) {
+							return valorFormater2(val)
+						},
+
+					}
 				} ],
+				grid : {
+					x : x_bar,
+					y : y_bar,
+					x2 : x2_bar,
+					y2 : y2_bar,
+					width : widht_bar
+				},
 				yAxis : [ {
 					type : 'category',
-					data : desc
+					data : desc,
+					axisLabel : {
+						textStyle : {
+							fontSize : 10
+						},
+						splitAreaType : {
+							show : true
+						},
+						margin : 3
+
+					}
 				} ],
 				series : [ {
 					name : 'Valor R$',
 					type : 'bar',
-					data : qtd
+					data : qtd,
+					barGap : "20%"
 				} ]
 			});
 
@@ -593,18 +445,25 @@ function dashBairrosLista() {// Produtos com mais faturamento
 			desc.reverse();
 			qtd.reverse();
 
-			var echartBar = echarts.init(document.getElementById('dash_vendasbairro'), theme);
+			var echartBar = echarts.init(document.getElementById('dash_vendasbairro'));
 
 			echartBar.setOption({
+				color : [ '#26B99A' ],
 				title : {
-					text : 'Produtos ',
-					subtext : 'Produtos mais faturados'
+					text : 'Pedidos ',
+					show : true
+
 				},
 				tooltip : {
-					trigger : 'axis'
+					trigger : 'axis',
+					formatter : function(val) {
+
+						return val["0"].name + "<br>  Quantidade: " + valorFormater(val["0"].value);
+					}
 				},
 				legend : {
-					x : 100,
+					x : 500,
+					show : true,
 					data : [ 'Produto' ]
 
 				},
@@ -612,16 +471,40 @@ function dashBairrosLista() {// Produtos com mais faturamento
 				calculable : true,
 				xAxis : [ {
 					type : 'value',
-					boundaryGap : [ 0, 0.01 ]
+					boundaryGap : [ 0, 0.01 ],
+					axisLabel : {
+						formatter : function(val) {
+							return valorFormater(val)
+						},
+
+					}
 				} ],
+				grid : {
+					x : x_bar,
+					y : y_bar,
+					x2 : x2_bar,
+					y2 : y2_bar,
+					width : widht_bar
+				},
 				yAxis : [ {
 					type : 'category',
-					data : desc
+					data : desc,
+					axisLabel : {
+						textStyle : {
+							fontSize : 10
+						},
+						splitAreaType : {
+							show : true
+						},
+						margin : 3
+
+					}
 				} ],
 				series : [ {
-					name : 'Quantidade:',
+					name : 'Quantidade',
 					type : 'bar',
-					data : qtd
+					data : qtd,
+					barGap : "20%"
 				} ]
 			});
 
@@ -731,7 +614,11 @@ function dashPedidoHora() {
 
 			}
 
+			$("#dash_pedhora_holder").html("");
+			$("#dash_pedhora_holder").html("<canvas id=\"dash_pedhora\"></canvas>");
+
 			var ctx = document.getElementById("dash_pedhora");
+
 			var lineChart = new Chart(ctx, {
 				type : 'line',
 				data : {
@@ -754,20 +641,6 @@ function dashPedidoHora() {
 				legend : false,
 				responsive : false
 			};
-
-			new Chart(document.getElementById("pie_pagamento"), {
-				type : 'doughnut',
-				tooltipFillColor : "rgba(51, 51, 51, 0.55)",
-				data : {
-					labels : labels,
-					datasets : [ {
-						data : datadash,
-						backgroundColor : backgroundColor,
-						hoverBackgroundColor : hoverBackgroundColor
-					} ]
-				},
-				options : options
-			});
 
 			$.unblockUI();
 
@@ -823,7 +696,11 @@ function dashPedidoDia() {
 
 			}
 
+			$("#dash_peddia_holder").html("");
+			$("#dash_peddia_holder").html("<canvas id=\"dash_peddia\"></canvas>");
+
 			var ctx = document.getElementById("dash_peddia");
+
 			var lineChart = new Chart(ctx, {
 				type : 'line',
 				data : {
@@ -1049,4 +926,306 @@ function dashServico() {
 		}
 	});
 
+}
+
+function dashProdDiaSingle() {
+
+	var data_pedido_ini = $("#data_pedido_ini").val();
+	var data_pedido_fim = $("#data_pedido_fim").val();
+	var cod_bairro = $("#cod_bairro").val();
+	var hora_final = $("#hora_final").val();
+	var hora_inicial = $("#hora_inicial").val();
+	var flag_servico = $("#flag_servico").val();
+	var dias_semana = $("#dias_semana").val();
+	dias_semana = JSON.stringify(dias_semana);
+
+	var id_prod = $("#id_produto_listagem").val();
+
+	if (id_prod != "") {
+
+		$.blockUI({
+			message : 'Carregando...'
+		});
+
+		$.ajax({
+			type : "POST",
+			url : "home?ac=ajax",
+			dataType : "json",
+			async : true,
+			data : {
+				cmd : 'dashProdDiaSingle',
+				data_pedido_ini : data_pedido_ini,
+				data_pedido_fim : data_pedido_fim,
+				cod_bairro : cod_bairro,
+				hora_final : hora_final,
+				hora_inicial : hora_inicial,
+				flag_servico : flag_servico,
+				dias_semana : dias_semana,
+				id_prod : id_prod
+
+			},
+			success : function(data) {
+
+				var labels = [];
+				var datadash = [];
+
+				for (t = 0; t < data.length; t++) {
+
+					labels[labels.length] = data[t].dia;
+					datadash[datadash.length] = data[t].qtd;
+
+				}
+
+				$("#dash_proddia_holder").html("");
+				$("#dash_proddia_holder").html("<canvas id=\"dash_proddia\"></canvas>");
+
+				var ctx = document.getElementById("dash_proddia");
+
+				var lineChart = new Chart(ctx, {
+					type : 'line',
+					data : {
+						labels : labels,
+						datasets : [ {
+							label : "Unidades",
+							backgroundColor : "rgba(38, 185, 154, 0.31)",
+							borderColor : "rgba(38, 185, 154, 0.7)",
+							pointBorderColor : "rgba(38, 185, 154, 0.7)",
+							pointBackgroundColor : "rgba(38, 185, 154, 0.7)",
+							pointHoverBackgroundColor : "#fff",
+							pointHoverBorderColor : "rgba(220,220,220,1)",
+							pointBorderWidth : 1,
+							data : datadash
+						} ]
+					},
+				});
+
+				$.unblockUI();
+
+			},
+			error : function(msg) {
+				$.unblockUI();
+				alert("Erro: " + msg.msg);
+			}
+		});
+	}
+}
+
+function dashProdHora_single() {
+
+	var data_pedido_ini = $("#data_pedido_ini").val();
+	var data_pedido_fim = $("#data_pedido_fim").val();
+	var cod_bairro = $("#cod_bairro").val();
+	var hora_final = $("#hora_final").val();
+	var hora_inicial = $("#hora_inicial").val();
+	var flag_servico = $("#flag_servico").val();
+	var dias_semana = $("#dias_semana").val();
+	dias_semana = JSON.stringify(dias_semana);
+
+	var id_prod = $("#id_produto_listagem").val();
+
+	if (id_prod != "") {
+
+		$.blockUI({
+			message : 'Carregando...'
+		});
+
+		$.ajax({
+			type : "POST",
+			url : "home?ac=ajax",
+			dataType : "json",
+			async : true,
+			data : {
+				cmd : 'dashProdHoraSingle',
+				data_pedido_ini : data_pedido_ini,
+				data_pedido_fim : data_pedido_fim,
+				cod_bairro : cod_bairro,
+				hora_final : hora_final,
+				hora_inicial : hora_inicial,
+				flag_servico : flag_servico,
+				dias_semana : dias_semana,
+				id_prod : id_prod
+
+			},
+			success : function(data) {
+
+				var labels = [];
+				var datadash = [];
+
+				for (t = 0; t < data.length; t++) {
+
+					labels[labels.length] = data[t].horaformated;
+					datadash[datadash.length] = data[t].qtd;
+
+				}
+
+				// dash_proddia_holder,dash_prodhora_holder
+
+				$("#dash_prodhora_holder").html("");
+				$("#dash_prodhora_holder").html("<canvas id=\"dash_prodhora\"></canvas>");
+
+				var ctx = document.getElementById("dash_prodhora");
+
+				var lineChart = new Chart(ctx, {
+					type : 'line',
+					data : {
+						labels : labels,
+						datasets : [ {
+							label : "Unidades",
+							backgroundColor : "rgba(38, 185, 154, 0.31)",
+							borderColor : "rgba(38, 185, 154, 0.7)",
+							pointBorderColor : "rgba(38, 185, 154, 0.7)",
+							pointBackgroundColor : "rgba(38, 185, 154, 0.7)",
+							pointHoverBackgroundColor : "#fff",
+							pointHoverBorderColor : "rgba(220,220,220,1)",
+							pointBorderWidth : 1,
+							data : datadash
+						} ]
+					},
+				});
+
+				var options = {
+					legend : false,
+					responsive : false
+				};
+
+				$.unblockUI();
+
+			},
+			error : function(msg) {
+				$.unblockUI();
+				alert("Erro: " + msg.msg);
+			}
+		});
+	}
+}
+
+function dashProdBairroSingle() {// Produtos com mais faturamento
+
+	var data_pedido_ini = $("#data_pedido_ini").val();
+	var data_pedido_fim = $("#data_pedido_fim").val();
+	var cod_bairro = $("#cod_bairro").val();
+	var hora_final = $("#hora_final").val();
+	var hora_inicial = $("#hora_inicial").val();
+	var flag_servico = $("#flag_servico").val();
+	var dias_semana = $("#dias_semana").val();
+	dias_semana = JSON.stringify(dias_semana);
+
+	$("#dash_prodbairro").html("");
+
+	var id_prod = $("#id_produto_listagem").val();
+
+	if (id_prod != "") {
+
+		$(window).trigger('resize');
+
+		$.ajax({
+			type : "POST",
+			url : "home?ac=ajax",
+			dataType : "json",
+			async : true,
+			data : {
+				cmd : 'dashProdBairroSingle',
+				data_pedido_ini : data_pedido_ini,
+				data_pedido_fim : data_pedido_fim,
+				cod_bairro : cod_bairro,
+				hora_final : hora_final,
+				hora_inicial : hora_inicial,
+				flag_servico : flag_servico,
+				dias_semana : dias_semana,
+				id_prod:id_prod
+
+			},
+			success : function(data) {
+
+				var dataset = [];
+				var desc = [];
+				var qtd = [];
+				
+				console.log(data);
+
+				for (t = 0; t < data.length; t++) {
+
+					desc[desc.length] = data[t].desc;
+					qtd[qtd.length] = data[t].qtd;
+				
+
+				}
+
+				desc.reverse();
+				qtd.reverse();
+
+				var echartBar = echarts.init(document.getElementById('dash_prodbairro'));
+
+				echartBar.setOption({
+					color : [ '#26B99A' ],
+					title : {
+						text : 'Local',
+						show : true
+
+					},
+					tooltip : {
+						trigger : 'axis',
+						formatter : function(val) {
+
+							return val["0"].name + "<br>  Quantidade: " + valorFormater(val["0"].value);
+						}
+					},
+					legend : {
+						x : 500,
+						show : true,
+						data : [ 'Produto' ]
+
+					},
+
+					calculable : true,
+					xAxis : [ {
+						type : 'value',
+						boundaryGap : [ 0, 0.01 ],
+						axisLabel : {
+							formatter : function(val) {
+								return valorFormater(val)
+							},
+
+						}
+					} ],
+					grid : {
+						x : x_bar,
+						y : y_bar,
+						x2 : x2_bar,
+						y2 : y2_bar,
+						width : widht_bar
+					},
+					yAxis : [ {
+						type : 'category',
+						data : desc,
+						axisLabel : {
+							textStyle : {
+								fontSize : 10
+							},
+							splitAreaType : {
+								show : true
+							},
+							margin : 3
+
+						}
+					} ],
+					series : [ {
+						name : 'Unidades',
+						type : 'bar',
+						data : qtd,
+						barGap : "20%"
+					} ]
+				});
+
+				$.unblockUI();
+
+			},
+			error : function(msg) {
+				$.unblockUI();
+				alert("Erro: " + msg.msg);
+			}
+		});
+
+		$(window).trigger('resize');
+	}
 }
