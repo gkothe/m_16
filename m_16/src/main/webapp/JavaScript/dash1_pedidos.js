@@ -4,7 +4,7 @@ var x_bar = 200;
 var y_bar = 50;
 var x2_bar = 80;
 var y2_bar = 20;
-var widht_bar = "75%" 
+var widht_bar = "75%"
 $(document).ready(function() {
 
 	$('#tabs_dash a[href="#dashboard1"]').tab('show')
@@ -63,8 +63,8 @@ function filtrar(troca) {
 
 	dashServico();
 	dashModo();
-	dashVendaProdsQtd();
-	dashVendaProdsVal();
+	dashVendaProdsQtd('+');
+	dashVendaProdsVal('+');
 	dashInfosBasicas();
 	dashPedidoHora();
 	dashPedidoDia();
@@ -142,7 +142,7 @@ function valorFormater2(value) {
 	return $("#sys_formatador2").val();
 }
 
-function dashVendaProdsQtd() {// Produtos mais vendidos
+function dashVendaProdsQtd(consulta) {// Produtos mais vendidos
 
 	var data_pedido_ini = $("#data_pedido_ini").val();
 	var data_pedido_fim = $("#data_pedido_fim").val();
@@ -170,10 +170,15 @@ function dashVendaProdsQtd() {// Produtos mais vendidos
 			hora_final : hora_final,
 			hora_inicial : hora_inicial,
 			flag_servico : flag_servico,
-			dias_semana : dias_semana
-
+			dias_semana : dias_semana,
+			consulta : consulta
 		},
 		success : function(data) {
+
+			if (consulta == "+")
+				$("#dashVendaProdsQtd_title").html("Produtos mais vendidos");
+			else
+				$("#dashVendaProdsQtd_title").html("Produtos menos vendidos");
 
 			var dataset = [];
 			var desc = [];
@@ -269,7 +274,7 @@ function dashVendaProdsQtd() {// Produtos mais vendidos
 	$(window).trigger('resize');
 }
 
-function dashVendaProdsVal() {// Produtos com mais faturamento
+function dashVendaProdsVal(consulta) {// Produtos com mais faturamento
 
 	var data_pedido_ini = $("#data_pedido_ini").val();
 	var data_pedido_fim = $("#data_pedido_fim").val();
@@ -297,10 +302,16 @@ function dashVendaProdsVal() {// Produtos com mais faturamento
 			hora_final : hora_final,
 			hora_inicial : hora_inicial,
 			flag_servico : flag_servico,
-			dias_semana : dias_semana
+			dias_semana : dias_semana,
+			consulta : consulta
 
 		},
 		success : function(data) {
+
+			if (consulta == "+")
+				$("#dashProdutosVal_title").html("Produtos mais faturados");
+			else
+				$("#dashProdutosVal_title").html("Produtos menos faturados");
 
 			var dataset = [];
 			var desc = [];
@@ -396,7 +407,7 @@ function dashVendaProdsVal() {// Produtos com mais faturamento
 	$(window).trigger('resize');
 }
 
-function dashBairrosLista() {// Produtos com mais faturamento
+function dashBairrosLista(consulta) {// Produtos com mais faturamento
 
 	var data_pedido_ini = $("#data_pedido_ini").val();
 	var data_pedido_fim = $("#data_pedido_fim").val();
@@ -424,7 +435,8 @@ function dashBairrosLista() {// Produtos com mais faturamento
 			hora_final : hora_final,
 			hora_inicial : hora_inicial,
 			flag_servico : flag_servico,
-			dias_semana : dias_semana
+			dias_semana : dias_semana,
+			consulta : consulta
 
 		},
 		success : function(data) {
@@ -433,6 +445,8 @@ function dashBairrosLista() {// Produtos com mais faturamento
 			var desc = [];
 			var qtd = [];
 			var val = [];
+var title;
+			var serieobj;
 
 			for (t = 0; t < data.length; t++) {
 
@@ -444,21 +458,45 @@ function dashBairrosLista() {// Produtos com mais faturamento
 
 			desc.reverse();
 			qtd.reverse();
+			val.reverse();
+
+			if (consulta == "valor") {
+				title = "Pedidos por bairro - Faturamento"
+				serieobj = {
+					name : 'Valor R$',
+					type : 'bar',
+					data : val,
+					barGap : "20%"
+				}
+
+			} else {
+				title = "Pedidos por bairro - Quantidade"
+				serieobj = {
+					name : 'Quantidade',
+					type : 'bar',
+					data : qtd,
+					barGap : "20%"
+				}
+
+			}
 
 			var echartBar = echarts.init(document.getElementById('dash_vendasbairro'));
 
 			echartBar.setOption({
 				color : [ '#26B99A' ],
 				title : {
-					text : 'Pedidos ',
+					text : title,
 					show : true
 
 				},
 				tooltip : {
 					trigger : 'axis',
 					formatter : function(val) {
-
-						return val["0"].name + "<br>  Quantidade: " + valorFormater(val["0"].value);
+						if (consulta == "valor") {
+							return val["0"].name + "<br>  Valor R$: " + valorFormater2(val["0"].value);
+						} else {
+							return val["0"].name + "<br>  Quantidade: " + valorFormater(val["0"].value);
+						}
 					}
 				},
 				legend : {
@@ -474,7 +512,14 @@ function dashBairrosLista() {// Produtos com mais faturamento
 					boundaryGap : [ 0, 0.01 ],
 					axisLabel : {
 						formatter : function(val) {
-							return valorFormater(val)
+							
+							if (consulta == "valor") {
+								return valorFormater2(val)
+							} else {
+								return valorFormater(val)
+							}
+							
+							
 						},
 
 					}
@@ -500,12 +545,7 @@ function dashBairrosLista() {// Produtos com mais faturamento
 
 					}
 				} ],
-				series : [ {
-					name : 'Quantidade',
-					type : 'bar',
-					data : qtd,
-					barGap : "20%"
-				} ]
+				series : [ serieobj ]
 			});
 
 			$.unblockUI();
@@ -1132,7 +1172,7 @@ function dashProdBairroSingle() {// Produtos com mais faturamento
 				hora_inicial : hora_inicial,
 				flag_servico : flag_servico,
 				dias_semana : dias_semana,
-				id_prod:id_prod
+				id_prod : id_prod
 
 			},
 			success : function(data) {
@@ -1140,14 +1180,13 @@ function dashProdBairroSingle() {// Produtos com mais faturamento
 				var dataset = [];
 				var desc = [];
 				var qtd = [];
-				
+
 				console.log(data);
 
 				for (t = 0; t < data.length; t++) {
 
 					desc[desc.length] = data[t].desc;
 					qtd[qtd.length] = data[t].qtd;
-				
 
 				}
 

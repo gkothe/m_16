@@ -297,7 +297,7 @@
 				<div class="col-md-12 col-sm-12 col-xs-12">
 					<div class="x_panel">
 						<div class="x_title">
-							<h2>Produtos mais vendidos</h2>
+							<h2 id="dashVendaProdsQtd_title">Produtos mais vendidos</h2>
 							<ul class="nav navbar-right panel_toolbox">
 								<li><a class="collapse-link"><i
 										class="fa fa-chevron-up"></i></a></li>
@@ -305,8 +305,8 @@
 									data-toggle="dropdown" role="button" aria-expanded="false"><i
 										class="fa fa-wrench"></i></a>
 									<ul class="dropdown-menu" role="menu">
-										<li><a href="#">Settings 1</a></li>
-										<li><a href="#">Settings 2</a></li>
+										<li><a href="#" onClick="dashVendaProdsQtd('+')"> Mais vendidos</a></li>
+										<li><a href="#" onClick="dashVendaProdsQtd('-')" >Menos vendidos</a></li>
 									</ul></li>
 								
 							</ul>
@@ -322,7 +322,7 @@
 				<div class="col-md-12 col-sm-12 col-xs-12">
 					<div class="x_panel">
 						<div class="x_title">
-							<h2>Produtos com mais faturamento</h2>
+							<h2 id="dashProdutosVal_title"> >Produtos com mais faturamento</h2>
 							<ul class="nav navbar-right panel_toolbox">
 								<li><a class="collapse-link"><i
 										class="fa fa-chevron-up"></i></a></li>
@@ -330,8 +330,8 @@
 									data-toggle="dropdown" role="button" aria-expanded="false"><i
 										class="fa fa-wrench"></i></a>
 									<ul class="dropdown-menu" role="menu">
-										<li><a href="#">Settings 1</a></li>
-										<li><a href="#">Settings 2</a></li>
+										<li><a onClick="dashVendaProdsVal('+')" href="#">Maior faturamento</a></li>
+										<li><a onClick="dashVendaProdsVal('-')" href="#">Menor faturamento</a></li>
 									</ul></li>
 								
 							</ul>
@@ -400,8 +400,8 @@
 									data-toggle="dropdown" role="button" aria-expanded="false"><i
 										class="fa fa-wrench"></i></a>
 									<ul class="dropdown-menu" role="menu">
-										<li><a href="#">Settings 1</a></li>
-										<li><a href="#">Settings 2</a></li>
+										<li><a onClick="dashBairrosLista('qtd')" href="#">Quantidade</a></li>
+										<li><a onClick="dashBairrosLista('valor')" href="#">Faturamento</a></li>
 									</ul></li>
 								
 							</ul>
@@ -468,8 +468,8 @@
 									data-toggle="dropdown" role="button" aria-expanded="false"><i
 										class="fa fa-wrench"></i></a>
 									<ul class="dropdown-menu" role="menu">
-										<li><a href="#">Settings 1</a></li>
-										<li><a href="#">Settings 2</a></li>
+										<li><a href="#" > aaa</a></li>
+										<li><a href="#"  >Settings 2</a></li>
 									</ul></li>
 								
 							</ul>

@@ -523,8 +523,9 @@ public class Relatorios {
 		String hora_inicial = request.getParameter("hora_inicial") == null ? "" : request.getParameter("hora_inicial");
 		String flag_servico = request.getParameter("flag_servico") == null ? "" : request.getParameter("flag_servico");
 		String dias_semana = request.getParameter("dias_semana") == null ? "" : request.getParameter("dias_semana");
-
+		String consulta = request.getParameter("consulta") == null ? "" : request.getParameter("consulta");
 		StringBuffer sql = new StringBuffer();
+
 		sql.append("SELECT pedido_item.id_prod, ");
 		sql.append("       Sum(qtd_prod) as qtd, ");
 		sql.append("       DESC_ABREVIADO as desc_prod ");
@@ -537,7 +538,11 @@ public class Relatorios {
 
 		sql = new StringBuffer(parametrosDash(sql.toString(), hora_inicial, hora_final, dias_semana, cod_bairro, data_pedido_ini, data_pedido_fim, flag_servico));
 
-		sql.append(" group by pedido_item.id_prod ,desc_prod order by sum(QTD_PROD) desc limit 20 ;");
+		if (consulta.equalsIgnoreCase("-")) {
+			sql.append(" group by pedido_item.id_prod ,desc_prod order by sum(QTD_PROD) asc limit 20 ;");
+		} else {
+			sql.append(" group by pedido_item.id_prod ,desc_prod order by sum(QTD_PROD) desc limit 20 ;");
+		}
 
 		PreparedStatement st = conn.prepareStatement(sql.toString());
 		st.setInt(1, coddistr);
@@ -568,7 +573,7 @@ public class Relatorios {
 		String hora_inicial = request.getParameter("hora_inicial") == null ? "" : request.getParameter("hora_inicial");
 		String flag_servico = request.getParameter("flag_servico") == null ? "" : request.getParameter("flag_servico");
 		String dias_semana = request.getParameter("dias_semana") == null ? "" : request.getParameter("dias_semana");
-
+		String consulta = request.getParameter("consulta") == null ? "" : request.getParameter("consulta");
 		StringBuffer sql = new StringBuffer();
 		sql.append("SELECT pedido_item.id_prod, ");
 		sql.append("       Sum(val_unit * qtd_prod ) as valsold,  ");
@@ -582,8 +587,11 @@ public class Relatorios {
 
 		sql = new StringBuffer(parametrosDash(sql.toString(), hora_inicial, hora_final, dias_semana, cod_bairro, data_pedido_ini, data_pedido_fim, flag_servico));
 
-		sql.append(" group by pedido_item.id_prod ,desc_prod order by sum(val_unit * qtd_prod ) desc limit 20 ;");
-
+		if (consulta.equalsIgnoreCase("-")) {
+			sql.append(" group by pedido_item.id_prod ,desc_prod order by sum(val_unit * qtd_prod ) asc limit 20 ;");
+		} else {
+			sql.append(" group by pedido_item.id_prod ,desc_prod order by sum(val_unit * qtd_prod ) desc limit 20 ;");
+		}
 		PreparedStatement st = conn.prepareStatement(sql.toString());
 		st.setInt(1, coddistr);
 		int contparam = 2;
