@@ -3,8 +3,11 @@
 var x_bar = 200;
 var y_bar = 50;
 var x2_bar = 80;
-var y2_bar = 20;
-var widht_bar = "75%"
+var y2_bar = 40;
+var widht_bar = "75%";
+
+
+
 $(document).ready(function() {
 
 	$('#tabs_dash a[href="#dashboard1"]').tab('show')
@@ -277,6 +280,10 @@ function dashVendaProdsQtd(consulta) {// Produtos mais vendidos
 					barGap : "20%"
 				} ]
 			});
+			
+			console.log(echarts);
+			console.log(echarts.config);
+			echartBar.on(echarts.config.EVENT.CLICK, eConsole);
 
 			$.unblockUI();
 
@@ -288,6 +295,15 @@ function dashVendaProdsQtd(consulta) {// Produtos mais vendidos
 	});
 
 	$(window).trigger('resize');
+}
+
+
+
+
+
+function eConsole(param) {
+  
+    console.log(param);
 }
 
 function dashVendaProdsVal(consulta) {// Produtos com mais faturamento
