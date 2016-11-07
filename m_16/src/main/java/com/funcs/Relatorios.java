@@ -332,9 +332,9 @@ public class Relatorios {
 				}
 
 				if (rs2.getInt("n") + 1 < 10) {
-					hora2 = "0" + rs2.getInt("n") + ":00";
+					hora2 = "0" + (rs2.getInt("n") + 1) + ":00";
 				} else {
-					hora2 = rs2.getInt("n") + ":00";
+					hora2 = rs2.getInt("n") + 1 + ":00";
 				}
 
 				obj.put("hora", hora);
@@ -712,9 +712,9 @@ public class Relatorios {
 				}
 
 				if (rs2.getInt("n") + 1 < 10) {
-					hora2 = "0" + rs2.getInt("n") + ":00";
+					hora2 = "0" + (rs2.getInt("n") + 1) + ":00";
 				} else {
-					hora2 = rs2.getInt("n") + ":00";
+					hora2 = (rs2.getInt("n") + 1) + ":00";
 				}
 
 				obj.put("hora", hora);
