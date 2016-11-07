@@ -77,10 +77,11 @@ function filtrar(troca) {
 }
 
 function filtrarProds() {
-
+	dashProdInfosgerais_single();
 	dashProdHora_single();
 	dashProdDiaSingle();
 	dashProdBairroSingle();
+	
 }
 
 function carregaBairros() {
@@ -445,7 +446,7 @@ function dashBairrosLista(consulta) {// Produtos com mais faturamento
 			var desc = [];
 			var qtd = [];
 			var val = [];
-var title;
+			var title;
 			var serieobj;
 
 			for (t = 0; t < data.length; t++) {
@@ -512,14 +513,13 @@ var title;
 					boundaryGap : [ 0, 0.01 ],
 					axisLabel : {
 						formatter : function(val) {
-							
+
 							if (consulta == "valor") {
 								return valorFormater2(val)
 							} else {
 								return valorFormater(val)
 							}
-							
-							
+
 						},
 
 					}
@@ -1139,6 +1139,61 @@ function dashProdHora_single() {
 	}
 }
 
+
+
+function dashProdInfosgerais_single() {// Produtos com mais faturamento
+
+	var data_pedido_ini = $("#data_pedido_ini").val();
+	var data_pedido_fim = $("#data_pedido_fim").val();
+	var cod_bairro = $("#cod_bairro").val();
+	var hora_final = $("#hora_final").val();
+	var hora_inicial = $("#hora_inicial").val();
+	var flag_servico = $("#flag_servico").val();
+	var dias_semana = $("#dias_semana").val();
+	dias_semana = JSON.stringify(dias_semana);
+
+
+	var id_prod = $("#id_produto_listagem").val();
+
+	if (id_prod != "") {
+
+		$(window).trigger('resize');
+
+		$.ajax({
+			type : "POST",
+			url : "home?ac=ajax",
+			dataType : "json",
+			async : true,
+			data : {
+				cmd : 'dashProdInfosgerais_single',
+				data_pedido_ini : data_pedido_ini,
+				data_pedido_fim : data_pedido_fim,
+				cod_bairro : cod_bairro,
+				hora_final : hora_final,
+				hora_inicial : hora_inicial,
+				flag_servico : flag_servico,
+				dias_semana : dias_semana,
+				id_prod : id_prod
+
+			},
+			success : function(data) {
+				
+				$("#lbldash_qtdprod").val(data.qtd);
+				$("#lbldash_valtotalprod").val(data.totalfat);
+				$("#lbldash_mediaprod").val(data.media);
+								
+			},
+			error : function(msg) {
+				$.unblockUI();
+				alert("Erro: " + msg.msg);
+			}
+		});
+
+		$(window).trigger('resize');
+	}
+}
+
+
 function dashProdBairroSingle() {// Produtos com mais faturamento
 
 	var data_pedido_ini = $("#data_pedido_ini").val();
@@ -1181,7 +1236,6 @@ function dashProdBairroSingle() {// Produtos com mais faturamento
 				var desc = [];
 				var qtd = [];
 
-				console.log(data);
 
 				for (t = 0; t < data.length; t++) {
 

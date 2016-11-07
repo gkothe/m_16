@@ -229,7 +229,12 @@ public class HomeController extends javax.servlet.http.HttpServlet {
 				Relatorios.dashProdHora_single(request, response, conn, coddistr);
 			}else if (cmd.equalsIgnoreCase("dashProdDiaSingle")) {
 				Relatorios.dashProdDia_single(request, response, conn, coddistr);
+			}else if (cmd.equalsIgnoreCase("dashProdInfosgerais_single")) {
+				Relatorios.dashProdInfosgerais_single(request, response, conn, coddistr);
 			}
+			
+			
+			
 
 			conn.commit();
 		} catch (Exception ex) {
