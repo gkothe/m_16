@@ -303,7 +303,7 @@ public class Relatorios {
 		rs2 = st.executeQuery();
 		while (rs2.next()) {
 
-			sql = "SELECT  HOUR(DATA_PEDIDO) as hora , TIME_FORMAT(DATA_PEDIDO,'%H:00' ) as horaformated ,TIME_FORMAT(DATE_ADD(DATA_PEDIDO,interval 1 HOUR ),'%H:00' )  as HORA2, COUNT(*) as qtd FROM pedido where id_distribuidora = ?  and flag_status = 'O' and HOUR(DATA_PEDIDO) = " + rs2.getInt("n");
+			sql = "SELECT  HOUR(DATA_PEDIDO) as hora , TIME_FORMAT(DATA_PEDIDO,'%H:00' ) as horaformated ,TIME_FORMAT(DATE_ADD(DATA_PEDIDO,interval 1 HOUR ),'%H:00' )  as HORA2, COUNT(*) as qtd, sum(VAL_TOTALPROD) as VAL_TOTALPROD FROM pedido where id_distribuidora = ?  and flag_status = 'O' and HOUR(DATA_PEDIDO) = " + rs2.getInt("n");
 
 			sql = parametrosDash(sql, hora_inicial, hora_final, dias_semana, cod_bairro, data_pedido_ini, data_pedido_fim, flag_servico);
 
@@ -321,6 +321,7 @@ public class Relatorios {
 				obj.put("hora", rs.getString("hora"));
 				obj.put("horaformated", rs.getString("horaformated") + "-" + rs.getString("HORA2"));
 				obj.put("qtd", rs.getInt("qtd"));
+				obj.put("val_totalprod", rs.getDouble("VAL_TOTALPROD"));
 				retorno.add(obj);
 			} else {
 				JSONObject obj = new JSONObject();
@@ -336,7 +337,7 @@ public class Relatorios {
 				} else {
 					hora2 = rs2.getInt("n") + 1 + ":00";
 				}
-
+				obj.put("val_totalprod", 0);
 				obj.put("hora", hora);
 				obj.put("horaformated", hora + "-" + hora2);
 				obj.put("qtd", "0");
@@ -371,7 +372,7 @@ public class Relatorios {
 		rs2 = st.executeQuery();
 		while (rs2.next()) {
 
-			sql = "SELECT DAYOFWEEK(DATA_PEDIDO) as dia, COUNT(*) as qtd FROM pedido  where id_distribuidora = ?  and flag_status = 'O' and DAYOFWEEK(DATA_PEDIDO) =  " + rs2.getInt("cod_dia");
+			sql = "SELECT DAYOFWEEK(DATA_PEDIDO) as dia, COUNT(*) as qtd,  sum(VAL_TOTALPROD) as VAL_TOTALPROD FROM pedido  where id_distribuidora = ?  and flag_status = 'O' and DAYOFWEEK(DATA_PEDIDO) =  " + rs2.getInt("cod_dia");
 
 			sql = parametrosDash(sql, hora_inicial, hora_final, dias_semana, cod_bairro, data_pedido_ini, data_pedido_fim, flag_servico);
 
@@ -387,12 +388,14 @@ public class Relatorios {
 			if (rs.next()) {
 				JSONObject obj = new JSONObject();
 				obj.put("dia", Utilitario.getDescDiaSemana(conn, rs.getInt("dia")));
-				obj.put("qtd", df.format(rs.getInt("qtd")));
+				obj.put("qtd", rs.getInt("qtd"));
+				obj.put("val_totalprod", rs.getDouble("VAL_TOTALPROD"));
 				retorno.add(obj);
 			} else {
 				JSONObject obj = new JSONObject();
 				obj.put("dia", Utilitario.getDescDiaSemana(conn, rs2.getInt("cod_dia")));
 				obj.put("qtd", 0);
+				obj.put("val_totalprod", 0);
 				retorno.add(obj);
 			}
 
@@ -611,7 +614,7 @@ public class Relatorios {
 		while (rs2.next()) {
 
 			sql = new StringBuffer();
-			sql.append(" select  DAYOFWEEK(DATA_PEDIDO) as dia,  sum(QTD_PROD) as qtd from pedido");
+			sql.append(" select  DAYOFWEEK(DATA_PEDIDO) as dia,  sum(QTD_PROD) as qtd, sum(val_unit * qtd_prod) as VAL_TOTALPROD  from pedido");
 			sql.append(" ");
 			sql.append(" inner join pedido_item ");
 			sql.append(" on pedido_item .id_pedido = pedido.id_pedido ");
@@ -636,11 +639,13 @@ public class Relatorios {
 				JSONObject obj = new JSONObject();
 				obj.put("dia", Utilitario.getDescDiaSemana(conn, rs.getInt("dia")));
 				obj.put("qtd", df.format(rs.getInt("qtd")));
+				obj.put("val_totalprod", (rs.getDouble("VAL_TOTALPROD")));
 				retorno.add(obj);
 			} else {
 				JSONObject obj = new JSONObject();
 				obj.put("dia", Utilitario.getDescDiaSemana(conn, rs2.getInt("cod_dia")));
 				obj.put("qtd", 0);
+				obj.put("val_totalprod", 0);
 				retorno.add(obj);
 			}
 		}
@@ -676,7 +681,7 @@ public class Relatorios {
 
 			sql = new StringBuffer();
 
-			sql.append("select HOUR(DATA_PEDIDO) as hora , TIME_FORMAT(DATA_PEDIDO,'%H:00' ) as horaformated , TIME_FORMAT(DATE_ADD(DATA_PEDIDO,interval 1 HOUR ),'%H:00' )  as HORA2, sum(QTD_PROD) as qtd  from pedido ");
+			sql.append("select sum(val_unit * qtd_prod) as VAL_TOTALPROD , HOUR(DATA_PEDIDO) as hora , TIME_FORMAT(DATA_PEDIDO,'%H:00' ) as horaformated , TIME_FORMAT(DATE_ADD(DATA_PEDIDO,interval 1 HOUR ),'%H:00' )  as HORA2, sum(QTD_PROD) as qtd  from pedido ");
 			sql.append(" ");
 			sql.append("inner join pedido_item ");
 			sql.append("on pedido_item .id_pedido = pedido.id_pedido ");
@@ -702,6 +707,7 @@ public class Relatorios {
 				obj.put("hora", rs.getString("hora"));
 				obj.put("horaformated", rs.getString("horaformated") + "-" + rs.getString("HORA2"));
 				obj.put("qtd", rs.getInt("qtd"));
+				obj.put("val_totalprod", rs.getDouble("VAL_TOTALPROD"));
 				retorno.add(obj);
 			} else {
 				obj = new JSONObject();
@@ -720,6 +726,7 @@ public class Relatorios {
 				obj.put("hora", hora);
 				obj.put("horaformated", hora + "-" + hora2);
 				obj.put("qtd", "0");
+				obj.put("val_totalprod", 0);
 				retorno.add(obj);
 			}
 

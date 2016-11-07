@@ -66,9 +66,9 @@ function filtrar(troca) {
 	dashVendaProdsQtd('+');
 	dashVendaProdsVal('+');
 	dashInfosBasicas();
-	dashPedidoHora();
-	dashPedidoDia();
-	dashBairrosLista();
+	dashPedidoHora('qtd');
+	dashPedidoDia('qtd');
+	dashBairrosLista('qtd');
 	filtrarProds();
 	if (troca) {
 		$('#tabs_dash a[href="#dashboard1"]').tab('show')
@@ -78,10 +78,10 @@ function filtrar(troca) {
 
 function filtrarProds() {
 	dashProdInfosgerais_single();
-	dashProdHora_single();
-	dashProdDiaSingle();
+	dashProdHora_single('qtd');
+	dashProdDiaSingle('qtd');
 	dashProdBairroSingle();
-	
+
 }
 
 function carregaBairros() {
@@ -216,6 +216,21 @@ function dashVendaProdsQtd(consulta) {// Produtos mais vendidos
 						return val["0"].name + "<br>  Quantidade: " + valorFormater(val["0"].value);
 					}
 				},
+				toolbox : {
+					show : true,
+					feature : {
+						magicType : {
+							show : true,
+							title : {
+								line : 'Line',
+								bar : 'Bar',
+								stack : 'Stack',
+								tiled : 'Tiled'
+							},
+							type : [ 'line', 'bar' ]
+						}
+					}
+				},
 				legend : {
 					x : 500,
 					show : true,
@@ -341,6 +356,21 @@ function dashVendaProdsVal(consulta) {// Produtos com mais faturamento
 					text : 'Produtos ',
 					show : true
 
+				},
+				toolbox : {
+					show : true,
+					feature : {
+						magicType : {
+							show : true,
+							title : {
+								line : 'Line',
+								bar : 'Bar',
+								stack : 'Stack',
+								tiled : 'Tiled'
+							},
+							type : [ 'line', 'bar' ]
+						}
+					}
 				},
 				tooltip : {
 					trigger : 'axis',
@@ -490,6 +520,20 @@ function dashBairrosLista(consulta) {// Produtos com mais faturamento
 					show : true
 
 				},
+				toolbox : {
+					show : true,
+					feature : {
+						magicType : {
+							show : true,
+							title : {
+								line : 'Line',
+								bar : 'Bar',
+
+							},
+							type : [ 'line', 'bar' ]
+						}
+					}
+				},
 				tooltip : {
 					trigger : 'axis',
 					formatter : function(val) {
@@ -611,7 +655,7 @@ function dashInfosBasicas() {
 
 }
 
-function dashPedidoHora() {
+function dashPedidoHora(consulta) {
 
 	var data_pedido_ini = $("#data_pedido_ini").val();
 	var data_pedido_fim = $("#data_pedido_fim").val();
@@ -646,41 +690,117 @@ function dashPedidoHora() {
 
 			var labels = [];
 			var datadash = [];
-
+			var label;
 			for (t = 0; t < data.length; t++) {
 
 				labels[labels.length] = data[t].horaformated;
-				datadash[datadash.length] = data[t].qtd;
+				if (consulta == "qtd") {
+					datadash[datadash.length] = data[t].qtd;
+					label = "Pedido - Quantidade";
+				} else {
+					datadash[datadash.length] = data[t].val_totalprod;
+					label = "Pedido - R$";
+				}
 
 			}
 
 			$("#dash_pedhora_holder").html("");
-			$("#dash_pedhora_holder").html("<canvas id=\"dash_pedhora\"></canvas>");
+			// $("#dash_pedhora_holder").html("<canvas
+			// id=\"dash_pedhora\"></canvas>");
+			$("#dash_pedhora_holder").html("<div style='height: 350px' id=\"dash_pedhora\"></div>");
 
-			var ctx = document.getElementById("dash_pedhora");
+			/*
+			 * var ctx = document.getElementById("dash_pedhora");
+			 * 
+			 * var lineChart = new Chart(ctx, { type : 'line', options : { },
+			 * data : { labels : labels, scaleLabel : "oi", datasets : [ { label :
+			 * label, backgroundColor : "rgba(38, 185, 154, 0.31)", borderColor :
+			 * "rgba(38, 185, 154, 0.7)", pointBorderColor : "rgba(38, 185, 154,
+			 * 0.7)", pointBackgroundColor : "rgba(38, 185, 154, 0.7)",
+			 * pointHoverBackgroundColor : "#fff", pointHoverBorderColor :
+			 * "rgba(220,220,220,1)", pointBorderWidth : 1, data : datadash } ] },
+			 * });
+			 * 
+			 * var options = { legend : false, responsive : false };
+			 */
 
-			var lineChart = new Chart(ctx, {
-				type : 'line',
-				data : {
-					labels : labels,
-					datasets : [ {
-						label : "Pedidos",
-						backgroundColor : "rgba(38, 185, 154, 0.31)",
-						borderColor : "rgba(38, 185, 154, 0.7)",
-						pointBorderColor : "rgba(38, 185, 154, 0.7)",
-						pointBackgroundColor : "rgba(38, 185, 154, 0.7)",
-						pointHoverBackgroundColor : "#fff",
-						pointHoverBorderColor : "rgba(220,220,220,1)",
-						pointBorderWidth : 1,
-						data : datadash
-					} ]
+			var echartLine = echarts.init(document.getElementById('dash_pedhora'));
+
+			echartLine.setOption({
+				title : {
+					text : consulta == "qtd" ? 'Quantidade' : "Faturamento",
 				},
-			});
+				color : [ '#26B99A' ],
+				tooltip : {
+					trigger : 'axis',
+					formatter : function(val) {
+						if (consulta == "qtd") {
+							return val["0"].name + "<br>  Quantidade: " + valorFormater(val["0"].value);
+						} else {
+							return val["0"].name + "<br>  Valor R$: " + valorFormater2(val["0"].value);
+						}
 
-			var options = {
-				legend : false,
-				responsive : false
-			};
+					}
+				},
+
+				legend : {
+					x : 220,
+					y : 40,
+					data : [ 'Intent' ]
+				},
+				toolbox : {
+					show : true,
+					feature : {
+						magicType : {
+							show : true,
+							title : {
+								line : 'Line',
+								bar : 'Bar',
+								stack : 'Stack',
+								tiled : 'Tiled'
+							},
+							type : [ 'line', 'bar' ]
+						}
+					}
+				},
+				calculable : true,
+				xAxis : [ {
+					type : 'category',
+					boundaryGap : false,
+					data : labels,
+					axisLabel : {
+						rotate : 45,
+						interval : 0
+
+					}
+				} ],
+				yAxis : [ {
+					type : 'value',
+					axisLabel : {
+						formatter : function(val) {
+							if (consulta == "qtd") {
+								return valorFormater(val)
+							} else {
+								return valorFormater2(val)
+							}
+
+						},
+					}
+				} ],
+				series : [ {
+					name : consulta == "qtd" ? 'Quantidade' : "Valor R$",
+					type : 'line',
+					smooth : true,
+					itemStyle : {
+						normal : {
+							areaStyle : {
+								type : 'default'
+							}
+						}
+					},
+					data : datadash
+				} ]
+			});
 
 			$.unblockUI();
 
@@ -693,7 +813,7 @@ function dashPedidoHora() {
 
 }
 
-function dashPedidoDia() {
+function dashPedidoDia(consulta) {
 
 	var data_pedido_ini = $("#data_pedido_ini").val();
 	var data_pedido_fim = $("#data_pedido_fim").val();
@@ -732,31 +852,111 @@ function dashPedidoDia() {
 			for (t = 0; t < data.length; t++) {
 
 				labels[labels.length] = data[t].dia;
-				datadash[datadash.length] = data[t].qtd;
+
+				if (consulta == "qtd") {
+					datadash[datadash.length] = data[t].qtd;
+					label = "Pedido - Quantidade";
+				} else {
+					datadash[datadash.length] = data[t].val_totalprod;
+					label = "Pedido - R$";
+				}
 
 			}
 
 			$("#dash_peddia_holder").html("");
-			$("#dash_peddia_holder").html("<canvas id=\"dash_peddia\"></canvas>");
+			// $("#dash_peddia_holder").html("<canvas
+			// id=\"dash_peddia\"></canvas>");
+			$("#dash_peddia_holder").html("<div  style='height: 350px' id=\"dash_peddia\"></div>");
 
-			var ctx = document.getElementById("dash_peddia");
+			/*
+			 * var ctx = document.getElementById("dash_peddia");
+			 * 
+			 * var lineChart = new Chart(ctx, { type : 'line', data : { labels :
+			 * labels, datasets : [ { label : "Pedidos", backgroundColor :
+			 * "rgba(38, 185, 154, 0.31)", borderColor : "rgba(38, 185, 154,
+			 * 0.7)", pointBorderColor : "rgba(38, 185, 154, 0.7)",
+			 * pointBackgroundColor : "rgba(38, 185, 154, 0.7)",
+			 * pointHoverBackgroundColor : "#fff", pointHoverBorderColor :
+			 * "rgba(220,220,220,1)", pointBorderWidth : 1, data : datadash } ] },
+			 * });
+			 * 
+			 */
 
-			var lineChart = new Chart(ctx, {
-				type : 'line',
-				data : {
-					labels : labels,
-					datasets : [ {
-						label : "Pedidos",
-						backgroundColor : "rgba(38, 185, 154, 0.31)",
-						borderColor : "rgba(38, 185, 154, 0.7)",
-						pointBorderColor : "rgba(38, 185, 154, 0.7)",
-						pointBackgroundColor : "rgba(38, 185, 154, 0.7)",
-						pointHoverBackgroundColor : "#fff",
-						pointHoverBorderColor : "rgba(220,220,220,1)",
-						pointBorderWidth : 1,
-						data : datadash
-					} ]
+			var echartLine = echarts.init(document.getElementById('dash_peddia'));
+
+			echartLine.setOption({
+				title : {
+					text : consulta == "qtd" ? 'Quantidade' : "Faturamento",
 				},
+				color : [ '#26B99A' ],
+				tooltip : {
+					trigger : 'axis',
+					formatter : function(val) {
+						if (consulta == "qtd") {
+							return val["0"].name + "<br>  Quantidade: " + valorFormater(val["0"].value);
+						} else {
+							return val["0"].name + "<br>  Valor R$: " + valorFormater2(val["0"].value);
+						}
+
+					}
+				},
+				legend : {
+					x : 220,
+					y : 40,
+					data : [ 'Intent' ]
+				},
+				toolbox : {
+					show : true,
+					feature : {
+						magicType : {
+							show : true,
+							title : {
+								line : 'Line',
+								bar : 'Bar',
+								stack : 'Stack',
+								tiled : 'Tiled'
+							},
+							type : [ 'line', 'bar' ]
+						}
+					}
+				},
+				calculable : true,
+				xAxis : [ {
+					type : 'category',
+					boundaryGap : false,
+					data : labels,
+					axisLabel : {
+						rotate : 30,
+						interval : 0
+
+					}
+				} ],
+				yAxis : [ {
+					type : 'value',
+					axisLabel : {
+						formatter : function(val) {
+							if (consulta == "qtd") {
+								return valorFormater(val)
+							} else {
+								return valorFormater2(val)
+							}
+
+						},
+					}
+				} ],
+				series : [ {
+					name : consulta == "qtd" ? 'Quantidade' : "Valor R$",
+					type : 'line',
+					smooth : true,
+					itemStyle : {
+						normal : {
+							areaStyle : {
+								type : 'default'
+							}
+						}
+					},
+					data : datadash
+				} ]
 			});
 
 			$.unblockUI();
@@ -968,7 +1168,7 @@ function dashServico() {
 
 }
 
-function dashProdDiaSingle() {
+function dashProdDiaSingle(consulta) {
 
 	var data_pedido_ini = $("#data_pedido_ini").val();
 	var data_pedido_fim = $("#data_pedido_fim").val();
@@ -1012,14 +1212,21 @@ function dashProdDiaSingle() {
 				for (t = 0; t < data.length; t++) {
 
 					labels[labels.length] = data[t].dia;
-					datadash[datadash.length] = data[t].qtd;
 
+					if (consulta == "qtd") {
+						datadash[datadash.length] = data[t].qtd;
+						label = "Pedido - Quantidade";
+					} else {
+						datadash[datadash.length] = data[t].val_totalprod;
+						label = "Pedido - R$";
+					}
+					
 				}
 
 				$("#dash_proddia_holder").html("");
-				$("#dash_proddia_holder").html("<canvas id=\"dash_proddia\"></canvas>");
+				$("#dash_proddia_holder").html("<div style='height: 350px'  id=\"dash_proddia\"></div>");
 
-				var ctx = document.getElementById("dash_proddia");
+		/*		var ctx = document.getElementById("dash_proddia");
 
 				var lineChart = new Chart(ctx, {
 					type : 'line',
@@ -1037,8 +1244,85 @@ function dashProdDiaSingle() {
 							data : datadash
 						} ]
 					},
-				});
+				});*/
 
+				var echartLine = echarts.init(document.getElementById('dash_proddia'));
+
+				echartLine.setOption({
+					title : {
+						text : consulta == "qtd" ? 'Quantidade' : "Faturamento",
+					},
+					color : [ '#26B99A' ],
+					tooltip : {
+						trigger : 'axis',
+						formatter : function(val) {
+							if (consulta == "qtd") {
+								return val["0"].name + "<br>  Quantidade: " + valorFormater(val["0"].value);
+							} else {
+								return val["0"].name + "<br>  Valor R$: " + valorFormater2(val["0"].value);
+							}
+
+						}
+					},
+					legend : {
+						x : 220,
+						y : 40,
+						data : [ 'Intent' ]
+					},
+					toolbox : {
+						show : true,
+						feature : {
+							magicType : {
+								show : true,
+								title : {
+									line : 'Line',
+									bar : 'Bar',
+									stack : 'Stack',
+									tiled : 'Tiled'
+								},
+								type : [ 'line', 'bar' ]
+							}
+						}
+					},
+					calculable : true,
+					xAxis : [ {
+						type : 'category',
+						boundaryGap : false,
+						data : labels,
+						axisLabel : {
+							rotate : 45,
+							interval : 0
+
+						}
+					} ],
+					yAxis : [ {
+						type : 'value',
+						axisLabel : {
+							formatter : function(val) {
+								if (consulta == "qtd") {
+									return valorFormater(val)
+								} else {
+									return valorFormater2(val)
+								}
+
+							},
+						}
+					} ],
+					series : [ {
+						name : consulta == "qtd" ? 'Quantidade' : "Valor R$",
+						type : 'line',
+						smooth : true,
+						itemStyle : {
+							normal : {
+								areaStyle : {
+									type : 'default'
+								}
+							}
+						},
+						data : datadash
+					} ]
+				});
+				
 				$.unblockUI();
 
 			},
@@ -1050,7 +1334,7 @@ function dashProdDiaSingle() {
 	}
 }
 
-function dashProdHora_single() {
+function dashProdHora_single(consulta) {
 
 	var data_pedido_ini = $("#data_pedido_ini").val();
 	var data_pedido_fim = $("#data_pedido_fim").val();
@@ -1093,41 +1377,116 @@ function dashProdHora_single() {
 
 				for (t = 0; t < data.length; t++) {
 
+					
 					labels[labels.length] = data[t].horaformated;
-					datadash[datadash.length] = data[t].qtd;
-
+					if (consulta == "qtd") {
+						datadash[datadash.length] = data[t].qtd;
+						label = "Pedido - Quantidade";
+					} else {
+						datadash[datadash.length] = data[t].val_totalprod;
+						label = "Pedido - R$";
+					}
+					
 				}
 
 				// dash_proddia_holder,dash_prodhora_holder
 
 				$("#dash_prodhora_holder").html("");
-				$("#dash_prodhora_holder").html("<canvas id=\"dash_prodhora\"></canvas>");
+				$("#dash_prodhora_holder").html("<div style='height: 350px' id=\"dash_prodhora\"></div>");
+				// $("#dash_prodhora_holder").html("<canvas
+				// id=\"dash_prodhora\"></canvas>");
 
-				var ctx = document.getElementById("dash_prodhora");
+				/*
+				 * var ctx = document.getElementById("dash_prodhora");
+				 * 
+				 * var lineChart = new Chart(ctx, { type : 'line', data : {
+				 * labels : labels, datasets : [ { label : "Unidades",
+				 * backgroundColor : "rgba(38, 185, 154, 0.31)", borderColor :
+				 * "rgba(38, 185, 154, 0.7)", pointBorderColor : "rgba(38, 185,
+				 * 154, 0.7)", pointBackgroundColor : "rgba(38, 185, 154, 0.7)",
+				 * pointHoverBackgroundColor : "#fff", pointHoverBorderColor :
+				 * "rgba(220,220,220,1)", pointBorderWidth : 1, data : datadash } ] },
+				 * });
+				 */
 
-				var lineChart = new Chart(ctx, {
-					type : 'line',
-					data : {
-						labels : labels,
-						datasets : [ {
-							label : "Unidades",
-							backgroundColor : "rgba(38, 185, 154, 0.31)",
-							borderColor : "rgba(38, 185, 154, 0.7)",
-							pointBorderColor : "rgba(38, 185, 154, 0.7)",
-							pointBackgroundColor : "rgba(38, 185, 154, 0.7)",
-							pointHoverBackgroundColor : "#fff",
-							pointHoverBorderColor : "rgba(220,220,220,1)",
-							pointBorderWidth : 1,
-							data : datadash
-						} ]
+				var echartLine = echarts.init(document.getElementById('dash_prodhora'));
+
+				echartLine.setOption({
+					title : {
+						text : consulta == "qtd" ? 'Quantidade' : "Faturamento",
 					},
+					color : [ '#26B99A' ],
+					tooltip : {
+						trigger : 'axis',
+						formatter : function(val) {
+							if (consulta == "qtd") {
+								return val["0"].name + "<br>  Quantidade: " + valorFormater(val["0"].value);
+							} else {
+								return val["0"].name + "<br>  Valor R$: " + valorFormater2(val["0"].value);
+							}
+
+						}
+					},
+					legend : {
+						x : 220,
+						y : 40,
+						data : [ 'Intent' ]
+					},
+					toolbox : {
+						show : true,
+						feature : {
+							magicType : {
+								show : true,
+								title : {
+									line : 'Line',
+									bar : 'Bar',
+									stack : 'Stack',
+									tiled : 'Tiled'
+								},
+								type : [ 'line', 'bar' ]
+							}
+						}
+					},
+					calculable : true,
+					xAxis : [ {
+						type : 'category',
+						boundaryGap : false,
+						data : labels,
+						axisLabel : {
+							rotate : 45,
+							interval : 0
+
+						}
+					} ],
+					yAxis : [ {
+						type : 'value',
+						axisLabel : {
+							formatter : function(val) {
+								if (consulta == "qtd") {
+									return valorFormater(val)
+								} else {
+									return valorFormater2(val)
+								}
+
+							},
+						}
+					} ],
+					series : [ {
+						name : consulta == "qtd" ? 'Quantidade' : "Valor R$",
+						type : 'line',
+						smooth : true,
+						itemStyle : {
+							normal : {
+								areaStyle : {
+									type : 'default'
+								}
+							}
+						},
+						data : datadash
+					} ]
 				});
 
-				var options = {
-					legend : false,
-					responsive : false
-				};
-
+				
 				$.unblockUI();
 
 			},
@@ -1139,8 +1498,6 @@ function dashProdHora_single() {
 	}
 }
 
-
-
 function dashProdInfosgerais_single() {// Produtos com mais faturamento
 
 	var data_pedido_ini = $("#data_pedido_ini").val();
@@ -1151,7 +1508,6 @@ function dashProdInfosgerais_single() {// Produtos com mais faturamento
 	var flag_servico = $("#flag_servico").val();
 	var dias_semana = $("#dias_semana").val();
 	dias_semana = JSON.stringify(dias_semana);
-
 
 	var id_prod = $("#id_produto_listagem").val();
 
@@ -1177,11 +1533,11 @@ function dashProdInfosgerais_single() {// Produtos com mais faturamento
 
 			},
 			success : function(data) {
-				
+
 				$("#lbldash_qtdprod").val(data.qtd);
 				$("#lbldash_valtotalprod").val(data.totalfat);
 				$("#lbldash_mediaprod").val(data.media);
-								
+
 			},
 			error : function(msg) {
 				$.unblockUI();
@@ -1192,7 +1548,6 @@ function dashProdInfosgerais_single() {// Produtos com mais faturamento
 		$(window).trigger('resize');
 	}
 }
-
 
 function dashProdBairroSingle() {// Produtos com mais faturamento
 
@@ -1236,7 +1591,6 @@ function dashProdBairroSingle() {// Produtos com mais faturamento
 				var desc = [];
 				var qtd = [];
 
-
 				for (t = 0; t < data.length; t++) {
 
 					desc[desc.length] = data[t].desc;
@@ -1255,6 +1609,21 @@ function dashProdBairroSingle() {// Produtos com mais faturamento
 						text : 'Local',
 						show : true
 
+					},
+					toolbox : {
+						show : true,
+						feature : {
+							magicType : {
+								show : true,
+								title : {
+									line : 'Line',
+									bar : 'Bar',
+									stack : 'Stack',
+									tiled : 'Tiled'
+								},
+								type : [ 'line', 'bar' ]
+							}
+						}
 					},
 					tooltip : {
 						trigger : 'axis',
