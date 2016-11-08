@@ -173,6 +173,36 @@ public class Utilitario {
 		return "Inválido";
 	}
 
+	public static int getnumMes(String mes) {
+
+		if (mes.equalsIgnoreCase("janeiro")) {
+			return 1;
+		} else if (mes.equalsIgnoreCase("Fevereiro")) {
+			return 2;
+		} else if (mes.equalsIgnoreCase("Março")) {
+			return 3;
+		} else if (mes.equalsIgnoreCase("Abril")) {
+			return 4;
+		} else if (mes.equalsIgnoreCase("Maio")) {
+			return 5;
+		} else if (mes.equalsIgnoreCase("Junho")) {
+			return 6;
+		} else if (mes.equalsIgnoreCase("Julho")) {
+			return 7;
+		} else if (mes.equalsIgnoreCase("Agosto")) {
+			return 8;
+		} else if (mes.equalsIgnoreCase("Setembro")) {
+			return 9;
+		} else if (mes.equalsIgnoreCase("Outubro")) {
+			return 10;
+		} else if (mes.equalsIgnoreCase("novembro")) {
+			return 11;
+		} else if (mes.equalsIgnoreCase("dezembro")) {
+			return 12;
+		}
+		return 0;
+	}
+
 	public static String returnDistrTiposPedido(String flag) { // , flag_entre_ret
 
 		if (flag.equalsIgnoreCase("L")) {
