@@ -3,7 +3,11 @@
 <!-- 	src="JavaScript/echarts-master/dist/echarts.js"></script> -->
 <script type="text/javascript"
 	src="JavaScript/echarts-master/dist/echarts-all.js"></script>
+<script type="text/javascript"
+	src="http://echarts.baidu.com/build/dist/echarts-all.js"></script>
 
+
+<!-- <script src="gentelella-master/vendors/echarts/dist/echarts.js"></script> -->
 <!-- <script type="text/javascript" -->
 <!-- 	src="JavaScript/echarts-master/asset/codemirror.js"></script> -->
 <!-- <script type="text/javascript" -->
@@ -65,7 +69,9 @@
 					</div>
 				</div>
 
-				<div class="col-xs-1 col-sm-1 col-md-1 col-lg-1 " align="right"></div>
+				<div class="col-xs-1 col-sm-1 col-md-1 col-lg-1 " align="right">
+
+				</div>
 
 				<div class="col-xs-4 col-md-4 col-lg-4 ">
 					<label for="">Período - Até </label>
@@ -150,10 +156,16 @@
 			<br>
 			<div class="row ">
 				<div class="col-xs-8 col-md-8 col-lg-8 " align="center">
+					<button class="btn btn-primary " type="button"
+						id="btn_filtros_limpar">Limpar Filtros</button>
+					&nbsp;&nbsp;&nbsp;
+
 					<button class="btn btn-primary " type="button" id="btn_filtrar">Continuar</button>
 				</div>
 
 			</div>
+
+
 
 		</div>
 	</div>
@@ -232,6 +244,48 @@
 				</div>
 			</div>
 
+			<div class="row">
+				<div class="col-md-12 col-sm-12 col-xs-12">
+					<div class="x_panel">
+						<div class="x_title">
+							<h2>Pedidos mensais</h2>
+							<ul class="nav navbar-right panel_toolbox">
+								<li><a class="collapse-link"><i
+										class="fa fa-chevron-up"></i></a></li>
+								<li class="dropdown"><a href="#" class="dropdown-toggle"
+									data-toggle="dropdown" role="button" aria-expanded="false"><i
+										class="fa fa-wrench"></i></a>
+									<ul class="dropdown-menu" role="menu">
+										<li><a onClick="dashMeses('qtd')" href="#">Quantidade</a></li>
+										<li><a onClick="dashMeses('val')" href="#">Faturamento</a></li>
+									</ul></li>
+
+							</ul>
+							<div class="clearfix"></div>
+						</div>
+						<div class="x_content">
+							<div align="center">
+								<table>
+									<tr>
+										<td style="padding-right: 15px"><div
+												style='height: 10px; width: 10px; background-color: #9B59B6; color: #9B59B6; display: inline; border-radius: 5px'>&nbsp;()</div>
+											Pedidos</td>
+										<td style="padding-right: 15px"><div
+												style='height: 10px; width: 10px; background-color: #26B99A; color: #26B99A; display: inline; border-radius: 5px'>&nbsp;()</div>
+											Entregas</td>
+										<td style="padding-right: 15px"><div
+												style='height: 10px; width: 10px; background-color: #3498DB; color: #3498DB; display: inline; border-radius: 5px'>&nbsp;()</div>
+											Retiradas</td>
+									</tr>
+								</table>
+							</div>
+							<div id="dash_meses" style="min-height: 500px;"></div>
+
+
+						</div>
+					</div>
+				</div>
+			</div>
 			<div class="row rowpad">
 				<div class="col-md-12 col-sm-12 col-xs-12 col-lg-6">
 					<div class="x_panel ">

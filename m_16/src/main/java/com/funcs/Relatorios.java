@@ -884,6 +884,120 @@ public class Relatorios {
 		out.print(retorno.toJSONString());
 	}
 
+	public static void dashMeses(HttpServletRequest request, HttpServletResponse response, Connection conn, int coddistr) throws Exception {
+		JSONArray retorno = new JSONArray();
+		PrintWriter out = response.getWriter();
+
+		String data_pedido_ini = request.getParameter("data_pedido_ini") == null ? "" : request.getParameter("data_pedido_ini");
+		String data_pedido_fim = request.getParameter("data_pedido_fim") == null ? "" : request.getParameter("data_pedido_fim");
+		String cod_bairro = request.getParameter("cod_bairro") == null ? "" : request.getParameter("cod_bairro");
+		String hora_final = request.getParameter("hora_final") == null ? "" : request.getParameter("hora_final");
+		String hora_inicial = request.getParameter("hora_inicial") == null ? "" : request.getParameter("hora_inicial");
+		String flag_servico = request.getParameter("flag_servico") == null ? "" : request.getParameter("flag_servico");
+		String dias_semana = request.getParameter("dias_semana") == null ? "" : request.getParameter("dias_semana");
+
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(new Date());
+		int year = cal.get(Calendar.YEAR);
+		int month = cal.get(Calendar.MONTH);
+		StringBuffer sql;
+		int cont = 0;
+		PreparedStatement st;
+		ResultSet rs;
+		int contparam;
+		while (cont < 13) {
+
+			sql = new StringBuffer();
+			sql.append("SELECT mes, ");
+			sql.append("       ano, ");
+			sql.append("       Sum(qtd)         AS qtd, ");
+			sql.append("       Sum(total)       AS total, ");
+			sql.append("       Sum(entregas)    AS entrega, ");
+			sql.append("       Sum(retirada)    AS retirada, ");
+			sql.append("       Sum(valentregas) AS valentregas, ");
+			sql.append("       Sum(valretirada) AS valretirada ");
+			sql.append("FROM   (SELECT Month(data_pedido) AS mes, ");
+			sql.append("               Year(data_pedido)  AS ano, ");
+			sql.append("               Count(*)           AS qtd, ");
+			sql.append("               flag_pedido_ret_entre, ");
+			sql.append("               Sum(val_totalprod) AS total, ");
+			sql.append("               CASE flag_pedido_ret_entre ");
+			sql.append("                 WHEN 'T' THEN Sum(1) ");
+			sql.append("                 ELSE Sum(0) ");
+			sql.append("               end                AS entregas, ");
+			sql.append("               CASE flag_pedido_ret_entre ");
+			sql.append("                 WHEN 'L' THEN Sum(1) ");
+			sql.append("                 ELSE Sum(0) ");
+			sql.append("               end                AS retirada, ");
+			sql.append("               CASE flag_pedido_ret_entre ");
+			sql.append("                 WHEN 'T' THEN Sum(val_totalprod) ");
+			sql.append("                 ELSE Sum(0) ");
+			sql.append("               end                AS valentregas, ");
+			sql.append("               CASE flag_pedido_ret_entre ");
+			sql.append("                 WHEN 'L' THEN Sum(val_totalprod) ");
+			sql.append("                 ELSE Sum(0) ");
+			sql.append("               end                AS valretirada ");
+			sql.append("        FROM   pedido ");
+			sql.append("        WHERE  id_distribuidora = ? ");
+			sql.append("               AND flag_status = 'O' and Month(data_pedido) = ? and  Year(data_pedido) = ? ");
+
+			sql = new StringBuffer(parametrosDash(sql.toString(), hora_inicial, hora_final, dias_semana, cod_bairro, "", "", ""));
+
+			sql.append("        GROUP  BY Month(data_pedido), ");
+			sql.append("                  Year(data_pedido), ");
+			sql.append("                  flag_pedido_ret_entre ");
+			sql.append("        ORDER  BY Year(data_pedido) DESC, ");
+			sql.append("                  Month(data_pedido) DESC) AS tab ");
+			sql.append("GROUP  BY tab.ano, ");
+			sql.append("          tab.mes ");
+			sql.append("ORDER  BY tab.ano DESC, ");
+			sql.append("          tab.mes DESC ");
+
+			st = conn.prepareStatement(sql.toString());
+			st.setInt(1, coddistr);
+			st.setInt(2, month);
+			st.setInt(3, year);
+			contparam = 4;
+
+			parametrosDashSt(st, contparam, hora_inicial, hora_final, dias_semana, cod_bairro, "", "", "");
+
+			rs = st.executeQuery();
+			if (rs.next()) {
+				JSONObject obj = new JSONObject();
+				obj.put("desc", Utilitario.getDescMes(rs.getInt("mes")) + " / " + rs.getInt("ano"));
+				obj.put("qtd", rs.getInt("qtd"));
+				
+				obj.put("entrega", rs.getInt("entrega"));
+				obj.put("retirada", rs.getInt("retirada"));
+				obj.put("total", rs.getDouble("total"));
+				obj.put("valentregas", rs.getDouble("valentregas"));
+				obj.put("valretirada", rs.getDouble("valretirada"));
+
+				retorno.add(obj);
+			} else {
+				JSONObject obj = new JSONObject();
+				obj.put("desc", Utilitario.getDescMes(month) + "/" + year);
+				obj.put("qtd", 0);
+			
+				obj.put("entrega", 0);
+				obj.put("retirada", 0);
+				obj.put("total", 0);
+				obj.put("valentregas", 0);
+				obj.put("valretirada", 0);
+				retorno.add(obj);
+			}
+
+			month = month - 1;
+			if (month == 0) {
+				month = 12;
+				year = year - 1;
+			}
+			cont++;
+		}
+		out.print(retorno.toJSONString());
+
+	}
+
 	public static JRMapCollectionDataSource relGradeHorariosDataSource(int coddistr, Connection conn) throws Exception {
 
 		Collection<Map<String, ?>> arrLinhas = new ArrayList<Map<String, ?>>();

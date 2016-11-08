@@ -142,6 +142,37 @@ public class Utilitario {
 		return "";
 	}
 
+	public static String getDescMes(int mes) {
+
+		if (mes == 1) {
+			return "Janeiro";
+		} else if (mes == 2) {
+			return "Fevereiro";
+		} else if (mes == 3) {
+			return "Março";
+		} else if (mes == 4) {
+			return "Abril";
+		} else if (mes == 5) {
+			return "Maio";
+		} else if (mes == 6) {
+			return "Junho";
+		} else if (mes == 7) {
+			return "Julho";
+		} else if (mes == 8) {
+			return "Agosto";
+		} else if (mes == 9) {
+			return "Setembro";
+		} else if (mes == 10) {
+			return "Outubro";
+		} else if (mes == 11) {
+			return "Novembro";
+		} else if (mes == 12) {
+			return "Dezembro";
+		}
+
+		return "Inválido";
+	}
+
 	public static String returnDistrTiposPedido(String flag) { // , flag_entre_ret
 
 		if (flag.equalsIgnoreCase("L")) {
@@ -165,7 +196,7 @@ public class Utilitario {
 		} else if (flag.equalsIgnoreCase("T")) {
 			// return "Somente tele-entrega";
 			return "Entrega";
-		}else if (flag.equalsIgnoreCase("")) {
+		} else if (flag.equalsIgnoreCase("")) {
 			return "Todos";
 		}
 
@@ -221,7 +252,7 @@ public class Utilitario {
 			return "Cartão";
 		} else if (flag.equalsIgnoreCase("A")) {
 			return "Ambos";
-		}else if (flag.equalsIgnoreCase("")) {
+		} else if (flag.equalsIgnoreCase("")) {
 			return "Todos";
 		}
 
@@ -575,7 +606,7 @@ public class Utilitario {
 
 	public static void sizeimage(String cod) {
 		try {
-//mudei direitorio para o m16_/***/produtos
+			// mudei direitorio para o m16_/***/produtos
 			BufferedImage originalImage = ImageIO.read(new File("D:\\Program Files\\Mydocs\\Visual Studio 2015\\Projects\\chamaTrago\\chamaTrago\\www\\img\\prods\\" + cod + ".jpg"));
 			int type = originalImage.getType() == 0 ? BufferedImage.TYPE_INT_ARGB : originalImage.getType();
 			Double IMG_WIDTH = new Double(maxsize);
@@ -646,7 +677,25 @@ public class Utilitario {
 
 	public static void main(String[] args) {
 		try {
-			resizeAllimage();
+
+			Calendar cal = Calendar.getInstance();
+			cal.setTime(new Date());
+			int year = cal.get(Calendar.YEAR);
+			int month = cal.get(Calendar.MONTH);
+
+			int cont = 0;
+
+			while (cont < 13) {
+
+				System.out.println(month + " - " + year);
+				month = month - 1;
+				if (month == 0) {
+					month = 12;
+					year = year - 1;
+				}
+				cont++;
+			}
+
 		} catch (Exception e) {
 		}
 

@@ -6,7 +6,7 @@ var x2_bar = 80;
 var y2_bar = 50;
 var widht_bar = "75%";
 
-//para os grafico de dia hora
+// para os grafico de dia hora
 var x_bar2 = 65;
 var y_bar2 = 40;
 var x2_bar2 = 40;
@@ -55,6 +55,11 @@ $(document).ready(function() {
 		$('#tabs_dash a[href="#dashboard1"]').tab('show')
 	});
 
+	$("#btn_filtros_limpar").click(function() {
+
+		limparfiltros();
+	});
+
 	$("#btn_filtrar2").click(function() {
 		filtrarProds();
 	});
@@ -68,7 +73,7 @@ $(document).ready(function() {
 function filtrar(troca) {
 
 	$(".linha_add_dash").remove();
-
+	dashMeses('qtd');
 	dashServico();
 	dashModo();
 	dashVendaProdsQtd('+');
@@ -84,13 +89,28 @@ function filtrar(troca) {
 
 }
 
+function limparfiltros() {
+
+	$("#data_pedido_ini").val("");
+	$("#data_pedido_fim").val("");
+	$("#cod_bairro").val("");
+	$("#hora_final").val("");
+	$("#hora_inicial").val("");
+	$("#flag_servico").val("");
+	// $("#dias_semana").val("");
+	$("#dias_semana").multiselect('deselect', [ "1", "2", "3", "4", "5", "6", "7" ]);
+
+}
+
 function filtrarProds() {
 	dashProdInfosgerais_single();
 	dashProdHora_single('qtd');
 	dashProdDiaSingle('qtd');
 	dashProdBairroSingle();
 
-	$('#mainpage').animate({ scrollTop: (0) }, 'slow');
+	$('#mainpage').animate({
+		scrollTop : (0)
+	}, 'slow');
 
 }
 
@@ -1732,4 +1752,180 @@ function dashProdBairroSingle() {// Produtos com mais faturamento
 
 		$(window).trigger('resize');
 	}
+}
+
+function dashMeses(consulta) {// Produtos com mais faturamento
+
+	var data_pedido_ini = $("#data_pedido_ini").val();
+	var data_pedido_fim = $("#data_pedido_fim").val();
+	var cod_bairro = $("#cod_bairro").val();
+	var hora_final = $("#hora_final").val();
+	var hora_inicial = $("#hora_inicial").val();
+	var flag_servico = $("#flag_servico").val();
+	var dias_semana = $("#dias_semana").val();
+	dias_semana = JSON.stringify(dias_semana);
+
+	$("#dash_meses").html("");
+
+	$(window).trigger('resize');
+
+	$.ajax({
+		type : "POST",
+		url : "home?ac=ajax",
+		dataType : "json",
+		async : true,
+		data : {
+			cmd : 'dashMeses',
+			data_pedido_ini : data_pedido_ini,
+			data_pedido_fim : data_pedido_fim,
+			cod_bairro : cod_bairro,
+			hora_final : hora_final,
+			hora_inicial : hora_inicial,
+			flag_servico : flag_servico,
+			dias_semana : dias_semana
+
+		},
+		success : function(data) {
+
+			var dataset = [];
+			var desc = [];
+			var qtd = [];
+
+			var entrega = [];
+			var retirada = [];
+
+			for (t = 0; t < data.length; t++) {
+
+				desc[desc.length] = data[t].desc;
+
+				if (consulta == 'qtd') {
+					qtd[qtd.length] = data[t].qtd;
+					entrega[qtd.length] = data[t].entrega;
+					retirada[qtd.length] = data[t].retirada;
+				} else {
+					qtd[qtd.length] = data[t].total;
+					entrega[qtd.length] = data[t].valentregas;
+					retirada[qtd.length] = data[t].valretirada;
+				}
+
+			}
+
+			desc.reverse();
+			qtd.reverse();
+			entrega.reverse();
+			retirada.reverse();
+
+			var echartBar = echarts.init(document.getElementById('dash_meses'));
+
+			echartBar.setOption({
+				color : [ '#9B59B6', '#26B99A', '#3498DB' ],
+				title : {
+					text : consulta == 'qtd' ? 'Quantiadade' : "Faturamento",
+					show : true
+
+				},
+				toolbox : {
+					show : true,
+					feature : {
+						magicType : {
+							show : true,
+							title : {
+								line : 'Line',
+								bar : 'Bar',
+								stack : 'Stack',
+								tiled : 'Tiled'
+							},
+							type : [ 'line', 'bar' ]
+						}
+					}
+				},
+				tooltip : {
+					trigger : 'axis',
+					formatter : function(val) {
+						console.log(val);
+
+						var html;
+						if (consulta == 'qtd') {
+							html = val["0"].name + "<br> <div style='height:10px; width:10px; background-color:#9B59B6;color:#9B59B6; display:inline; border-radius:5px ' >&nbsp;()</div>  Pedidos: " + valorFormater(val["0"].value);
+							html = html + "<br> <div style='height:10px; width:10px; background-color:#26B99A;color:#26B99A; display:inline; border-radius:5px ' >&nbsp;()</div> Entregas: " + valorFormater(val["1"].value);
+							html = html + "<br> <div style='height:10px; width:10px; background-color:#3498DB;color:#3498DB; display:inline; border-radius:5px ' >&nbsp;()</div> Retiradas: " + valorFormater(val["2"].value);
+						}else{
+							html = val["0"].name + "<br> <div style='height:10px; width:10px; background-color:#9B59B6;color:#9B59B6; display:inline; border-radius:5px ' >&nbsp;()</div>  Pedidos R$: " + valorFormater2(val["0"].value);
+							html = html + "<br> <div style='height:10px; width:10px; background-color:#26B99A;color:#26B99A; display:inline; border-radius:5px ' >&nbsp;()</div> Entregas R$: " + valorFormater2(val["1"].value);
+							html = html + "<br> <div style='height:10px; width:10px; background-color:#3498DB;color:#3498DB; display:inline; border-radius:5px ' >&nbsp;()</div> Retiradas R$: " + valorFormater2(val["2"].value);
+							
+						}
+						
+						
+						return html;
+					}
+				},
+				legend : {
+					show : false,
+					data : [ 'Total de pedidos', 'Entregas', 'Retiradas' ],
+				},
+				selectedMode : false,
+
+				calculable : true,
+				xAxis : [ {
+					type : 'category',
+					data : desc,
+					boundaryGap : [ 0, 0.01 ],
+					textStyle : {
+						fontSize : 10
+					},
+					splitAreaType : {
+						show : true
+					},
+					axisLabel : {
+						rotate : 45,
+						interval : 0
+					}
+
+				} ],
+				grid : {
+					x : x_bar2,
+					y : y_bar2,
+					x2 : x2_bar,
+					y2 : 95,
+					width : widht_bar2,
+
+				},
+				yAxis : [ {
+					type : 'value',
+					axisLabel : {
+
+						margin : 3
+					}
+				} ],
+				series : [ {
+					name : 'Total pedidos',
+					type : 'bar',
+					data : qtd,
+					barGap : "20%"
+				}, {
+					name : 'Entrega pedidos',
+					type : 'bar',
+					data : entrega,
+					barGap : "20%"
+				}, {
+					name : 'Retirada pedidos',
+					type : 'bar',
+					data : retirada,
+					barGap : "20%"
+				}
+
+				]
+			});
+
+			$.unblockUI();
+
+		},
+		error : function(msg) {
+			$.unblockUI();
+
+		}
+	});
+
+	$(window).trigger('resize');
 }
