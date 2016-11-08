@@ -3,10 +3,15 @@
 var x_bar = 200;
 var y_bar = 50;
 var x2_bar = 80;
-var y2_bar = 40;
+var y2_bar = 50;
 var widht_bar = "75%";
 
-
+//para os grafico de dia hora
+var x_bar2 = 65;
+var y_bar2 = 40;
+var x2_bar2 = 40;
+var y2_bar2 = 70;
+var widht_bar2 = "90%";
 
 $(document).ready(function() {
 
@@ -85,6 +90,8 @@ function filtrarProds() {
 	dashProdDiaSingle('qtd');
 	dashProdBairroSingle();
 
+	$('#mainpage').animate({ scrollTop: (0) }, 'slow');
+
 }
 
 function carregaBairros() {
@@ -119,7 +126,7 @@ function carregaBairros() {
 		},
 		error : function(msg) {
 			$.unblockUI();
-			
+
 		}
 	});
 
@@ -184,16 +191,10 @@ function dashVendaProdsQtd(consulta) {// Produtos mais vendidos
 			else
 				$("#dashVendaProdsQtd_title").html("Produtos menos vendidos");
 
-			var dataset = [];
 			var desc = [];
 			var qtd = [];
 
 			for (t = 0; t < data.length; t++) {
-
-				dataset[dataset.length] = {
-					device : data[t].desc,
-					geekbench : data[t].qtd
-				};
 
 				desc[desc.length] = data[t].desc;
 				qtd[qtd.length] = data[t].qtd;
@@ -280,9 +281,7 @@ function dashVendaProdsQtd(consulta) {// Produtos mais vendidos
 					barGap : "20%"
 				} ]
 			});
-			
-			console.log(echarts);
-			console.log(echarts.config);
+
 			echartBar.on(echarts.config.EVENT.CLICK, eConsole);
 
 			$.unblockUI();
@@ -290,20 +289,25 @@ function dashVendaProdsQtd(consulta) {// Produtos mais vendidos
 		},
 		error : function(msg) {
 			$.unblockUI();
-			
+
 		}
 	});
 
 	$(window).trigger('resize');
 }
 
-
-
-
-
 function eConsole(param) {
-  
-    console.log(param);
+
+	$("#desc_produto_listagem").val(param.name);
+	$("#desc_produto_listagem").blur();
+	$.blockUI({
+		message : 'Carregando...'
+	});
+	setTimeout(function() {
+		$('#tabs_dash a[href="#dashboard2"]').tab('show');
+		$.unblockUI();
+	}, 1000);
+
 }
 
 function dashVendaProdsVal(consulta) {// Produtos com mais faturamento
@@ -441,13 +445,13 @@ function dashVendaProdsVal(consulta) {// Produtos com mais faturamento
 					barGap : "20%"
 				} ]
 			});
-
+			echartBar.on(echarts.config.EVENT.CLICK, eConsole);
 			$.unblockUI();
 
 		},
 		error : function(msg) {
 			$.unblockUI();
-			
+
 		}
 	});
 
@@ -613,7 +617,7 @@ function dashBairrosLista(consulta) {// Produtos com mais faturamento
 		},
 		error : function(msg) {
 			$.unblockUI();
-			
+
 		}
 	});
 
@@ -665,7 +669,7 @@ function dashInfosBasicas() {
 		},
 		error : function(msg) {
 			$.unblockUI();
-			
+
 		}
 	});
 
@@ -763,8 +767,8 @@ function dashPedidoHora(consulta) {
 					x : 220,
 					y : 40,
 					data : [ 'Intent' ],
-					show:false
-				
+					show : false
+
 				},
 				toolbox : {
 					show : true,
@@ -782,6 +786,13 @@ function dashPedidoHora(consulta) {
 					}
 				},
 				calculable : true,
+				grid : {
+					x : x_bar2,
+					y : y_bar2,
+					x2 : x2_bar2,
+					y2 : y2_bar2,
+					width : widht_bar2
+				},
 				xAxis : [ {
 					type : 'category',
 					boundaryGap : false,
@@ -825,7 +836,7 @@ function dashPedidoHora(consulta) {
 		},
 		error : function(msg) {
 			$.unblockUI();
-			
+
 		}
 	});
 
@@ -919,7 +930,7 @@ function dashPedidoDia(consulta) {
 					}
 				},
 				legend : {
-					
+
 					x : 500,
 					show : false,
 					data : [ 'Produto' ]
@@ -940,6 +951,13 @@ function dashPedidoDia(consulta) {
 					}
 				},
 				calculable : true,
+				grid : {
+					x : x_bar2,
+					y : y_bar2,
+					x2 : x2_bar2,
+					y2 : y2_bar2,
+					width : widht_bar2
+				},
 				xAxis : [ {
 					type : 'category',
 					boundaryGap : false,
@@ -983,7 +1001,7 @@ function dashPedidoDia(consulta) {
 		},
 		error : function(msg) {
 			$.unblockUI();
-			
+
 		}
 	});
 
@@ -1082,7 +1100,7 @@ function dashModo() {
 		},
 		error : function(msg) {
 			$.unblockUI();
-			
+
 		}
 	});
 
@@ -1181,7 +1199,7 @@ function dashServico() {
 		},
 		error : function(msg) {
 			$.unblockUI();
-			
+
 		}
 	});
 
@@ -1239,31 +1257,24 @@ function dashProdDiaSingle(consulta) {
 						datadash[datadash.length] = data[t].val_totalprod;
 						label = "Pedido - R$";
 					}
-					
+
 				}
 
 				$("#dash_proddia_holder").html("");
 				$("#dash_proddia_holder").html("<div style='height: 350px'  id=\"dash_proddia\"></div>");
 
-		/*		var ctx = document.getElementById("dash_proddia");
-
-				var lineChart = new Chart(ctx, {
-					type : 'line',
-					data : {
-						labels : labels,
-						datasets : [ {
-							label : "Unidades",
-							backgroundColor : "rgba(38, 185, 154, 0.31)",
-							borderColor : "rgba(38, 185, 154, 0.7)",
-							pointBorderColor : "rgba(38, 185, 154, 0.7)",
-							pointBackgroundColor : "rgba(38, 185, 154, 0.7)",
-							pointHoverBackgroundColor : "#fff",
-							pointHoverBorderColor : "rgba(220,220,220,1)",
-							pointBorderWidth : 1,
-							data : datadash
-						} ]
-					},
-				});*/
+				/*
+				 * var ctx = document.getElementById("dash_proddia");
+				 * 
+				 * var lineChart = new Chart(ctx, { type : 'line', data : {
+				 * labels : labels, datasets : [ { label : "Unidades",
+				 * backgroundColor : "rgba(38, 185, 154, 0.31)", borderColor :
+				 * "rgba(38, 185, 154, 0.7)", pointBorderColor : "rgba(38, 185,
+				 * 154, 0.7)", pointBackgroundColor : "rgba(38, 185, 154, 0.7)",
+				 * pointHoverBackgroundColor : "#fff", pointHoverBorderColor :
+				 * "rgba(220,220,220,1)", pointBorderWidth : 1, data : datadash } ] },
+				 * });
+				 */
 
 				var echartLine = echarts.init(document.getElementById('dash_proddia'));
 
@@ -1303,6 +1314,13 @@ function dashProdDiaSingle(consulta) {
 							}
 						}
 					},
+					grid : {
+						x : x_bar2,
+						y : y_bar2,
+						x2 : x2_bar2,
+						y2 : y2_bar2,
+						width : widht_bar2
+					},
 					calculable : true,
 					xAxis : [ {
 						type : 'category',
@@ -1341,13 +1359,13 @@ function dashProdDiaSingle(consulta) {
 						data : datadash
 					} ]
 				});
-				
+
 				$.unblockUI();
 
 			},
 			error : function(msg) {
 				$.unblockUI();
-				
+
 			}
 		});
 	}
@@ -1396,7 +1414,6 @@ function dashProdHora_single(consulta) {
 
 				for (t = 0; t < data.length; t++) {
 
-					
 					labels[labels.length] = data[t].horaformated;
 					if (consulta == "qtd") {
 						datadash[datadash.length] = data[t].qtd;
@@ -1405,7 +1422,7 @@ function dashProdHora_single(consulta) {
 						datadash[datadash.length] = data[t].val_totalprod;
 						label = "Pedido - R$";
 					}
-					
+
 				}
 
 				// dash_proddia_holder,dash_prodhora_holder
@@ -1466,6 +1483,13 @@ function dashProdHora_single(consulta) {
 							}
 						}
 					},
+					grid : {
+						x : x_bar2,
+						y : y_bar2,
+						x2 : x2_bar2,
+						y2 : y2_bar2,
+						width : widht_bar2
+					},
 					calculable : true,
 					xAxis : [ {
 						type : 'category',
@@ -1505,13 +1529,12 @@ function dashProdHora_single(consulta) {
 					} ]
 				});
 
-				
 				$.unblockUI();
 
 			},
 			error : function(msg) {
 				$.unblockUI();
-				
+
 			}
 		});
 	}
@@ -1560,7 +1583,7 @@ function dashProdInfosgerais_single() {// Produtos com mais faturamento
 			},
 			error : function(msg) {
 				$.unblockUI();
-				
+
 			}
 		});
 
@@ -1703,7 +1726,7 @@ function dashProdBairroSingle() {// Produtos com mais faturamento
 			},
 			error : function(msg) {
 				$.unblockUI();
-				
+
 			}
 		});
 
