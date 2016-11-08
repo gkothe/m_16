@@ -106,7 +106,7 @@ function filtrarProds() {
 	dashProdInfosgerais_single();
 	dashProdHora_single('qtd');
 	dashProdDiaSingle('qtd');
-	dashProdBairroSingle();
+	dashProdBairroSingle('qtd');
 
 	$('#mainpage').animate({
 		scrollTop : (0)
@@ -1611,7 +1611,7 @@ function dashProdInfosgerais_single() {// Produtos com mais faturamento
 	}
 }
 
-function dashProdBairroSingle() {// Produtos com mais faturamento
+function dashProdBairroSingle(consulta) {// Produtos com mais faturamento
 
 	var data_pedido_ini = $("#data_pedido_ini").val();
 	var data_pedido_fim = $("#data_pedido_fim").val();
@@ -1656,8 +1656,10 @@ function dashProdBairroSingle() {// Produtos com mais faturamento
 				for (t = 0; t < data.length; t++) {
 
 					desc[desc.length] = data[t].desc;
-					qtd[qtd.length] = data[t].qtd;
-
+					if (consulta == 'qtd')
+						qtd[qtd.length] = data[t].qtd;
+					else
+						qtd[qtd.length] = data[t].valtotal;
 				}
 
 				desc.reverse();
@@ -1690,8 +1692,10 @@ function dashProdBairroSingle() {// Produtos com mais faturamento
 					tooltip : {
 						trigger : 'axis',
 						formatter : function(val) {
-
-							return val["0"].name + "<br>  Quantidade: " + valorFormater(val["0"].value);
+							if (consulta == 'qtd')
+								return val["0"].name + "<br>  Quantidade: " + valorFormater(val["0"].value);
+							else
+								return val["0"].name + "<br>  Valor R$: " + valorFormater2(val["0"].value);
 						}
 					},
 					legend : {
@@ -1707,7 +1711,10 @@ function dashProdBairroSingle() {// Produtos com mais faturamento
 						boundaryGap : [ 0, 0.01 ],
 						axisLabel : {
 							formatter : function(val) {
-								return valorFormater(val)
+								if (consulta == 'qtd')
+									return valorFormater(val)
+								else
+									return valorFormater2(val)
 							},
 
 						}
@@ -1820,7 +1827,7 @@ function dashMeses(consulta) {// Produtos com mais faturamento
 			echartBar.setOption({
 				color : [ '#9B59B6', '#26B99A', '#3498DB' ],
 				title : {
-					text : consulta == 'qtd' ? 'Quantiadade' : "Faturamento",
+					text : consulta == 'qtd' ? 'Quantidade' : "Faturamento",
 					show : true
 
 				},
@@ -1849,14 +1856,13 @@ function dashMeses(consulta) {// Produtos com mais faturamento
 							html = val["0"].name + "<br> <div style='height:10px; width:10px; background-color:#9B59B6;color:#9B59B6; display:inline; border-radius:5px ' >&nbsp;()</div>  Pedidos: " + valorFormater(val["0"].value);
 							html = html + "<br> <div style='height:10px; width:10px; background-color:#26B99A;color:#26B99A; display:inline; border-radius:5px ' >&nbsp;()</div> Entregas: " + valorFormater(val["1"].value);
 							html = html + "<br> <div style='height:10px; width:10px; background-color:#3498DB;color:#3498DB; display:inline; border-radius:5px ' >&nbsp;()</div> Retiradas: " + valorFormater(val["2"].value);
-						}else{
+						} else {
 							html = val["0"].name + "<br> <div style='height:10px; width:10px; background-color:#9B59B6;color:#9B59B6; display:inline; border-radius:5px ' >&nbsp;()</div>  Pedidos R$: " + valorFormater2(val["0"].value);
 							html = html + "<br> <div style='height:10px; width:10px; background-color:#26B99A;color:#26B99A; display:inline; border-radius:5px ' >&nbsp;()</div> Entregas R$: " + valorFormater2(val["1"].value);
 							html = html + "<br> <div style='height:10px; width:10px; background-color:#3498DB;color:#3498DB; display:inline; border-radius:5px ' >&nbsp;()</div> Retiradas R$: " + valorFormater2(val["2"].value);
-							
+
 						}
-						
-						
+
 						return html;
 					}
 				},

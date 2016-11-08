@@ -480,7 +480,8 @@ public class Relatorios {
 
 		sql.append("SELECT  sum(QTD_PROD) as qtd, ");
 		sql.append("       COALESCE(pedido.cod_bairro, 0)           AS cod_bairro, ");
-		sql.append("       COALESCE(desc_bairro, '* Distribuidora') AS desc_bairro ");
+		sql.append("       COALESCE(desc_bairro, '* Distribuidora') AS desc_bairro, ");
+		sql.append("       sum(QTD_PROD * Val_unit ) as valtotal ");
 		sql.append("FROM   pedido ");
 		sql.append("       INNER JOIN pedido_item ");
 		sql.append("               ON pedido_item .id_pedido = pedido.id_pedido ");
@@ -504,6 +505,7 @@ public class Relatorios {
 			JSONObject obj = new JSONObject();
 			obj.put("desc", rs.getString("desc_bairro"));
 			obj.put("qtd", rs.getInt("qtd"));
+			obj.put("valtotal", rs.getDouble("valtotal"));
 			retorno.add(obj);
 		}
 		sql = new StringBuffer();
@@ -515,7 +517,8 @@ public class Relatorios {
 
 			sql.append("SELECT  sum(QTD_PROD) as qtd, ");
 			sql.append("       COALESCE(pedido.cod_bairro, 0)           AS cod_bairro, ");
-			sql.append("       COALESCE(desc_bairro, '* Distribuidora') AS desc_bairro ");
+			sql.append("       COALESCE(desc_bairro, '* Distribuidora') AS desc_bairro, ");
+			sql.append("       sum(QTD_PROD * Val_unit ) as valtotal ");
 			sql.append("FROM   pedido ");
 			sql.append("       INNER JOIN pedido_item ");
 			sql.append("               ON pedido_item .id_pedido = pedido.id_pedido ");
@@ -537,6 +540,7 @@ public class Relatorios {
 				JSONObject obj = new JSONObject();
 				obj.put("desc", rs2.getString("desc_bairro"));
 				obj.put("qtd", rs2.getInt("qtd"));
+				obj.put("valtotal", rs2.getDouble("valtotal"));
 				retorno.add(obj);
 			}
 
