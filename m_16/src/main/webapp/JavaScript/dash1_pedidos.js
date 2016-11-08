@@ -119,7 +119,7 @@ function carregaBairros() {
 		},
 		error : function(msg) {
 			$.unblockUI();
-			alert("Erro: " + msg.msg);
+			
 		}
 	});
 
@@ -236,7 +236,7 @@ function dashVendaProdsQtd(consulta) {// Produtos mais vendidos
 				},
 				legend : {
 					x : 500,
-					show : true,
+					show : false,
 					data : [ 'Produto' ]
 
 				},
@@ -290,7 +290,7 @@ function dashVendaProdsQtd(consulta) {// Produtos mais vendidos
 		},
 		error : function(msg) {
 			$.unblockUI();
-			alert("Erro: " + msg.msg);
+			
 		}
 	});
 
@@ -397,7 +397,7 @@ function dashVendaProdsVal(consulta) {// Produtos com mais faturamento
 				},
 				legend : {
 					x : 500,
-					show : true,
+					show : false,
 					data : [ 'Produto' ]
 
 				},
@@ -447,7 +447,7 @@ function dashVendaProdsVal(consulta) {// Produtos com mais faturamento
 		},
 		error : function(msg) {
 			$.unblockUI();
-			alert("Erro: " + msg.msg);
+			
 		}
 	});
 
@@ -562,7 +562,7 @@ function dashBairrosLista(consulta) {// Produtos com mais faturamento
 				},
 				legend : {
 					x : 500,
-					show : true,
+					show : false,
 					data : [ 'Produto' ]
 
 				},
@@ -613,7 +613,7 @@ function dashBairrosLista(consulta) {// Produtos com mais faturamento
 		},
 		error : function(msg) {
 			$.unblockUI();
-			alert("Erro: " + msg.msg);
+			
 		}
 	});
 
@@ -665,7 +665,7 @@ function dashInfosBasicas() {
 		},
 		error : function(msg) {
 			$.unblockUI();
-			alert("Erro: " + msg.msg);
+			
 		}
 	});
 
@@ -762,7 +762,9 @@ function dashPedidoHora(consulta) {
 				legend : {
 					x : 220,
 					y : 40,
-					data : [ 'Intent' ]
+					data : [ 'Intent' ],
+					show:false
+				
 				},
 				toolbox : {
 					show : true,
@@ -823,7 +825,7 @@ function dashPedidoHora(consulta) {
 		},
 		error : function(msg) {
 			$.unblockUI();
-			alert("Erro: " + msg.msg);
+			
 		}
 	});
 
@@ -917,9 +919,10 @@ function dashPedidoDia(consulta) {
 					}
 				},
 				legend : {
-					x : 220,
-					y : 40,
-					data : [ 'Intent' ]
+					
+					x : 500,
+					show : false,
+					data : [ 'Produto' ]
 				},
 				toolbox : {
 					show : true,
@@ -980,7 +983,7 @@ function dashPedidoDia(consulta) {
 		},
 		error : function(msg) {
 			$.unblockUI();
-			alert("Erro: " + msg.msg);
+			
 		}
 	});
 
@@ -1079,7 +1082,7 @@ function dashModo() {
 		},
 		error : function(msg) {
 			$.unblockUI();
-			alert("Erro: " + msg.msg);
+			
 		}
 	});
 
@@ -1178,7 +1181,7 @@ function dashServico() {
 		},
 		error : function(msg) {
 			$.unblockUI();
-			alert("Erro: " + msg.msg);
+			
 		}
 	});
 
@@ -1281,9 +1284,9 @@ function dashProdDiaSingle(consulta) {
 						}
 					},
 					legend : {
-						x : 220,
-						y : 40,
-						data : [ 'Intent' ]
+						x : 500,
+						show : false,
+						data : [ 'Produto' ]
 					},
 					toolbox : {
 						show : true,
@@ -1344,7 +1347,7 @@ function dashProdDiaSingle(consulta) {
 			},
 			error : function(msg) {
 				$.unblockUI();
-				alert("Erro: " + msg.msg);
+				
 			}
 		});
 	}
@@ -1444,9 +1447,9 @@ function dashProdHora_single(consulta) {
 						}
 					},
 					legend : {
-						x : 220,
-						y : 40,
-						data : [ 'Intent' ]
+						x : 500,
+						show : false,
+						data : [ 'Produto' ]
 					},
 					toolbox : {
 						show : true,
@@ -1508,7 +1511,7 @@ function dashProdHora_single(consulta) {
 			},
 			error : function(msg) {
 				$.unblockUI();
-				alert("Erro: " + msg.msg);
+				
 			}
 		});
 	}
@@ -1557,7 +1560,7 @@ function dashProdInfosgerais_single() {// Produtos com mais faturamento
 			},
 			error : function(msg) {
 				$.unblockUI();
-				alert("Erro: " + msg.msg);
+				
 			}
 		});
 
@@ -1650,7 +1653,7 @@ function dashProdBairroSingle() {// Produtos com mais faturamento
 					},
 					legend : {
 						x : 500,
-						show : true,
+						show : false,
 						data : [ 'Produto' ]
 
 					},
@@ -1700,7 +1703,7 @@ function dashProdBairroSingle() {// Produtos com mais faturamento
 			},
 			error : function(msg) {
 				$.unblockUI();
-				alert("Erro: " + msg.msg);
+				
 			}
 		});
 
