@@ -1,22 +1,19 @@
 //@ sourceURL=dash1_pedidos.js
 
-var x_bar = 200;
+var x_bar = 200;    //lateral esqerda
 var y_bar = 50;
 var x2_bar = 80;
 var y2_bar = 50;
 var widht_bar = "75%";
 
 // para os grafico de dia hora
-var x_bar2 = 65;
+var x_bar2 = 80;
 var y_bar2 = 40;
 var x2_bar2 = 40;
 var y2_bar2 = 70;
-var widht_bar2 = "90%";
+var widht_bar2 = "85%";
 
 $(document).ready(function() {
-
-	
-	
 
 	$('.collapse-link').on('click', function() {
 		var $BOX_PANEL = $(this).closest('.x_panel'), $ICON = $(this).find('i'), $BOX_CONTENT = $BOX_PANEL.find('.x_content');
@@ -47,11 +44,9 @@ $(document).ready(function() {
 		todayHighlight : true,
 		daysOfWeekHighlighted : "0,6",
 	});
-	
 
 	$("#btn_filtrar").click(function() {
 
-	
 		$('#tabs_dash a[href="#dashboard1"]').tab('show')
 		// filtrar(true);
 	});
@@ -68,16 +63,16 @@ $(document).ready(function() {
 	$('a[data-toggle="pill"]').on('shown.bs.tab', function(evt) {
 		$(window).trigger('resize');
 		var target = $(evt.target).attr("href") // activated tab
-		if(target=='#dashboard1'){
+		if (target == '#dashboard1') {
 			filtrar(false);
-		}else if(target=='#dashboard2'){
+		} else if (target == '#dashboard2') {
 			filtrarProds();
 		}
 		$(window).trigger('resize');
 	});
-	
+
 	$('#tabs_dash a[href="#filtros"]').tab('show')
-	
+
 });
 
 function filtrar(troca) {
@@ -113,17 +108,15 @@ function limparfiltros() {
 }
 
 function filtrarProds() {
-	
+
 	$('#mainpage').animate({
 		scrollTop : (0)
 	}, 'slow');
 
-	
 	dashProdInfosgerais_single();
 	dashProdHora_single('qtd');
 	dashProdDiaSingle('qtd');
 	dashProdBairroSingle('qtd');
-
 
 }
 
@@ -290,6 +283,7 @@ function dashVendaProdsQtd(consulta) {// Produtos mais vendidos
 				calculable : true,
 				xAxis : [ {
 					type : 'value',
+					//scale:true,
 					boundaryGap : [ 0, 0.01 ],
 					axisLabel : {
 						formatter : function(val) {
@@ -308,6 +302,7 @@ function dashVendaProdsQtd(consulta) {// Produtos mais vendidos
 				yAxis : [ {
 					type : 'category',
 					data : desc,
+					
 					axisLabel : {
 						textStyle : {
 							fontSize : 10
@@ -342,17 +337,35 @@ function dashVendaProdsQtd(consulta) {// Produtos mais vendidos
 }
 
 function eConsole(param) {
-
-	$("#desc_produto_listagem").val(param.name);
-	$("#desc_produto_listagem").blur();
 	$.blockUI({
 		message : 'Carregando...'
 	});
 	
-	setTimeout(function() {
-		$('#tabs_dash a[href="#dashboard2"]').tab('show');
-		$.unblockUI();
-	}, 1000);
+	$.ajax({
+		type : "POST",
+		url : "home?ac=ajax",
+		dataType : "json",
+		async : true,
+		data : {
+			cmd : 'getfullprodname',
+			param : param.name
+		},
+		success : function(data) {
+
+			$("#desc_produto_listagem").val(data.name);
+			$("#desc_produto_listagem").blur();
+		
+			setTimeout(function() {
+				$('#tabs_dash a[href="#dashboard2"]').tab('show');
+				$.unblockUI();
+			}, 1000);
+
+		},
+		error : function(msg) {
+			$.unblockUI();
+
+		}
+	});
 
 }
 
@@ -801,7 +814,6 @@ function dashPedidoHora(consulta) {
 
 			$("#dash_pedhora_holder").html("<div style='height: 350px' id=\"dash_pedhora\"></div>");
 
-
 			var echartLine = echarts.init(document.getElementById('dash_pedhora'));
 
 			echartLine.setOption({
@@ -836,7 +848,7 @@ function dashPedidoHora(consulta) {
 							title : {
 								line : 'Linha',
 								bar : 'Barra'
-								
+
 							},
 							type : [ 'line', 'bar' ],
 							option : {
@@ -967,8 +979,6 @@ function dashPedidoDia(consulta) {
 			// $("#dash_peddia_holder").html("<canvas
 			// id=\"dash_peddia\"></canvas>");
 			$("#dash_peddia_holder").html("<div  style='height: 350px' id=\"dash_peddia\"></div>");
-
-	
 
 			var echartLine = echarts.init(document.getElementById('dash_peddia'));
 
@@ -1378,7 +1388,7 @@ function dashProdDiaSingle(consulta) {
 								title : {
 									line : 'Linha',
 									bar : 'Barra'
-									
+
 								},
 								type : [ 'line', 'bar' ],
 								option : {
@@ -1560,7 +1570,7 @@ function dashProdHora_single(consulta) {
 								title : {
 									line : 'Linha',
 									bar : 'Barra'
-									
+
 								},
 								type : [ 'line', 'bar' ],
 								option : {
@@ -1759,7 +1769,7 @@ function dashProdBairroSingle(consulta) {// Produtos com mais faturamento
 								title : {
 									line : 'Linha',
 									bar : 'Barra',
-									
+
 								},
 								type : [ 'line', 'bar' ],
 								option : {
@@ -1925,7 +1935,7 @@ function dashDia(consulta) {// Produtos com mais faturamento
 							title : {
 								line : 'Linha',
 								bar : 'Barra'
-								
+
 							},
 							type : [ 'line', 'bar' ],
 							option : {
@@ -2119,9 +2129,9 @@ function dashMeses(consulta) {// Produtos com mais faturamento
 						magicType : {
 							show : true,
 							title : {
-								line : 'Linha', 
+								line : 'Linha',
 								bar : 'Barra'
-														
+
 							},
 							type : [ 'line', 'bar' ],
 							option : {
@@ -2211,7 +2221,7 @@ function dashMeses(consulta) {// Produtos com mais faturamento
 					type : 'bar',
 					data : qtd,
 					barGap : "20%"
-					
+
 				}, {
 					name : 'Entrega pedidos',
 					type : 'bar',

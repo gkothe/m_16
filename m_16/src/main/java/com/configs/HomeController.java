@@ -235,6 +235,8 @@ public class HomeController extends javax.servlet.http.HttpServlet {
 				Relatorios.dashMeses(request, response, conn, coddistr);
 			}else if (cmd.equalsIgnoreCase("dashDiasDoMes")) {
 				Relatorios.dashDiasDoMes(request, response, conn, coddistr);
+			}else if (cmd.equalsIgnoreCase("getfullprodname")) {
+				Utilitario.getFullProdname(request, response, conn);
 			}
 			
 			

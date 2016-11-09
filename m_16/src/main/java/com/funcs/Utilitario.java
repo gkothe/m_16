@@ -536,6 +536,22 @@ public class Utilitario {
 		return desc_produto;
 	}
 
+	public static void getFullProdname(HttpServletRequest request, HttpServletResponse response, Connection conn) throws Exception {
+		JSONObject retorno = new JSONObject();
+		PrintWriter out = response.getWriter();
+
+		String desc_produto = request.getParameter("param") == null ? "" : request.getParameter("param");
+		String varname1 = " select * from produtos where DESC_ABREVIADO = ? ";
+		PreparedStatement st = conn.prepareStatement(varname1);
+		st.setString(1, desc_produto);
+		ResultSet rs2 = st.executeQuery();
+		if (rs2.next()) {
+			retorno.put("name", rs2.getString("DESC_PROD"));
+		}
+
+		out.print(retorno.toJSONString());
+	}
+
 	public static String getNomeProdIdProdDistr(Connection conn, long ID_PROD_DIST, boolean abreviado) throws Exception {
 
 		String desc_produto = "";
@@ -709,26 +725,20 @@ public class Utilitario {
 	public static void main(String[] args) {
 		try {
 
-			
-			
-			
 			Calendar cal = Calendar.getInstance();
 			cal.setTime(new Date());
 			int year = cal.get(Calendar.YEAR);
-			int month =4;// cal.get(Calendar.MONTH);
+			int month = 4;// cal.get(Calendar.MONTH);
 
 			int cont = 0;
-			
-			
+
 			LocalDate initial = LocalDate.of(2016, 11, 13);
 			LocalDate start = initial.withDayOfMonth(1);
 			LocalDate end = initial.withDayOfMonth(initial.lengthOfMonth());
-			
+
 			;
 			System.out.println(end.getDayOfMonth());
 
-			
-			
 			while (cont < 13) {
 
 				System.out.println(month + " - " + year);

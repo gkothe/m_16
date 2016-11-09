@@ -221,11 +221,12 @@ public class Home_ajax {
 				out.print(objValor.toJSONString());
 			} else if (campo.equals("desc_produto")) {
 
-				String sql = "select produtos.id_prod as id, produtos.desc_prod as descr from produtos_distribuidora inner join produtos on produtos_distribuidora.id_prod =  produtos.id_prod where id_distribuidora = ? and produtos_distribuidora.flag_ativo = 'S' and produtos.FLAG_ATIVO = 'S' and produtos.desc_prod like  ? limit 10";
+				String sql = "select produtos.id_prod as id, produtos.desc_prod as descr from produtos_distribuidora inner join produtos on produtos_distribuidora.id_prod =  produtos.id_prod where id_distribuidora = ? and produtos_distribuidora.flag_ativo = 'S' and produtos.FLAG_ATIVO = 'S' and (produtos.desc_prod like  ?  or produtos.desc_abreviado like ?) limit 10";
 
 				PreparedStatement st = conn.prepareStatement(sql);
 				st.setInt(1, coddistr);
 				st.setString(2, "%" + q + "%");
+				st.setString(3, "%" + q + "%");
 				ResultSet rs = st.executeQuery();
 				while (rs.next()) {
 					objValor = new org.json.simple.JSONObject();
@@ -255,11 +256,12 @@ public class Home_ajax {
 				// em relação ao autocomplete do 'id_produto' e do 'desc_produto' muda o join, a distribuidora vai na ligação.
 				// considerando os ativos do distribuidora e do sistema, caso precisar separar os flags, tem q mandar algum parametro extra.
 
-				String sql = "select produtos.id_prod as id, desc_prod as descr from produtos  left join produtos_distribuidora on produtos.id_prod = produtos_distribuidora.id_prod	 and ID_DISTRIBUIDORA = ? where (produtos.flag_ativo = 'S') and  produtos.desc_prod like  ? order by desc_prod asc  limit 10";
+				String sql = "select produtos.id_prod as id, desc_prod as descr from produtos  left join produtos_distribuidora on produtos.id_prod = produtos_distribuidora.id_prod	 and ID_DISTRIBUIDORA = ? where (produtos.flag_ativo = 'S') and  (produtos.desc_prod like  ?  or produtos.desc_abreviado like ?) order by desc_prod asc  limit 10";
 
 				PreparedStatement st = conn.prepareStatement(sql);
 				st.setInt(1, coddistr);
 				st.setString(2, "%" + q + "%");
+				st.setString(3, "%" + q + "%");
 				ResultSet rs = st.executeQuery();
 				while (rs.next()) {
 					objValor = new org.json.simple.JSONObject();
