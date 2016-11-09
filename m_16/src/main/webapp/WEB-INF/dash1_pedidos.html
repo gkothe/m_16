@@ -3,9 +3,6 @@
 <!-- 	src="JavaScript/echarts-master/dist/echarts.js"></script> -->
 <script type="text/javascript"
 	src="JavaScript/echarts-master/dist/echarts-all.js"></script>
-<script type="text/javascript"
-	src="http://echarts.baidu.com/build/dist/echarts-all.js"></script>
-
 
 <!-- <script src="gentelella-master/vendors/echarts/dist/echarts.js"></script> -->
 <!-- <script type="text/javascript" -->
@@ -41,19 +38,16 @@
 
 
 
-<ul class="nav nav-pills" id="tabs_dash" role="tablist">
-	<li role="presentation" class="active"><a href="#filtros"
-		aria-controls="home" role="tab" data-toggle="tab">Filtros</a></li>
-	<li role="presentation"><a href="#dashboard1" aria-controls="home"
-		role="tab" data-toggle="tab">Dashboard - 1 </a></li>
-	<li role="presentation"><a href="#dashboard2" aria-controls="home"
-		role="tab" data-toggle="tab">Dashboard - 2 </a></li>
 
+<ul class="nav nav-pills nav-justified" " id="tabs_dash">
+	<li class="active"><a data-toggle="pill" href="#filtros">Filtros</a></li>
+	<li><a data-toggle="pill" href="#dashboard1">Dashboard - 1 </a></li>
+	<li><a data-toggle="pill" href="#dashboard2">Dashboard - 2 </a></li>
 </ul>
-
+<!-- data-toggle="tab" -->
 <div class="tab-content">
 
-	<div role="tabpanel" class="tab-pane active" id="filtros">
+	<div class="tab-pane active" id="filtros">
 
 		<div style="width: 95%; height: 100%"
 			class="container bs-docs-container">
@@ -169,8 +163,7 @@
 
 		</div>
 	</div>
-
-	<div role="tabpanel" class="tab-pane active" id="dashboard1">
+	<div class="tab-pane " id="dashboard1">
 		<div style="width: 95%; height: 100%"
 			class="container bs-docs-container">
 			<br>
@@ -284,48 +277,7 @@
 
 						</div>
 
-						<div class="row">
-							<div class="col-md-12 col-sm-12 col-xs-12">
-								<div class="x_panel">
-									<div class="x_title">
-										<h2>Dia</h2>
-										<ul class="nav navbar-right panel_toolbox">
-											<li><a class="collapse-link"><i
-													class="fa fa-chevron-up"></i></a></li>
-											<li class="dropdown"><a href="#" class="dropdown-toggle"
-												data-toggle="dropdown" role="button" aria-expanded="false"><i
-													class="fa fa-wrench"></i></a>
-												<ul class="dropdown-menu" role="menu">
-													<li><a onClick="" href="#">Quantidade</a></li>
-													<li><a onClick="" href="#">Faturamento</a></li>
-												</ul></li>
 
-										</ul>
-										<div class="clearfix"></div>
-									</div>
-									<div class="x_content">
-										<div align="center">
-											<table>
-												<tr>
-													<td style="padding-right: 15px"><div
-															style='height: 10px; width: 10px; background-color: #9B59B6; color: #9B59B6; display: inline; border-radius: 5px'>&nbsp;()</div>
-														Pedidos</td>
-													<td style="padding-right: 15px"><div
-															style='height: 10px; width: 10px; background-color: #26B99A; color: #26B99A; display: inline; border-radius: 5px'>&nbsp;()</div>
-														Entregas</td>
-													<td style="padding-right: 15px"><div
-															style='height: 10px; width: 10px; background-color: #3498DB; color: #3498DB; display: inline; border-radius: 5px'>&nbsp;()</div>
-														Retiradas</td>
-												</tr>
-											</table>
-										</div>
-										<div id="dash_dias" style="min-height: 500px;"></div>
-
-
-									</div>
-								</div>
-							</div>
-						</div>
 					</div>
 				</div>
 			</div>
@@ -537,7 +489,7 @@
 
 
 	</div>
-	<div role="tabpanel" class="tab-pane active" id="dashboard2">
+	<div class="tab-pane " id="dashboard2">
 
 		<div style="width: 95%; height: 100%"
 			class="container bs-docs-container">
@@ -691,14 +643,73 @@
 		</div>
 	</div>
 
-
-
-	<br> <input id="sys_formatador" type="hidden"> <br> <input
-		id="sys_formatador2" type="hidden"><input
-		id="descdataday" type="hidden">
-
-
 </div>
+
+<div id="modal_dashdias" class="modal fade" tabindex="-1" role="dialog">
+	<div class="modal-dialog modal-admin " role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal"
+					aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+				</button>
+				<h4 id="dash_diastitle" class="modal-title"></h4>
+			</div>
+			<div class="modal-body">
+				<div class="row">
+					<div class="col-md-12 col-sm-12 col-xs-12">
+						<div class="x_panel">
+							<div class="x_title">
+								<ul class="nav navbar-right panel_toolbox">
+									<li><a class="collapse-link"><i
+											class="fa fa-chevron-up"></i></a></li>
+									<li class="dropdown"><a href="#" class="dropdown-toggle"
+										data-toggle="dropdown" role="button" aria-expanded="false"><i
+											class="fa fa-wrench"></i></a>
+										<ul class="dropdown-menu" role="menu">
+											<li><a onClick="dashDia('qtd')" href="#">Quantidade</a></li>
+											<li><a onClick="dashDia('val')" href="#">Faturamento</a></li>
+										</ul></li>
+
+								</ul>
+								<div class="clearfix"></div>
+							</div>
+							<div class="x_content">
+								<div align="center">
+									<table>
+										<tr>
+											<td style="padding-right: 15px"><div
+													style='height: 10px; width: 10px; background-color: #9B59B6; color: #9B59B6; display: inline; border-radius: 5px'>&nbsp;()</div>
+												Pedidos</td>
+											<td style="padding-right: 15px"><div
+													style='height: 10px; width: 10px; background-color: #26B99A; color: #26B99A; display: inline; border-radius: 5px'>&nbsp;()</div>
+												Entregas</td>
+											<td style="padding-right: 15px"><div
+													style='height: 10px; width: 10px; background-color: #3498DB; color: #3498DB; display: inline; border-radius: 5px'>&nbsp;()</div>
+												Retiradas</td>
+										</tr>
+									</table>
+								</div>
+								<div id="dash_dias" style="min-height: 500px;"></div>
+
+
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-primary" data-dismiss="modal">Fechar</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+
+<input id="sys_formatador" type="hidden">
+<input id="sys_formatador2" type="hidden">
+<input id="descdataday" type="hidden">
+
 </html>
 
 

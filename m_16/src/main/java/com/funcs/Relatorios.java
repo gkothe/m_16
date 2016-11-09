@@ -13,6 +13,7 @@ import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
@@ -1025,15 +1026,29 @@ public class Relatorios {
 		int year = cal.get(Calendar.YEAR);
 		int month = cal.get(Calendar.MONTH);
 		StringBuffer sql;
-		int cont = 0;
+		int cont = 1;
 		PreparedStatement st;
 		ResultSet rs;
 		int contparam;
-		while (cont != 0) {
+		
+		
+		LocalDate initial = LocalDate.of(Integer.parseInt(mesano[1]), Integer.parseInt(mesano[0]), 1);
+		LocalDate end = initial.withDayOfMonth(initial.lengthOfMonth());
+		
+	
+		
+	/*	SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+		Date convertedDate = dateFormat.parse("01/"+((month+"").length() == 1 ? "0"+month : month)+"/"+year);
+		Calendar c = Calendar.getInstance();
+		c.setTime(convertedDate);
+		c.set(Calendar.DAY_OF_MONTH, c.getActualMaximum(Calendar.DAY_OF_MONTH));
+		c.get*/
+		
+		while (cont <= 	end.getDayOfMonth()) {
 
 			sql = new StringBuffer();
-			sql.append("select ");
-			sql.append("dia, ");
+			sql.append(" select ");
+			sql.append(" dia, ");
 			sql.append("        Sum(qtd) as qtd, ");
 			sql.append("       Sum(total) as total, ");
 			sql.append("       Sum(entregas) as entrega, ");
@@ -1042,7 +1057,7 @@ public class Relatorios {
 			sql.append("        sum(valretirada) as valretirada ");
 			sql.append(" from ( ");
 			sql.append(" ");
-			sql.append("select day(data_pedido) as dia , count(*) as qtd,sum(val_totalprod) as total , ");
+			sql.append(" select day(data_pedido) as dia , count(*) as qtd,sum(val_totalprod) as total , ");
 			sql.append(" ");
 			sql.append(" CASE flag_pedido_ret_entre ");
 			sql.append("                 WHEN 'T' THEN Sum(1) ");
@@ -1064,27 +1079,28 @@ public class Relatorios {
 			sql.append(" ");
 			sql.append(" from pedido WHERE  id_distribuidora = ?   AND flag_status = 'O' and month(data_pedido) = ? and year(data_pedido)  = ? and day(data_pedido) = ?  ");
 			sql.append(" ");
-			sql.append("group by day(data_pedido), flag_pedido_ret_entre ");
+			sql.append(" group by day(data_pedido), flag_pedido_ret_entre ");
 			sql.append(" ");
 			sql.append(" ");
 			sql.append(") as tab ");
 			sql.append(" ");
-			sql.append("GROUP  BY tab.dia");
+			sql.append(" GROUP  BY tab.dia");
 
 			// sql = new StringBuffer(parametrosDash(sql.toString(), hora_inicial, hora_final, dias_semana, cod_bairro, "", "", ""));
 
 			st = conn.prepareStatement(sql.toString());
 			st.setInt(1, coddistr);
-			st.setInt(2, month);
-			st.setInt(3, year);
-			contparam = 4;
+			st.setInt(2, Integer.parseInt(mesano[0]));
+			st.setInt(3, Integer.parseInt(mesano[1]));
+			st.setInt(4, cont);
+			contparam = 5;
 
 			// parametrosDashSt(st, contparam, hora_inicial, hora_final, dias_semana, cod_bairro, "", "", "");
 
 			rs = st.executeQuery();
 			if (rs.next()) {
 				JSONObject obj = new JSONObject();
-				obj.put("desc", "");
+				obj.put("desc","Dia " + cont + "º");
 				obj.put("qtd", rs.getInt("qtd"));
 
 				obj.put("entrega", rs.getInt("entrega"));
@@ -1096,7 +1112,7 @@ public class Relatorios {
 				retorno.add(obj);
 			} else {
 				JSONObject obj = new JSONObject();
-				obj.put("desc", "");
+				obj.put("desc","Dia " + cont + "º");
 				obj.put("qtd", 0);
 
 				obj.put("entrega", 0);
@@ -1107,12 +1123,7 @@ public class Relatorios {
 				retorno.add(obj);
 			}
 
-			month = month - 1;
-			if (month == 0) {
-				month = 12;
-				year = year - 1;
-			}
-			cont++;
+		cont++;
 		}
 		out.print(retorno.toJSONString());
 

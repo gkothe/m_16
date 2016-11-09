@@ -16,6 +16,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
@@ -708,13 +709,26 @@ public class Utilitario {
 	public static void main(String[] args) {
 		try {
 
+			
+			
+			
 			Calendar cal = Calendar.getInstance();
 			cal.setTime(new Date());
 			int year = cal.get(Calendar.YEAR);
-			int month = cal.get(Calendar.MONTH);
+			int month =4;// cal.get(Calendar.MONTH);
 
 			int cont = 0;
+			
+			
+			LocalDate initial = LocalDate.of(2016, 11, 13);
+			LocalDate start = initial.withDayOfMonth(1);
+			LocalDate end = initial.withDayOfMonth(initial.lengthOfMonth());
+			
+			;
+			System.out.println(end.getDayOfMonth());
 
+			
+			
 			while (cont < 13) {
 
 				System.out.println(month + " - " + year);
