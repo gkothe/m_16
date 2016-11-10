@@ -76,18 +76,15 @@ input:focus {
 	width: 70% !important;
 }
 
-.field_dash{
-
-text-align: right;
-background-color: white !important;
+.field_dash {
+	text-align: right;
+	background-color: white !important;
 }
+
 .modal-admin {
-    
-    width: 95%;
-    height: 90%;
-    
+	width: 95%;
+	height: 90%;
 }
-
 </style>
 
 
@@ -155,9 +152,10 @@ background-color: white !important;
 										class="fa fa-edit clickmenu2"></i> Relatórios <span
 										class="fa fa-chevron-down clickmenu"></span></a>
 									<ul class="nav child_menu">
-										<li><a href="form.html">The void is here</a></li>
 										<li><a linkmenu="rel_pedidos"
 											onclick="trocaPag(this,'N',event);" class="clickmenu">Pedidos</a></li>
+										<li><a linkmenu="rel_produtos"
+											onclick="trocaPag(this,'N',event);" class="clickmenu">Produtos</a></li>
 										<li><a linkmenu="dashpedidos"
 											onclick="trocaPag(this,'N',event);" class="clickmenu">Dashboard
 												Pedidos</a></li>
@@ -762,12 +760,12 @@ background-color: white !important;
 
 
 	<!-- Chart.js -->
-	
+
 	<!-- Custom Theme Scripts  tem que ter-->
 	<!-- 	<script src="gentelella-master/production/js/custom.js"></script> -->
 	<script src="gentelella-master/build/js/custom.js"></script>
-    
-	
+
+
 	<script type="text/javascript"
 		src="JavaScript/jquery-ui-1.10.4.custom/js/jquery-ui-1.10.4.custom.min.js"></script>
 	<script type="text/javascript"
@@ -814,9 +812,9 @@ background-color: white !important;
 		src="JavaScript/inputmask/jquery.inputmask.js"></script>
 	<script type="text/javascript"
 		src="JavaScript/boostrap_multiselect/bootstrap-multiselect.js"></script>
-		
 
-		
+
+
 </body>
 
 <script>

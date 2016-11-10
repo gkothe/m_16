@@ -1593,164 +1593,152 @@ public class Relatorios {
 
 			StringBuffer sql = new StringBuffer();
 
-			sql.append("SELECT desc_prod, ");
-			sql.append("       pedido_item.val_unit, ");
-			sql.append("       qtd_prod, ");
-			sql.append("       pedido_item.val_unit * qtd_prod          AS val_subtotalprod, ");
-			sql.append("       pedido.id_pedido, ");
-			sql.append("       COALESCE(bairros.desc_bairro, '-')       AS desc_bairro, ");
-			sql.append("       pedido.flag_status, ");
-			sql.append("       data_pedido, ");
-			sql.append("       val_totalprod, ");
-			sql.append("       val_entrega, ");
-			sql.append("       data_pedido_resposta, ");
-			sql.append("       num_ped, ");
-			sql.append("       pedido.flag_modopagamento, ");
-			sql.append("       flag_pedido_ret_entre, ");
-			sql.append("       perc_pagamento, ");
-			sql.append("       nome_pessoa, ");
-			sql.append("       desc_endereco_entrega, ");
-			sql.append("       desc_endereco_num_entrega, ");
-			sql.append("       desc_endereco_complemento_entrega, ");
-			sql.append("       num_telefonecontato_cliente, ");
-			sql.append("       data_cancelamento, ");
-			sql.append("       desc_obs, ");
-			sql.append("       desc_motivo, ");
-			sql.append("       ( perc_pagamento * val_totalprod ) / 100 AS tragoaqui_perc ");
-			sql.append("FROM   pedido ");
-			sql.append("       INNER JOIN distribuidora ");
-			sql.append("               ON distribuidora.id_distribuidora = pedido.id_distribuidora ");
-			sql.append("       LEFT JOIN bairros ");
-			sql.append("              ON bairros.cod_bairro = pedido.cod_bairro ");
-			sql.append("       INNER JOIN pedido_item ");
-			sql.append("               ON pedido.id_pedido = pedido_item.id_pedido ");
-			sql.append("       INNER JOIN produtos_distribuidora ");
-			sql.append("               ON produtos_distribuidora.id_prod = pedido_item.id_prod ");
-			sql.append("                  AND produtos_distribuidora.id_distribuidora =  " + coddistr);
-			sql.append("       INNER JOIN produtos ");
-			sql.append("               ON produtos.id_prod = produtos_distribuidora.id_prod ");
-			sql.append("       LEFT JOIN pedido_motivo_cancelamento ");
-			sql.append("              ON pedido_motivo_cancelamento.id_pedido = pedido.id_pedido ");
-			sql.append("       LEFT JOIN motivos_cancelamento ");
-			sql.append("              ON pedido_motivo_cancelamento.cod_motivo = ");
-			sql.append("                 motivos_cancelamento.cod_motivo");
+			sql = new StringBuffer();
+			sql.append("  select produtos.id_prod,DESC_PROD, produtos_distribuidora.FLAG_ATIVO, sum(pedido_item.QTD_PROD) as qtd, sum(pedido_item.QTD_PROD * VAL_UNIT) as total  from produtos ");
+			sql.append(" ");
+			sql.append("			inner join produtos_distribuidora ");
+			sql.append("			on produtos_distribuidora.id_prod = produtos.id_prod ");
+			sql.append(" ");
+			sql.append("			left join pedido_item ");
+			sql.append("			on pedido_item.id_prod = produtos_distribuidora.id_prod ");
+			sql.append(" ");
+			sql.append("			left join pedido ");
+			sql.append("			on pedido.id_pedido = pedido_item.id_pedido ");
+			sql.append(" ");
+			sql.append("			where produtos.flag_ativo = 'S'and produtos_distribuidora.id_distribuidora = " + coddistr + " and pedido.flag_status = 'O' ");
+			sql.append(" ");
+			sql.append("			group by produtos.id_prod,DESC_PROD, produtos_distribuidora.FLAG_ATIVO order by DESC_PROD");
 
-			sql.append("			where distribuidora.id_distribuidora =  " + coddistr);
-
-			if (!(dataini.equalsIgnoreCase(""))) {
-				sql.append("  and  data_pedido >= ?");
-				hmParams.put("dataini", dataini);
-
-			}
-
-			if (!(datafim.equalsIgnoreCase("")) && datafim != null) {
-				sql.append(" and  data_pedido <= ?");
-				hmParams.put("datafim", datafim);
-			}
-
-			if (!flag_situacao.equalsIgnoreCase("")) {
-				sql.append("  and  FLAG_STATUS = ? ");
-			}
-
-			if (!cod_bairro.equalsIgnoreCase("")) {
-				sql.append("  and  pedido.cod_bairro = ? ");
-			}
-
-			if (!flag_servico.equalsIgnoreCase("")) {
-				sql.append("  and  pedido.FLAG_PEDIDO_RET_ENTRE = ? ");
-			}
-
-			if (!flag_pagamento.equalsIgnoreCase("")) {
-				sql.append("  and  pedido.FLAG_MODOPAGAMENTO = ? ");
-			}
-
-			sql.append(" order by num_ped");
+			/*
+			 * if (!(dataini.equalsIgnoreCase(""))) { sql.append("  and  data_pedido >= ?"); hmParams.put("dataini", dataini);
+			 * 
+			 * }
+			 * 
+			 * if (!(datafim.equalsIgnoreCase("")) && datafim != null) { sql.append(" and  data_pedido <= ?"); hmParams.put("datafim", datafim); }
+			 * 
+			 * if (!flag_situacao.equalsIgnoreCase("")) { sql.append("  and  FLAG_STATUS = ? "); }
+			 * 
+			 * if (!cod_bairro.equalsIgnoreCase("")) { sql.append("  and  pedido.cod_bairro = ? "); }
+			 * 
+			 * if (!flag_servico.equalsIgnoreCase("")) { sql.append("  and  pedido.FLAG_PEDIDO_RET_ENTRE = ? "); }
+			 * 
+			 * if (!flag_pagamento.equalsIgnoreCase("")) { sql.append("  and  pedido.FLAG_MODOPAGAMENTO = ? "); }
+			 * 
+			 */
 
 			PreparedStatement st = conn.prepareStatement(sql.toString());
-			int contparam = 1;
-
-			if (!(dataini.equalsIgnoreCase(""))) {
-				Date data = new SimpleDateFormat("dd/MM/yyyy HH:mm").parse(dataini + " " + "00:00");
-				st.setString(contparam, new SimpleDateFormat("yyyy-MM-dd HH:mm").format(data));
-				contparam++;
-			}
-
-			if (!(datafim.equalsIgnoreCase(""))) {
-				Date data = new SimpleDateFormat("dd/MM/yyyy HH:mm").parse(datafim + " " + "23:59:59");
-				st.setString(contparam, new SimpleDateFormat("yyyy-MM-dd HH:mm").format(data));
-				contparam++;
-			}
-
-			if (!flag_situacao.equalsIgnoreCase("")) {
-				st.setString(contparam, flag_situacao);
-				contparam++;
-			}
-
-			if (!cod_bairro.equalsIgnoreCase("")) {
-				st.setLong(contparam, Long.parseLong(cod_bairro));
-				contparam++;
-			}
-
-			if (!flag_servico.equalsIgnoreCase("")) {
-				st.setString(contparam, flag_servico);
-				contparam++;
-			}
-
-			if (!flag_pagamento.equalsIgnoreCase("")) {
-				st.setString(contparam, flag_pagamento);
-				contparam++;
-			}
+			/*
+			 * int contparam = 1;
+			 * 
+			 * if (!(dataini.equalsIgnoreCase(""))) { Date data = new SimpleDateFormat("dd/MM/yyyy HH:mm").parse(dataini + " " + "00:00"); st.setString(contparam, new SimpleDateFormat("yyyy-MM-dd HH:mm").format(data)); contparam++; }
+			 * 
+			 * if (!(datafim.equalsIgnoreCase(""))) { Date data = new SimpleDateFormat("dd/MM/yyyy HH:mm").parse(datafim + " " + "23:59:59"); st.setString(contparam, new SimpleDateFormat("yyyy-MM-dd HH:mm").format(data)); contparam++; }
+			 * 
+			 * if (!flag_situacao.equalsIgnoreCase("")) { st.setString(contparam, flag_situacao); contparam++; }
+			 * 
+			 * if (!cod_bairro.equalsIgnoreCase("")) { st.setLong(contparam, Long.parseLong(cod_bairro)); contparam++; }
+			 * 
+			 * if (!flag_servico.equalsIgnoreCase("")) { st.setString(contparam, flag_servico); contparam++; }
+			 * 
+			 * if (!flag_pagamento.equalsIgnoreCase("")) { st.setString(contparam, flag_pagamento); contparam++; }
+			 */
 
 			ResultSet rs = st.executeQuery();
 			HashMap<String, Object> hmFat = new HashMap<String, Object>();
 			double val_totalprod = 0;
-
 			double val_entrega = 0;
 			double tragoaqui_perc = 0;
 			long id_ped = 0;
 			long qtd_ped = 0;
-
+			StringBuffer varname1;
 			while (rs.next()) {
+
 				hmFat = new HashMap<String, Object>();
-				hmFat.put("flag_status", (rs.getString("flag_status")));
-				hmFat.put("desc_status", Utilitario.returnStatusPedidoFlag(rs.getString("flag_status")));
-				hmFat.put("data_pedido", rs.getTimestamp("DATA_PEDIDO"));
-				hmFat.put("data_pedido_resposta", rs.getTimestamp("DATA_PEDIDO_RESPOSTA"));
-				hmFat.put("num_ped", rs.getLong("NUM_PED"));
-				hmFat.put("val_totalprod", new BigDecimal(rs.getDouble("VAL_TOTALPROD")));
-				hmFat.put("flag_modopagamento", rs.getString("FLAG_MODOPAGAMENTO"));
-				hmFat.put("flag_pedido_ret_entre", rs.getString("FLAG_PEDIDO_RET_ENTRE"));
-				hmFat.put("tragoaqui_perc", new BigDecimal(rs.getDouble("tragoaqui_perc")));
-				hmFat.put("desc_bairro", rs.getString("DESC_BAIRRO"));
-				hmFat.put("id_pedido", rs.getLong("id_pedido"));
-				hmFat.put("desc_prod", rs.getString("desc_prod"));
-				hmFat.put("val_unit", new BigDecimal(rs.getDouble("val_unit")));
-				hmFat.put("qtd_prod", rs.getLong("QTD_PROD"));
-				hmFat.put("val_subtotalprod", new BigDecimal(rs.getDouble("VAL_SUBTOTALPROD")));
-				hmFat.put("val_entrega", new BigDecimal(rs.getDouble("VAL_ENTREGA")));
-				hmFat.put("nome_pessoa", rs.getString("NOME_PESSOA"));
-				hmFat.put("desc_endereco_entrega", rs.getString("DESC_ENDERECO_ENTREGA"));
-				hmFat.put("desc_endereco_num_entrega", rs.getString("DESC_ENDERECO_NUM_ENTREGA") == null ? "" : rs.getString("DESC_ENDERECO_NUM_ENTREGA"));
-				hmFat.put("desc_endereco_complemento_entrega", rs.getString("DESC_ENDERECO_COMPLEMENTO_ENTREGA") == null ? "" : rs.getString("DESC_ENDERECO_COMPLEMENTO_ENTREGA"));
-				hmFat.put("num_telefonecontato_cliente", rs.getString("NUM_TELEFONECONTATO_CLIENTE") == null ? "" : rs.getString("NUM_TELEFONECONTATO_CLIENTE"));
-				hmFat.put("data_cancelamento", rs.getTimestamp("data_cancelamento"));
-				hmFat.put("desc_obs", rs.getString("desc_obs"));
-				hmFat.put("desc_motivo", rs.getString("desc_motivo"));
+				hmFat.put("flag_ativo", rs.getString("FLAG_ATIVO").equalsIgnoreCase("S") ? "Ativado" : "Desativado");
+				hmFat.put("desc_prod", rs.getString("DESC_PROD"));
+				hmFat.put("id_prod", rs.getLong("id_prod"));
+				hmFat.put("qtd", df.format(rs.getLong("qtd")));
+				hmFat.put("val_totalprod", df2.format(rs.getDouble("total")));
 
-				if (rs.getLong("id_pedido") != id_ped) {
-					qtd_ped++;
-					val_totalprod = val_totalprod + rs.getDouble("VAL_TOTALPROD");
-					val_entrega = val_entrega + rs.getDouble("val_entrega");
-					tragoaqui_perc = tragoaqui_perc + rs.getDouble("tragoaqui_perc");
+				varname1 = new StringBuffer();
+				varname1.append("select cod_bairro,sum(pedido_item.QTD_PROD) as qtd from pedido ");
+				varname1.append(" ");
+				varname1.append("left join pedido_item ");
+				varname1.append("on pedido.id_pedido = pedido_item.id_pedido ");
+				varname1.append(" ");
+				varname1.append("where pedido.id_distribuidora =" + coddistr + " and pedido.flag_status = 'O' and cod_bairro is null and id_prod = " + rs.getInt("id_prod"));
+				varname1.append(" ");
+				varname1.append("group by cod_bairro ");
+				varname1.append("  ");
+				varname1.append("order by sum(pedido_item.QTD_PROD) desc");
 
-					id_ped = rs.getLong("id_pedido");
+				st2 = conn.prepareStatement(varname1.toString());
+				rs2 = st2.executeQuery();
+
+				if (rs2.next()) {
+					hmFat.put("venda_local", df.format(rs2.getDouble("qtd")) );
+				} else {
+					hmFat.put("venda_local", "0");
 				}
 
-				hmFat.put("qtd_pedido", qtd_ped);
-				hmFat.put("summary_prodtotal", new BigDecimal(val_totalprod));
-				hmFat.put("summary_fretetotal", new BigDecimal(val_entrega));
-				hmFat.put("summary_total", new BigDecimal(val_totalprod + val_entrega));
-				hmFat.put("summary_perc", new BigDecimal(tragoaqui_perc));
+				varname1 = new StringBuffer();
+				varname1.append("select cod_bairro,sum(pedido_item.QTD_PROD) as qtd from pedido ");
+				varname1.append(" ");
+				varname1.append("left join pedido_item ");
+				varname1.append("on pedido.id_pedido = pedido_item.id_pedido ");
+				varname1.append(" ");
+				varname1.append("where pedido.id_distribuidora = " + coddistr + " and pedido.flag_status = 'O' and cod_bairro is not null and id_prod = " + rs.getInt("id_prod"));
+				varname1.append(" ");
+				varname1.append("group by cod_bairro ");
+				varname1.append("  ");
+				varname1.append("order by sum(pedido_item.QTD_PROD) desc limit 1");
+
+				st2 = conn.prepareStatement(varname1.toString());
+				rs2 = st2.executeQuery();
+
+				if (rs2.next()) {
+					hmFat.put("venda_bairro", Utilitario.getNomeBairro(conn, rs2.getInt("cod_bairro"), -1) + " - " + df.format(rs2.getInt("qtd")));
+				} else {
+					hmFat.put("venda_bairro", "-");
+				}
+
+				varname1 = new StringBuffer();
+				varname1.append("select dayofweek(data_pedido)  as dia,sum(pedido_item.QTD_PROD) as qtd from pedido ");
+				varname1.append(" ");
+				varname1.append("left join pedido_item ");
+				varname1.append("on pedido.id_pedido = pedido_item.id_pedido ");
+				varname1.append(" ");
+				varname1.append("where pedido.id_distribuidora = " + coddistr + " and pedido.flag_status = 'O' and id_prod = " + rs.getInt("id_prod"));
+				varname1.append(" ");
+				varname1.append("group by dayofweek(data_pedido) order by sum(pedido_item.QTD_PROD) desc limit 1;");
+
+				st2 = conn.prepareStatement(varname1.toString());
+				rs2 = st2.executeQuery();
+
+				if (rs2.next()) {
+					hmFat.put("dia_semana", Utilitario.getDescDiaSemana(conn, rs2.getInt("dia"), true) + " - " + df.format(rs2.getInt("qtd")));
+				} else {
+					hmFat.put("dia_semana", "-");
+				}
+
+				varname1 = new StringBuffer();
+				varname1.append("select TIME_FORMAT(DATA_PEDIDO,'%H:00' ) as horaformated , TIME_FORMAT(DATE_ADD(DATA_PEDIDO,interval 1 HOUR ),'%H:00' ) as hora2, sum(pedido_item.QTD_PROD) as qtd from pedido ");
+				varname1.append(" ");
+				varname1.append("left join pedido_item ");
+				varname1.append("on pedido.id_pedido = pedido_item.id_pedido ");
+				varname1.append(" ");
+				varname1.append("where pedido.id_distribuidora = " + coddistr + " and pedido.flag_status = 'O' and id_prod = + " + rs.getInt("id_prod"));
+				varname1.append(" ");
+				varname1.append("group by TIME_FORMAT(DATA_PEDIDO,'%H:00' )  order by sum(pedido_item.QTD_PROD) desc;");
+
+				st2 = conn.prepareStatement(varname1.toString());
+				rs2 = st2.executeQuery();
+
+				if (rs2.next()) {
+					hmFat.put("hora", rs2.getString("horaformated") + "-" + rs2.getString("HORA2") + " - " + df.format(rs2.getInt("qtd")));
+				} else {
+					hmFat.put("hora", "-");
+				}
 
 				arrLinhas.add(hmFat);
 			}
@@ -1775,7 +1763,7 @@ public class Relatorios {
 
 			hmParams.put("nome_distribuidora", Utilitario.getNomeDistr(conn, coddistr, false));
 
-			rodaRel("rel_pedidos", relPedidosDataSource(coddistr, conn, hmParams, request, response), hmParams, request, response);
+			rodaRel("rel_produtos", relProdutosDataSource(coddistr, conn, hmParams, request, response), hmParams, request, response);
 
 		} catch (Exception e) {
 

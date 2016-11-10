@@ -98,9 +98,13 @@ public class HomeController extends javax.servlet.http.HttpServlet {
 
 				else if (strTipo.equalsIgnoreCase("rel_pedidos")) {
 					relPedidos(request, response);
+				}else if (strTipo.equalsIgnoreCase("rel_produtos")) {
+					relProdutos(request, response);
 				} else if (strTipo.equalsIgnoreCase("rel_pedidospdf")) {
 					Relatorios.relPedidos(request, response, Integer.parseInt(request.getSession(false).getAttribute("coddis").toString()));
-				} else if (strTipo.equalsIgnoreCase("rel_gradehorarios")) {
+				} else if (strTipo.equalsIgnoreCase("rel_produtospdf")) {
+					Relatorios.relProdutos(request, response, Integer.parseInt(request.getSession(false).getAttribute("coddis").toString()));
+				}else if (strTipo.equalsIgnoreCase("rel_gradehorarios")) {
 					rel_gradehorarios(request, response);
 				} else if (strTipo.equalsIgnoreCase("logout")) {
 					request.getSession().invalidate();
@@ -317,6 +321,15 @@ public class HomeController extends javax.servlet.http.HttpServlet {
 		}
 	}
 
+	private void relProdutos(HttpServletRequest request, HttpServletResponse response) throws Exception {
+		try {
+			request.getRequestDispatcher("/WEB-INF/rel_produtos.html").forward(request, response);
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw e;
+		} finally {
+		}
+	}
 	private void listaprod(HttpServletRequest request, HttpServletResponse response) throws Exception {
 		try {
 			request.getRequestDispatcher("/WEB-INF/produtos_distribuidora.html").forward(request, response);

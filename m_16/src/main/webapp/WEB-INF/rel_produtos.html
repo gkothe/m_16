@@ -1,0 +1,167 @@
+<html>
+<script type="text/javascript" src="JavaScript/rel_produto.js"></script>
+<div class="x_title">
+
+	<div class="row">
+		<div class="col-xs-12 col-md-12 col-lg-12">
+			<div class="form-group">
+				<label style="font-size: 30px" for="">Relatório de Produtos</label>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="x_content">
+
+
+	<div style="width: 95%; height: 100%"
+		class="container bs-docs-container">
+
+
+		<br>
+
+		<div class="row ">
+
+			<div class="col-xs-4 col-md-4 col-lg-4 ">
+				<label for="">Período - De </label>
+				<div class="input-group">
+					<input type="text" class="form-control data" id="rel_data_ini"
+						placeholder="Data inicial" /> <span
+						class="input-group-addon glyphicon glyphicon-calendar"> </span>
+				</div>
+			</div>
+
+			<div class="col-xs-1 col-sm-1 col-md-1 col-lg-1 " align="right"></div>
+
+			<div class="col-xs-4 col-md-4 col-lg-4 ">
+				<label for="">Período - Até </label>
+
+				<div class="input-group">
+					<input type="text" class="form-control data" id="rel_data_fim"
+						placeholder="Data final" /> <span
+						class="input-group-addon glyphicon glyphicon-calendar"> </span>
+				</div>
+			</div>
+
+
+		</div>
+
+
+		<div class="row ">
+
+
+			<div class="col-xs-4 col-md-4 col-lg-4 ">
+				<label for="">Bairro</label>
+				<div class="form-group">
+					<select id="cod_bairro" class="form-control" style="width: 100%"
+						name="cod_bairro">
+
+					</select>
+
+				</div>
+			</div>
+
+			<div class="col-xs-1 col-sm-1 col-md-1 col-lg-1 " align="right"></div>
+
+			<div class="col-xs-4 col-md-4 col-lg-4 ">
+				<label for="">Modo de Pagamento </label>
+				<div class="form-group">
+					<select id="flag_pagamento" class="form-control"
+						style="width: 100%" name="flag_pagamento">
+						<option value="">Todos</option>
+						<option value="C">Cartão Crédito</option>
+						<option value="O">Dinheiro</option>
+
+					</select>
+				</div>
+			</div>
+
+
+		</div>
+
+
+
+		<div class="row ">
+
+
+			<div class="col-xs-4 col-md-4 col-lg-4 ">
+				<label for="">Situação</label>
+				<div class="form-group">
+					<select id="flag_situacao" class="form-control"
+						style="width: 100%; min-width: 100%" name="flag_situacao">
+						<option value="">Todas</option>
+						<option value="A">Aberto</option>
+						<option value="1">Aceitos (Em envio/espera)</option>
+						<option value="C">Cancelado</option>
+						<option selected value="O">Finalizado</option>
+						<option value="R">Recusado</option>
+
+					</select>
+				</div>
+			</div>
+
+			<div class="col-xs-1 col-sm-1 col-md-1 col-lg-1 " align="right"></div>
+
+			<div class="col-xs-4 col-md-4 col-lg-4 ">
+				<label for="">Serviço </label>
+				<div class="form-group">
+					<select id="flag_servico" class="form-control" style="width: 100%"
+						name="flag_servico">
+						<option value="">Todos</option>
+						<option value="L">Retirar no local</option>
+						<option value="T">Entrega</option>
+					</select>
+				</div>
+			</div>
+
+
+		</div>
+
+
+		<div class="row ">
+
+			<div class="col-xs-4 col-md-4 col-lg-4 ">
+				<label for="">Opções de exibição</label>
+				<div class="form-group">
+					<select id="flag_opc" class="form-control"
+						style="width: 100%; min-width: 100%" name="flag_opc">
+						<option value="S">Sintética</option>
+						<option value="A">Analítica</option>
+
+
+					</select>
+				</div>
+			</div>
+		</div>
+
+		<br>
+		<div class="row">
+
+			<div class="col-xs-12 col-md-12 col-lg-12" align="center">
+
+				<button class="btn btn-primary " type="button"
+					id="btn_filtros_limpar">Limpar Filtros</button>
+				<button class="btn btn-primary " type="button"
+					id="btn_rel">Gerar relátorio</button>
+
+			</div>
+
+
+		</div>
+
+
+	</div>
+
+
+</div>
+
+
+<br>
+<input id="sys_formatador" type="hidden">
+
+
+</html>
+
+
+
+
+
