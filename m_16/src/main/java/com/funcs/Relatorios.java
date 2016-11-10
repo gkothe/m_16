@@ -68,7 +68,8 @@ public class Relatorios {
 				}
 
 			for (int i = 0; i < dias.size(); i++) {
-				String day = (Integer.parseInt(dias.get(i).toString())) + "";// Returns the weekday index for date (1 = Monday, 2 = Tuesday, … 7 = Sunday). , monday no sistema começa em 1.
+				String day = (Integer.parseInt(dias.get(i).toString())) + "";// Returns the weekday index for date (1 = Sunday, 2 = Monday, …, 7 = Saturday), monday no sistema começa em 1.mas estes filtros q vem da tela, eu fiz igual ao SQL
+
 				filtro = filtro + "," + day;
 
 			}
@@ -244,7 +245,7 @@ public class Relatorios {
 		String flag_servico = request.getParameter("flag_servico") == null ? "" : request.getParameter("flag_servico");
 		String dias_semana = request.getParameter("dias_semana") == null ? "" : request.getParameter("dias_semana");
 
-		String sql = "select distinct FLAG_PEDIDO_RET_ENTRE, count(FLAG_PEDIDO_RET_ENTRE) as qtd from pedido  where id_distribuidora = ? and flag_status = 'O' ";
+		String sql = "select distinct FLAG_PEDIDO_RET_ENTRE, count(FLAG_PEDIDO_RET_ENTRE) as qtd,sum(val_totalprod) as val_totalprod from pedido  where id_distribuidora = ? and flag_status = 'O' ";
 
 		sql = parametrosDash(sql, hora_inicial, hora_final, dias_semana, cod_bairro, data_pedido_ini, data_pedido_fim, flag_servico);
 
@@ -262,6 +263,7 @@ public class Relatorios {
 			obj.put("desc", rs.getString("FLAG_PEDIDO_RET_ENTRE").equalsIgnoreCase("T") ? "Entrega" : "Retirada");
 			obj.put("qtd", rs.getInt("qtd"));
 			obj.put("qtddf", df.format(rs.getInt("qtd")));
+			obj.put("val_totalprod", df2.format(rs.getInt("val_totalprod")));
 			retorno.add(obj);
 		}
 
@@ -388,13 +390,13 @@ public class Relatorios {
 			rs = st.executeQuery();
 			if (rs.next()) {
 				JSONObject obj = new JSONObject();
-				obj.put("dia", Utilitario.getDescDiaSemana(conn, rs.getInt("dia")));
+				obj.put("dia", Utilitario.getDescDiaSemana(conn, rs.getInt("dia"), true));
 				obj.put("qtd", rs.getInt("qtd"));
 				obj.put("val_totalprod", rs.getDouble("VAL_TOTALPROD"));
 				retorno.add(obj);
 			} else {
 				JSONObject obj = new JSONObject();
-				obj.put("dia", Utilitario.getDescDiaSemana(conn, rs2.getInt("cod_dia")));
+				obj.put("dia", Utilitario.getDescDiaSemana(conn, rs2.getInt("cod_dia"), true));
 				obj.put("qtd", 0);
 				obj.put("val_totalprod", 0);
 				retorno.add(obj);
@@ -425,6 +427,8 @@ public class Relatorios {
 		sql2.append("SELECT * from bairros where cod_cidade =  " + request.getSession(false).getAttribute("cod_cidade").toString() + " order by desc_bairro");
 		st = conn.prepareStatement(sql2.toString());
 		rs2 = st.executeQuery();
+		double qtdmax = 0;
+		double fatmax = 0;
 		while (rs2.next()) {
 
 			sql = "select  count(id_pedido) as qtd,  COALESCE(desc_bairro, '* Distribuidora') AS desc_bairro ,sum(VAL_TOTALPROD) as valprod from pedido inner join bairros on bairros.cod_bairro = pedido.cod_bairro  where  id_distribuidora = ?  and flag_status = 'O' and pedido.cod_bairro =  " + rs2.getInt("cod_bairro");
@@ -442,14 +446,28 @@ public class Relatorios {
 			rs = st.executeQuery();
 			if (rs.next()) {
 				JSONObject obj = new JSONObject();
+
+				if (rs.getInt("qtd") > qtdmax) {
+					qtdmax = rs.getInt("qtd");
+				}
+
+				if (rs.getInt("valprod") > fatmax) {
+					fatmax = rs.getDouble("valprod");
+				}
+
+				obj.put("fatmax", Math.ceil(fatmax * 1.2));
+				obj.put("qtdmax", Math.ceil(qtdmax * 1.2));
 				obj.put("desc", rs.getString("desc_bairro"));
 				obj.put("qtd_f", df.format(rs.getInt("qtd")));
 				obj.put("valtotal_f", df2.format(rs.getDouble("valprod")));
 				obj.put("qtd", (rs.getInt("qtd")));
 				obj.put("valtotal", (rs.getDouble("valprod")));
+
 				retorno.add(obj);
 			} else {
 				JSONObject obj = new JSONObject();
+				obj.put("fatmax", Math.ceil(fatmax * 1.2));
+				obj.put("qtdmax", Math.ceil(qtdmax * 1.2));
 				obj.put("desc", rs2.getString("desc_bairro"));
 				obj.put("qtd_f", df.format(0));
 				obj.put("valtotal_f", df2.format(0));
@@ -502,8 +520,20 @@ public class Relatorios {
 		parametrosDashSt(st, contparam, hora_inicial, hora_final, dias_semana, "", data_pedido_ini, data_pedido_fim, flag_servico);
 		ResultSet rs2;
 		ResultSet rs = st.executeQuery();
+		double qtdmax = 0;
+		double fatmax = 0;
 		while (rs.next()) {
 			JSONObject obj = new JSONObject();
+
+			if (rs.getInt("qtd") > qtdmax) {
+				qtdmax = rs.getInt("qtd");
+			}
+
+			if (rs.getInt("valtotal") > fatmax) {
+				fatmax = rs.getDouble("valtotal");
+			}
+			obj.put("fatmax", Math.ceil(fatmax * 1.2));
+			obj.put("qtdmax", Math.ceil(qtdmax * 1.2));
 			obj.put("desc", rs.getString("desc_bairro"));
 			obj.put("qtd", rs.getInt("qtd"));
 			obj.put("valtotal", rs.getDouble("valtotal"));
@@ -537,8 +567,18 @@ public class Relatorios {
 			parametrosDashSt(st, contparam, hora_inicial, hora_final, dias_semana, "", data_pedido_ini, data_pedido_fim, flag_servico);
 
 			rs2 = st.executeQuery();
-			while (rs2.next()) {
+			if (rs2.next()) {
 				JSONObject obj = new JSONObject();
+				if (rs2.getInt("qtd") > qtdmax) {
+					qtdmax = rs2.getInt("qtd");
+				}
+
+				if (rs2.getInt("valtotal") > fatmax) {
+					fatmax = rs2.getDouble("valtotal");
+				}
+				obj.put("fatmax", Math.ceil(fatmax * 1.2));
+				obj.put("qtdmax", Math.ceil(qtdmax * 1.2));
+
 				obj.put("desc", rs2.getString("desc_bairro"));
 				obj.put("qtd", rs2.getInt("qtd"));
 				obj.put("valtotal", rs2.getDouble("valtotal"));
@@ -588,6 +628,23 @@ public class Relatorios {
 			obj.put("media", df2.format(rs.getInt("media")));
 			obj.put("totalfat", "R$ " + df2.format(rs.getDouble("totalfat")));
 			obj.put("valunit", df2.format(rs.getDouble("Val_unit")));
+
+		}
+
+		sql = new StringBuffer();
+		sql.append(" select     Val_prod, flag_ativo   ");
+		sql.append(" FROM   produtos_distribuidora ");
+		sql.append("            where id_distribuidora = ? and   id_prod = ? ");
+
+		st = conn.prepareStatement(sql.toString());
+		st.setInt(1, coddistr);
+		st.setInt(2, Integer.parseInt(id_prod));
+
+		rs = st.executeQuery();
+		if (rs.next()) {
+
+			obj.put("val_prod", "R$ " + df2.format(rs.getDouble("Val_prod")));
+			obj.put("flag_ativo", rs.getString("flag_ativo").equalsIgnoreCase("S") ? "Ativado" : "Desativado");
 
 		}
 
@@ -642,13 +699,13 @@ public class Relatorios {
 			rs = st.executeQuery();
 			if (rs.next()) {
 				JSONObject obj = new JSONObject();
-				obj.put("dia", Utilitario.getDescDiaSemana(conn, rs.getInt("dia")));
+				obj.put("dia", Utilitario.getDescDiaSemana(conn, rs.getInt("dia"), true));
 				obj.put("qtd", df.format(rs.getInt("qtd")));
 				obj.put("val_totalprod", (rs.getDouble("VAL_TOTALPROD")));
 				retorno.add(obj);
 			} else {
 				JSONObject obj = new JSONObject();
-				obj.put("dia", Utilitario.getDescDiaSemana(conn, rs2.getInt("cod_dia")));
+				obj.put("dia", Utilitario.getDescDiaSemana(conn, rs2.getInt("cod_dia"), true));
 				obj.put("qtd", 0);
 				obj.put("val_totalprod", 0);
 				retorno.add(obj);
@@ -780,9 +837,18 @@ public class Relatorios {
 
 		parametrosDashSt(st, contparam, hora_inicial, hora_final, dias_semana, cod_bairro, data_pedido_ini, data_pedido_fim, flag_servico);
 
+		double qtdmax = 0;
+
 		ResultSet rs = st.executeQuery();
 		while (rs.next()) {
 			JSONObject obj = new JSONObject();
+
+			if (rs.getInt("qtd") > qtdmax) {
+				qtdmax = rs.getInt("qtd");
+			}
+
+			obj.put("qtdmax", Math.ceil(qtdmax * 1.2));
+
 			obj.put("desc", rs.getString("desc_prod"));
 			obj.put("qtd", rs.getInt("qtd"));
 			obj.put("qtddf", df.format(rs.getInt("qtd")));
@@ -827,10 +893,16 @@ public class Relatorios {
 		int contparam = 2;
 
 		parametrosDashSt(st, contparam, hora_inicial, hora_final, dias_semana, cod_bairro, data_pedido_ini, data_pedido_fim, flag_servico);
-
+		double qtdmax = 0;
 		ResultSet rs = st.executeQuery();
 		while (rs.next()) {
 			JSONObject obj = new JSONObject();
+
+			if (rs.getInt("valsold") > qtdmax) {
+				qtdmax = rs.getDouble("valsold");
+			}
+
+			obj.put("qtdmax", Math.ceil(qtdmax * 1.2));
 			obj.put("desc", rs.getString("desc_prod"));
 			obj.put("valsold", rs.getInt("valsold"));
 			obj.put("valsolddesc", df2.format(rs.getInt("valsold")));
@@ -904,7 +976,7 @@ public class Relatorios {
 		Calendar cal = Calendar.getInstance();
 		cal.setTime(new Date());
 		int year = cal.get(Calendar.YEAR);
-		int month = cal.get(Calendar.MONTH);
+		int month = cal.get(Calendar.MONTH) + 1;
 		StringBuffer sql;
 		int cont = 0;
 		PreparedStatement st;
@@ -1018,7 +1090,7 @@ public class Relatorios {
 
 		String[] mesano = descdataday.split("/");
 
-		mesano[0] = Utilitario.getnumMes((mesano[0].trim()))+"";
+		mesano[0] = Utilitario.getnumMes((mesano[0].trim())) + "";
 		mesano[1] = mesano[1].trim();
 
 		Calendar cal = Calendar.getInstance();
@@ -1030,25 +1102,19 @@ public class Relatorios {
 		PreparedStatement st;
 		ResultSet rs;
 		int contparam;
-		
-		
+
 		LocalDate initial = LocalDate.of(Integer.parseInt(mesano[1]), Integer.parseInt(mesano[0]), 1);
 		LocalDate end = initial.withDayOfMonth(initial.lengthOfMonth());
-		
-	
-		
-	/*	SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
-		Date convertedDate = dateFormat.parse("01/"+((month+"").length() == 1 ? "0"+month : month)+"/"+year);
-		Calendar c = Calendar.getInstance();
-		c.setTime(convertedDate);
-		c.set(Calendar.DAY_OF_MONTH, c.getActualMaximum(Calendar.DAY_OF_MONTH));
-		c.get*/
-		
-		while (cont <= 	end.getDayOfMonth()) {
+
+		/*
+		 * SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy"); Date convertedDate = dateFormat.parse("01/"+((month+"").length() == 1 ? "0"+month : month)+"/"+year); Calendar c = Calendar.getInstance(); c.setTime(convertedDate); c.set(Calendar.DAY_OF_MONTH, c.getActualMaximum(Calendar.DAY_OF_MONTH)); c.get
+		 */
+
+		while (cont <= end.getDayOfMonth()) {
 
 			sql = new StringBuffer();
 			sql.append(" select ");
-			sql.append(" dia, ");
+			sql.append(" dia,diaweek, ");
 			sql.append("        Sum(qtd) as qtd, ");
 			sql.append("       Sum(total) as total, ");
 			sql.append("       Sum(entregas) as entrega, ");
@@ -1057,7 +1123,7 @@ public class Relatorios {
 			sql.append("        sum(valretirada) as valretirada ");
 			sql.append(" from ( ");
 			sql.append(" ");
-			sql.append(" select day(data_pedido) as dia , count(*) as qtd,sum(val_totalprod) as total , ");
+			sql.append(" select day(data_pedido) as dia , DAYOFWEEK(DATA_PEDIDO) as diaweek, count(*) as qtd,sum(val_totalprod) as total , ");
 			sql.append(" ");
 			sql.append(" CASE flag_pedido_ret_entre ");
 			sql.append("                 WHEN 'T' THEN Sum(1) ");
@@ -1078,6 +1144,7 @@ public class Relatorios {
 			sql.append("               END                AS valretirada ");
 			sql.append(" ");
 			sql.append(" from pedido WHERE  id_distribuidora = ?   AND flag_status = 'O' and month(data_pedido) = ? and year(data_pedido)  = ? and day(data_pedido) = ?  ");
+			sql = new StringBuffer(parametrosDash(sql.toString(), hora_inicial, hora_final, dias_semana, cod_bairro, "", "", ""));
 			sql.append(" ");
 			sql.append(" group by day(data_pedido), flag_pedido_ret_entre ");
 			sql.append(" ");
@@ -1086,8 +1153,6 @@ public class Relatorios {
 			sql.append(" ");
 			sql.append(" GROUP  BY tab.dia");
 
-			// sql = new StringBuffer(parametrosDash(sql.toString(), hora_inicial, hora_final, dias_semana, cod_bairro, "", "", ""));
-
 			st = conn.prepareStatement(sql.toString());
 			st.setInt(1, coddistr);
 			st.setInt(2, Integer.parseInt(mesano[0]));
@@ -1095,12 +1160,12 @@ public class Relatorios {
 			st.setInt(4, cont);
 			contparam = 5;
 
-			// parametrosDashSt(st, contparam, hora_inicial, hora_final, dias_semana, cod_bairro, "", "", "");
+			parametrosDashSt(st, contparam, hora_inicial, hora_final, dias_semana, cod_bairro, "", "", "");
 
 			rs = st.executeQuery();
 			if (rs.next()) {
 				JSONObject obj = new JSONObject();
-				obj.put("desc","Dia " + cont + "º");
+				obj.put("desc", "Dia " + cont + "º - " + Utilitario.getDescDiaSemana(conn, rs.getInt("diaweek"), true));
 				obj.put("qtd", rs.getInt("qtd"));
 
 				obj.put("entrega", rs.getInt("entrega"));
@@ -1111,8 +1176,10 @@ public class Relatorios {
 
 				retorno.add(obj);
 			} else {
+
+				LocalDate aux = LocalDate.of(Integer.parseInt(mesano[1]), Integer.parseInt(mesano[0]), cont);
 				JSONObject obj = new JSONObject();
-				obj.put("desc","Dia " + cont + "º");
+				obj.put("desc", "Dia " + cont + "º - " + Utilitario.getDescDiaSemana(conn, aux.getDayOfWeek().getValue(), false));
 				obj.put("qtd", 0);
 
 				obj.put("entrega", 0);
@@ -1123,7 +1190,7 @@ public class Relatorios {
 				retorno.add(obj);
 			}
 
-		cont++;
+			cont++;
 		}
 		out.print(retorno.toJSONString());
 
@@ -1478,6 +1545,233 @@ public class Relatorios {
 				hmParams.put("show_info", false);
 				hmParams.put("opcao_exib", "Sintética");
 			}
+
+			hmParams.put("nome_distribuidora", Utilitario.getNomeDistr(conn, coddistr, false));
+
+			rodaRel("rel_pedidos", relPedidosDataSource(coddistr, conn, hmParams, request, response), hmParams, request, response);
+
+		} catch (Exception e) {
+
+			e.printStackTrace();
+		}
+		try {
+			conn.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+			// TODO: handle exception
+		}
+	}
+
+	public static JRMapCollectionDataSource relProdutosDataSource(int coddistr, Connection conn, Map hmParams, HttpServletRequest request, HttpServletResponse response) throws Exception {
+
+		Collection<Map<String, ?>> arrLinhas = new ArrayList<Map<String, ?>>();
+		try {
+
+			PreparedStatement st3 = null;
+			ResultSet rs3 = null;
+			PreparedStatement st2 = null;
+			ResultSet rs2 = null;
+
+			String dataini = request.getParameter("dataini") == null ? "" : request.getParameter("dataini");
+			String datafim = request.getParameter("datafim") == null ? "" : request.getParameter("datafim");
+			String flag_situacao = request.getParameter("flag_situacao") == null ? "" : request.getParameter("flag_situacao");
+			String infocliente = request.getParameter("infocliente") == null ? "" : request.getParameter("infocliente");
+			String chk_prods = request.getParameter("chk_prods") == null ? "" : request.getParameter("chk_prods");
+			String flag_pagamento = request.getParameter("flag_pagamento") == null ? "" : request.getParameter("flag_pagamento");
+			String cod_bairro = request.getParameter("cod_bairro") == null ? "" : request.getParameter("cod_bairro");
+			String flag_servico = request.getParameter("flag_servico") == null ? "" : request.getParameter("flag_servico");
+
+			hmParams.put("dataini", "");
+			hmParams.put("datafim", "");
+			hmParams.put("situacao", Utilitario.returnStatusPedidoFlag(flag_situacao));
+			hmParams.put("servico", Utilitario.returnDistrTiposPedido(flag_servico));
+			hmParams.put("modo_pay", Utilitario.returnModoPagamento(flag_pagamento));
+			if (!cod_bairro.equalsIgnoreCase(""))
+				hmParams.put("bairro", Utilitario.getNomeBairro(conn, Integer.parseInt(cod_bairro), 0));
+			else
+				hmParams.put("bairro", "Todos");
+
+			StringBuffer sql = new StringBuffer();
+
+			sql.append("SELECT desc_prod, ");
+			sql.append("       pedido_item.val_unit, ");
+			sql.append("       qtd_prod, ");
+			sql.append("       pedido_item.val_unit * qtd_prod          AS val_subtotalprod, ");
+			sql.append("       pedido.id_pedido, ");
+			sql.append("       COALESCE(bairros.desc_bairro, '-')       AS desc_bairro, ");
+			sql.append("       pedido.flag_status, ");
+			sql.append("       data_pedido, ");
+			sql.append("       val_totalprod, ");
+			sql.append("       val_entrega, ");
+			sql.append("       data_pedido_resposta, ");
+			sql.append("       num_ped, ");
+			sql.append("       pedido.flag_modopagamento, ");
+			sql.append("       flag_pedido_ret_entre, ");
+			sql.append("       perc_pagamento, ");
+			sql.append("       nome_pessoa, ");
+			sql.append("       desc_endereco_entrega, ");
+			sql.append("       desc_endereco_num_entrega, ");
+			sql.append("       desc_endereco_complemento_entrega, ");
+			sql.append("       num_telefonecontato_cliente, ");
+			sql.append("       data_cancelamento, ");
+			sql.append("       desc_obs, ");
+			sql.append("       desc_motivo, ");
+			sql.append("       ( perc_pagamento * val_totalprod ) / 100 AS tragoaqui_perc ");
+			sql.append("FROM   pedido ");
+			sql.append("       INNER JOIN distribuidora ");
+			sql.append("               ON distribuidora.id_distribuidora = pedido.id_distribuidora ");
+			sql.append("       LEFT JOIN bairros ");
+			sql.append("              ON bairros.cod_bairro = pedido.cod_bairro ");
+			sql.append("       INNER JOIN pedido_item ");
+			sql.append("               ON pedido.id_pedido = pedido_item.id_pedido ");
+			sql.append("       INNER JOIN produtos_distribuidora ");
+			sql.append("               ON produtos_distribuidora.id_prod = pedido_item.id_prod ");
+			sql.append("                  AND produtos_distribuidora.id_distribuidora =  " + coddistr);
+			sql.append("       INNER JOIN produtos ");
+			sql.append("               ON produtos.id_prod = produtos_distribuidora.id_prod ");
+			sql.append("       LEFT JOIN pedido_motivo_cancelamento ");
+			sql.append("              ON pedido_motivo_cancelamento.id_pedido = pedido.id_pedido ");
+			sql.append("       LEFT JOIN motivos_cancelamento ");
+			sql.append("              ON pedido_motivo_cancelamento.cod_motivo = ");
+			sql.append("                 motivos_cancelamento.cod_motivo");
+
+			sql.append("			where distribuidora.id_distribuidora =  " + coddistr);
+
+			if (!(dataini.equalsIgnoreCase(""))) {
+				sql.append("  and  data_pedido >= ?");
+				hmParams.put("dataini", dataini);
+
+			}
+
+			if (!(datafim.equalsIgnoreCase("")) && datafim != null) {
+				sql.append(" and  data_pedido <= ?");
+				hmParams.put("datafim", datafim);
+			}
+
+			if (!flag_situacao.equalsIgnoreCase("")) {
+				sql.append("  and  FLAG_STATUS = ? ");
+			}
+
+			if (!cod_bairro.equalsIgnoreCase("")) {
+				sql.append("  and  pedido.cod_bairro = ? ");
+			}
+
+			if (!flag_servico.equalsIgnoreCase("")) {
+				sql.append("  and  pedido.FLAG_PEDIDO_RET_ENTRE = ? ");
+			}
+
+			if (!flag_pagamento.equalsIgnoreCase("")) {
+				sql.append("  and  pedido.FLAG_MODOPAGAMENTO = ? ");
+			}
+
+			sql.append(" order by num_ped");
+
+			PreparedStatement st = conn.prepareStatement(sql.toString());
+			int contparam = 1;
+
+			if (!(dataini.equalsIgnoreCase(""))) {
+				Date data = new SimpleDateFormat("dd/MM/yyyy HH:mm").parse(dataini + " " + "00:00");
+				st.setString(contparam, new SimpleDateFormat("yyyy-MM-dd HH:mm").format(data));
+				contparam++;
+			}
+
+			if (!(datafim.equalsIgnoreCase(""))) {
+				Date data = new SimpleDateFormat("dd/MM/yyyy HH:mm").parse(datafim + " " + "23:59:59");
+				st.setString(contparam, new SimpleDateFormat("yyyy-MM-dd HH:mm").format(data));
+				contparam++;
+			}
+
+			if (!flag_situacao.equalsIgnoreCase("")) {
+				st.setString(contparam, flag_situacao);
+				contparam++;
+			}
+
+			if (!cod_bairro.equalsIgnoreCase("")) {
+				st.setLong(contparam, Long.parseLong(cod_bairro));
+				contparam++;
+			}
+
+			if (!flag_servico.equalsIgnoreCase("")) {
+				st.setString(contparam, flag_servico);
+				contparam++;
+			}
+
+			if (!flag_pagamento.equalsIgnoreCase("")) {
+				st.setString(contparam, flag_pagamento);
+				contparam++;
+			}
+
+			ResultSet rs = st.executeQuery();
+			HashMap<String, Object> hmFat = new HashMap<String, Object>();
+			double val_totalprod = 0;
+
+			double val_entrega = 0;
+			double tragoaqui_perc = 0;
+			long id_ped = 0;
+			long qtd_ped = 0;
+
+			while (rs.next()) {
+				hmFat = new HashMap<String, Object>();
+				hmFat.put("flag_status", (rs.getString("flag_status")));
+				hmFat.put("desc_status", Utilitario.returnStatusPedidoFlag(rs.getString("flag_status")));
+				hmFat.put("data_pedido", rs.getTimestamp("DATA_PEDIDO"));
+				hmFat.put("data_pedido_resposta", rs.getTimestamp("DATA_PEDIDO_RESPOSTA"));
+				hmFat.put("num_ped", rs.getLong("NUM_PED"));
+				hmFat.put("val_totalprod", new BigDecimal(rs.getDouble("VAL_TOTALPROD")));
+				hmFat.put("flag_modopagamento", rs.getString("FLAG_MODOPAGAMENTO"));
+				hmFat.put("flag_pedido_ret_entre", rs.getString("FLAG_PEDIDO_RET_ENTRE"));
+				hmFat.put("tragoaqui_perc", new BigDecimal(rs.getDouble("tragoaqui_perc")));
+				hmFat.put("desc_bairro", rs.getString("DESC_BAIRRO"));
+				hmFat.put("id_pedido", rs.getLong("id_pedido"));
+				hmFat.put("desc_prod", rs.getString("desc_prod"));
+				hmFat.put("val_unit", new BigDecimal(rs.getDouble("val_unit")));
+				hmFat.put("qtd_prod", rs.getLong("QTD_PROD"));
+				hmFat.put("val_subtotalprod", new BigDecimal(rs.getDouble("VAL_SUBTOTALPROD")));
+				hmFat.put("val_entrega", new BigDecimal(rs.getDouble("VAL_ENTREGA")));
+				hmFat.put("nome_pessoa", rs.getString("NOME_PESSOA"));
+				hmFat.put("desc_endereco_entrega", rs.getString("DESC_ENDERECO_ENTREGA"));
+				hmFat.put("desc_endereco_num_entrega", rs.getString("DESC_ENDERECO_NUM_ENTREGA") == null ? "" : rs.getString("DESC_ENDERECO_NUM_ENTREGA"));
+				hmFat.put("desc_endereco_complemento_entrega", rs.getString("DESC_ENDERECO_COMPLEMENTO_ENTREGA") == null ? "" : rs.getString("DESC_ENDERECO_COMPLEMENTO_ENTREGA"));
+				hmFat.put("num_telefonecontato_cliente", rs.getString("NUM_TELEFONECONTATO_CLIENTE") == null ? "" : rs.getString("NUM_TELEFONECONTATO_CLIENTE"));
+				hmFat.put("data_cancelamento", rs.getTimestamp("data_cancelamento"));
+				hmFat.put("desc_obs", rs.getString("desc_obs"));
+				hmFat.put("desc_motivo", rs.getString("desc_motivo"));
+
+				if (rs.getLong("id_pedido") != id_ped) {
+					qtd_ped++;
+					val_totalprod = val_totalprod + rs.getDouble("VAL_TOTALPROD");
+					val_entrega = val_entrega + rs.getDouble("val_entrega");
+					tragoaqui_perc = tragoaqui_perc + rs.getDouble("tragoaqui_perc");
+
+					id_ped = rs.getLong("id_pedido");
+				}
+
+				hmFat.put("qtd_pedido", qtd_ped);
+				hmFat.put("summary_prodtotal", new BigDecimal(val_totalprod));
+				hmFat.put("summary_fretetotal", new BigDecimal(val_entrega));
+				hmFat.put("summary_total", new BigDecimal(val_totalprod + val_entrega));
+				hmFat.put("summary_perc", new BigDecimal(tragoaqui_perc));
+
+				arrLinhas.add(hmFat);
+			}
+
+		} catch (Exception e) {
+			throw e;
+		} finally {
+		}
+
+		JRMapCollectionDataSource objRetorno = new JRMapCollectionDataSource(arrLinhas);
+		return objRetorno;
+
+	}
+
+	public static void relProdutos(HttpServletRequest request, HttpServletResponse response, int coddistr) {
+
+		Connection conn = null;
+		try {
+
+			conn = Conexao.getConexao();
+			Map hmParams = new HashMap();
 
 			hmParams.put("nome_distribuidora", Utilitario.getNomeDistr(conn, coddistr, false));
 

@@ -469,7 +469,14 @@ public class Utilitario {
 
 	}
 
-	public static String getDescDiaSemana(Connection conn, int cod_dia) throws Exception {
+	public static String getDescDiaSemana(Connection conn, int cod_dia, boolean tratadia) throws Exception {
+		if (tratadia) {
+			if (cod_dia == 1) {
+				cod_dia = 7;
+			} else {
+				cod_dia = cod_dia - 1;
+			}
+		}
 
 		String varname1 = " select * from  dias_semana where cod_dia = ? ";
 		PreparedStatement st = conn.prepareStatement(varname1);
@@ -727,9 +734,13 @@ public class Utilitario {
 
 			Calendar cal = Calendar.getInstance();
 			cal.setTime(new Date());
+			System.out.println(new Date());
 			int year = cal.get(Calendar.YEAR);
-			int month = 4;// cal.get(Calendar.MONTH);
+			int month = cal.get(Calendar.MONTH);
 
+			
+			System.out.println(month);
+			
 			int cont = 0;
 
 			LocalDate initial = LocalDate.of(2016, 11, 13);
@@ -737,7 +748,7 @@ public class Utilitario {
 			LocalDate end = initial.withDayOfMonth(initial.lengthOfMonth());
 
 			;
-			System.out.println(end.getDayOfMonth());
+			
 
 			while (cont < 13) {
 

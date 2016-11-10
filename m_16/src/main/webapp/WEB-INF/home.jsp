@@ -82,10 +82,10 @@ text-align: right;
 background-color: white !important;
 }
 .modal-admin {
-    /* new custom width */
+    
     width: 95%;
-    /* must be half of the width, minus scrollbar on the left (30px) */
-/*     margin-left: -375px; */
+    height: 90%;
+    
 }
 
 </style>

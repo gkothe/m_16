@@ -1,6 +1,6 @@
 //@ sourceURL=dash1_pedidos.js
 
-var x_bar = 200;    //lateral esqerda
+var x_bar = 200; // lateral esqerda
 var y_bar = 50;
 var x2_bar = 80;
 var y2_bar = 50;
@@ -57,7 +57,13 @@ $(document).ready(function() {
 	});
 
 	$("#btn_filtrar2").click(function() {
-		filtrarProds();
+		divManage(false);
+		filtrarProds(true, false);
+	});
+
+	$("#btn_showlist").click(function() {
+		divManage(true);
+		filtrarProds(false, true);
 	});
 
 	$('a[data-toggle="pill"]').on('shown.bs.tab', function(evt) {
@@ -66,14 +72,51 @@ $(document).ready(function() {
 		if (target == '#dashboard1') {
 			filtrar(false);
 		} else if (target == '#dashboard2') {
-			filtrarProds();
+			filtrarProds(true, true);
+		} else if (target == '#dashboard3') {
+			filtrar(false);
 		}
 		$(window).trigger('resize');
 	});
 
 	$('#tabs_dash a[href="#filtros"]').tab('show')
 
+	dashInfosBasicas();
+	divManage(true);
 });
+
+function divManage(lista) {
+
+	if (lista == false) {
+		$("#div_produnico").show();
+		$("#div_prodlista").hide();
+		$("#btn_showlist").show();
+
+	} else {
+		$("#div_produnico").hide();
+		$("#div_prodlista").show();
+		$("#btn_showlist").hide();
+	}
+
+}
+
+function filtrarProds(single, lista) {
+
+	if (lista) {
+		dashVendaProdsQtd('+');
+		dashVendaProdsVal('+');
+	}
+	if (single) {
+		$('#div_produnico').animate({
+			scrollTop : (0)
+		}, 'slow');
+
+		dashProdInfosgerais_single();
+		dashProdHora_single('qtd');
+		dashProdDiaSingle('qtd');
+		dashProdBairroSingle('qtd');
+	}
+}
 
 function filtrar(troca) {
 	$(".linha_add_dash").remove();
@@ -81,13 +124,12 @@ function filtrar(troca) {
 
 	dashServico();
 	dashModo();
-	dashVendaProdsQtd('+');
-	dashVendaProdsVal('+');
+
 	dashInfosBasicas();
 	dashPedidoHora('qtd');
 	dashPedidoDia('qtd');
 	dashBairrosLista('qtd');
-	filtrarProds();
+	filtrarProds(false, true);
 	if (troca) {
 		$('#tabs_dash a[href="#dashboard1"]').tab('show')
 	}
@@ -104,19 +146,6 @@ function limparfiltros() {
 	$("#flag_servico").val("");
 	// $("#dias_semana").val("");
 	$("#dias_semana").multiselect('deselect', [ "1", "2", "3", "4", "5", "6", "7" ]);
-
-}
-
-function filtrarProds() {
-
-	$('#mainpage').animate({
-		scrollTop : (0)
-	}, 'slow');
-
-	dashProdInfosgerais_single();
-	dashProdHora_single('qtd');
-	dashProdDiaSingle('qtd');
-	dashProdBairroSingle('qtd');
 
 }
 
@@ -283,14 +312,17 @@ function dashVendaProdsQtd(consulta) {// Produtos mais vendidos
 				calculable : true,
 				xAxis : [ {
 					type : 'value',
-					//scale:true,
+					// scale:true,
 					boundaryGap : [ 0, 0.01 ],
 					axisLabel : {
 						formatter : function(val) {
 							return valorFormater(val)
 						},
 
-					}
+					},
+					scale : true,
+					min : 0,
+					max : data[data.length - 1].qtdmax,
 				} ],
 				grid : {
 					x : x_bar,
@@ -302,7 +334,7 @@ function dashVendaProdsQtd(consulta) {// Produtos mais vendidos
 				yAxis : [ {
 					type : 'category',
 					data : desc,
-					
+
 					axisLabel : {
 						textStyle : {
 							fontSize : 10
@@ -340,7 +372,7 @@ function eConsole(param) {
 	$.blockUI({
 		message : 'Carregando...'
 	});
-	
+
 	$.ajax({
 		type : "POST",
 		url : "home?ac=ajax",
@@ -354,11 +386,14 @@ function eConsole(param) {
 
 			$("#desc_produto_listagem").val(data.name);
 			$("#desc_produto_listagem").blur();
-		
+
 			setTimeout(function() {
-				$('#tabs_dash a[href="#dashboard2"]').tab('show');
+				divManage(false);
+				filtrarProds(true, false);
+
+				// $('#tabs_dash a[href="#dashboard2"]').tab('show');
 				$.unblockUI();
-			}, 1000);
+			}, 1500);
 
 		},
 		error : function(msg) {
@@ -487,7 +522,10 @@ function dashVendaProdsVal(consulta) {// Produtos com mais faturamento
 							return valorFormater2(val)
 						},
 
-					}
+					},
+					scale : true,
+					min : 0,
+					max : data[data.length - 1].qtdmax,
 				} ],
 				grid : {
 					x : x_bar,
@@ -661,6 +699,9 @@ function dashBairrosLista(consulta) {// Produtos com mais faturamento
 				xAxis : [ {
 					type : 'value',
 					boundaryGap : [ 0, 0.01 ],
+					scale : true,
+					min : 0,
+					max : (consulta == "valor" ? data[data.length - 1].fatmax : data[data.length - 1].qtdmax),
 					axisLabel : {
 						formatter : function(val) {
 
@@ -1249,6 +1290,7 @@ function dashServico() {
 				html = html + "	</td>";
 				html = html + "	<td style=\"text-align: center\">" + data[t].qtddf + "</td>";
 				html = html + "	<td style=\"text-align: center\">" + data[t].perc + "%</td>";
+				html = html + "	<td style=\"text-align: center\">R$ " + data[t].val_totalprod + "</td>";
 				html = html + "</tr>";
 
 			}
@@ -1682,10 +1724,12 @@ function dashProdInfosgerais_single() {// Produtos com mais faturamento
 
 			},
 			success : function(data) {
-
 				$("#lbldash_qtdprod").val(data.qtd);
 				$("#lbldash_valtotalprod").val(data.totalfat);
 				$("#lbldash_mediaprod").val(data.media);
+
+				$("#lbldash_valatual").val(data.val_prod);
+				$("#lbldash_prodsit").val(data.flag_ativo);
 
 			},
 			error : function(msg) {
@@ -1817,7 +1861,10 @@ function dashProdBairroSingle(consulta) {// Produtos com mais faturamento
 									return valorFormater2(val)
 							},
 
-						}
+						},
+						scale : true,
+						min : 0,
+						max : (consulta == "qtd" ? data[data.length - 1].qtdmax : data[data.length - 1].fatmax)
 					} ],
 					grid : {
 						x : x_bar,
@@ -1979,8 +2026,7 @@ function dashDia(consulta) {// Produtos com mais faturamento
 					data : [ 'Total de pedidos', 'Entregas', 'Retiradas' ],
 				},
 				selectedMode : false,
-
-				calculable : true,
+				calculable : false,
 				xAxis : [ {
 					type : 'category',
 					data : desc,
@@ -2001,7 +2047,7 @@ function dashDia(consulta) {// Produtos com mais faturamento
 					x : x_bar2,
 					y : y_bar2,
 					x2 : x2_bar,
-					y2 : 95,
+					y2 : 105,
 					width : widht_bar2,
 
 				},
@@ -2104,7 +2150,7 @@ function dashMeses(consulta) {// Produtos com mais faturamento
 				} else {
 					qtd[qtd.length] = data[t].total;
 					entrega[entrega.length] = data[t].valentregas;
-					retirada[qtdretirada.length] = data[t].valretirada;
+					retirada[retirada.length] = data[t].valretirada;
 				}
 
 			}
@@ -2252,6 +2298,13 @@ function loadDias(param) {
 	$("#dash_diastitle").html(param.name);
 	$("#modal_dashdias").modal("show");
 	$("#descdataday").val(param.name);
-	dashDia('qtd');
+	$("#dash_dias").html("");
+	$.blockUI({
+		message : 'Aguarde...'
+	});
+	setTimeout(function() {
+		dashDia('qtd');
+		$.unblockUI();
+	}, 500)
 
 }
