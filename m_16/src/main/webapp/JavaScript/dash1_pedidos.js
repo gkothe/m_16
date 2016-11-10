@@ -1289,8 +1289,8 @@ function dashServico() {
 				html = html + "		</p>";
 				html = html + "	</td>";
 				html = html + "	<td style=\"text-align: center\">" + data[t].qtddf + "</td>";
-				html = html + "	<td style=\"text-align: center\">" + data[t].perc + "%</td>";
 				html = html + "	<td style=\"text-align: center\">R$ " + data[t].val_totalprod + "</td>";
+				html = html + "	<td style=\"text-align: center\">" + data[t].perc + "%</td>";
 				html = html + "</tr>";
 
 			}
