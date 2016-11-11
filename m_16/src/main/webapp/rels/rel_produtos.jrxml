@@ -1,8 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="rel_produtos" pageWidth="842" pageHeight="595" orientation="Landscape" columnWidth="802" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="c069c8d5-1243-4cc3-9277-141b325c51c3">
-	<property name="ireport.zoom" value="1.6105100000000103"/>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="rel_produtos" pageWidth="842" pageHeight="595" orientation="Landscape" whenNoDataType="NoDataSection" columnWidth="802" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="c069c8d5-1243-4cc3-9277-141b325c51c3">
+	<property name="ireport.zoom" value="1.9487171000000127"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
+	<parameter name="dataini" class="java.lang.String"/>
+	<parameter name="datafim" class="java.lang.String"/>
+	<parameter name="nome_distribuidora" class="java.lang.String"/>
 	<field name="flag_ativo" class="java.lang.String"/>
 	<field name="desc_prod" class="java.lang.String"/>
 	<field name="id_prod" class="java.lang.Long"/>
@@ -16,7 +19,48 @@
 		<band splitType="Stretch"/>
 	</background>
 	<title>
-		<band height="36" splitType="Stretch"/>
+		<band height="70" splitType="Stretch">
+			<staticText>
+				<reportElement mode="Opaque" x="0" y="0" width="802" height="19" forecolor="#000000" backcolor="#FFFFFF" uuid="20a172ec-f18e-4570-a596-66a33a7836f8"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[RELATÓRIO DE PROTUDOS]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="19" width="50" height="15" uuid="fe599c13-4b02-4562-9bfe-73f259b9aa9a"/>
+				<textElement>
+					<font isBold="true" isPdfEmbedded="true"/>
+				</textElement>
+				<text><![CDATA[Empresa:]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="50" y="19" width="542" height="15" uuid="875884f9-2878-4a9d-b77d-81d03e5fa41a"/>
+				<textFieldExpression><![CDATA[$P{nome_distribuidora}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="0" y="49" width="60" height="15" uuid="dd93a4a8-db84-430d-b833-8d1a6f85cf15"/>
+				<textElement>
+					<font isBold="true" isPdfEmbedded="true"/>
+				</textElement>
+				<text><![CDATA[Data final:]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="60" y="34" width="100" height="15" uuid="1374b473-dafe-4c0e-b1b7-5527f1d63174"/>
+				<textFieldExpression><![CDATA[$P{dataini}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="60" y="49" width="100" height="15" uuid="294a7cf7-861d-49d4-a3a1-6334e9008f62"/>
+				<textFieldExpression><![CDATA[$P{datafim}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="0" y="34" width="60" height="15" uuid="98a099eb-c39e-4c92-b7e6-d0d18beb8597"/>
+				<textElement>
+					<font isBold="true" isPdfEmbedded="true"/>
+				</textElement>
+				<text><![CDATA[Data inicial:]]></text>
+			</staticText>
+		</band>
 	</title>
 	<pageHeader>
 		<band splitType="Stretch"/>
@@ -181,20 +225,13 @@
 		</band>
 	</pageFooter>
 	<summary>
-		<band height="15" splitType="Stretch">
-			<staticText>
-				<reportElement mode="Opaque" x="0" y="0" width="121" height="15" forecolor="#000000" backcolor="#FFFFFF" uuid="10742625-20ea-4fdb-9ccb-f47cadb38494"/>
-				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font size="8"/>
-				</textElement>
-				<text><![CDATA[Quantidade de produtos listados:]]></text>
-			</staticText>
+		<band height="37" splitType="Stretch">
 			<textField>
-				<reportElement x="121" y="0" width="100" height="15" uuid="fb3ad6ac-402a-4377-9811-9c46d7d43c9a"/>
+				<reportElement x="0" y="12" width="286" height="25" uuid="fb3ad6ac-402a-4377-9811-9c46d7d43c9a"/>
 				<textElement verticalAlignment="Middle">
-					<font size="8"/>
+					<font size="10"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$V{REPORT_COUNT}]]></textFieldExpression>
+				<textFieldExpression><![CDATA["Quantidade de produtos listados: " + $V{REPORT_COUNT}]]></textFieldExpression>
 			</textField>
 		</band>
 	</summary>

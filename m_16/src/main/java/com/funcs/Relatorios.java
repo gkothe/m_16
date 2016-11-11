@@ -1575,15 +1575,28 @@ public class Relatorios {
 			String dataini = request.getParameter("dataini") == null ? "" : request.getParameter("dataini");
 			String datafim = request.getParameter("datafim") == null ? "" : request.getParameter("datafim");
 			String flag_situacao = request.getParameter("flag_situacao") == null ? "" : request.getParameter("flag_situacao");
+			String flagabrev = request.getParameter("flagabrev") == null ? "" : request.getParameter("flagabrev");
 
-			hmParams.put("dataini", "");
-			hmParams.put("datafim", "");
+			if (!(dataini.equalsIgnoreCase(""))) {
+				hmParams.put("dataini", dataini);
+
+			} else {
+				hmParams.put("dataini", "");
+			}
+
+			if (!(datafim.equalsIgnoreCase(""))) {
+				hmParams.put("datafim", datafim);
+
+			} else {
+				hmParams.put("datafim", "");
+			}
+
 			hmParams.put("situacao", Utilitario.returnStatusPedidoFlag(flag_situacao));
 
 			StringBuffer sql = new StringBuffer();
 
 			sql = new StringBuffer();
-			sql.append("  select produtos.id_prod,DESC_PROD, produtos_distribuidora.FLAG_ATIVO, sum(pedido_item.QTD_PROD) as qtd, sum(pedido_item.QTD_PROD * VAL_UNIT) as total  from produtos ");
+			sql.append("  select produtos.id_prod,DESC_PROD,DESC_ABREVIADO, produtos_distribuidora.FLAG_ATIVO, sum(pedido_item.QTD_PROD) as qtd, sum(pedido_item.QTD_PROD * VAL_UNIT) as total  from produtos ");
 			sql.append(" ");
 			sql.append("			inner join produtos_distribuidora ");
 			sql.append("			on produtos_distribuidora.id_prod = produtos.id_prod ");
@@ -1600,9 +1613,17 @@ public class Relatorios {
 			}
 			sql = new StringBuffer(parametrosDash(sql.toString(), "", "", "", "", dataini, datafim, ""));
 
-			sql.append(" ");
-			sql.append("			group by produtos.id_prod,DESC_PROD, produtos_distribuidora.FLAG_ATIVO order by DESC_PROD");
-
+			
+			sql.append("			group by produtos.id_prod,DESC_PROD, produtos_distribuidora.FLAG_ATIVO,DESC_ABREVIADO ");
+			
+			if(flagabrev.equalsIgnoreCase("1")){
+				sql.append(" order by DESC_PROD ");	
+			}else{
+				sql.append(" order by DESC_ABREVIADO ");
+			}
+			
+			
+			
 			PreparedStatement st = conn.prepareStatement(sql.toString());
 			int contparam = 1;
 			if (!flag_situacao.equalsIgnoreCase("")) {
@@ -1620,7 +1641,13 @@ public class Relatorios {
 
 				hmFat = new HashMap<String, Object>();
 				hmFat.put("flag_ativo", rs.getString("FLAG_ATIVO").equalsIgnoreCase("S") ? "Ativado" : "Desativado");
-				hmFat.put("desc_prod", rs.getString("DESC_PROD"));
+				
+				if(flagabrev.equalsIgnoreCase("1")){
+					hmFat.put("desc_prod", rs.getString("DESC_PROD"));
+				}else{
+					hmFat.put("desc_prod", rs.getString("DESC_ABREVIADO"));
+				}
+			
 				hmFat.put("id_prod", rs.getLong("id_prod"));
 				hmFat.put("qtd", df.format(rs.getLong("qtd")));
 				hmFat.put("val_totalprod", df2.format(rs.getDouble("total")));

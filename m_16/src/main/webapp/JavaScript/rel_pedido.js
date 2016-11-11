@@ -16,7 +16,6 @@ $(document).ready(function() {
 		$("#chk_infocliente").val("");
 		$("#chk_prods").val("");
 
-		loadhistoricos();
 	});
 
 	$('.data').datepicker({

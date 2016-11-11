@@ -9,14 +9,11 @@ $(document).ready(function() {
 
 		$("#rel_data_ini").val("");
 		$("#rel_data_fim").val("");
-		$("#cod_bairro").val("");
-		$("#flag_pagamento").val("");
 		$("#flag_situacao").val("");
-		$("#flag_servico").val("");
-		$("#chk_infocliente").val("");
-		$("#chk_prods").val("");
-
-		loadhistoricos();
+		$("#flag_situacao").val("");
+		$("#flagabrev").val("1");
+		
+		
 	});
 
 	$('.data').datepicker({
@@ -85,6 +82,9 @@ function gerarRel() {
 	var flag_pagamento = $("#flag_pagamento").val();
 	var flag_opc = $("#flag_opc").val();
 	var flag_servico = $("#flag_servico").val();
+	var flagabrev = $("#flagabrev").val();
+	
+	
 
 	var erro = false;
 //	if (dataini == "" || datafim == "") {
@@ -119,6 +119,11 @@ function gerarRel() {
 	if(flag_opc !=""){
 		filtros = filtros+ "&flag_opc=" + flag_opc;
 	}
+	
+	if(flagabrev !=""){
+		filtros = filtros+ "&flagabrev=" + flagabrev;
+	}
+	
 	
 	
 	if (!erro) {
