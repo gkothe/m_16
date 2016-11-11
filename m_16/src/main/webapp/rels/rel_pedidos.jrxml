@@ -254,8 +254,7 @@ FROM   pedido
 + " " +
 ($F{desc_endereco_num_entrega} == null ? "" : $F{desc_endereco_num_entrega}) +
 " " +
-($F{desc_endereco_complemento_entrega} == null ? "" : $F{desc_endereco_complemento_entrega})
-]]></textFieldExpression>
+($F{desc_endereco_complemento_entrega} == null ? "" : $F{desc_endereco_complemento_entrega})]]></textFieldExpression>
 				</textField>
 				<staticText>
 					<reportElement x="0" y="0" width="173" height="15" uuid="4022999b-95ac-4e9e-a95c-cad07f2dd87b"/>
@@ -917,7 +916,7 @@ FROM   pedido
 					<font size="8"/>
 					<paragraph lineSpacing="Single"/>
 				</textElement>
-				<textFieldExpression><![CDATA["Pagina "+$V{PAGE_NUMBER}+" de"]]></textFieldExpression>
+				<textFieldExpression><![CDATA["Página "+$V{PAGE_NUMBER}+" de"]]></textFieldExpression>
 			</textField>
 			<textField evaluationTime="Report">
 				<reportElement x="770" y="0" width="29" height="13" uuid="e007b800-e73d-4382-a89f-4ce144e61dff"/>

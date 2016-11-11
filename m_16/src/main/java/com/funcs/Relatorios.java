@@ -1575,21 +1575,10 @@ public class Relatorios {
 			String dataini = request.getParameter("dataini") == null ? "" : request.getParameter("dataini");
 			String datafim = request.getParameter("datafim") == null ? "" : request.getParameter("datafim");
 			String flag_situacao = request.getParameter("flag_situacao") == null ? "" : request.getParameter("flag_situacao");
-			String infocliente = request.getParameter("infocliente") == null ? "" : request.getParameter("infocliente");
-			String chk_prods = request.getParameter("chk_prods") == null ? "" : request.getParameter("chk_prods");
-			String flag_pagamento = request.getParameter("flag_pagamento") == null ? "" : request.getParameter("flag_pagamento");
-			String cod_bairro = request.getParameter("cod_bairro") == null ? "" : request.getParameter("cod_bairro");
-			String flag_servico = request.getParameter("flag_servico") == null ? "" : request.getParameter("flag_servico");
 
 			hmParams.put("dataini", "");
 			hmParams.put("datafim", "");
 			hmParams.put("situacao", Utilitario.returnStatusPedidoFlag(flag_situacao));
-			hmParams.put("servico", Utilitario.returnDistrTiposPedido(flag_servico));
-			hmParams.put("modo_pay", Utilitario.returnModoPagamento(flag_pagamento));
-			if (!cod_bairro.equalsIgnoreCase(""))
-				hmParams.put("bairro", Utilitario.getNomeBairro(conn, Integer.parseInt(cod_bairro), 0));
-			else
-				hmParams.put("bairro", "Todos");
 
 			StringBuffer sql = new StringBuffer();
 
@@ -1605,51 +1594,27 @@ public class Relatorios {
 			sql.append("			left join pedido ");
 			sql.append("			on pedido.id_pedido = pedido_item.id_pedido ");
 			sql.append(" ");
-			sql.append("			where produtos.flag_ativo = 'S'and produtos_distribuidora.id_distribuidora = " + coddistr + " and pedido.flag_status = 'O' ");
+			sql.append("			where produtos.flag_ativo = 'S' and produtos_distribuidora.id_distribuidora = " + coddistr + " and pedido.flag_status = 'O' ");
+			if (!flag_situacao.equalsIgnoreCase("")) {
+				sql.append("		and produtos_distribuidora.flag_ativo = ? ");
+			}
+			sql = new StringBuffer(parametrosDash(sql.toString(), "", "", "", "", dataini, datafim, ""));
+
 			sql.append(" ");
 			sql.append("			group by produtos.id_prod,DESC_PROD, produtos_distribuidora.FLAG_ATIVO order by DESC_PROD");
 
-			/*
-			 * if (!(dataini.equalsIgnoreCase(""))) { sql.append("  and  data_pedido >= ?"); hmParams.put("dataini", dataini);
-			 * 
-			 * }
-			 * 
-			 * if (!(datafim.equalsIgnoreCase("")) && datafim != null) { sql.append(" and  data_pedido <= ?"); hmParams.put("datafim", datafim); }
-			 * 
-			 * if (!flag_situacao.equalsIgnoreCase("")) { sql.append("  and  FLAG_STATUS = ? "); }
-			 * 
-			 * if (!cod_bairro.equalsIgnoreCase("")) { sql.append("  and  pedido.cod_bairro = ? "); }
-			 * 
-			 * if (!flag_servico.equalsIgnoreCase("")) { sql.append("  and  pedido.FLAG_PEDIDO_RET_ENTRE = ? "); }
-			 * 
-			 * if (!flag_pagamento.equalsIgnoreCase("")) { sql.append("  and  pedido.FLAG_MODOPAGAMENTO = ? "); }
-			 * 
-			 */
-
 			PreparedStatement st = conn.prepareStatement(sql.toString());
-			/*
-			 * int contparam = 1;
-			 * 
-			 * if (!(dataini.equalsIgnoreCase(""))) { Date data = new SimpleDateFormat("dd/MM/yyyy HH:mm").parse(dataini + " " + "00:00"); st.setString(contparam, new SimpleDateFormat("yyyy-MM-dd HH:mm").format(data)); contparam++; }
-			 * 
-			 * if (!(datafim.equalsIgnoreCase(""))) { Date data = new SimpleDateFormat("dd/MM/yyyy HH:mm").parse(datafim + " " + "23:59:59"); st.setString(contparam, new SimpleDateFormat("yyyy-MM-dd HH:mm").format(data)); contparam++; }
-			 * 
-			 * if (!flag_situacao.equalsIgnoreCase("")) { st.setString(contparam, flag_situacao); contparam++; }
-			 * 
-			 * if (!cod_bairro.equalsIgnoreCase("")) { st.setLong(contparam, Long.parseLong(cod_bairro)); contparam++; }
-			 * 
-			 * if (!flag_servico.equalsIgnoreCase("")) { st.setString(contparam, flag_servico); contparam++; }
-			 * 
-			 * if (!flag_pagamento.equalsIgnoreCase("")) { st.setString(contparam, flag_pagamento); contparam++; }
-			 */
+			int contparam = 1;
+			if (!flag_situacao.equalsIgnoreCase("")) {
+				st.setString(contparam, flag_situacao);
+				contparam++;
+			}
+
+			parametrosDashSt(st, contparam, "", "", "", "", dataini, datafim, "");
 
 			ResultSet rs = st.executeQuery();
 			HashMap<String, Object> hmFat = new HashMap<String, Object>();
-			double val_totalprod = 0;
-			double val_entrega = 0;
-			double tragoaqui_perc = 0;
-			long id_ped = 0;
-			long qtd_ped = 0;
+
 			StringBuffer varname1;
 			while (rs.next()) {
 
@@ -1667,16 +1632,19 @@ public class Relatorios {
 				varname1.append("on pedido.id_pedido = pedido_item.id_pedido ");
 				varname1.append(" ");
 				varname1.append("where pedido.id_distribuidora =" + coddistr + " and pedido.flag_status = 'O' and cod_bairro is null and id_prod = " + rs.getInt("id_prod"));
+				varname1 = new StringBuffer(parametrosDash(varname1.toString(), "", "", "", "", dataini, datafim, ""));
 				varname1.append(" ");
 				varname1.append("group by cod_bairro ");
 				varname1.append("  ");
 				varname1.append("order by sum(pedido_item.QTD_PROD) desc");
 
 				st2 = conn.prepareStatement(varname1.toString());
+				contparam = 1;
+				parametrosDashSt(st2, contparam, "", "", "", "", dataini, datafim, "");
 				rs2 = st2.executeQuery();
 
 				if (rs2.next()) {
-					hmFat.put("venda_local", df.format(rs2.getDouble("qtd")) );
+					hmFat.put("venda_local", df.format(rs2.getDouble("qtd")));
 				} else {
 					hmFat.put("venda_local", "0");
 				}
@@ -1688,16 +1656,19 @@ public class Relatorios {
 				varname1.append("on pedido.id_pedido = pedido_item.id_pedido ");
 				varname1.append(" ");
 				varname1.append("where pedido.id_distribuidora = " + coddistr + " and pedido.flag_status = 'O' and cod_bairro is not null and id_prod = " + rs.getInt("id_prod"));
+				varname1 = new StringBuffer(parametrosDash(varname1.toString(), "", "", "", "", dataini, datafim, ""));
 				varname1.append(" ");
 				varname1.append("group by cod_bairro ");
 				varname1.append("  ");
 				varname1.append("order by sum(pedido_item.QTD_PROD) desc limit 1");
 
 				st2 = conn.prepareStatement(varname1.toString());
+				contparam = 1;
+				parametrosDashSt(st2, contparam, "", "", "", "", dataini, datafim, "");
 				rs2 = st2.executeQuery();
 
 				if (rs2.next()) {
-					hmFat.put("venda_bairro", Utilitario.getNomeBairro(conn, rs2.getInt("cod_bairro"), -1) + " - " + df.format(rs2.getInt("qtd")));
+					hmFat.put("venda_bairro", Utilitario.getNomeBairro(conn, rs2.getInt("cod_bairro"), -1) + " / " + df.format(rs2.getInt("qtd")));
 				} else {
 					hmFat.put("venda_bairro", "-");
 				}
@@ -1709,14 +1680,17 @@ public class Relatorios {
 				varname1.append("on pedido.id_pedido = pedido_item.id_pedido ");
 				varname1.append(" ");
 				varname1.append("where pedido.id_distribuidora = " + coddistr + " and pedido.flag_status = 'O' and id_prod = " + rs.getInt("id_prod"));
+				varname1 = new StringBuffer(parametrosDash(varname1.toString(), "", "", "", "", dataini, datafim, ""));
 				varname1.append(" ");
 				varname1.append("group by dayofweek(data_pedido) order by sum(pedido_item.QTD_PROD) desc limit 1;");
 
 				st2 = conn.prepareStatement(varname1.toString());
+				contparam = 1;
+				parametrosDashSt(st2, contparam, "", "", "", "", dataini, datafim, "");
 				rs2 = st2.executeQuery();
 
 				if (rs2.next()) {
-					hmFat.put("dia_semana", Utilitario.getDescDiaSemana(conn, rs2.getInt("dia"), true) + " - " + df.format(rs2.getInt("qtd")));
+					hmFat.put("dia_semana", Utilitario.getDescDiaSemana(conn, rs2.getInt("dia"), true) + " / " + df.format(rs2.getInt("qtd")));
 				} else {
 					hmFat.put("dia_semana", "-");
 				}
@@ -1728,14 +1702,17 @@ public class Relatorios {
 				varname1.append("on pedido.id_pedido = pedido_item.id_pedido ");
 				varname1.append(" ");
 				varname1.append("where pedido.id_distribuidora = " + coddistr + " and pedido.flag_status = 'O' and id_prod = + " + rs.getInt("id_prod"));
+				varname1 = new StringBuffer(parametrosDash(varname1.toString(), "", "", "", "", dataini, datafim, ""));
 				varname1.append(" ");
 				varname1.append("group by TIME_FORMAT(DATA_PEDIDO,'%H:00' )  order by sum(pedido_item.QTD_PROD) desc;");
 
 				st2 = conn.prepareStatement(varname1.toString());
+				contparam = 1;
+				parametrosDashSt(st2, contparam, "", "", "", "", dataini, datafim, "");
 				rs2 = st2.executeQuery();
 
 				if (rs2.next()) {
-					hmFat.put("hora", rs2.getString("horaformated") + "-" + rs2.getString("HORA2") + " - " + df.format(rs2.getInt("qtd")));
+					hmFat.put("hora", rs2.getString("horaformated") + " - " + rs2.getString("HORA2") + " / " + df.format(rs2.getInt("qtd")));
 				} else {
 					hmFat.put("hora", "-");
 				}
