@@ -96,8 +96,8 @@ input:focus {
 			<div class="col-md-3 left_col">
 				<div class="left_col scroll-view">
 					<div class="navbar nav_title" style="border: 0;">
-						<a class="site_title"><image style="width: 25px"
-								src="images/beer_PNG2388.png"></image> <span>TragoAqui!</span></a>
+						<a class="site_title"><image style="width: 200px"
+								src="images/logomenu.png"></image> </a>
 					</div>
 
 					<div class="clearfix"></div>
@@ -538,9 +538,35 @@ input:focus {
 
 								</div>
 
+								<div id="m_agendamento_div"
+									class="col-xs-6 col-sm-6 col-md-6 col-lg-6" align="">
+									<table>
+										<tr>
+											<td style="padding-right: 5px;"><label for="">Horário
+													requisitado para entrega: </label></td>
+											<td><label id="m_agendamento"></label></td>
+
+										</tr>
+
+									</table>
+
+								</div>
 
 
 							</div>
+
+
+							<div class="row" id="m_troco_para_div">
+								<div class="col-xs-6 col-sm-6 col-md-6 col-lg-6" align="">
+									<table>
+										<tr>
+											<td style="padding-right: 5px;"><label for="">Troco para: </label></td>
+											<td><label id=""> </label><label id="m_troco_para"></label></td>
+										</tr>
+									</table>
+								</div>
+							</div>
+
 							<div class="row cancelamento">
 
 								<div class="col-xs-6 col-sm-6 col-md-6 col-lg-6 " align="">

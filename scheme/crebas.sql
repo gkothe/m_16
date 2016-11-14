@@ -1,6 +1,6 @@
 /*==============================================================*/
 /* DBMS name:      MySQL 5.0                                    */
-/* Created on:     26/10/2016 9:47:53 AM                        */
+/* Created on:     14/11/2016 11:22:59 AM                       */
 /*==============================================================*/
 
 
@@ -223,6 +223,9 @@ create table PEDIDO
    PAG_PAYID_TIPOCARTAO text,
    FLAG_PEDIDO_RET_ENTRE char(1),
    TEMPO_ESTIMADO_DESEJADO TIME,
+   NUM_TROCOPARA        numeric(12,2),
+   DATA_AGENDA_ENTREGA  datetime,
+   FLAG_MODOENTREGA     char(1),
    primary key (ID_PEDIDO)
 )
 auto_increment = 1;

@@ -503,13 +503,36 @@ function visualizarPedido(id) {
 			audio.currentTime = 0;
 			if (data.tipo_servico == "T") {
 				$("#m_lbl_bairro").html("Bairro:");
-				$("#m_tempo_max").html(data.m_tempo_max);
-				$("#m_tempomax_div").show();
+
+				if (data.flag_modoentrega == 'A') {
+					$("#m_tempomax_div").hide();
+					$("#m_agendamento").html(data.data_agenda_entrega);
+					$("#m_agendamento_div").show();
+				} else {
+					$("#m_agendamento_div").hide();
+					$("#m_tempomax_div").hide();
+					$("#m_tempo_max").html(data.m_tempo_max);
+					$("#m_tempomax_div").show();
+				}
+
 			} else {
+				$("#m_agendamento_div").hide();
 				$("#m_tempomax_div").hide();
 				$("#m_lbl_bairro").html("");
 			}
 			$("#m_flag_pedido_ret_entre").val(data.tipo_servico);
+			if(data.num_trocopara != undefined ){
+				$("#m_troco_para_div").show();
+				$("#m_troco_para").html(data.num_trocopara);	
+				
+			}else{
+				$("#m_troco_para_div").hide();
+				$("#m_troco_para").html("");	
+			}
+			
+			
+			
+			
 			/*
 			 * if(data.desc_bairro_ret !=undefined && data.desc_bairro_ret !==
 			 * ""){ $("#m_desc_bairro").html(data.desc_bairro_ret); }else{

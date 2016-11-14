@@ -1181,7 +1181,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 			retorno.put("DESC_NOME_ABREV", rs.getString("DESC_NOME_ABREV"));/// abreviado da distribuidora
 			retorno.put("val_minentrega", rs.getString("VAL_ENTREGA_MIN"));///
 			retorno.put("valcar", df2.format(retornaValCarrinho(cod_usuario, conn) - (rs.getInt("QTD") * rs.getDouble("VAL_PROD"))));
-			retorno.put("img",  rs.getString("ID_PROD")+".jpg"); 
+			retorno.put("img", rs.getString("ID_PROD") + ".jpg");
 		}
 
 		retorno.put("msg", "ok");
@@ -1441,7 +1441,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 		}
 
 		rs = st.executeQuery();
-//carrega produto unico foi para outra função
+		// carrega produto unico foi para outra função
 		if (listagem) {
 
 			JSONArray prods = new JSONArray();
@@ -1455,7 +1455,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 				prod.put("VAL_PROD", "R$ " + df2.format(rs.getDouble("VAL_PROD")));//
 				prod.put("ID_DISTRIBUIDORA", rs.getString("ID_DISTRIBUIDORA"));
 				prod.put("DESC_NOME_ABREV", rs.getString("DESC_NOME_ABREV"));/// abreviado da distribuidora
-				prod.put("img",  rs.getString("ID_PROD")+"_min.jpg");/// abreviado da distribuidora
+				prod.put("img", rs.getString("ID_PROD") + "_min.jpg");/// abreviado da distribuidora
 				prods.add(prod);
 			}
 			double valcar = retornaValCarrinho(cod_usuario, conn);
@@ -1482,7 +1482,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 				retorno.put("DESC_NOME_ABREV", rs.getString("DESC_NOME_ABREV"));/// abreviado da distribuidora
 				retorno.put("val_minentrega", rs.getString("VAL_ENTREGA_MIN"));///
 				retorno.put("valcar", df2.format(retornaValCarrinho(cod_usuario, conn) - (rs.getInt("QTD") * rs.getDouble("VAL_PROD"))));
-				retorno.put("img",  rs.getString("ID_PROD")+".jpg");///
+				retorno.put("img", rs.getString("ID_PROD") + ".jpg");///
 			}
 
 		}
@@ -2573,7 +2573,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 				rs2 = st2.executeQuery();
 				while (rs2.next()) {
 
-					//validacaoProdutoDistribuidora(request, response, conn, rs2.getLong("ID_PROD_DIST"), rs2.getDouble("VAL_PROD"), false);
+					// validacaoProdutoDistribuidora(request, response, conn, rs2.getLong("ID_PROD_DIST"), rs2.getDouble("VAL_PROD"), false);
 
 				}
 			}
@@ -2594,6 +2594,9 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 		String desc_endereco_complemento = request.getParameter("desc_endereco_complemento") == null ? "" : request.getParameter("desc_endereco_complemento");
 		String tempomax = request.getParameter("tempo_estimado_desejado") == null ? "" : request.getParameter("tempo_estimado_desejado");
 		String choiceserv = request.getParameter("choiceserv") == null ? "" : request.getParameter("choiceserv");
+		String trocopara = request.getParameter("troco_para") == null ? "" : request.getParameter("troco_para");
+		String modoentrega = request.getParameter("modoentrega") == null ? "" : request.getParameter("modoentrega");
+		String dataagendamento = request.getParameter("dataagendamento") == null ? "" : request.getParameter("dataagendamento");
 
 		if (!choiceserv.equals("T") && !choiceserv.equals("L")) {
 			throw new Exception("Tipo de serviço inválido.");
@@ -2683,9 +2686,9 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 
 				sql = new StringBuffer();
 				sql.append("INSERT INTO pedido ");
-				sql.append("  (`ID_PEDIDO`, `ID_DISTRIBUIDORA`, `ID_USUARIO`, `DATA_PEDIDO`, `FLAG_STATUS`, `VAL_TOTALPROD`, `VAL_ENTREGA`,  `NUM_PED`, `COD_BAIRRO`, `NUM_TELEFONECONTATO_CLIENTE`,  `DESC_ENDERECO_ENTREGA`, `DESC_ENDERECO_NUM_ENTREGA`, `DESC_ENDERECO_COMPLEMENTO_ENTREGA`, flag_vizualizado,FLAG_MODOPAGAMENTO,NOME_PESSOA,FLAG_PEDIDO_RET_ENTRE,TEMPO_ESTIMADO_DESEJADO) ");
+				sql.append("  (`ID_PEDIDO`, `ID_DISTRIBUIDORA`, `ID_USUARIO`, `DATA_PEDIDO`, `FLAG_STATUS`, `VAL_TOTALPROD`, `VAL_ENTREGA`,  `NUM_PED`, `COD_BAIRRO`, `NUM_TELEFONECONTATO_CLIENTE`,  `DESC_ENDERECO_ENTREGA`, `DESC_ENDERECO_NUM_ENTREGA`, `DESC_ENDERECO_COMPLEMENTO_ENTREGA`, flag_vizualizado,FLAG_MODOPAGAMENTO,NOME_PESSOA,FLAG_PEDIDO_RET_ENTRE,TEMPO_ESTIMADO_DESEJADO,flag_modoentrega,DATA_AGENDA_ENTREGA) ");
 				sql.append("VALUES ");
-				sql.append("  (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?,?,?,?);");
+				sql.append("  (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?,?,?,?,?,?);");
 
 				st = conn.prepareStatement(sql.toString());
 
@@ -2725,6 +2728,25 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 					st.setString(18, tempomax.substring(0, 2) + ":" + tempomax.substring(2, 4));
 				} else {
 					st.setString(18, "00:00");
+				}
+
+				if (choiceserv.equalsIgnoreCase("T")) {
+					if (modoentrega.equalsIgnoreCase("A") || modoentrega.equalsIgnoreCase("T")) {
+						st.setString(19, modoentrega);
+					} else {
+						throw new Exception("Modo de entrega inválido!");
+					}
+				} else {
+					st.setNull(19, java.sql.Types.VARCHAR);
+				}
+
+				if (modoentrega.equalsIgnoreCase("A") && choiceserv.equalsIgnoreCase("T")) {// agendamento
+					if(dataagendamento.equalsIgnoreCase("")){
+						throw new Exception("Data de agendamento inválida.");	
+					}
+					st.setTimestamp(20, Utilitario.getTimeStamp(new SimpleDateFormat("ddMMyyyyHHmm").parse(dataagendamento)));
+				} else {
+					st.setNull(20, java.sql.Types.TIMESTAMP);
 				}
 
 				email = rs.getString("DESC_EMAIL");
@@ -2769,7 +2791,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 							throw new Exception("Sua pedido não atingiu o valor mínimo de entrega da distribuidora. O valor mínimo é de R$ " + df2.format(valmin_entrgega));
 						}
 					}
-					if (tipo_pagamento.equalsIgnoreCase("C")) {// se for do tipo cartao de credito , tem que salvar as infos
+					if (tipo_pagamento.equalsIgnoreCase("C") && false) {// se for do tipo cartao de credito , tem que salvar as infos. TEM FALSE PQ NAO VAI MAIS SER USADO CARTÃO POR DENTRO DO APP.
 
 						String token = request.getParameter("token") == null ? "" : request.getParameter("token");
 						String paymentMethodId = request.getParameter("pay_id") == null ? "" : request.getParameter("pay_id");
@@ -2847,7 +2869,33 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 
 					}
 
-					// realizar pagamento, pensar TODO
+					if (tipo_pagamento.equalsIgnoreCase("D")) {
+
+						if (!trocopara.equalsIgnoreCase("")) {
+
+							try {
+								Double.parseDouble(trocopara);
+							} catch (Exception e) {
+								throw new Exception("Troco inválido!");
+							}
+							
+							if(rs.getDouble("val_prod") > Double.parseDouble(trocopara) && Double.parseDouble(trocopara) != 0){
+								throw new Exception("Mesnagem de troco");
+							}
+							
+							
+							sql = new StringBuffer();
+							sql.append("UPDATE pedido ");
+							sql.append("   SET `NUM_TROCOPARA` = ?  ");
+							sql.append("WHERE  `ID_PEDIDO` = ? ");
+
+							st = conn.prepareStatement(sql.toString());
+							st.setDouble(1, Double.parseDouble(trocopara));
+							st.setLong(2, idped);
+
+							st.executeUpdate();
+						}
+					}
 
 					// payment(request, response, conn, cod_usuario,email);
 

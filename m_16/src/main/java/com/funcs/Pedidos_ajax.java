@@ -5,9 +5,13 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
+import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Locale;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -19,6 +23,10 @@ import org.json.simple.parser.JSONParser;
 public class Pedidos_ajax {
 
 	// public static int horas_fim_pedido = 6;
+
+	public static DecimalFormatSymbols dfs = new DecimalFormatSymbols(new Locale("pt", "BR"));
+	public static NumberFormat df = new DecimalFormat("###,###.#", dfs);
+	public static NumberFormat df2 = new DecimalFormat("#,###,##0.00", dfs);
 
 	public static void carregaBairros(HttpServletRequest request, HttpServletResponse response, Connection conn, int coddistr) throws Exception {
 		JSONArray retorno = new JSONArray();
@@ -213,6 +221,14 @@ public class Pedidos_ajax {
 			objRetorno.put("data_formatada", new SimpleDateFormat("dd/MM/yyyy HH:mm").format(rs.getTimestamp("DATA_PEDIDO")));
 			objRetorno.put("NUM_PED", rs.getString("NUM_PED"));
 			objRetorno.put("FLAG_STATUS", rs.getString("FLAG_STATUS"));
+
+			
+			if (rs.getTimestamp("DATA_AGENDA_ENTREGA") != null) {
+				objRetorno.put("data_agenda_entrega", new SimpleDateFormat("dd/MM/yyyy HH:mm").format(rs.getTimestamp("DATA_AGENDA_ENTREGA")));
+			} else {
+
+			}
+			objRetorno.put("flag_modoentrega", rs.getString("flag_modoentrega") == null ? "" : rs.getString("flag_modoentrega"));
 
 			if (rs.getString("FLAG_PEDIDO_RET_ENTRE").equalsIgnoreCase("L")) {
 				objRetorno.put("DESC_BAIRRO", "Retirar no local");
@@ -455,6 +471,17 @@ public class Pedidos_ajax {
 			objRetorno.put("VAL_ENTREGA", rs.getString("VAL_ENTREGA"));
 			objRetorno.put("ID_PEDIDO", rs.getString("ID_PEDIDO"));
 			objRetorno.put("num_ped", rs.getString("num_ped"));
+
+			if(rs.getDouble("NUM_TROCOPARA")!=0.0){
+				objRetorno.put("num_trocopara", "R$ " + df2.format(rs.getDouble("NUM_TROCOPARA")));	
+			}
+			if (rs.getTimestamp("DATA_AGENDA_ENTREGA") != null) {
+				objRetorno.put("data_agenda_entrega", new SimpleDateFormat("dd/MM/yyyy HH:mm").format(rs.getTimestamp("DATA_AGENDA_ENTREGA")));
+			} else {
+
+			}
+			objRetorno.put("flag_modoentrega", rs.getString("flag_modoentrega") == null ? "" : rs.getString("flag_modoentrega"));
+
 			int user = rs.getInt("id_usuario");
 			String status = rs.getString("FLAG_STATUS");
 
@@ -573,6 +600,15 @@ public class Pedidos_ajax {
 			objRetorno.put("num_ped", rs.getString("num_ped"));
 			objRetorno.put("ID_PEDIDO", rs.getString("ID_PEDIDO"));
 
+		
+			
+			if (rs.getTimestamp("DATA_AGENDA_ENTREGA") != null) {
+				objRetorno.put("data_agenda_entrega", new SimpleDateFormat("dd/MM/yyyy HH:mm").format(rs.getTimestamp("DATA_AGENDA_ENTREGA")));
+			} else {
+
+			}
+			objRetorno.put("flag_modoentrega", rs.getString("flag_modoentrega") == null ? "" : rs.getString("flag_modoentrega"));
+
 			int user = rs.getInt("id_usuario");
 			String status = rs.getString("FLAG_STATUS");
 
@@ -611,6 +647,10 @@ public class Pedidos_ajax {
 
 				objRetorno.put("DESC_ENDERECO", end + " " + num + " " + compl);
 
+				if(rs.getDouble("NUM_TROCOPARA")!=0.0){
+					objRetorno.put("num_trocopara", "R$ " + df2.format(rs.getDouble("NUM_TROCOPARA")));	
+				}
+				
 				objRetorno.put("tipo_servico", rs.getString("FLAG_PEDIDO_RET_ENTRE"));
 				if (rs.getString("FLAG_PEDIDO_RET_ENTRE").equalsIgnoreCase("L")) {
 					objRetorno.put("desc_bairro", "Retirar no local");
@@ -710,8 +750,7 @@ public class Pedidos_ajax {
 		out.print(objRetorno.toJSONString());
 
 	}
-	
-	
+
 	public static void finalizandoPedidoMobile(HttpServletRequest request, HttpServletResponse response, Connection conn, long idusario) throws Exception {
 		PrintWriter out = response.getWriter();
 		JSONObject objRetorno = new JSONObject();
@@ -725,19 +764,18 @@ public class Pedidos_ajax {
 		st.setLong(2, idusario);
 		ResultSet rs = st.executeQuery();
 		if (!rs.next()) {
-				throw new Exception("Pedido inválido! Entre em contato com o suporte");
+			throw new Exception("Pedido inválido! Entre em contato com o suporte");
 		} else {
 
-				sql = " update  pedido  set flag_status = 'O' where id_pedido = ? and ID_USUARIO = ?  ";
-				st = conn.prepareStatement(sql);
-				st.setInt(1, Integer.parseInt(id_pedido));
-				st.setLong(2, idusario);
-				st.executeUpdate();
+			sql = " update  pedido  set flag_status = 'O' where id_pedido = ? and ID_USUARIO = ?  ";
+			st = conn.prepareStatement(sql);
+			st.setInt(1, Integer.parseInt(id_pedido));
+			st.setLong(2, idusario);
+			st.executeUpdate();
 
-				objRetorno.put("msg", "ok");
+			objRetorno.put("msg", "ok");
 
 		}
-
 
 		out.print(objRetorno.toJSONString());
 
@@ -801,12 +839,16 @@ public class Pedidos_ajax {
 					m_tempo_entrega_inp = "00:00";
 
 				} else {
-					Date datatempoentregateste = Utilitario.testeHora("HH:mm", m_tempo_entrega_inp, "Tempo de entrega inválido!");// tempo de entrega da distri
-					Date datatempoentregateste2 = Utilitario.testeHora("HH:mm", rs.getString("TEMPO_ESTIMADO_DESEJADO"), "");
-					;// tempo de entrega do usuario
+					if (rs.getString("flag_modoentrega").equalsIgnoreCase("T")) {
+						Date datatempoentregateste = Utilitario.testeHora("HH:mm", m_tempo_entrega_inp, "Tempo de entrega inválido!");// tempo de entrega da distri
+						Date datatempoentregateste2 = Utilitario.testeHora("HH:mm", rs.getString("TEMPO_ESTIMADO_DESEJADO"), "");
+						;// tempo de entrega do usuario
 
-					if (datatempoentregateste.after(datatempoentregateste2)) {// ;/
-						throw new Exception("Tempo de entrega é acima do desejado!");
+						if (datatempoentregateste.after(datatempoentregateste2)) {// ;/
+							throw new Exception("Tempo de entrega é acima do desejado!");
+						}
+					} else {
+						m_tempo_entrega_inp = "00:00";
 					}
 				}
 

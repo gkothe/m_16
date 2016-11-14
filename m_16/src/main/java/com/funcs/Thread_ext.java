@@ -28,7 +28,7 @@ public class Thread_ext extends Thread {
 			if(secs_param*100> 1000)
 				rodateste = 10000; //testa de 10 em 10 segs
 			else
-				rodateste = secs_param*100;  //se o tempo de teste for menor q 10, fazeoms a thread rodar no mesmo tempo
+				rodateste = secs_param*1000;  //se o tempo de teste for menor q 10, fazeoms a thread rodar no mesmo tempo
 			
 			
 			while (true) {
@@ -72,6 +72,8 @@ public class Thread_ext extends Thread {
 					agora = new Date();
 					seconds = (agora.getTime() - date.getTime()) / 1000;
 
+				//	System.out.println(rs.getInt("ID_DISTRIBUIDORA") +" "+ agora + " " + date + " " + seconds);
+					
 					if (seconds > secs_param && rs.getString("FLAG_ATIVO").equalsIgnoreCase("S")) { // empresa esta offine
 
 						st = conn.prepareStatement("update distribuidora set FLAG_ATIVO = 'F' where id_distribuidora = ? ");

@@ -5,6 +5,7 @@
 <head>
 <meta charset="utf-8" />
 <title>Login</title>
+<link rel="shortcut icon" href="images/favicon.png" type="image/x-icon">
 <meta content="width=device-width, initial-scale=1.0" name="viewport" />
 <title>TragoAqui!</title>
 
@@ -23,7 +24,7 @@
 
 <style type="text/css">
 body {
-	background: url(images/background.jpg) no-repeat center center fixed;
+	background: url(images/back3.png) no-repeat center center fixed;
 	-webkit-background-size: cover;
 	-moz-background-size: cover;
 	-o-background-size: cover;
@@ -32,11 +33,10 @@ body {
 </style>
 </head>
 <%
-String error ="";
-if(request.getAttribute("errologin")!=null){
-	error = request.getAttribute("errologin").toString();
-}
-	
+	String error = "";
+	if (request.getAttribute("errologin") != null) {
+		error = request.getAttribute("errologin").toString();
+	}
 %>
 <body>
 	<div align="center">
@@ -51,7 +51,7 @@ if(request.getAttribute("errologin")!=null){
 							<div class="panel panel-default" style="width: 400px">
 
 								<div class="panel-heading">
-									<h2 class="form-signin-heading">ChamaTrago!</h2>
+									<img src="images/logo.png" style="max-width: 350px;padding-left: 10px;">
 								</div>
 								<div class="panel-body">
 
@@ -117,8 +117,8 @@ if(request.getAttribute("errologin")!=null){
 
 							<div class="form-group">
 								<label for="desc_mail">Preencha o seu e-mail cadastrado
-									abaixo:</label> <input type="text" 
-									class="form-control warn-change" id="r_desc_mail" />
+									abaixo:</label> <input type="text" class="form-control warn-change"
+									id="r_desc_mail" />
 							</div>
 
 						</div>
