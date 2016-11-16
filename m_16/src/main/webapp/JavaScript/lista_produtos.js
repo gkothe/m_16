@@ -53,11 +53,15 @@ $(document).ready(function() {
 	var tabela = $('#table_produtos');
 
 	$(tabela).bootstrapTable().on('dbl-click-cell.bs.table', function(field, value, row, element) {
-		var id = element.seq_movimento;
-		var form = document.getElementById('form');
-		Enviar(form, $("#app_root").val() + "?ac=nfse&id=" + id);
+		editarProduto($element.id_prod);
 
 	});
+	
+	
+	$(tabela).on('click-cell.bs.table', function(field, value, row, $element) {
+		editarProduto($element.id_prod);
+	});
+	
 
 	$(tabela).on('sort.bs.table reset-view.bs.table post-body.bs.table', function() {
 		$('th', $('#table_produtos')).css('background-color', 'rgb(248, 248, 248)');

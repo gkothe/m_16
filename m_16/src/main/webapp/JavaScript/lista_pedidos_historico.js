@@ -13,7 +13,7 @@ $(window).resize(function() {
 $(document).ready(function() {
 
 	$("#btn_filtrar_historico").click(function() {
-		loadhistoricos();
+		loadhistoricos(1,10);
 	});
 
 	$("#btn_filtros_limpar").click(function() {
@@ -34,7 +34,7 @@ $(document).ready(function() {
 		$("#flag_situacao").val("");
 		$("#flag_pedido_ret_entre").val("");
 
-		loadhistoricos();
+		loadhistoricos(1,10);
 	});
 
 	$("#val_ini_historico").autoNumeric('init', numerico);
@@ -85,13 +85,27 @@ $(document).ready(function() {
 		visualizarPedidoHistorico($element.ID_PEDIDO);
 	});
 
-	$(tabela).on('page-change.bs.table', function() {
+	$(tabela).on('page-change.bs.table', function(e,pag,size) {
 		$(".openpedido").click(function() {
 			visualizarPedidoHistorico($(this).attr("data-valor"));
 		});
+		
+		loadhistoricos(pag,size);
+	});
+	
+	$(tabela).on('sort.bs.table', function(e,name,order) {
+		$("#sys_order").val(order);
+		$("#sys_name").val(name);
+	
+		loadhistoricos(1,10);
+		
 	});
 
-	loadhistoricos();
+	
+	$("#sys_name").val("NUM_PED");
+	$("#sys_order").val("asc");
+	 
+	loadhistoricos(1,10);
 	carregaBairros();
 
 });
@@ -317,7 +331,7 @@ function visualizarPedidoHistorico(id) {
 
 }
 
-function loadhistoricos() {
+function loadhistoricos(pag, size) {
 
 	var num_pedido_historico = $("#num_pedido_historico").val();
 	var id_produto = $("#id_produto").val();
@@ -332,6 +346,9 @@ function loadhistoricos() {
 	var flag_situacao = $("#flag_situacao").val();
 	var flag_pedido_ret_entre = $("#flag_pedido_ret_entre").val();
 
+	var sort = $("#sys_name").val();
+	var order = $("#sys_order").val();
+	
 	$.blockUI({
 		message : 'Carregando...'
 	});
@@ -353,7 +370,11 @@ function loadhistoricos() {
 			val_ini_historico : val_ini_historico,
 			val_fim_historico : val_fim_historico,
 			flag_situacao : flag_situacao,
-			flag_pedido_ret_entre : flag_pedido_ret_entre
+			flag_pedido_ret_entre : flag_pedido_ret_entre,
+			pag:pag,
+			size:size,
+			sort:sort,
+			order:order
 
 		},
 		success : function(data) {

@@ -260,6 +260,7 @@ public class Pedidos_ajax {
 
 	public static void carregaPedidoshistoricos(HttpServletRequest request, HttpServletResponse response, Connection conn, int coddistr) throws Exception {
 
+		JSONObject ret = new JSONObject();
 		JSONArray pedidos = new JSONArray();
 		PrintWriter out = response.getWriter();
 
@@ -274,75 +275,132 @@ public class Pedidos_ajax {
 		String val_fim_historico = request.getParameter("val_fim_historico") == null ? "" : request.getParameter("val_fim_historico");
 		String flag_situacao = request.getParameter("flag_situacao") == null ? "" : request.getParameter("flag_situacao");
 		String flag_pedido_ret_entre = request.getParameter("flag_pedido_ret_entre") == null ? "" : request.getParameter("flag_pedido_ret_entre");
+		
+		String pag = request.getParameter("pag") == null ? "" : request.getParameter("pag");
+		String size = request.getParameter("size") == null ? "" : request.getParameter("size");
+		
+		String name = request.getParameter("sort") == null ? "" : request.getParameter("sort");
+		String order = request.getParameter("order") == null ? "" : request.getParameter("order");
+		
+		
+		
 
 		String sql = "select * from pedido LEFT join bairros on bairros.cod_bairro = pedido.cod_bairro left join pedido_motivo_cancelamento on pedido_motivo_cancelamento.id_pedido = pedido.id_pedido where ID_DISTRIBUIDORA = ? and (flag_status = 'O' or flag_status = 'R' or (flag_status = 'C' and FLAG_CONFIRMADO_DISTRIBUIDORA = 'S' )) ";
-
+		String sql2 =" select count(*) as total from pedido LEFT join bairros on bairros.cod_bairro = pedido.cod_bairro left join pedido_motivo_cancelamento on pedido_motivo_cancelamento.id_pedido = pedido.id_pedido where ID_DISTRIBUIDORA = ? and (flag_status = 'O' or flag_status = 'R' or (flag_status = 'C' and FLAG_CONFIRMADO_DISTRIBUIDORA = 'S' ))" ;
 		if (!num_pedido_historico.equalsIgnoreCase("")) {
 			sql = sql + " and NUM_PED  = ? ";
+			sql2 = sql2 + " and NUM_PED  = ? ";
 		}
 
 		if (!flag_situacao.equalsIgnoreCase("")) {
 			sql = sql + " and flag_status  = ? ";
+			sql2 = sql2 + " and flag_status  = ? ";
 		}
 
 		if (!id_produto.equalsIgnoreCase("")) {
 			sql = sql + " and id_pedido in (select id_pedido from pedido_item where id_prod = ? ) ";
+			sql2 = sql2 + " and id_pedido in (select id_pedido from pedido_item where id_prod = ? ) ";
 		}
 
 		if (!cod_bairro_historico.equalsIgnoreCase("")) {
 			sql = sql + " and pedido. COD_BAIRRO = ? ";
+			sql2 = sql2 + " and pedido. COD_BAIRRO = ? ";
 		}
 
 		if (!(data_pedido_ini.equalsIgnoreCase(""))) {
 			sql = sql + "  and  data_pedido >= ?";
+			sql2 = sql2 + "  and  data_pedido >= ?";
 		}
 
 		if (!(data_pedido_fim.equalsIgnoreCase(""))) {
 			sql = sql + "  and  data_pedido <= ?";
+			sql2 = sql2 + "  and  data_pedido <= ?";
 		}
 
 		if (!(data_reposta_ini.equalsIgnoreCase(""))) {
 			sql = sql + "  and  DATA_PEDIDO_RESPOSTA >= ?";
+			sql2 = sql2 + "  and  DATA_PEDIDO_RESPOSTA >= ?";
 		}
 
 		if (!(data_reposta_fim.equalsIgnoreCase(""))) {
 			sql = sql + "  and  DATA_PEDIDO_RESPOSTA <= ?";
+			sql2 = sql2 + "  and  DATA_PEDIDO_RESPOSTA <= ?";
 		}
 
 		if (!val_ini_historico.equalsIgnoreCase("")) {
 			sql = sql + "  and  VAL_TOTALPROD >= ? ";
+			sql2 = sql2 + "  and  VAL_TOTALPROD >= ? ";
 		}
 
 		if (!val_fim_historico.equalsIgnoreCase("")) {
 			sql = sql + "  and  VAL_TOTALPROD <= ? ";
+			sql2 = sql2 + "  and  VAL_TOTALPROD <= ? ";
 		}
 
 		if (!flag_pedido_ret_entre.equalsIgnoreCase("")) {
 			sql = sql + "  and  flag_pedido_ret_entre = ? ";
-
+			sql2 = sql2 + "  and  flag_pedido_ret_entre = ? ";
 		}
 
+		
+		try {
+			Integer.parseInt(pag);
+			Integer.parseInt(size);
+		} catch (Exception e) {
+			throw new Exception("Parâmetros de paginação inválidos.");	
+		}
+		
+		
+
+		if(!order.equalsIgnoreCase("desc") &&  !order.equalsIgnoreCase("asc")){
+			throw new Exception("Parâmetros de paginação inválidos.");	
+		}
+		
+		if(name.equalsIgnoreCase("num_ped")){
+			sql = sql + "  ORDER BY num_ped " + order;
+		}else if(name.equalsIgnoreCase("data_formatada")){
+			sql = sql + "  ORDER BY DATA_PEDIDO " + order;
+		}else if(name.equalsIgnoreCase("data_formatada_resposta")){
+			sql = sql + "  ORDER BY DATA_PEDIDO_RESPOSTA " + order;
+		}else if(name.equalsIgnoreCase("DESC_BAIRRO")){
+			sql = sql + "  ORDER BY DESC_BAIRRO " + order;
+		}else if(name.equalsIgnoreCase("VAL_TOTALPROD")){
+			sql = sql + "  ORDER BY VAL_TOTALPROD " + order;
+		}else if(name.equalsIgnoreCase("FLAG_STATUS")){
+			sql = sql + "  ORDER BY FLAG_STATUS " + order;
+		}else{
+			sql = sql + "  ORDER BY num_ped " + order;
+		}
+		
+		sql = sql + "  limit "+size+" OFFSET "+(Integer.parseInt(size) * (Integer.parseInt(pag) - 1))+" ";
+	
 		PreparedStatement st = conn.prepareStatement(sql);
+		PreparedStatement st2 = conn.prepareStatement(sql2);
 		st.setInt(1, coddistr);
+		st2.setInt(1, coddistr);
 
 		int contparam = 2;
 		if (!num_pedido_historico.equalsIgnoreCase("")) {
 			st.setInt(contparam, Integer.parseInt(num_pedido_historico));
+			st2.setInt(contparam, Integer.parseInt(num_pedido_historico));
 			contparam++;
 		}
 
 		if (!flag_situacao.equalsIgnoreCase("")) {
 			st.setString(contparam, (flag_situacao));
+			st2.setString(contparam, (flag_situacao));
 			contparam++;
 		}
 
 		if (!id_produto.equalsIgnoreCase("")) {
 			st.setInt(contparam, Integer.parseInt(id_produto));
+			st2.setInt(contparam, Integer.parseInt(id_produto));
 			contparam++;
 		}
 
 		if (!cod_bairro_historico.equalsIgnoreCase("")) {
 			st.setInt(contparam, Integer.parseInt(cod_bairro_historico));
+			st2.setInt(contparam, Integer.parseInt(cod_bairro_historico));
 			contparam++;
 		}
 
@@ -350,6 +408,7 @@ public class Pedidos_ajax {
 
 			Date data = new SimpleDateFormat("dd/MM/yyyy HH:mm").parse(data_pedido_ini + " 00:00");
 			st.setString(contparam, new SimpleDateFormat("yyyy-MM-dd HH:mm").format(data));
+			st2.setString(contparam, new SimpleDateFormat("yyyy-MM-dd HH:mm").format(data));
 			contparam++;
 		}
 
@@ -357,6 +416,7 @@ public class Pedidos_ajax {
 
 			Date data = new SimpleDateFormat("dd/MM/yyyy HH:mm").parse(data_pedido_fim + " 23:59");
 			st.setString(contparam, new SimpleDateFormat("yyyy-MM-dd HH:mm").format(data));
+			st2.setString(contparam, new SimpleDateFormat("yyyy-MM-dd HH:mm").format(data));
 			contparam++;
 		}
 
@@ -364,6 +424,7 @@ public class Pedidos_ajax {
 
 			Date data = new SimpleDateFormat("dd/MM/yyyy HH:mm").parse(data_reposta_ini + " 00:00");
 			st.setString(contparam, new SimpleDateFormat("yyyy-MM-dd HH:mm").format(data));
+			st2.setString(contparam, new SimpleDateFormat("yyyy-MM-dd HH:mm").format(data));
 			contparam++;
 		}
 
@@ -371,26 +432,34 @@ public class Pedidos_ajax {
 
 			Date data = new SimpleDateFormat("dd/MM/yyyy HH:mm").parse(data_reposta_fim + " 23:59");
 			st.setString(contparam, new SimpleDateFormat("yyyy-MM-dd HH:mm").format(data));
+			st2.setString(contparam, new SimpleDateFormat("yyyy-MM-dd HH:mm").format(data));
 			contparam++;
 		}
 
 		if (!val_ini_historico.equalsIgnoreCase("")) {
 			st.setDouble(contparam, Double.parseDouble(val_ini_historico));
+			st2.setDouble(contparam, Double.parseDouble(val_ini_historico));
 			contparam++;
 		}
 
 		if (!val_fim_historico.equalsIgnoreCase("")) {
 			st.setDouble(contparam, Double.parseDouble(val_fim_historico));
+			st2.setDouble(contparam, Double.parseDouble(val_fim_historico));
 			contparam++;
 		}
 
 		if (!flag_pedido_ret_entre.equalsIgnoreCase("")) {
 			st.setString(contparam, (flag_pedido_ret_entre));
+			st2.setString(contparam, (flag_pedido_ret_entre));
 			contparam++;
 		}
 
-		ResultSet rs = st.executeQuery();
-		PreparedStatement st2;
+		ResultSet rs = st2.executeQuery();
+		if(rs.next()){
+			ret.put("total", rs.getLong("total"));
+		}
+		
+		rs = st.executeQuery();
 		ResultSet rs2;
 		while (rs.next()) {
 			JSONObject objRetorno = new JSONObject();
@@ -429,7 +498,10 @@ public class Pedidos_ajax {
 			pedidos.add(objRetorno);
 		}
 
-		out.print(pedidos.toJSONString());
+		
+		ret.put("rows", pedidos);
+		
+		out.print(ret.toJSONString());
 
 	}
 

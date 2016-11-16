@@ -93,8 +93,8 @@ input:focus {
 <body class="nav-md">
 	<div class="container body">
 		<div class="main_container" id="main_cont" style="">
-			<div class="col-md-3 left_col">
-				<div class="left_col scroll-view">
+			<div  class="col-md-3 left_col menucustom">
+				<div  class="left_col scroll-view menucustom">
 					<div class="navbar nav_title" style="border: 0;">
 						<a class="site_title"><image style="width: 200px"
 								src="images/logomenu.png"></image> </a>
@@ -119,7 +119,7 @@ input:focus {
 
 					<br /> <br> <br>
 					<!-- sidebar menu -->
-					<div id="sidebar-menu"
+					<div  id="sidebar-menu"
 						class="main_menu_side hidden-print main_menu">
 						<div class="menu_section">
 							<h3>Menu</h3>

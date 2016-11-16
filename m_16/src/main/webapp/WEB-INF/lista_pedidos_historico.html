@@ -234,10 +234,16 @@
 
 			<div class="row">
 				<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-					<table id="table_pedidos_historico" data-toggle="table" style="cursor: pointer;"
-						data-height="300" data-locale="pt-BR" class="table_boots"
-						data-minimum-count-columns="1" data-reorderable-columns="true"
-						data-show-footer="true">
+					<table id="table_pedidos_historico" data-toggle="table"
+						style="cursor: pointer;" data-height="300" data-locale="pt-BR"
+						class="table_boots" data-minimum-count-columns="1"
+						data-reorderable-columns="true" data-show-footer="true"
+						data-pagination="true" data-page-list="[5,10,25,50,100]"
+						data-page-size="10" data-pagination-first-text="Primeiro"
+						data-side-pagination="server"
+						data-pagination-pre-text="Anterior"
+						data-pagination-next-text="Próximo"
+						data-pagination-last-text="Último">
 						<thead class="header">
 							<tr>
 
@@ -248,15 +254,13 @@
 									data-sortable="true" data-align="center">Data Ped.</th>
 								<th data-field="data_formatada_resposta" data-width="20%"
 									data-sortable="true" data-align="center">Resposta</th>
-
-
 								<th data-field="DESC_BAIRRO" data-width="15%"
 									data-sortable="true" data-align="center">Bairro</th>
 								<th data-field="VAL_TOTALPROD" data-width="15%"
 									data-align="right" data-formatter="valorFormater"
 									data-sortable="true">Valor</th>
 								<th data-field="FLAG_STATUS" data-formatter="statusFormater"
-									data-width="10%" data-sortable="true" data-align="center">Situação</th>
+									data-width="10%" data-sortable="false" data-align="center">Situação</th>
 								<th data-sortable="false" data-width="10%" data-align="center"
 									data-formatter="btnFormater">Opções</th>
 
@@ -277,6 +281,8 @@
 </div>
 <br>
 <input id="sys_formatador" type="hidden">
+<input id="sys_order" type="hidden">
+<input id="sys_name"  type="hidden">
 
 
 </html>
