@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="rel_gradehorario" pageWidth="842" pageHeight="595" orientation="Landscape" whenNoDataType="AllSectionsNoDetail" columnWidth="802" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="4e56c072-32bc-4521-b4c2-2f64501d11e8">
-	<property name="ireport.zoom" value="1.2100000000000073"/>
+	<property name="ireport.zoom" value="4.5949729863572495"/>
 	<property name="ireport.x" value="0"/>
-	<property name="ireport.y" value="4"/>
+	<property name="ireport.y" value="276"/>
 	<subDataset name="PRODUTOS" uuid="8915ee26-d983-4741-84f8-37606df93cd9">
 		<property name="id_pedido" value="$F{id_pedido}"/>
 		<queryString language="SQL">
@@ -19,6 +19,8 @@
 	<parameter name="modo_pay" class="java.lang.String"/>
 	<parameter name="opcao_exib" class="java.lang.String"/>
 	<parameter name="bairro" class="java.lang.String"/>
+	<parameter name="rel_ped_ini" class="java.lang.String"/>
+	<parameter name="rel_ped_fim" class="java.lang.String"/>
 	<queryString>
 		<![CDATA[SELECT desc_prod,
        pedido_item.val_unit,
@@ -653,18 +655,18 @@ FROM   pedido
 				<text><![CDATA[Data incial:]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="0" y="50" width="52" height="15" uuid="52ab338d-7d2c-4407-a93f-0209d760ab18"/>
+				<reportElement x="0" y="50" width="50" height="15" uuid="52ab338d-7d2c-4407-a93f-0209d760ab18"/>
 				<textElement>
 					<font isBold="true" isPdfEmbedded="true"/>
 				</textElement>
 				<text><![CDATA[Data final:]]></text>
 			</staticText>
 			<textField>
-				<reportElement x="52" y="50" width="100" height="15" uuid="6bcd26aa-3c1d-41bd-ae32-7b769444776c"/>
+				<reportElement x="50" y="50" width="100" height="15" uuid="6bcd26aa-3c1d-41bd-ae32-7b769444776c"/>
 				<textFieldExpression><![CDATA[$P{datafim}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement x="287" y="35" width="41" height="15" uuid="c20e73e9-a019-4e7e-9117-54bcdf175c6c"/>
+				<reportElement x="520" y="65" width="41" height="15" uuid="c20e73e9-a019-4e7e-9117-54bcdf175c6c"/>
 				<textElement>
 					<font isBold="true" isPdfEmbedded="true"/>
 				</textElement>
@@ -678,7 +680,7 @@ FROM   pedido
 				<text><![CDATA[Modo de pagamento:]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="287" y="50" width="47" height="15" uuid="f73d42f6-9f59-4db2-9ec9-bd612683d1ab"/>
+				<reportElement x="274" y="65" width="47" height="15" uuid="f73d42f6-9f59-4db2-9ec9-bd612683d1ab"/>
 				<textElement>
 					<font isBold="true" isPdfEmbedded="true"/>
 				</textElement>
@@ -703,11 +705,11 @@ FROM   pedido
 				<textFieldExpression><![CDATA[$P{bairro}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="328" y="35" width="154" height="15" uuid="3d520dcc-1354-43e2-a1cd-f6f90c5e8b5d"/>
+				<reportElement x="561" y="65" width="154" height="15" uuid="3d520dcc-1354-43e2-a1cd-f6f90c5e8b5d"/>
 				<textFieldExpression><![CDATA[$P{servico}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="334" y="50" width="154" height="15" uuid="d0fbd4b1-72fb-452d-a5bd-1c77ac62a685"/>
+				<reportElement x="321" y="65" width="154" height="15" uuid="d0fbd4b1-72fb-452d-a5bd-1c77ac62a685"/>
 				<textFieldExpression><![CDATA[$P{situacao}]]></textFieldExpression>
 			</textField>
 			<textField>
@@ -717,6 +719,28 @@ FROM   pedido
 			<textField>
 				<reportElement x="613" y="50" width="166" height="15" uuid="914b17d7-782b-4542-bb52-331dec6a8b0b"/>
 				<textFieldExpression><![CDATA[$P{opcao_exib}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="274" y="35" width="86" height="15" uuid="75471213-ae27-4f05-b1ff-85862f4ad394"/>
+				<textElement>
+					<font isBold="true" isPdfEmbedded="true"/>
+				</textElement>
+				<text><![CDATA[Num. Ped. inicial:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="274" y="50" width="78" height="15" uuid="acb4b56a-2ecf-40ee-a438-8caad5c22c50"/>
+				<textElement>
+					<font isBold="true" isPdfEmbedded="true"/>
+				</textElement>
+				<text><![CDATA[Num. Ped. final:]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="360" y="35" width="122" height="15" uuid="16ea990b-fd45-454d-93c8-df7a1c483d12"/>
+				<textFieldExpression><![CDATA[$P{rel_ped_ini}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="352" y="50" width="122" height="15" uuid="2d0d7574-ba88-429a-a545-978ceabdccf5"/>
+				<textFieldExpression><![CDATA[$P{rel_ped_fim}]]></textFieldExpression>
 			</textField>
 		</band>
 	</title>

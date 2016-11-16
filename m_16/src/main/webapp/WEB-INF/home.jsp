@@ -6,7 +6,7 @@
 <meta charset="utf-8" />
 <meta content="width=device-width, initial-scale=1.0" name="viewport" />
 
-<title>TragoAqui!</title>
+<title>TragoAqui</title>
 <link rel="shortcut icon" href="images/favicon.png" type="image/x-icon">
 <!-- Bootstrap -->
 <link href="gentelella-master/vendors/bootstrap/dist/css/bootstrap.css"
@@ -82,8 +82,8 @@ input:focus {
 }
 
 .modal-admin {
-	width: 95%;
-	height: 90%;
+	width: 85%;
+	height: 85%;
 }
 </style>
 
@@ -278,7 +278,7 @@ input:focus {
 			<!-- /page content -->
 
 			<!-- footer content -->
-			<footer style="padding-bottom: 25px;">
+			<footer style="padding-bottom: 0px !important" >
 				<br>
 			</footer>
 			<!-- /footer content -->

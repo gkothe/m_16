@@ -60,23 +60,19 @@ function showHelp() {
 
 }
 
+function sysMsg(text, tipo) {
 
-function sysMsg(text,tipo){
-	
-	if(tipo=='E'){
-		$("#msg_erro_aviso").html("<label style=\"font-size: 20px; color: red\" > ERRO!</label>");	
-	}else if(tipo=='A'){
-		$("#msg_erro_aviso").html("<label style=\"font-size: 20px; color:#ff9900\" > Aviso!</label>");	
-	}else if(tipo=='M'){
+	if (tipo == 'E') {
+		$("#msg_erro_aviso").html("<label style=\"font-size: 20px; color: red\" > ERRO!</label>");
+	} else if (tipo == 'A') {
+		$("#msg_erro_aviso").html("<label style=\"font-size: 20px; color:#ff9900\" > Aviso!</label>");
+	} else if (tipo == 'M') {
 		$("#msg_erro_aviso").html("<label style=\"font-size: 20px; color:green\" > Mensagem</label>");
 	}
-	
-	
-	
-	
+
 	$("#modal_erros").modal('show');
 	$("#msg_erro").html(text);
-	
+
 }
 
 function trocaPag(pag, jsp, e) {
@@ -239,7 +235,6 @@ $(document).ready(function() {
 	 */
 	resizedivs();
 
-	
 });
 
 var sommute = false;
@@ -302,9 +297,23 @@ function loadLogoEmpresa() {
 
 		},
 		error : function(data) {
-			
+
 		}
 	});
+
+}
+
+function changeTitle(tem, qtd) {
+	var newTitle = "";
+	if (tem) {
+		newTitle = '(' + qtd + ') ' + " TragoAqui";
+		document.title = newTitle;
+	} else {
+		newTitle = "TragoAqui";
+
+	}
+
+	document.title = newTitle;
 
 }
 
@@ -325,7 +334,8 @@ function checarPedidos() {
 			if (data.errologin != undefined) {
 				window.location.href = "";
 			} else if (data.tem == "true") {
-
+				changeTitle(true,data.qtd);
+				
 				$("#msg_holder").show();
 
 				var html = "";
@@ -356,6 +366,7 @@ function checarPedidos() {
 
 			} else if (data.tem == "false") {
 				$("#msg_holder").hide();
+				changeTitle(false,"");
 
 			}
 
@@ -371,6 +382,7 @@ function checarPedidos() {
 
 		},
 		error : function(data) {
+			changeTitle(false,"");
 			if (data.status == 0) {
 
 				$("#msg_holder").hide();
@@ -379,7 +391,7 @@ function checarPedidos() {
 
 			} else {
 				if (data.statusText != undefined)
-					 sysMsg(data.statusText,'E')
+					sysMsg(data.statusText, 'E')
 
 			}
 		}
@@ -499,7 +511,7 @@ function loadMotivos() {
 		},
 		error : function(data) {
 			if (data.statusText != undefined)
-				sysMsg(data.statusText,'E')
+				sysMsg(data.statusText, 'E')
 		}
 	});
 
@@ -542,18 +554,15 @@ function visualizarPedido(id) {
 				$("#m_lbl_bairro").html("");
 			}
 			$("#m_flag_pedido_ret_entre").val(data.tipo_servico);
-			if(data.num_trocopara != undefined ){
+			if (data.num_trocopara != undefined) {
 				$("#m_troco_para_div").show();
-				$("#m_troco_para").html(data.num_trocopara);	
-				
-			}else{
+				$("#m_troco_para").html(data.num_trocopara);
+
+			} else {
 				$("#m_troco_para_div").hide();
-				$("#m_troco_para").html("");	
+				$("#m_troco_para").html("");
 			}
-			
-			
-			
-			
+
 			/*
 			 * if(data.desc_bairro_ret !=undefined && data.desc_bairro_ret !==
 			 * ""){ $("#m_desc_bairro").html(data.desc_bairro_ret); }else{
@@ -650,7 +659,7 @@ function visualizarPedido(id) {
 		},
 		error : function(data) {
 			if (data.statusText != undefined)
-				sysMsg(data.statusText,'E');
+				sysMsg(data.statusText, 'E');
 		}
 	});
 
@@ -679,8 +688,8 @@ function finalizarPedido() {
 			success : function(data) {
 
 				if (data.msg == 'ok') {
-					
-					sysMsg("Pedido finalizado!",'M')
+
+					sysMsg("Pedido finalizado!", 'M')
 					checarPedidos();
 
 					try {
@@ -693,7 +702,7 @@ function finalizarPedido() {
 					limpaModal();
 
 				} else if (data.erro != undefined) {
-					 sysMsg(data.erro,'E')
+					sysMsg(data.erro, 'E')
 				}
 
 				$.unblockUI();
@@ -753,14 +762,14 @@ function responderPedido() {
 
 					if (data.msg == 'ok') {
 						if (resposta == "A") {
-							
-							 sysMsg("Pedido Respondido",'M')
+
+							sysMsg("Pedido Respondido", 'M')
 
 						}
 
 						if (resposta == "R") {
-							sysMsg("Pedido Recusado",'M')
-							
+							sysMsg("Pedido Recusado", 'M')
+
 						}
 
 						checarPedidos();
@@ -782,7 +791,7 @@ function responderPedido() {
 						}
 
 					} else if (data.erro != undefined) {
-						 sysMsg(data.erro,'E')
+						sysMsg(data.erro, 'E')
 					}
 
 					$.unblockUI();
@@ -796,8 +805,8 @@ function responderPedido() {
 		}
 
 	} else {
-		 sysMsg("Você deve aceitar ou recusar o pedido.",'A')
-		
+		sysMsg("Você deve aceitar ou recusar o pedido.", 'A')
+
 	}
 }
 
@@ -897,7 +906,7 @@ function setAutocomplete(cod, descr) {
 
 				},
 				error : function(data) {
-					
+
 				}
 			});
 		}

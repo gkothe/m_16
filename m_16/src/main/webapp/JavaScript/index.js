@@ -1,3 +1,4 @@
+//@ sourceURL=index.js
 function showTrocaEmail() {
 
 	$("#modal_ajuda").modal("show");
@@ -17,7 +18,7 @@ $(document).ready(function() {
 function limpaModal() {
 
 	$("#r_desc_mail").val("");
-
+ 
 }
 
 function sendEmail() {
@@ -31,7 +32,7 @@ function sendEmail() {
 	
 	$.ajax({
 		type : 'POST',
-		url : "sys?acao=senha_email",
+		url : "",
 		data : {
 			acao : "senha_email",
 			email : email
@@ -56,4 +57,23 @@ function sendEmail() {
 		}
 	});
 
+}
+
+
+function sysMsg(text,tipo){
+	
+	if(tipo=='E'){
+		$("#msg_erro_aviso").html("<label style=\"font-size: 20px; color: red\" > ERRO!</label>");	
+	}else if(tipo=='A'){
+		$("#msg_erro_aviso").html("<label style=\"font-size: 20px; color:#ff9900\" > Aviso!</label>");	
+	}else if(tipo=='M'){
+		$("#msg_erro_aviso").html("<label style=\"font-size: 20px; color:green\" > Mensagem</label>");
+	}
+	
+	
+	
+	
+	$("#modal_erros").modal('show');
+	$("#msg_erro").html(text);
+	
 }

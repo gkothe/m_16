@@ -1273,6 +1273,12 @@ public class Relatorios {
 			String cod_bairro = request.getParameter("cod_bairro") == null ? "" : request.getParameter("cod_bairro");
 			String flag_servico = request.getParameter("flag_servico") == null ? "" : request.getParameter("flag_servico");
 
+			String rel_ped_ini = request.getParameter("rel_ped_ini") == null ? "" : request.getParameter("rel_ped_ini");
+			String rel_ped_fim = request.getParameter("rel_ped_fim") == null ? "" : request.getParameter("rel_ped_fim");
+
+			hmParams.put("rel_ped_ini", "");
+			hmParams.put("rel_ped_fim", "");
+
 			hmParams.put("dataini", "");
 			hmParams.put("datafim", "");
 			hmParams.put("situacao", Utilitario.returnStatusPedidoFlag(flag_situacao));
@@ -1356,6 +1362,17 @@ public class Relatorios {
 				sql.append("  and  pedido.FLAG_MODOPAGAMENTO = ? ");
 			}
 
+			if (!(rel_ped_ini.equalsIgnoreCase(""))) {
+				sql.append("  and  num_ped >= ?");
+				hmParams.put("rel_ped_ini", rel_ped_ini+"");
+
+			}
+
+			if (!(rel_ped_fim.equalsIgnoreCase(""))) {
+				sql.append(" and  num_ped <= ?");
+				hmParams.put("rel_ped_fim", rel_ped_fim+"");
+			}
+
 			sql.append(" order by num_ped");
 
 			PreparedStatement st = conn.prepareStatement(sql.toString());
@@ -1392,6 +1409,20 @@ public class Relatorios {
 				st.setString(contparam, flag_pagamento);
 				contparam++;
 			}
+			
+
+
+			if (!rel_ped_ini.equalsIgnoreCase("")) {
+				st.setLong(contparam, Long.parseLong(rel_ped_ini));
+				contparam++;
+			}
+			
+			if (!rel_ped_fim.equalsIgnoreCase("")) {
+				st.setLong(contparam, Long.parseLong(rel_ped_fim));
+				contparam++;
+			}
+			
+			
 
 			ResultSet rs = st.executeQuery();
 			HashMap<String, Object> hmFat = new HashMap<String, Object>();
@@ -1613,17 +1644,14 @@ public class Relatorios {
 			}
 			sql = new StringBuffer(parametrosDash(sql.toString(), "", "", "", "", dataini, datafim, ""));
 
-			
 			sql.append("			group by produtos.id_prod,DESC_PROD, produtos_distribuidora.FLAG_ATIVO,DESC_ABREVIADO ");
-			
-			if(flagabrev.equalsIgnoreCase("1")){
-				sql.append(" order by DESC_PROD ");	
-			}else{
+
+			if (flagabrev.equalsIgnoreCase("1")) {
+				sql.append(" order by DESC_PROD ");
+			} else {
 				sql.append(" order by DESC_ABREVIADO ");
 			}
-			
-			
-			
+
 			PreparedStatement st = conn.prepareStatement(sql.toString());
 			int contparam = 1;
 			if (!flag_situacao.equalsIgnoreCase("")) {
@@ -1641,13 +1669,13 @@ public class Relatorios {
 
 				hmFat = new HashMap<String, Object>();
 				hmFat.put("flag_ativo", rs.getString("FLAG_ATIVO").equalsIgnoreCase("S") ? "Ativado" : "Desativado");
-				
-				if(flagabrev.equalsIgnoreCase("1")){
+
+				if (flagabrev.equalsIgnoreCase("1")) {
 					hmFat.put("desc_prod", rs.getString("DESC_PROD"));
-				}else{
+				} else {
 					hmFat.put("desc_prod", rs.getString("DESC_ABREVIADO"));
 				}
-			
+
 				hmFat.put("id_prod", rs.getLong("id_prod"));
 				hmFat.put("qtd", df.format(rs.getLong("qtd")));
 				hmFat.put("val_totalprod", df2.format(rs.getDouble("total")));

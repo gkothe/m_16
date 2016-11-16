@@ -51,7 +51,8 @@ body {
 							<div class="panel panel-default" style="width: 400px">
 
 								<div class="panel-heading">
-									<img src="images/logo.png" style="max-width: 350px;padding-left: 10px;">
+									<img src="images/logo.png"
+										style="max-width: 350px; padding-left: 10px;">
 								</div>
 								<div class="panel-body">
 
@@ -79,10 +80,11 @@ body {
 										}
 									%>
 
-									<br> <label for="" class="">Esqueceu sua
-										senha\usuário? Clique abaixo.</label>
+									<br> <label for="" class="">Esqueceu sua senha \
+										usuário? Clique abaixo.</label>
 									<button class="btn btn-lg btn-primary btn-block" type="button"
-										onclick="showTrocaEmail();">Recuperar senha\usuário.</button>
+										onclick="showTrocaEmail();">Recuperar Senha \
+										Usuário</button>
 
 								</div>
 							</div>
@@ -108,7 +110,7 @@ body {
 					</button>
 					<h4 class="modal-title" id="">
 						<label style="font-size: 20px; color: black">Recuperar
-							senha\usuário. </label>
+							Senha \ Usuário. </label>
 					</h4>
 				</div>
 				<div class="modal-body" style="max-height: 800px; overflow: auto;">
@@ -142,6 +144,47 @@ body {
 			</div>
 		</div>
 	</div>
+	<div class="modal fade bs-example-modal-lg" tabindex="-5" role="dialog"
+		id="modal_erros" aria-hidden="true">
+		<div class="modal-dialog modal-lg">
+			<div class="modal-content">
 
+				<div class="modal-header" align="center">
+					<button type="button" class="close" data-dismiss="modal">
+						<span aria-hidden="true">×</span>
+					</button>
+					<h4 class="modal-title" id="msg_erro_aviso">
+						<label style="font-size: 20px; color: red" id="">ERRO!</label>
+					</h4>
+				</div>
+				<div class="modal-body" style="max-height: 800px; overflow: auto;">
+
+					<div class="row">
+
+						<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 ">
+							<strong>Mensagem:</strong>&nbsp;<label id="msg_erro"></label>
+						</div>
+
+
+					</div>
+
+				</div>
+				<div class="modal-footer">
+
+					<div class="row">
+
+						<div class="col-xs-10 col-sm-10 col-md-10 col-lg-10 "></div>
+
+
+						<div class="col-xs-2 col-sm-2 col-md-2 col-lg-2 " align="right">
+							<button type="button" class="btn btn-primary"
+								data-dismiss="modal">Fechar</button>
+						</div>
+
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
 </body>
 </html>

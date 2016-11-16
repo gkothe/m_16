@@ -2,7 +2,7 @@
 $(document).ready(function() {
 
 	$("#btn_filtrar_historico").click(function() {
-		gerarRel() 
+		gerarRel()
 	});
 
 	$("#btn_filtros_limpar").click(function() {
@@ -15,7 +15,9 @@ $(document).ready(function() {
 		$("#flag_servico").val("");
 		$("#chk_infocliente").val("");
 		$("#chk_prods").val("");
-
+		$("#rel_ped_fim").val("");
+		$("#rel_ped_ini").val("");
+		
 	});
 
 	$('.data').datepicker({
@@ -69,7 +71,7 @@ function carregaBairros() {
 		},
 		error : function(msg) {
 			$.unblockUI();
-			
+
 		}
 	});
 
@@ -85,44 +87,55 @@ function gerarRel() {
 	var flag_opc = $("#flag_opc").val();
 	var flag_servico = $("#flag_servico").val();
 
+	var rel_ped_fim = $("#rel_ped_fim").val();
+	var rel_ped_ini = $("#rel_ped_ini").val();
+
 	var erro = false;
-//	if (dataini == "" || datafim == "") {
-//		erro = true;
-//	}
-	
-	var filtros  = "";
-	if(dataini !=""){
-		filtros = filtros+ "&dataini=" + dataini;
+
+	// if (dataini == "" || datafim == "") {
+	// erro = true;
+	// }
+
+	var filtros = "";
+	if (dataini != "") {
+		filtros = filtros + "&dataini=" + dataini;
 	}
-	
-	if(datafim !=""){
-		filtros = filtros+ "&datafim=" + datafim;
+
+	if (datafim != "") {
+		filtros = filtros + "&datafim=" + datafim;
 	}
-	
-	if(cod_bairro !=""){
-		filtros = filtros+ "&cod_bairro=" + cod_bairro;
+
+	if (cod_bairro != "") {
+		filtros = filtros + "&cod_bairro=" + cod_bairro;
 	}
-	
-	if(flag_situacao !=""){
-		filtros = filtros+ "&flag_situacao=" + flag_situacao;
+
+	if (flag_situacao != "") {
+		filtros = filtros + "&flag_situacao=" + flag_situacao;
 	}
-	
-	if(flag_pagamento !=""){
-		filtros = filtros+ "&flag_pagamento=" + flag_pagamento;
+
+	if (flag_pagamento != "") {
+		filtros = filtros + "&flag_pagamento=" + flag_pagamento;
 	}
-	
-	if(flag_servico !=""){
-		filtros = filtros+ "&flag_servico=" + flag_servico;
+
+	if (flag_servico != "") {
+		filtros = filtros + "&flag_servico=" + flag_servico;
 	}
-	
-	if(flag_opc !=""){
-		filtros = filtros+ "&flag_opc=" + flag_opc;
+
+	if (flag_opc != "") {
+		filtros = filtros + "&flag_opc=" + flag_opc;
 	}
-	
-	
+
+	if (rel_ped_ini != "") {
+		filtros = filtros + "&rel_ped_ini=" + rel_ped_ini;
+	}
+
+	if (rel_ped_fim != "") {
+		filtros = filtros + "&rel_ped_fim=" + rel_ped_fim;
+	}
+
 	if (!erro) {
 		var nome = "Relátorio de pedidos"
-		var w = window.open("home/" + nome + ".pdf?ac=rel_pedidospdf"+filtros, '_blank');
+		var w = window.open("home/" + nome + ".pdf?ac=rel_pedidospdf" + filtros, '_blank');
 	}
 }
 
