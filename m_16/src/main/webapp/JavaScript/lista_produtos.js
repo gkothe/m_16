@@ -75,7 +75,7 @@ $(document).ready(function() {
 	loadProdutos();
 
 	$("#row_da_tabelaprod").find(".fixed-table-toolbar").append("<div class=\"pull-left \" style=\"padding-top: 10px;\"> <label>Listagem de produtos</label> </div>");
-	;
+	
 
 });
 
