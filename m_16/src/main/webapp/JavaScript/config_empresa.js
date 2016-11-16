@@ -263,7 +263,7 @@ function carregaBairros() {
 		},
 		error : function(msg) {
 			$.unblockUI();
-			alert("Erro: " + msg.msg);
+			
 		}
 	});
 
@@ -338,20 +338,18 @@ function salvarTela() {
 
 			if (data.msg == 'ok') {
 
-				alert("Dado salvos!");
+				sysMsg("Dado salvos!",'M')
 				$(".lbl_save").hide();
-				location.reload(true);
+				setTimeout(function(){ location.reload(true); }, 1500);
 				
 			} else {
-
-				alert(data.erro);
+				 sysMsg(data.erro,'E')
 
 			}
 
 		},
 		error : function(msg) {
 			$.unblockUI();
-			alert("Erro: " + msg.msg);
 		}
 	});
 
@@ -382,7 +380,8 @@ function addBairro() {
 			for (t = 0; t < horarios_bairros.length; t++) {
 
 				if (horarios_bairros[t].cod_bairro == $("#cod_bairro").val()) {
-					alert("Atenção! Bairro já existe na relação de bairros para entrega. O sistema irá carregar as informações existentes.");
+					sysMsg("Atenção! Bairro já existe na relação de bairros para entrega. O sistema irá carregar as informações existentes.",'A')
+					
 					jatem = true;
 					loadDadosBairro($("#cod_bairro").val());
 					break;
@@ -402,7 +401,8 @@ function addBairro() {
 			loadDadosBairro($("#cod_bairro").val());
 		}
 	} else {
-		alert("Escolha um bairro");
+		sysMsg("Escolha um bairro",'E')
+		
 	}
 }
 
@@ -485,7 +485,7 @@ function loadCidade() {
 		},
 		error : function(msg) {
 			$.unblockUI();
-			alert("Erro: " + msg.msg);
+			
 		}
 	});
 
@@ -517,7 +517,7 @@ function loadBairrosParam() {
 		},
 		error : function(msg) {
 			$.unblockUI();
-			alert("Erro: " + msg.msg);
+			
 		}
 	});
 
@@ -569,7 +569,7 @@ function loadDados() {
 		},
 		error : function(msg) {
 			$.unblockUI();
-			alert("Erro: " + msg.msg);
+			
 		}
 	});
 
@@ -653,7 +653,7 @@ function addHorario() {
 	
 	}
 	catch(err) {
-	   alert(err);
+		 sysMsg(err,'E')
 	}
 }
 
@@ -715,7 +715,7 @@ function loadDiasSemana() {
 
 		},
 		error : function(data) {
-			alert(data.responseText);
+			
 		}
 	});
 

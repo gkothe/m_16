@@ -40,20 +40,19 @@ function sendEmail() {
 		dataType : 'json',
 		success : function(data) {
 			if (data.msg == 'ok') {
-				alert("Email enviado! ");
+				
+				sysMsg("Email enviado!",'M')
 				
 				$("#modal_ajuda").modal("hide");
 			} else {
-
-				alert(data.erro);
-
+				 sysMsg(data.erro,'E')
 			}
 
 			$.unblockUI();
 		},
 		error : function(data) {
 			$.unblockUI();
-			alert(data.responseText);
+			
 		}
 	});
 

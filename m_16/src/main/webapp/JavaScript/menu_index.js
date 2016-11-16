@@ -60,6 +60,25 @@ function showHelp() {
 
 }
 
+
+function sysMsg(text,tipo){
+	
+	if(tipo=='E'){
+		$("#msg_erro_aviso").html("<label style=\"font-size: 20px; color: red\" > ERRO!</label>");	
+	}else if(tipo=='A'){
+		$("#msg_erro_aviso").html("<label style=\"font-size: 20px; color:#ff9900\" > Aviso!</label>");	
+	}else if(tipo=='M'){
+		$("#msg_erro_aviso").html("<label style=\"font-size: 20px; color:green\" > Mensagem</label>");
+	}
+	
+	
+	
+	
+	$("#modal_erros").modal('show');
+	$("#msg_erro").html(text);
+	
+}
+
 function trocaPag(pag, jsp, e) {
 
 	var link = $(pag).attr('linkmenu');
@@ -220,6 +239,7 @@ $(document).ready(function() {
 	 */
 	resizedivs();
 
+	
 });
 
 var sommute = false;
@@ -282,7 +302,7 @@ function loadLogoEmpresa() {
 
 		},
 		error : function(data) {
-			alert(data.responseText);
+			
 		}
 	});
 
@@ -359,7 +379,8 @@ function checarPedidos() {
 
 			} else {
 				if (data.statusText != undefined)
-					alert(data.statusText);
+					 sysMsg(data.statusText,'E')
+
 			}
 		}
 	});
@@ -478,7 +499,7 @@ function loadMotivos() {
 		},
 		error : function(data) {
 			if (data.statusText != undefined)
-				alert(data.responseText);
+				sysMsg(data.statusText,'E')
 		}
 	});
 
@@ -629,7 +650,7 @@ function visualizarPedido(id) {
 		},
 		error : function(data) {
 			if (data.statusText != undefined)
-				alert(data.responseText);
+				sysMsg(data.statusText,'E');
 		}
 	});
 
@@ -658,8 +679,8 @@ function finalizarPedido() {
 			success : function(data) {
 
 				if (data.msg == 'ok') {
-					alert("Pedido finalizado!");
-
+					
+					sysMsg("Pedido finalizado!",'M')
 					checarPedidos();
 
 					try {
@@ -672,7 +693,7 @@ function finalizarPedido() {
 					limpaModal();
 
 				} else if (data.erro != undefined) {
-					alert(data.erro);
+					 sysMsg(data.erro,'E')
 				}
 
 				$.unblockUI();
@@ -732,12 +753,14 @@ function responderPedido() {
 
 					if (data.msg == 'ok') {
 						if (resposta == "A") {
-							alert("Pedido Respondido");
+							
+							 sysMsg("Pedido Respondido",'M')
 
 						}
 
 						if (resposta == "R") {
-							alert("Pedido Recusado!");
+							sysMsg("Pedido Recusado",'M')
+							
 						}
 
 						checarPedidos();
@@ -759,7 +782,7 @@ function responderPedido() {
 						}
 
 					} else if (data.erro != undefined) {
-						alert(data.erro);
+						 sysMsg(data.erro,'E')
 					}
 
 					$.unblockUI();
@@ -773,7 +796,8 @@ function responderPedido() {
 		}
 
 	} else {
-		alert("Você deve aceitar ou recusar o pedido.");
+		 sysMsg("Você deve aceitar ou recusar o pedido.",'A')
+		
 	}
 }
 
@@ -873,7 +897,7 @@ function setAutocomplete(cod, descr) {
 
 				},
 				error : function(data) {
-					alert(data.responseText);
+					
 				}
 			});
 		}

@@ -152,7 +152,7 @@ function editarProduto(id_produto) {
 		},
 		error : function(msg) {
 			$.unblockUI();
-			alert("Erro: " + msg.msg);
+			
 		}
 	});
 
@@ -193,19 +193,19 @@ function salvarProduto(id_produto) {
 		},
 		success : function(data) {
 			if (data.msg) {
-				alert(data.msg);
+				 sysMsg(data.msg,'M')
+				
 				cleanModalprod();
 				$('#modal_produto').modal('hide');
 				loadProdutos();
 				$.unblockUI();
 			}else{
-				alert(data.erro);
+				 sysMsg(data.erro,'E')
 			}
 
 		},
 		error : function(msg) {
 			$.unblockUI();
-			alert("Erro: " + msg.msg);
 		}
 	});
 
@@ -251,7 +251,6 @@ function loadProdutos() {
 		},
 		error : function(msg) {
 			$.unblockUI();
-			alert("Erro: " + msg.msg);
 		}
 	});
 

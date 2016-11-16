@@ -186,7 +186,7 @@ function carregaBairros() {
 		},
 		error : function(msg) {
 			$.unblockUI();
-			alert("Erro: " + msg.msg);
+			
 		}
 	});
 
@@ -272,8 +272,7 @@ function loadAbertos(blockui) {
 			if (msg.status == 0) {
 
 			} else {
-				alert("Erro: " + msg.msg);
-
+				 sysMsg(msg.msg,'E')
 			}
 
 		}

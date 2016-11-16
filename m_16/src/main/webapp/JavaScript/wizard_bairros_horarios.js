@@ -142,17 +142,17 @@ function salvarconfigs() {
 
 			if (data.msg == 'ok') {
 
-				alert("Configurações de bairros/horários salvos!");
+				
+				sysMsg("Configurações de bairros/horários salvos!",'M')
 				location.reload(true);
 
 			} else {
-				alert(data.erro);
+				sysMsg(data.erro,'E')
 			}
 			$.unblockUI();
 		},
 		error : function(data) {
 			$.unblockUI();
-			alert(data.responseText);
 		}
 	});
 
@@ -220,7 +220,8 @@ function addHorario() {
 		}
 
 	} catch (err) {
-		alert(err);
+		sysMsg(err,'E')
+		
 	}
 }
 
@@ -287,7 +288,8 @@ function addHorario2() {
 		}
 
 	} catch (err) {
-		alert(err);
+		sysMsg(err,'E')
+		
 	}
 }
 
@@ -322,7 +324,7 @@ function loadBairrosWizard() {
 			$("#tab_wizard_bairros").html(html.toString());
 		},
 		error : function(data) {
-			alert(data.responseText);
+			
 		}
 	});
 
@@ -369,7 +371,7 @@ function loadDiasWizard() {
 			$("#tab_wizard_dias").html(html.toString());
 		},
 		error : function(data) {
-			alert(data.responseText);
+			
 		}
 	});
 

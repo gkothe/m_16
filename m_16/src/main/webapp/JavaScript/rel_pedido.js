@@ -69,7 +69,7 @@ function carregaBairros() {
 		},
 		error : function(msg) {
 			$.unblockUI();
-			alert("Erro: " + msg.msg);
+			
 		}
 	});
 

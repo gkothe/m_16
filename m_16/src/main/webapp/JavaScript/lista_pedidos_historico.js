@@ -167,7 +167,7 @@ function carregaBairros() {
 		},
 		error : function(msg) {
 			$.unblockUI();
-			alert("Erro: " + msg.msg);
+			
 		}
 	});
 
@@ -325,7 +325,7 @@ function visualizarPedidoHistorico(id) {
 
 		},
 		error : function(data) {
-			alert(data.responseText);
+			
 		}
 	});
 
@@ -393,7 +393,7 @@ function loadhistoricos(pag, size) {
 		},
 		error : function(msg) {
 			$.unblockUI();
-			alert("Erro: " + msg.msg);
+			
 		}
 	});
 

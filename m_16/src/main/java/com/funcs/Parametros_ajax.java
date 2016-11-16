@@ -150,7 +150,7 @@ public class Parametros_ajax {
 
 			}
 
-			obj.put("msg", "Produto salvos!");
+			obj.put("msg", "Produto salvo!");
 
 		}
 
