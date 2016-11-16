@@ -276,26 +276,6 @@ public class Home_ajax {
 
 	}
 
-	public static void main(String[] args) {
 
-		try {
-			Calendar date_pedidocal = Calendar.getInstance();
-			date_pedidocal.setTime(new SimpleDateFormat("dd/MM/yyyy hh:mm").parse("02/08/2016 10:10"));
-
-			Calendar agoracal = Calendar.getInstance();
-			agoracal.setTime(new Date());
-
-			long diferenca = agoracal.getTimeInMillis() - date_pedidocal.getTimeInMillis();
-			long diferencaMin = diferenca / (60 * 1000); // DIFERENCA EM MINUTOS
-
-			System.out.println(diferencaMin);
-
-		} catch (Exception e) {
-
-			e.printStackTrace();
-			// TODO: handle exception
-		}
-
-	}
 
 }

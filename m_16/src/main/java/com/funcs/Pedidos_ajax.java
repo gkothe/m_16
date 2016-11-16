@@ -414,9 +414,9 @@ public class Pedidos_ajax {
 
 		if (!(data_pedido_fim.equalsIgnoreCase(""))) {
 
-			Date data = new SimpleDateFormat("dd/MM/yyyy HH:mm").parse(data_pedido_fim + " 23:59");
-			st.setString(contparam, new SimpleDateFormat("yyyy-MM-dd HH:mm").format(data));
-			st2.setString(contparam, new SimpleDateFormat("yyyy-MM-dd HH:mm").format(data));
+			Date data = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").parse(data_pedido_fim + " 23:59:59");
+			st.setString(contparam, new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(data));
+			st2.setString(contparam, new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(data));
 			contparam++;
 		}
 
@@ -430,9 +430,9 @@ public class Pedidos_ajax {
 
 		if (!(data_reposta_fim.equalsIgnoreCase(""))) {
 
-			Date data = new SimpleDateFormat("dd/MM/yyyy HH:mm").parse(data_reposta_fim + " 23:59");
-			st.setString(contparam, new SimpleDateFormat("yyyy-MM-dd HH:mm").format(data));
-			st2.setString(contparam, new SimpleDateFormat("yyyy-MM-dd HH:mm").format(data));
+			Date data = new SimpleDateFormat("dd/MM/yyyy HH:mm").parse(data_reposta_fim + " 23:59:59");
+			st.setString(contparam, new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(data));
+			st2.setString(contparam, new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(data));
 			contparam++;
 		}
 

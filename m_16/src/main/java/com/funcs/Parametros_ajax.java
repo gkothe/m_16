@@ -880,16 +880,6 @@ public class Parametros_ajax {
 		out.print(ret.toJSONString());
 	}
 
-	public static void main(String[] args) {
 
-		try {
-			Date data = new SimpleDateFormat("HH:mm").parse("8:30");
-			System.out.println(data);
-
-		} catch (Exception e) {
-			// TODO: handle exception
-		}
-
-	}
 
 }

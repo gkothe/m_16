@@ -1628,8 +1628,8 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 
 		if (!(datafim.equalsIgnoreCase(""))) {
 
-			Date data = new SimpleDateFormat("dd/MM/yyyy HH:mm").parse(datafim + " " + "23:59:59");
-			st.setString(contparam, new SimpleDateFormat("yyyy-MM-dd HH:mm").format(data));
+			Date data = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").parse(datafim + " " + "23:59:59");
+			st.setString(contparam, new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(data));
 			contparam++;
 		}
 
