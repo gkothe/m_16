@@ -921,7 +921,7 @@ function responderPedido() {
 
 							setTimeout(function() {
 								visualizarPedido(id);
-							}, 700)
+							}, 700);
 
 						}
 

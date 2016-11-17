@@ -36,11 +36,8 @@ import net.sf.jasperreports.engine.export.JRPdfExporterParameter;
 
 public class Parametros_ajax {
 
-	//Dias são fixos, 1 segunda feira ate 7 domingo, 8=custom
-	
-	
-	
-	
+	// Dias são fixos, 1 segunda feira ate 7 domingo, 8=custom
+
 	public static void carregaProdutos(HttpServletRequest request, HttpServletResponse response, Connection conn, int coddistr) throws Exception {
 		PrintWriter out = response.getWriter();
 		JSONArray prods = new JSONArray();
@@ -291,7 +288,7 @@ public class Parametros_ajax {
 		PrintWriter out = response.getWriter();
 		JSONArray ret = new JSONArray();
 
-		String sql = " SELECT TXT_OBS_HORA, `ID_DISTRIBUIDORA`, " + "    `COD_CIDADE`," + "    `DESC_RAZAO_SOCIAL`," + "   `DESC_NOME_ABREV`," + "  `VAL_ENTREGA_MIN`," + " `DESC_TELEFONE`," + " `DESC_ENDERECO`," + " `NUM_ENDEREC`," + " `DESC_COMPLEMENTO`," + " `VAL_TELE_ENTREGA`," + " flag_custom," + " desc_mail, " + " coalesce(flag_ativo,'N') as flag_ativo,FLAG_MODOPAGAMENTO, flag_entre_ret from distribuidora  where	 ID_DISTRIBUIDORA = ? ";
+		String sql = " SELECT cod_bairro, TXT_OBS_HORA, `ID_DISTRIBUIDORA`, " + "    `COD_CIDADE`," + "    `DESC_RAZAO_SOCIAL`," + "   `DESC_NOME_ABREV`," + "  `VAL_ENTREGA_MIN`," + " `DESC_TELEFONE`," + " `DESC_ENDERECO`," + " `NUM_ENDEREC`," + " `DESC_COMPLEMENTO`," + " `VAL_TELE_ENTREGA`," + " flag_custom," + " desc_mail, " + " coalesce(flag_ativo,'N') as flag_ativo,FLAG_MODOPAGAMENTO, flag_entre_ret from distribuidora  where	 ID_DISTRIBUIDORA = ? ";
 
 		PreparedStatement st = conn.prepareStatement(sql);
 		st.setInt(1, coddistr);
@@ -320,12 +317,12 @@ public class Parametros_ajax {
 			obj.put("DESC_COMPLEMENTO", rs.getString("DESC_COMPLEMENTO"));
 			obj.put("VAL_TELE_ENTREGA", rs.getString("VAL_TELE_ENTREGA"));
 			obj.put("flag_custom", rs.getString("flag_custom"));
+			obj.put("cod_bairro", rs.getString("cod_bairro"));
 			obj.put("desc_mail", rs.getString("desc_mail"));
 			obj.put("flag_ativo", rs.getString("flag_ativo").equalsIgnoreCase("F") ? "S" : rs.getString("flag_ativo"));
 			obj.put("flag_modopag", rs.getString("FLAG_MODOPAGAMENTO"));
 			obj.put("flag_entre_ret", rs.getString("flag_entre_ret"));
 			obj.put("txt_obs_hora", rs.getString("txt_obs_hora"));
-			
 
 			ret.add(obj);
 
@@ -354,9 +351,8 @@ public class Parametros_ajax {
 		String flag_modopag = request.getParameter("flag_modopag") == null ? "" : request.getParameter("flag_modopag"); //
 		String flag_entre_ret = request.getParameter("flag_entre_ret") == null ? "" : request.getParameter("flag_entre_ret"); //
 		String txt_obs_hora = request.getParameter("txt_obs_hora") == null ? "" : request.getParameter("txt_obs_hora"); //
-		
-		
-		
+		String cod_bairro_distr = request.getParameter("cod_bairro_distr") == null ? "" : request.getParameter("cod_bairro_distr"); //
+
 		if (!(flag_custom.equalsIgnoreCase("S")) && !(flag_custom.equalsIgnoreCase("N"))) {
 			throw new Exception("Dados inválidos, entre em contato com o suporte.");
 		}
@@ -365,9 +361,13 @@ public class Parametros_ajax {
 			throw new Exception("Dados inválidos, entre em contato com o suporte.");
 		}
 
+		if (desc_endereco.equalsIgnoreCase("") || desc_complemento.equalsIgnoreCase("") || cod_bairro_distr.equalsIgnoreCase("")) {
+			throw new Exception("Dados de endereço, entre em contato com o suporte.");
+		}
+
 		JSONArray bairros = (JSONArray) new JSONParser().parse(bairrosjson);
 
-		String sql = " UPDATE distribuidora SET `COD_CIDADE` = ?, `DESC_RAZAO_SOCIAL` = ?, `DESC_NOME_ABREV` = ?, `VAL_ENTREGA_MIN` = ?, `DESC_TELEFONE` = ?, `DESC_ENDERECO` = ?, `NUM_ENDEREC` = ?, `DESC_COMPLEMENTO` = ?, `VAL_TELE_ENTREGA` = ? , flag_custom = ? , flag_ativo = ?, desc_mail =?, FLAG_MODOPAGAMENTO = ? , flag_entre_ret = ? , txt_obs_hora = ?  WHERE `ID_DISTRIBUIDORA` = ? ";
+		String sql = " UPDATE distribuidora SET `COD_CIDADE` = ?, `DESC_RAZAO_SOCIAL` = ?, `DESC_NOME_ABREV` = ?, `VAL_ENTREGA_MIN` = ?, `DESC_TELEFONE` = ?, `DESC_ENDERECO` = ?, `NUM_ENDEREC` = ?, `DESC_COMPLEMENTO` = ?, `VAL_TELE_ENTREGA` = ? , flag_custom = ? , flag_ativo = ?, desc_mail =?, FLAG_MODOPAGAMENTO = ? , flag_entre_ret = ? , txt_obs_hora = ?, COD_BAIRRO = ?  WHERE `ID_DISTRIBUIDORA` = ? ";
 
 		PreparedStatement st = conn.prepareStatement(sql);
 		st.setInt(1, Integer.parseInt(cod_cidade));
@@ -385,9 +385,8 @@ public class Parametros_ajax {
 		st.setString(13, flag_modopag);
 		st.setString(14, flag_entre_ret);
 		st.setString(15, txt_obs_hora);
-		st.setInt(16, coddistr);  
-		
-		
+		st.setString(16, cod_bairro_distr);
+		st.setInt(17, coddistr);
 
 		st.executeUpdate();
 
@@ -480,10 +479,10 @@ public class Parametros_ajax {
 					if (horario.get("HORARIO_FIM").toString().length() != 5) {
 						throw new Exception("O horário " + horario.get("HORARIO_FIM") + " é invalido");
 					}
-					
-					Date dataini = Utilitario.testeHora("HH:mm", horario.get("HORARIO_INI").toString(),"");//tempo de entrega da distri
-					Date datafim = Utilitario.testeHora("HH:mm", horario.get("HORARIO_FIM").toString(),"");;//tempo de entrega do usuario
-					
+
+					Date dataini = Utilitario.testeHora("HH:mm", horario.get("HORARIO_INI").toString(), "");// tempo de entrega da distri
+					Date datafim = Utilitario.testeHora("HH:mm", horario.get("HORARIO_FIM").toString(), "");
+					;// tempo de entrega do usuario
 
 					for (int l = 0; l < horarios.size(); l++) {
 
@@ -492,10 +491,9 @@ public class Parametros_ajax {
 
 						if (!(idteste.equalsIgnoreCase(horario2.get("id_horario").toString()))) {
 
-							Date dataini2 = Utilitario.testeHora("HH:mm", horario.get("HORARIO_INI").toString(),"");//tempo de entrega da distri
-							Date datafim2 = Utilitario.testeHora("HH:mm", horario.get("HORARIO_FIM").toString(),"");;//tempo de entrega do usuario
-							
-
+							Date dataini2 = Utilitario.testeHora("HH:mm", horario.get("HORARIO_INI").toString(), "");// tempo de entrega da distri
+							Date datafim2 = Utilitario.testeHora("HH:mm", horario.get("HORARIO_FIM").toString(), "");
+							;// tempo de entrega do usuario
 
 							if (dataini.after(dataini2) && dataini.before(datafim2)) {
 								throw new Exception("Erro ao salvar. Existem horarios conflitantes.");
@@ -663,12 +661,9 @@ public class Parametros_ajax {
 						throw new Exception("O horário " + horario.get("HORARIO_FIM") + " é invalido");
 					}
 
-					
-					Date dataini = Utilitario.testeHora("HH:mm", horario.get("HORARIO_INI").toString(),"");//tempo de entrega da distri
-					Date datafim = Utilitario.testeHora("HH:mm", horario.get("HORARIO_FIM").toString(),"");;//tempo de entrega do usuario
-					
-					
-					
+					Date dataini = Utilitario.testeHora("HH:mm", horario.get("HORARIO_INI").toString(), "");// tempo de entrega da distri
+					Date datafim = Utilitario.testeHora("HH:mm", horario.get("HORARIO_FIM").toString(), "");
+					;// tempo de entrega do usuario
 
 					// teste de conflito de horario
 
@@ -693,7 +688,7 @@ public class Parametros_ajax {
 					rs2 = st2.executeQuery();
 
 					if (rs2.next()) {
-						msg = msg + "O horário " + horario.get("HORARIO_INI").toString() + " até as " + horario.get("HORARIO_FIM").toString() + " conflita com horários no Bairro: " + Utilitario.getNomeBairro(conn, 0, iddistrbair) + "   -  Dia: " + Utilitario.getDescDiaSemana(conn, (coddia),false) + " - das " + rs2.getString("HORARIO_INI") + " até " + rs2.getString("HORARIO_FIM") + " \n";
+						msg = msg + "O horário " + horario.get("HORARIO_INI").toString() + " até as " + horario.get("HORARIO_FIM").toString() + " conflita com horários no Bairro: " + Utilitario.getNomeBairro(conn, 0, iddistrbair) + "   -  Dia: " + Utilitario.getDescDiaSemana(conn, (coddia), false) + " - das " + rs2.getString("HORARIO_INI") + " até " + rs2.getString("HORARIO_FIM") + " \n";
 						// throw new Exception("O horário " + horario.get("HORARIO_INI").toString() + " até as " + horario.get("HORARIO_FIM").toString() + " conflita com horários no Bairro: " + Utilitario.getNomeBairro(conn, 0, iddistrbair) + " - Dia: " + Utilitario.getDescDiaSemana(conn, (coddia)) + " - das " + rs2.getString("HORARIO_INI") + " até " + rs2.getString("HORARIO_FIM") );
 					}
 
@@ -740,16 +735,11 @@ public class Parametros_ajax {
 
 		JSONArray horarios = (JSONArray) new JSONParser().parse(horariosjson);
 
-	/*	for (int i = 0; i < horarios.size(); i++) {
-			JSONObject faixa = (JSONObject) horarios.get(i);
-			for (int t = 0; t < dias.length; t++) {
-				System.out.println(horarios.get(i));
-				if (!Utilitario.isNumeric(faixa.get(i).toString().substring(horarios.get(i).toString().length() - 1, horarios.get(i).toString().length()))) {// pega o ultimo char de horarios_1
-					throw new Exception("Dia inválido.");
-				}	
-			}
-			
-		}*/
+		/*
+		 * for (int i = 0; i < horarios.size(); i++) { JSONObject faixa = (JSONObject) horarios.get(i); for (int t = 0; t < dias.length; t++) { System.out.println(horarios.get(i)); if (!Utilitario.isNumeric(faixa.get(i).toString().substring(horarios.get(i).toString().length() - 1, horarios.get(i).toString().length()))) {// pega o ultimo char de horarios_1 throw new Exception("Dia inválido."); } }
+		 * 
+		 * }
+		 */
 
 		PreparedStatement st = null;
 		PreparedStatement st2 = null;
@@ -815,57 +805,52 @@ public class Parametros_ajax {
 				st2.executeUpdate();
 			}
 
-			
-
 			for (int i = 0; i < horarios.size(); i++) {
 				JSONObject faixa = (JSONObject) horarios.get(i);
 				for (int t = 0; t < dias.length; t++) {
-					if(faixa.get("HORARIO_"+dias[t])!=null){
-						 String horariocompleto = faixa.get("HORARIO_"+dias[t]).toString();
-						 String[] horariosstr = horariocompleto.split(" - ");
-						 
-						 
-							Date dataini = Utilitario.testeHora("HH:mm", horariosstr[0],"");//tempo de entrega da distri
-							Date datafim = Utilitario.testeHora("HH:mm", horariosstr[1],"");;//tempo de entrega do usuario
-							
-							
-							
-							StringBuffer varname1 = new StringBuffer();
-							varname1.append("SELECT * ");
-							varname1.append("FROM   distribuidora_horario_dia_entre ");
-							varname1.append("WHERE  id_distribuidora = " + coddistr + " ");
-							varname1.append("       AND cod_dia = " + dias[t] + " ");
-							varname1.append("       AND id_distr_bairro =  " + iddistrbair + " ");
-							varname1.append("       AND ( ( horario_ini BETWEEN ? AND ? ");
-							varname1.append("                OR horario_fim BETWEEN ? AND ? ) ");
-							varname1.append("              OR ( ? BETWEEN horario_ini AND horario_fim ");
-							varname1.append("                    OR ? BETWEEN horario_ini AND horario_fim ) );");
+					if (faixa.get("HORARIO_" + dias[t]) != null) {
+						String horariocompleto = faixa.get("HORARIO_" + dias[t]).toString();
+						String[] horariosstr = horariocompleto.split(" - ");
 
-							st2 = conn.prepareStatement(varname1.toString());
-							st2.setString(1, horariosstr[0] + ":00");
-							st2.setString(2, horariosstr[1] + ":59");
-							st2.setString(3, horariosstr[0] + ":00");
-							st2.setString(4, horariosstr[1] + ":59");
-							st2.setString(5, horariosstr[0]+ ":00");
-							st2.setString(6, horariosstr[1] + ":59");
-							rs2 = st2.executeQuery();
+						Date dataini = Utilitario.testeHora("HH:mm", horariosstr[0], "");// tempo de entrega da distri
+						Date datafim = Utilitario.testeHora("HH:mm", horariosstr[1], "");
+						;// tempo de entrega do usuario
 
-							if (rs2.next()) {
-								msg = msg + "O horário " + horariosstr[0] + " até as " + horariosstr[1] + " conflita com horários no Bairro: " + Utilitario.getNomeBairro(conn, 0, iddistrbair) + "   -  Dia: " + Utilitario.getDescDiaSemana(conn, (dias[t]),false) + " - das " + rs2.getString("HORARIO_INI") + " até " + rs2.getString("HORARIO_FIM") + " \n";
-								// throw new Exception("O horário " + horario.get("HORARIO_INI").toString() + " até as " + horario.get("HORARIO_FIM").toString() + " conflita com horários no Bairro: " + Utilitario.getNomeBairro(conn, 0, iddistrbair) + " - Dia: " + Utilitario.getDescDiaSemana(conn, (coddia)) + " - das " + rs2.getString("HORARIO_INI") + " até " + rs2.getString("HORARIO_FIM") );
-							}
+						StringBuffer varname1 = new StringBuffer();
+						varname1.append("SELECT * ");
+						varname1.append("FROM   distribuidora_horario_dia_entre ");
+						varname1.append("WHERE  id_distribuidora = " + coddistr + " ");
+						varname1.append("       AND cod_dia = " + dias[t] + " ");
+						varname1.append("       AND id_distr_bairro =  " + iddistrbair + " ");
+						varname1.append("       AND ( ( horario_ini BETWEEN ? AND ? ");
+						varname1.append("                OR horario_fim BETWEEN ? AND ? ) ");
+						varname1.append("              OR ( ? BETWEEN horario_ini AND horario_fim ");
+						varname1.append("                    OR ? BETWEEN horario_ini AND horario_fim ) );");
 
-							sql = "INSERT INTO distribuidora_horario_dia_entre (`ID_HORARIO`, `ID_DISTRIBUIDORA`, `COD_DIA`, `ID_DISTR_BAIRRO`, `HORARIO_INI`, `HORARIO_FIM`) VALUES (?, ?, ?, ?, ?, ?);";
-							st3 = conn.prepareStatement(sql);
-							st3.setInt(1, Utilitario.retornaIdinsert("distribuidora_horario_dia_entre", "id_horario", conn));
-							st3.setInt(2, coddistr);
-							st3.setInt(3, dias[t]);
-							st3.setInt(4, iddistrbair);
-							st3.setString(5, horariosstr[0] + ":00");
-							st3.setString(6, horariosstr[1] + ":59");
-							st3.executeUpdate();
-							
-						
+						st2 = conn.prepareStatement(varname1.toString());
+						st2.setString(1, horariosstr[0] + ":00");
+						st2.setString(2, horariosstr[1] + ":59");
+						st2.setString(3, horariosstr[0] + ":00");
+						st2.setString(4, horariosstr[1] + ":59");
+						st2.setString(5, horariosstr[0] + ":00");
+						st2.setString(6, horariosstr[1] + ":59");
+						rs2 = st2.executeQuery();
+
+						if (rs2.next()) {
+							msg = msg + "O horário " + horariosstr[0] + " até as " + horariosstr[1] + " conflita com horários no Bairro: " + Utilitario.getNomeBairro(conn, 0, iddistrbair) + "   -  Dia: " + Utilitario.getDescDiaSemana(conn, (dias[t]), false) + " - das " + rs2.getString("HORARIO_INI") + " até " + rs2.getString("HORARIO_FIM") + " \n";
+							// throw new Exception("O horário " + horario.get("HORARIO_INI").toString() + " até as " + horario.get("HORARIO_FIM").toString() + " conflita com horários no Bairro: " + Utilitario.getNomeBairro(conn, 0, iddistrbair) + " - Dia: " + Utilitario.getDescDiaSemana(conn, (coddia)) + " - das " + rs2.getString("HORARIO_INI") + " até " + rs2.getString("HORARIO_FIM") );
+						}
+
+						sql = "INSERT INTO distribuidora_horario_dia_entre (`ID_HORARIO`, `ID_DISTRIBUIDORA`, `COD_DIA`, `ID_DISTR_BAIRRO`, `HORARIO_INI`, `HORARIO_FIM`) VALUES (?, ?, ?, ?, ?, ?);";
+						st3 = conn.prepareStatement(sql);
+						st3.setInt(1, Utilitario.retornaIdinsert("distribuidora_horario_dia_entre", "id_horario", conn));
+						st3.setInt(2, coddistr);
+						st3.setInt(3, dias[t]);
+						st3.setInt(4, iddistrbair);
+						st3.setString(5, horariosstr[0] + ":00");
+						st3.setString(6, horariosstr[1] + ":59");
+						st3.executeUpdate();
+
 					}
 				}
 
@@ -879,7 +864,5 @@ public class Parametros_ajax {
 		ret.put("msg", "ok");
 		out.print(ret.toJSONString());
 	}
-
-
 
 }

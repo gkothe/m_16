@@ -1,6 +1,6 @@
 /*==============================================================*/
 /* DBMS name:      MySQL 5.0                                    */
-/* Created on:     17/11/2016 10:17:46 AM                       */
+/* Created on:     17/11/2016 3:40:45 PM                        */
 /*==============================================================*/
 
 
@@ -120,12 +120,13 @@ create table DISTRIBUIDORA
 (
    ID_DISTRIBUIDORA     INT4 not null auto_increment,
    COD_CIDADE           INT4,
+   COD_BAIRRO           INT4 not null,
    DESC_RAZAO_SOCIAL    TEXT,
    DESC_NOME_ABREV      TEXT,
    VAL_ENTREGA_MIN      NUMERIC(12,2),
    DESC_TELEFONE        VARCHAR(50),
-   DESC_ENDERECO        TEXT,
-   NUM_ENDEREC          VARCHAR(10),
+   DESC_ENDERECO        TEXT not null,
+   NUM_ENDEREC          VARCHAR(10) not null,
    DESC_COMPLEMENTO     TEXT,
    VAL_TELE_ENTREGA     NUMERIC(12,2),
    FLAG_CUSTOM          char(1),
@@ -375,6 +376,9 @@ alter table CARRINHO_ITEM add constraint FK_REFERENCE_23 foreign key (ID_CARRINH
 
 alter table CARRINHO_ITEM add constraint FK_REFERENCE_24 foreign key (ID_PROD_DIST)
       references PRODUTOS_DISTRIBUIDORA (ID_PROD_DIST) on delete restrict on update restrict;
+
+alter table DISTRIBUIDORA add constraint FK_REFERENCE_30 foreign key (COD_BAIRRO)
+      references BAIRROS (COD_BAIRRO) on delete restrict on update restrict;
 
 alter table DISTRIBUIDORA add constraint FK_REFERENCE_6 foreign key (COD_CIDADE)
       references CIDADE (COD_CIDADE) on delete restrict on update restrict;

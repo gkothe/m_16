@@ -95,7 +95,9 @@ $(document).ready(function() {
 	$("#txt_obs_hora").change(function() {
 		ativaWarningSalvar();
 	});
-	
+	$("#cod_bairro_distr").change(function() {
+		ativaWarningSalvar();
+	});
 	
 	$(".warn-change").change(function(){
 		ativaWarningSalvar();
@@ -147,7 +149,7 @@ $(document).ready(function() {
 	loadBairrosParam();
 	loadDiasSemana();
 
-	loadDados();
+
 
 	$('[data-toggle="tooltip"]').tooltip();
 });
@@ -257,9 +259,12 @@ function carregaBairros() {
 			}
 
 			$("#cod_bairro").html(html);
-
+			$("#cod_bairro_distr").html(html);
+			
+			
+			
 			$.unblockUI();
-
+			loadDados();
 		},
 		error : function(msg) {
 			$.unblockUI();
@@ -296,6 +301,8 @@ function salvarTela() {
 	var flag_modopag = $("#flag_modopag").val();
 	var flag_entre_ret = $("#flag_entre_ret").val();
 	var txt_obs_hora = $("#txt_obs_hora").val();
+	var cod_bairro_distr = $("#cod_bairro_distr").val();
+	
 	
 	var flag_custom = "";
 
@@ -330,7 +337,8 @@ function salvarTela() {
 			desc_mail:desc_mail,
 			flag_modopag:flag_modopag,
 			flag_entre_ret:flag_entre_ret,
-			txt_obs_hora:txt_obs_hora
+			txt_obs_hora:txt_obs_hora,
+			cod_bairro_distr:cod_bairro_distr
 			
 
 		},
@@ -526,7 +534,7 @@ function loadBairrosParam() {
 function loadDados() {
 
 	$.blockUI({
-		message : 'Salvando...'
+		message : 'Carregando...'
 	});
 
 	$.ajax({
@@ -553,6 +561,7 @@ function loadDados() {
 			$("#flag_modopag").val(data[0].flag_modopag);
 			$("#emp_logo").attr("src", data[0].nome_img);
 			$("#flag_entre_ret").val(data[0].flag_entre_ret);
+			$("#cod_bairro_distr").val(data[0].cod_bairro);
 			
 			$("#txt_obs_hora").val(data[0].txt_obs_hora);
 			
