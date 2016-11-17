@@ -25,7 +25,7 @@
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font size="10" isBold="true"/>
 				</textElement>
-				<text><![CDATA[RELATÓRIO DE PROTUDOS]]></text>
+				<text><![CDATA[RELATÓRIO DE PRODUTOS]]></text>
 			</staticText>
 			<staticText>
 				<reportElement x="0" y="19" width="50" height="15" uuid="fe599c13-4b02-4562-9bfe-73f259b9aa9a"/>
