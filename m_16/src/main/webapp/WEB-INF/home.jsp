@@ -93,8 +93,8 @@ input:focus {
 <body class="nav-md">
 	<div class="container body">
 		<div class="main_container" id="main_cont" style="">
-			<div  class="col-md-3 left_col menucustom">
-				<div  class="left_col scroll-view menucustom">
+			<div class="col-md-3 left_col menucustom">
+				<div class="left_col scroll-view menucustom">
 					<div class="navbar nav_title" style="border: 0;">
 						<a class="site_title"><image style="width: 200px"
 								src="images/logomenu.png"></image> </a>
@@ -119,7 +119,7 @@ input:focus {
 
 					<br /> <br> <br>
 					<!-- sidebar menu -->
-					<div  id="sidebar-menu"
+					<div id="sidebar-menu"
 						class="main_menu_side hidden-print main_menu">
 						<div class="menu_section">
 							<h3>Menu</h3>
@@ -278,7 +278,7 @@ input:focus {
 			<!-- /page content -->
 
 			<!-- footer content -->
-			<footer style="padding-bottom: 0px !important" >
+			<footer style="padding-bottom: 0px !important">
 				<br>
 			</footer>
 			<!-- /footer content -->
@@ -350,8 +350,8 @@ input:focus {
 			</div>
 
 			<div id="modal_cancelamentos"></div>
-			
-			<div class="modal fade bs-example-modal-lg" tabindex="-5"
+
+			<div class="modal fade bs-example-modal-lg" tabindex="-5" style="z-index:2000"
 				role="dialog" id="modal_erros" aria-hidden="true">
 				<div class="modal-dialog modal-lg">
 					<div class="modal-content">
@@ -364,7 +364,7 @@ input:focus {
 								<label style="font-size: 20px; color: red" id="">ERRO!</label>
 							</h4>
 						</div>
-						<div class="modal-body" style="max-height: 800px; overflow: auto;">
+						<div class="modal-body" style="max-height: 750px; overflow: auto;">
 
 							<div class="row">
 
@@ -394,6 +394,48 @@ input:focus {
 				</div>
 			</div>
 
+
+
+			<div class="modal fade bs-example-modal-lg"  tabindex="5"
+				role="dialog" id="modal_prodsrecusa" aria-hidden="true">
+				<div class="modal-dialog modal-lg">
+					<div class="modal-content">
+
+						<div class="modal-header" align="center">
+							<button type="button" class="close" data-dismiss="modal">
+								<span aria-hidden="true">×</span>
+							</button>
+							<h4 class="modal-title" id="msg_erro_aviso">
+								<label style="font-size: 20px; color: red" id="">Produtos
+									em falta</label>
+							</h4>
+						</div>
+						<div class="modal-body" style="max-height: 750px; overflow: auto;">
+							<strong>Por favor, selecione os produtos que estão em falta no estoque:</strong>
+							<br>
+							<div  style="max-height: 500px; overflow: auto" id="modal_prodsrecusa_div"></div>
+
+						</div>
+						<div class="modal-footer">
+
+							<div class="row">
+
+								<div class="col-xs-10 col-sm-10 col-md-10 col-lg-10 " align="left">
+								<button type="button" class="btn btn-primary" id="modal_prodsrecusa_btn_voltar"
+										data-dismiss="modal">Cancelar</button>
+								</div>
+
+
+								<div class="col-xs-2 col-sm-2 col-md-2 col-lg-2 " align="right">
+									<button type="button" class="btn btn-primary" id="modal_prodsrecusa_btn_continuar"
+										data-dismiss="modal">Continuar</button>
+								</div>
+
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
 
 			<div class="modal fade bs-example-modal-lg" tabindex="-5"
 				role="dialog" id="modal_pedido" aria-hidden="true">
@@ -603,7 +645,8 @@ input:focus {
 								<div class="col-xs-6 col-sm-6 col-md-6 col-lg-6" align="">
 									<table>
 										<tr>
-											<td style="padding-right: 5px;"><label for="">Troco para: </label></td>
+											<td style="padding-right: 5px;"><label for="">Troco
+													para: </label></td>
 											<td><label id=""> </label><label id="m_troco_para"></label></td>
 										</tr>
 									</table>

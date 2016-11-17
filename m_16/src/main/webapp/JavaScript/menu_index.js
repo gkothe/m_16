@@ -185,6 +185,23 @@ $(document).ready(function() {
 
 	});
 
+	$("#modal_prodsrecusa_btn_continuar").click(function() {
+		$("#modal_prodsrecusa").modal('hide');
+		$("#modal_pedido").modal('show');
+		preventclean = false;
+	});
+
+	$("#modal_prodsrecusa_btn_voltar").click(function() {
+		$("#modal_prodsrecusa").modal('hide');
+		$("#modal_pedido").modal('show');
+
+		$('#element_clickrecusar').attr('checked', false);
+		$("#modal_prodsrecusa_div").html("");
+		$("#modal_prodsrecusa_btn_prods").hide();
+
+		preventclean = false;
+	});
+
 	$("#lbl_recusar").click(function() {
 		$("input[name=flag_aceita_recusa][value='R']").prop('checked', true);
 		testaAceitaRecusa();
@@ -196,7 +213,10 @@ $(document).ready(function() {
 	});
 
 	$('#modal_pedido').on('hidden.bs.modal', function() {
-		limpaModal();
+		if (!preventclean) {
+			limpaModal();
+		}
+
 	})
 
 	$('input[type=radio][name=flag_aceita_recusa]').prop('checked', false);
@@ -236,7 +256,7 @@ $(document).ready(function() {
 	resizedivs();
 
 });
-
+var preventclean = false;
 var sommute = false;
 var audio = new Audio('audiopedido.mp3');
 function mutarsom() {
@@ -266,6 +286,8 @@ function limpaModal() {
 	$('#m_table_produtos').bootstrapTable('removeAll');
 	$('input[type=radio][name=flag_aceita_recusa]').prop('checked', false);
 	$('.motivo').prop('checked', false);
+	$('.prodrecusa').prop('checked', false);
+	$("#modal_prodsrecusa_btn_prods").hide();
 	/*
 	 * $("#m_hora_entrega").autoNumeric('set', 0);
 	 * $("#m_minutos_entrega").autoNumeric('set', 0);
@@ -334,8 +356,8 @@ function checarPedidos() {
 			if (data.errologin != undefined) {
 				window.location.href = "";
 			} else if (data.tem == "true") {
-				changeTitle(true,data.qtd);
-				
+				changeTitle(true, data.qtd);
+
 				$("#msg_holder").show();
 
 				var html = "";
@@ -366,7 +388,7 @@ function checarPedidos() {
 
 			} else if (data.tem == "false") {
 				$("#msg_holder").hide();
-				changeTitle(false,"");
+				changeTitle(false, "");
 
 			}
 
@@ -382,7 +404,7 @@ function checarPedidos() {
 
 		},
 		error : function(data) {
-			changeTitle(false,"");
+			changeTitle(false, "");
 			if (data.status == 0) {
 
 				$("#msg_holder").hide();
@@ -464,7 +486,7 @@ function valorFormater(value, row, index) {
 	$("#sys_formatador").autoNumeric('set', value);
 	return $("#sys_formatador").val();
 }
-
+var motivo_estoque = 0;
 function loadMotivos() {
 
 	$.ajax({
@@ -479,34 +501,84 @@ function loadMotivos() {
 		success : function(data) {
 
 			var html = [];
+			motivo_estoque = data.estoque;
+			for (t = 0; t < data.mot.length; t++) {
+				if ((motivo_estoque + "") == (data.mot[t].COD_MOTIVO + "")) {
+					html.push(" <tr> <td colspan='100%' style=\"padding-right: 10px;\"> ");
+					html.push("<div   class=\"checkbox\" style=\"margin-top: 0px; margin-bottom: 0px;\">");
+					html.push("<label> <input type=\"checkbox\"  id=\"element_clickrecusar\" class=\"motivo\" value=\"" + data.mot[t].COD_MOTIVO + "\"> " + data.mot[t].DESC_MOTIVO + "</label> </div> &nbsp; ");
+					html.push('<button data-toggle=\"tooltip\" style="margin-bottom: 0px;padding-bottom: 2px;padding-top: 1px;height: 21px;"  id=\"modal_prodsrecusa_btn_prods\" type="button" class="btn btn-primary" title="Listar produtos"> <span class="glyphicon glyphicon-list-alt" aria-hidden="true"></span></button>');
+					// html.push("<a role=\"button\" title=\"Escolher produtos\"
+					// class=\"btn btn-default btn_tabela \"
+					// data-container=\"body\" data-placement=\"left\" >");
+					// html.push("<i class=\"glyphicon
+					// glyphicon-list-alt\"></i>");
+					// html.push("</a></td>");
+					html.push(" </tr>");
+				}
 
-			for (t = 0; t < data.length; t++) {
+			}
 
-				html.push(" <tr> <td style=\"padding-right: 10px;\"> ");
-				html.push("<div class=\"checkbox\" style=\"margin-top: 0px; margin-bottom: 0px;\">");
-				html.push("<label> <input type=\"checkbox\" class=\"motivo\" value=\"" + data[t].COD_MOTIVO + "\"> " + data[t].DESC_MOTIVO + "</label> </div> 	</td>");
+			for (t = 0; t < data.mot.length; t++) {
 
-				if (data[t + 1] != undefined) {
-
-					html.push("<td style=\"padding-right: 10px;\"> ");
-					html.push("<div class=\"checkbox\" style=\"margin-top: 0px; margin-bottom: 0px;\">");
-					html.push("<label> <input type=\"checkbox\" class=\"motivo\" value=\"" + data[t + 1].COD_MOTIVO + "\"> " + data[t + 1].DESC_MOTIVO + "</label> </div> 	</td>");
+				if ((motivo_estoque + "") == (data.mot[t].COD_MOTIVO + "")) {
 					t++;
 				}
 
-				if (data[t + 1] != undefined) {
+				html.push(" <tr> <td style=\"padding-right: 10px;\"> ");
+				html.push("<div class=\"checkbox\" style=\"margin-top: 0px; margin-bottom: 0px;\">");
+				html.push("<label> <input type=\"checkbox\" class=\"motivo\"  value=\"" + data.mot[t].COD_MOTIVO + "\"> " + data.mot[t].DESC_MOTIVO + "</label> </div> 	</td>");
+
+				if (data.mot[t + 1] != undefined) {
+
+					if ((motivo_estoque + "") == (data.mot[t + 1].COD_MOTIVO + "")) {
+						t++;
+					}
 
 					html.push("<td style=\"padding-right: 10px;\"> ");
 					html.push("<div class=\"checkbox\" style=\"margin-top: 0px; margin-bottom: 0px;\">");
-					html.push("<label> <input type=\"checkbox\"  class=\"motivo\" value=\"" + data[t + 1].COD_MOTIVO + "\"> " + data[t + 1].DESC_MOTIVO + "</label> </div> 	</td>");
+					html.push("<label> <input type=\"checkbox\" class=\"motivo\" value=\"" + data.mot[t + 1].COD_MOTIVO + "\"> " + data.mot[t + 1].DESC_MOTIVO + "</label> </div> 	</td>");
+
+					t++;
+				}
+
+				if (data.mot[t + 1] != undefined) {
+
+					if ((motivo_estoque + "") == (data.mot[t + 1].COD_MOTIVO + "")) {
+						t++;
+					}
+
+					html.push("<td style=\"padding-right: 10px;\"> ");
+					html.push("<div class=\"checkbox\" style=\"margin-top: 0px; margin-bottom: 0px;\">");
+					html.push("<label> <input type=\"checkbox\"  class=\"motivo\" value=\"" + data.mot[t + 1].COD_MOTIVO + "\"> " + data.mot[t + 1].DESC_MOTIVO + "</label> </div> 	</td>");
 					t++;
 				}
 
 				html.push(" </tr>");
-
 			}
 
 			$("#desc_motivos").html(html);
+			setTimeout(function() {
+				$("#element_clickrecusar").click(function() {
+
+					if ($("#element_clickrecusar").is(":checked")) {
+						showProdsRecusar(true);
+						$("#modal_prodsrecusa_btn_prods").show();
+					} else {
+						$("#modal_prodsrecusa_btn_prods").hide();
+					}
+
+				});
+				$('[data-toggle="tooltip"]').tooltip();
+				$("#modal_prodsrecusa_btn_prods").hide();
+
+				$("#modal_prodsrecusa_btn_prods").click(function() {
+
+					showProdsRecusar(false);
+
+				});
+
+			}, 700)
 
 		},
 		error : function(data) {
@@ -517,8 +589,58 @@ function loadMotivos() {
 
 }
 
+function showProdsRecusar(ajax) {
+
+	if (ajax) {
+		$.ajax({
+			type : 'POST',
+			url : "home?ac=ajax",
+			data : {
+				cmd : "carregaPedido_AbertoEnvio",
+				id : function() {
+					return pedido_atual;
+				}
+
+			},
+			async : false,
+			dataType : 'json',
+			success : function(data) {
+
+				preventclean = true;
+				$("#modal_prodsrecusa").modal('show');
+				$("#modal_pedido").modal('hide');
+
+				var html = [];
+
+				html.push("<table>");
+
+				for (t = 0; t < data.prods.length; t++) {
+					html.push(" <tr> <td style=\"padding-right: 10px;\"> ");
+					html.push("<div class=\"checkbox\" style=\"margin-top: 0px; margin-bottom: 0px;\">");
+					html.push("<label> <input type=\"checkbox\" class=\"prodrecusa\"  value=\"" + data.prods[t].SEQ_ITEM + "\"> " + data.prods[t].DESC_PROD + "</label> </div> 	</td>");
+				}
+
+				html.push("</table>");
+				$("#modal_prodsrecusa_div").html(html);
+			},
+			error : function(data) {
+				if (data.statusText != undefined)
+					sysMsg(data.statusText, 'E');
+			}
+		});
+	}else{
+		preventclean = true;
+		$("#modal_prodsrecusa").modal('show');
+		$("#modal_pedido").modal('hide');
+		
+	}
+}
+var pedido_atual = 0;
 function visualizarPedido(id) {
 
+	preventclean = false;
+	limpaModal();
+	pedido_atual = id;
 	$.ajax({
 		type : 'POST',
 		url : "home?ac=ajax",
@@ -742,9 +864,16 @@ function responderPedido() {
 				motivos[i++] = $(this).val();
 			});
 
-			var id = $("#m_id_pedido").val();
+			var prodsrecusados = [];
+			i = 0;
+			$('.prodrecusa:checked').each(function() {
+				prodsrecusados[i++] = $(this).val();
+			});
 
+			var id = $("#m_id_pedido").val();
 			var motivos_json = JSON.stringify(motivos);
+			var prodsrecusadosjson = JSON.stringify(prodsrecusados);
+
 			$.ajax({
 				type : "POST",
 				url : "home?ac=ajax",
@@ -755,7 +884,8 @@ function responderPedido() {
 					motivos_json : motivos_json,
 					m_tempo_entrega_inp : m_tempo_entrega_inp,
 					id : id,
-					resposta : resposta
+					resposta : resposta,
+					prodsrecusadosjson : prodsrecusadosjson
 
 				},
 				success : function(data) {

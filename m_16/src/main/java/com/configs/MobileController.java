@@ -478,7 +478,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 
 		st.executeUpdate();
 
-		String texto = " Bem vindo ao TragoAqui, para validar seu e-mail clique no link abaixo: <br> " + sys.getUrl_system() + "mobile?ac=validar&token=" + validacao;
+		String texto = " Bem vindo ao TragoAqui, para validar seu e-mail clique  <a href='" + sys.getUrl_system() + "mobile?ac=validar&token=" + validacao +"'> aqui. </a>";
 
 		Utilitario.sendEmail(desc_email, texto, "Ativação da sua conta no TragoAqui!", conn);
 
@@ -564,8 +564,9 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 
 				st.executeUpdate();
 
-				String texto = " Clique no link para validar seu novo e-mail: <br> " + sys.getUrl_system() + "mobile?ac=validarEmail&token=" + validacao;
+				String texto = " Para validar seu novo e-mail clique   <a href='" + sys.getUrl_system() + "mobile?ac=validarEmail&token=" + validacao+ "' > aqui. </a>  "; 
 
+				
 				Utilitario.sendEmail(te_email, texto, "Confirmação de novo e-mail - TragoAqui", conn);
 				objRetorno.put("msg", "ok");
 			}

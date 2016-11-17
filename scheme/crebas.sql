@@ -1,6 +1,6 @@
 /*==============================================================*/
 /* DBMS name:      MySQL 5.0                                    */
-/* Created on:     14/11/2016 11:22:59 AM                       */
+/* Created on:     17/11/2016 10:17:46 AM                       */
 /*==============================================================*/
 
 
@@ -235,15 +235,14 @@ auto_increment = 1;
 /*==============================================================*/
 create table PEDIDO_ITEM
 (
-   ID_PEDIDO_ITEM       int(8) not null auto_increment,
    ID_PEDIDO            INT8 not null,
    SEQ_ITEM             INT4 not null,
    VAL_UNIT             NUMERIC(12,2),
    ID_PROD              INT4 not null,
    QTD_PROD             INT8,
-   primary key (ID_PEDIDO_ITEM)
-)
-auto_increment = 1;
+   FLAG_RECUSADO        char(1) default 'N',
+   primary key (ID_PEDIDO, SEQ_ITEM)
+);
 
 /*==============================================================*/
 /* Table: PEDIDO_MOTIVOS_RECUSA                                 */
@@ -325,7 +324,8 @@ create table SYS_PARAMETROS
    SYS_FROMDESC         text,
    SYS_TLS              char(1),
    PED_HORASOKEY        int,
-   NUM_TEMPOMAXCANC_MINUTO int
+   NUM_TEMPOMAXCANC_MINUTO int,
+   COD_RECUSA           int
 );
 
 /*==============================================================*/

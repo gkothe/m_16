@@ -48,19 +48,18 @@ public class Home_ajax {
 		st.setInt(1, coddistr);
 		rs = st.executeQuery();
 		objRetorno.put("canc_pop", false);
-		
+
 		if (rs.next()) {
 			objRetorno.put("canc_pop", true);
 			objRetorno.put("id_pedpop", rs.getString("id_pedido"));
 			objRetorno.put("num_pedpop", rs.getString("num_ped"));
-			
-			sql  = " UPDATE pedido_motivo_cancelamento  SET FLAG_POPUPINICIAL = 'S'  where   id_pedido = " + rs.getString("id_pedido");
+
+			sql = " UPDATE pedido_motivo_cancelamento  SET FLAG_POPUPINICIAL = 'S'  where   id_pedido = " + rs.getString("id_pedido");
 
 			st = conn.prepareStatement(sql.toString());
 			st.executeUpdate();
 		}
-		
-		
+
 		sql = "select * from pedido join pedido_motivo_cancelamento on pedido_motivo_cancelamento.id_pedido = pedido.id_pedido  where ID_DISTRIBUIDORA = ? and (flag_status = 'C' and FLAG_VIZUALIZADO_CANC = 'N')  ";
 		st = conn.prepareStatement(sql);
 		st.setInt(1, coddistr);
@@ -174,7 +173,9 @@ public class Home_ajax {
 
 		PrintWriter out = response.getWriter();
 
-		JSONArray objRetorno = new JSONArray();
+		JSONObject objret = new JSONObject();
+
+		JSONArray motivos = new JSONArray();
 
 		String sql = "select * from  motivos_recusa order by DESC_MOTIVO";
 
@@ -187,10 +188,15 @@ public class Home_ajax {
 			obj.put("COD_MOTIVO", rs.getString("COD_MOTIVO"));
 			obj.put("DESC_MOTIVO", rs.getString("DESC_MOTIVO"));
 
-			objRetorno.add(obj);
+			motivos.add(obj);
 		}
 
-		out.print(objRetorno.toJSONString());
+		Sys_parametros sys = new Sys_parametros(conn);
+		
+		objret.put("mot", motivos);
+		objret.put("estoque", sys.getCod_recusa_estoque());
+
+		out.print(objret.toJSONString());
 
 	}
 
@@ -275,7 +281,5 @@ public class Home_ajax {
 		}
 
 	}
-
-
 
 }

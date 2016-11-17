@@ -25,7 +25,16 @@ public class Sys_parametros {
 	boolean sys_tls = true;
 	int PED_HORASOKEY = 0;
 	int NUM_TEMPOMAXCANC_MINUTO = 0;
+	int cod_recusa_estoque = 0;
 	
+
+	public int getCod_recusa_estoque() {
+		return cod_recusa_estoque;
+	}
+
+	public void setCod_recusa_estoque(int cod_recusa_estoque) {
+		this.cod_recusa_estoque = cod_recusa_estoque;
+	}
 
 	public int getNUM_TEMPOMAXCANC_MINUTO() {
 		return NUM_TEMPOMAXCANC_MINUTO;
@@ -206,6 +215,7 @@ public class Sys_parametros {
 				this.setSys_id_visistante(rs.getLong("id_visitante"));
 				this.setPED_HORASOKEY(rs.getInt("PED_HORASOKEY"));
 				this.setNUM_TEMPOMAXCANC_MINUTO(rs.getInt("NUM_TEMPOMAXCANC_MINUTO"));
+				this.setCod_recusa_estoque(rs.getInt("COD_RECUSA"));
 			}
 
 		} catch (Exception e) {

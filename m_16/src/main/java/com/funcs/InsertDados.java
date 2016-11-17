@@ -252,6 +252,187 @@ public class InsertDados {
 
 	}
 
+	public static void insertRandomPedsAberto(int iddistr, int usuario, String dateini, String datefim, int qtdpedidos) {
+
+		Connection conn = null;
+		try {
+			ResultSet rs;
+			conn = Conexao.getConexao();
+			conn.setAutoCommit(false);
+			PreparedStatement st;
+			int ped = 0;
+			String sql;
+			double val_totalprod = 0;
+			int qtdprods = ThreadLocalRandom.current().nextInt(1, 8 + 1);
+			int countprod = 0;
+			long offset = Timestamp.valueOf(dateini).getTime();
+			long end = Timestamp.valueOf(datefim).getTime();
+			int qtd = 0;
+			StringBuffer varname1;
+			long diff = end - offset + 1;
+			Timestamp rand;
+			long idpedido;
+			Date dateped;
+			String servico; 
+			int cod_bairro = 0;
+			double VAL_TELE_ENTREGA = 0;
+			ResultSet rs2;
+			while (ped < qtdpedidos) {
+				ped++;
+
+				rand = new Timestamp(offset + (long) (Math.random() * diff));
+				dateped = new Date(rand.getTime());
+				idpedido = Utilitario.retornaIdinsertLong("pedido", "id_pedido", conn);
+
+				// val_totalprod,val_entrega_value
+
+				servico = Math.random() < 0.5 ? "T" : "L";
+
+				 cod_bairro = 0;
+				 VAL_TELE_ENTREGA = 0;
+				if (servico.equalsIgnoreCase("T")) {
+
+					sql = " select * from bairros ORDER BY RAND() limit 1  ";
+					st = conn.prepareStatement(sql);
+					 rs2 = st.executeQuery();
+					if (rs2.next()) {
+						cod_bairro = rs2.getInt("cod_bairro");
+					}
+
+					sql = " select * from distribuidora where ID_DISTRIBUIDORA =  " + iddistr;
+					st = conn.prepareStatement(sql);
+					rs2 = st.executeQuery();
+					if (rs2.next()) {
+						VAL_TELE_ENTREGA = rs2.getDouble("VAL_TELE_ENTREGA");
+					}
+
+				}
+
+				varname1 = new StringBuffer();
+				varname1.append("INSERT INTO pedido ");
+				varname1.append("            (id_pedido, ");
+				varname1.append("             id_distribuidora, ");
+				varname1.append("             id_usuario, ");
+				varname1.append("             data_pedido, ");
+				varname1.append("             flag_status, ");
+				varname1.append("             data_pedido_resposta, ");
+				varname1.append("             num_ped, ");
+				if (servico.equalsIgnoreCase("T")) {
+					varname1.append("             cod_bairro, ");
+				}
+				varname1.append("             num_telefonecontato_cliente, ");
+				varname1.append("             tempo_estimado_entrega, ");
+				varname1.append("             desc_endereco_entrega, ");
+				varname1.append("             desc_endereco_num_entrega, ");
+				varname1.append("             desc_endereco_complemento_entrega, ");
+				varname1.append("             flag_vizualizado, ");
+				varname1.append("             flag_modopagamento, ");
+				varname1.append("             desc_cartao, ");
+				varname1.append("             nome_pessoa, ");
+				varname1.append("             pag_token, ");
+				varname1.append("             pag_mail, ");
+				varname1.append("             pag_payid_tipocartao, ");
+				varname1.append("             flag_pedido_ret_entre, ");
+				varname1.append("             tempo_estimado_desejado) ");
+				varname1.append(" VALUES      (" + idpedido + ",");
+				varname1.append("             " + iddistr + ", ");
+				varname1.append("             " + usuario + ", ");
+				varname1.append("             '" + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(dateped) + "', ");
+				varname1.append("             'A', ");
+				varname1.append("             '" + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(dateped) + "', ");
+				varname1.append("             " + Utilitario.getNextNumpad(conn, iddistr) + ", ");
+				if (servico.equalsIgnoreCase("T")) {
+					varname1.append("             " + cod_bairro + ", ");
+				}
+				varname1.append("             '999999999', ");
+				if (servico.equalsIgnoreCase("T")) {
+					varname1.append("             '01:00:00', ");
+				} else {
+					varname1.append("             '00:00:00', ");
+				}
+
+				varname1.append("             '', ");
+				varname1.append("             '', ");
+				varname1.append("             '', ");
+				varname1.append("             'S', ");
+				varname1.append("             '" + (Math.random() < 0.5 ? "D" : "C") + "', ");
+				varname1.append("             'Gabriel Dalcin Kothe', ");
+				varname1.append("             '', ");
+				varname1.append("             '', ");
+				varname1.append("             '', ");
+				varname1.append("             '', ");
+				varname1.append("             '" + servico + "', ");
+				if (servico.equalsIgnoreCase("T")) {
+					varname1.append("             '01:00:00' ) ");
+				} else {
+					varname1.append("             '00:00:00' ) ");
+				}
+
+				st = conn.prepareStatement(varname1.toString());
+				st.executeUpdate();
+				val_totalprod = 0;
+				qtdprods = ThreadLocalRandom.current().nextInt(50, 70 + 1);
+				countprod = 0;
+				while (countprod < qtdprods) {
+					sql = "select * from  produtos_distribuidora where id_distribuidora = "+iddistr+" and id_prod in (select id_prod from produtos  ORDER BY RAND() ) ORDER BY RAND()";
+					st = conn.prepareStatement(sql);
+					rs = st.executeQuery();
+					if (rs.next()) {
+						qtd = ThreadLocalRandom.current().nextInt(1, 15 + 1);
+						varname1 = new StringBuffer();
+						varname1.append("INSERT INTO pedido_item ");
+						varname1.append("  ( `ID_PEDIDO`, `SEQ_ITEM`, `VAL_UNIT`, `ID_PROD`, `QTD_PROD`) ");
+						varname1.append("VALUES ");
+						varname1.append("  (" + idpedido + ", " + Utilitario.retornaIdinsertChaveSecundaria("pedido_item", "id_pedido", idpedido + "", "SEQ_ITEM", conn) + ", " + rs.getDouble("VAL_PROD") + ", " + rs.getInt("ID_PROD") + ", " + qtd + ")");
+						val_totalprod = val_totalprod + (qtd * rs.getDouble("VAL_PROD"));
+						st = conn.prepareStatement(varname1.toString());
+						st.executeUpdate();
+					}else{
+						throw new Exception("erro1");
+					}
+
+					countprod++;
+				}
+
+				
+				if(countprod == 0 ){
+					throw new Exception("erro2");
+				} 
+				
+				sql = " update pedido set val_totalprod =  " + val_totalprod + " , VAL_ENTREGA = " + VAL_TELE_ENTREGA + " where id_pedido  = " + idpedido;
+				st = conn.prepareStatement(sql);
+				st.executeUpdate();
+
+			}
+
+			/*
+			 * String sql = " select * from produtos ";
+			 * 
+			 * PreparedStatement st = conn.prepareStatement(sql); ResultSet rs = st.executeQuery(); while (rs.next()) {
+			 * 
+			 * sql = "INSERT INTO produtos_distribuidora ( `ID_PROD`, `ID_DISTRIBUIDORA`, `VAL_PROD`, `FLAG_ATIVO`) VALUES ( ?, ?, ?, ?)";
+			 * 
+			 * st = conn.prepareStatement(sql); st.setInt(1, rs.getInt("ID_PROD")); st.setInt(2, iddistr); Random r = new Random(); double randomValue = 1 + (30 - 1) * r.nextDouble(); st.setDouble(3, randomValue); st.setString(4, "S"); st.executeUpdate();
+			 * 
+			 * }
+			 */
+
+			conn.commit();
+		} catch (Exception e) {
+			e.printStackTrace();
+			try {
+				conn.rollback();
+			} catch (Exception e2) {
+			}
+			try {
+				conn.close();
+			} catch (Exception e2) {
+			}
+		}
+
+	}
+
+	
 	public static void insertRandomPeds(int iddistr, int usuario, String dateini, String datefim, int qtdpedidos) {
 
 		Connection conn = null;
@@ -371,7 +552,7 @@ public class InsertDados {
 				st = conn.prepareStatement(varname1.toString());
 				st.executeUpdate();
 				val_totalprod = 0;
-				qtdprods = ThreadLocalRandom.current().nextInt(1, 8 + 1);
+				qtdprods = ThreadLocalRandom.current().nextInt(50, 70 + 1);
 				countprod = 0;
 				while (countprod < qtdprods) {
 					sql = "select * from  produtos_distribuidora where id_distribuidora = "+iddistr+" and id_prod in (select id_prod from produtos  ORDER BY RAND() ) ORDER BY RAND()";
@@ -441,14 +622,13 @@ public class InsertDados {
 //		insertRandomPeds(1, 17, "2016-01-01 00:00:00", "2016-10-31 23:59:59", 500);
 //		insertRandomPeds(1, 17, "2016-01-01 00:00:00", "2016-10-31 23:59:59", 500);
 //		insertRandomPeds(1, 17, "2016-01-01 00:00:00", "2016-10-31 23:59:59", 500);
-		
-		
-		insertRandomPeds(1, 17, "2015-01-01 00:00:00", "2015-11-30 23:59:59", 500);
-		insertRandomPeds(1, 17, "2015-01-01 00:00:00", "2015-11-30 23:59:59", 500);
-		insertRandomPeds(1, 17, "2015-01-01 00:00:00", "2015-11-30 23:59:59", 500);
-		insertRandomPeds(1, 17, "2015-01-01 00:00:00", "2015-11-30 23:59:59", 500);
-		insertRandomPeds(1, 17, "2015-01-01 00:00:00", "2015-11-30 23:59:59", 500);
-		
+		insertRandomPedsAberto(1, 17, "2016-11-17 10:00:00", "2016-11-17 10:20:00", 5);
+//		insertRandomPeds(1, 17, "2015-01-01 00:00:00", "2015-11-30 23:59:59", 500);
+//		insertRandomPeds(1, 17, "2015-01-01 00:00:00", "2015-11-30 23:59:59", 500);
+//		insertRandomPeds(1, 17, "2015-01-01 00:00:00", "2015-11-30 23:59:59", 500);
+//		insertRandomPeds(1, 17, "2015-01-01 00:00:00", "2015-11-30 23:59:59", 500);
+//		insertRandomPeds(1, 17, "2015-01-01 00:00:00", "2015-11-30 23:59:59", 500);
+//		
 //		 try {
 //		 int cont = 0;
 //		 while (cont < 1000) {
