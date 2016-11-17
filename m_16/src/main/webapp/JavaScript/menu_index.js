@@ -519,42 +519,45 @@ function loadMotivos() {
 
 			}
 
-			for (t = 0; t < data.mot.length; t++) {
+			
+			for (t = 0; t < data.mot.length; t++) {  
 
 				if ((motivo_estoque + "") == (data.mot[t].COD_MOTIVO + "")) {
-					t++;
-				}
+				} else {
 
-				html.push(" <tr> <td style=\"padding-right: 10px;\"> ");
-				html.push("<div class=\"checkbox\" style=\"margin-top: 0px; margin-bottom: 0px;\">");
-				html.push("<label> <input type=\"checkbox\" class=\"motivo\"  value=\"" + data.mot[t].COD_MOTIVO + "\"> " + data.mot[t].DESC_MOTIVO + "</label> </div> 	</td>");
+					html.push(" <tr> <td style=\"padding-right: 10px;\"> ");
+					html.push("<div class=\"checkbox\" style=\"margin-top: 0px; margin-bottom: 0px;\">");
+					html.push("<label> <input type=\"checkbox\" class=\"motivo\"  value=\"" + data.mot[t].COD_MOTIVO + "\"> " + data.mot[t].DESC_MOTIVO + "</label> </div> 	</td>");
 
-				if (data.mot[t + 1] != undefined) {
+					if (data.mot[t + 1] != undefined) {
 
-					if ((motivo_estoque + "") == (data.mot[t + 1].COD_MOTIVO + "")) {
-						t++;
+						if ((motivo_estoque + "") == (data.mot[t + 1].COD_MOTIVO + "")) {
+							t++;
+						}
+						if (data.mot[t] != undefined) { 
+							html.push("<td style=\"padding-right: 10px;\"> ");
+							html.push("<div class=\"checkbox\" style=\"margin-top: 0px; margin-bottom: 0px;\">");
+							html.push("<label> <input type=\"checkbox\" class=\"motivo\" value=\"" + data.mot[t + 1].COD_MOTIVO + "\"> " + data.mot[t + 1].DESC_MOTIVO + "</label> </div> 	</td>");
+
+							t++;
+						}
 					}
 
-					html.push("<td style=\"padding-right: 10px;\"> ");
-					html.push("<div class=\"checkbox\" style=\"margin-top: 0px; margin-bottom: 0px;\">");
-					html.push("<label> <input type=\"checkbox\" class=\"motivo\" value=\"" + data.mot[t + 1].COD_MOTIVO + "\"> " + data.mot[t + 1].DESC_MOTIVO + "</label> </div> 	</td>");
+					if (data.mot[t + 1] != undefined) {
 
-					t++;
-				}
-
-				if (data.mot[t + 1] != undefined) {
-
-					if ((motivo_estoque + "") == (data.mot[t + 1].COD_MOTIVO + "")) {
-						t++;
+						if ((motivo_estoque + "") == (data.mot[t + 1].COD_MOTIVO + "")) {
+							t++;
+						}
+						if (data.mot[t + 1] != undefined) {
+							html.push("<td style=\"padding-right: 10px;\"> ");
+							html.push("<div class=\"checkbox\" style=\"margin-top: 0px; margin-bottom: 0px;\">");
+							html.push("<label> <input type=\"checkbox\"  class=\"motivo\" value=\"" + data.mot[t + 1].COD_MOTIVO + "\"> " + data.mot[t + 1].DESC_MOTIVO + "</label> </div> 	</td>");
+							t++;
+						}
 					}
 
-					html.push("<td style=\"padding-right: 10px;\"> ");
-					html.push("<div class=\"checkbox\" style=\"margin-top: 0px; margin-bottom: 0px;\">");
-					html.push("<label> <input type=\"checkbox\"  class=\"motivo\" value=\"" + data.mot[t + 1].COD_MOTIVO + "\"> " + data.mot[t + 1].DESC_MOTIVO + "</label> </div> 	</td>");
-					t++;
+					html.push(" </tr>");
 				}
-
-				html.push(" </tr>");
 			}
 
 			$("#desc_motivos").html(html);
@@ -610,6 +613,8 @@ function showProdsRecusar(ajax) {
 				$("#modal_prodsrecusa").modal('show');
 				$("#modal_pedido").modal('hide');
 
+				$("#msg_erro_aviso_sub").html("Por favor, selecione os produtos que estão em falta no estoque:");
+				
 				var html = [];
 
 				html.push("<table>");
@@ -628,11 +633,11 @@ function showProdsRecusar(ajax) {
 					sysMsg(data.statusText, 'E');
 			}
 		});
-	}else{
+	} else {
 		preventclean = true;
 		$("#modal_prodsrecusa").modal('show');
 		$("#modal_pedido").modal('hide');
-		
+
 	}
 }
 var pedido_atual = 0;

@@ -566,6 +566,7 @@ public class Pedidos_ajax {
 				obj.put("QTD_PROD", rs2.getInt("QTD_PROD"));
 				obj.put("VAL_UNIT", rs2.getDouble("VAL_UNIT"));
 				obj.put("VAL_TOTAL", rs2.getDouble("VAL_TOTAL"));
+				obj.put("FLAG_RECUSADO", rs2.getString("FLAG_RECUSADO"));
 
 				prods.add(obj);
 
@@ -608,8 +609,11 @@ public class Pedidos_ajax {
 				rs2 = st2.executeQuery();
 				JSONArray motivos = new JSONArray();
 				while (rs2.next()) {
-
-					motivos.add(rs2.getString("DESC_MOTIVO"));
+					JSONObject obj = new JSONObject();
+					obj.put("desc_motivo", rs2.getString("desc_motivo"));
+					obj.put("cod_motivo", rs2.getString("cod_motivo"));
+					
+					motivos.add(obj);
 				}
 
 				objRetorno.put("motivos", motivos);

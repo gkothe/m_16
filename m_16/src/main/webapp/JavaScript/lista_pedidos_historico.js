@@ -13,7 +13,7 @@ $(window).resize(function() {
 $(document).ready(function() {
 
 	$("#btn_filtrar_historico").click(function() {
-		loadhistoricos(1,10);
+		loadhistoricos(1, 10);
 	});
 
 	$("#btn_filtros_limpar").click(function() {
@@ -34,7 +34,7 @@ $(document).ready(function() {
 		$("#flag_situacao").val("");
 		$("#flag_pedido_ret_entre").val("");
 
-		loadhistoricos(1,10);
+		loadhistoricos(1, 10);
 	});
 
 	$("#val_ini_historico").autoNumeric('init', numerico);
@@ -85,27 +85,26 @@ $(document).ready(function() {
 		visualizarPedidoHistorico($element.ID_PEDIDO);
 	});
 
-	$(tabela).on('page-change.bs.table', function(e,pag,size) {
+	$(tabela).on('page-change.bs.table', function(e, pag, size) {
 		$(".openpedido").click(function() {
 			visualizarPedidoHistorico($(this).attr("data-valor"));
 		});
-		
-		loadhistoricos(pag,size);
-	});
-	
-	$(tabela).on('sort.bs.table', function(e,name,order) {
-		$("#sys_order").val(order);
-		$("#sys_name").val(name);
-	
-		loadhistoricos(1,10);
-		
+
+		loadhistoricos(pag, size);
 	});
 
-	
+	$(tabela).on('sort.bs.table', function(e, name, order) {
+		$("#sys_order").val(order);
+		$("#sys_name").val(name);
+
+		loadhistoricos(1, 10);
+
+	});
+
 	$("#sys_name").val("NUM_PED");
 	$("#sys_order").val("asc");
-	 
-	loadhistoricos(1,10);
+
+	loadhistoricos(1, 10);
 	carregaBairros();
 
 });
@@ -167,7 +166,7 @@ function carregaBairros() {
 		},
 		error : function(msg) {
 			$.unblockUI();
-			
+
 		}
 	});
 
@@ -187,7 +186,7 @@ function visualizarPedidoHistorico(id) {
 		dataType : 'json',
 		success : function(data) {
 			$(".cancelamento").hide();
-			
+
 			if (data.tipo_servico == "T") {
 				$("#m_lbl_bairro").html("Bairro:");
 
@@ -207,27 +206,25 @@ function visualizarPedidoHistorico(id) {
 				$("#m_tempomax_div").hide();
 				$("#m_lbl_bairro").html("");
 			}
-			
-			if(data.num_trocopara != undefined ){
+
+			if (data.num_trocopara != undefined) {
 				$("#m_troco_para_div").show();
-				$("#m_troco_para").html(data.num_trocopara);	
-				
-			}else{
+				$("#m_troco_para").html(data.num_trocopara);
+
+			} else {
 				$("#m_troco_para_div").hide();
-				$("#m_troco_para").html("");	
+				$("#m_troco_para").html("");
 			}
-			
-			
-			
+
 			$("#m_desc_bairro").html(data.desc_bairro);
 			$("#m_total_pedido").autoNumeric('set', parseFloat(data.VAL_ENTREGA) + parseFloat(data.VAL_TOTALPROD));
 			$("#m_total_tele").autoNumeric('set', data.VAL_ENTREGA);
 			$("#m_total_produtos").autoNumeric('set', data.VAL_TOTALPROD);
 			$("#m_data_pedido").html(data.data_pedido);
 			$("#m_id_pedido").val(data.ID_PEDIDO);
-			var   num_ped = data.num_ped;
+			var num_ped = data.num_ped;
 			if (data.flag_status == "O") {
-				$("#m_lbl_titulo").html("Pedido Finalizado - Número: "  + num_ped );
+				$("#m_lbl_titulo").html("Pedido Finalizado - Número: " + num_ped);
 				$("#m_lbl_titulo").css("color", "green");
 
 				$("#envio_desc_nome").html(data.DESC_NOME);
@@ -246,7 +243,7 @@ function visualizarPedidoHistorico(id) {
 
 			} else if (data.flag_status == "R") {
 				$("#m_lbl_titulo").css("color", "red");
-				$("#m_lbl_titulo").html("Pedido Recusado Número: "  + num_ped);
+				$("#m_lbl_titulo").html("Pedido Recusado Número: " + num_ped);
 
 				$("#m_responder").hide();
 				$("#m_finalizar").hide();
@@ -256,22 +253,53 @@ function visualizarPedidoHistorico(id) {
 				var html = [];
 
 				for (t = 0; t < data.motivos.length; t++) {
-
-					html.push(" <tr> <td style=\"padding-right: 10px; width 40% \"> ");
-					html.push("<div class=\"checkbox\" style=\"margin-top: 0px; margin-bottom: 0px;\">");
-					html.push("<label>  " + (t + 1) + " - " + data.motivos[t] + "</label> </div> 	</td>");
-
-					if (data.motivos[t + 1] != undefined) {
-
-						html.push("<td style=\"padding-right: 10px; width 40%\"> ");
-						html.push("<div class=\"checkbox\" style=\"margin-top: 0px; margin-bottom: 0px;\">");
-						html.push("<label> " + (t + 2) + " - " + data.motivos[t + 1] + "</label> </div> 	</td>");
-						t++;
+					if ((motivo_estoque + "") == (data.motivos[t].cod_motivo + "")) {
+						html.push(" <tr> <td colspan='100%' style=\"padding-right: 10px;\"> ");
+						html.push("<div   class=\"checkbox\" style=\"margin-top: 0px; margin-bottom: 0px;\">");
+						html.push("<label>  " + (t + 1) + " - " + data.motivos[t].desc_motivo + "</label> </div> &nbsp; ");
+						html.push('<button data-toggle=\"tooltip\" style="margin-bottom: 0px;padding-bottom: 2px;padding-top: 1px;height: 21px;"  id=\"modal_prodsrecusa_btn_prods2\" type="button" class="btn btn-primary" title="Listar produtos"> <span class="glyphicon glyphicon-list-alt" aria-hidden="true"></span></button>');
+						html.push(" </tr>");
 					}
 
-					html.push(" </tr>");
-
 				}
+
+				for (t = 0; t < data.motivos.length; t++) {
+
+					if ((motivo_estoque + "") == (data.motivos[t].cod_motivo + "")) {
+					} else {
+
+						html.push(" <tr> <td style=\"padding-right: 10px; width 40% \"> ");
+						html.push("<div class=\"checkbox\" style=\"margin-top: 0px; margin-bottom: 0px;\">");
+						html.push("<label>  " + (t + 1) + " - " + data.motivos[t].desc_motivo + "</label> </div> 	</td>");
+
+						if (data.motivos[t + 1] != undefined) {
+
+							if ((motivo_estoque + "") == (data.motivos[t + 1].cod_motivo + "")) {
+								t++;
+							}
+							if (data.motivos[t + 1] != undefined) {
+								html.push("<td style=\"padding-right: 10px; width 40%\"> ");
+								html.push("<div class=\"checkbox\" style=\"margin-top: 0px; margin-bottom: 0px;\">");
+								html.push("<label> " + (t + 2) + " - " + data.motivos[t + 1].desc_motivo + "</label> </div> 	</td>");
+								t++;
+							}
+						}
+
+						html.push(" </tr>");
+					}
+				}
+
+				setTimeout(function() {
+
+					$('[data-toggle="tooltip"]').tooltip();
+
+					$("#modal_prodsrecusa_btn_prods2").click(function() {
+
+						showProdsRecusaHist(id);
+
+					});
+
+				}, 700)
 
 				$("#desc_motivos2").html(html);
 
@@ -286,7 +314,7 @@ function visualizarPedidoHistorico(id) {
 
 				$("#m_lbl_titulo").css("color", "red");
 
-				$("#m_lbl_titulo").html("Cancelado -  Número: "  + num_ped);
+				$("#m_lbl_titulo").html("Cancelado -  Número: " + num_ped);
 				$(".cancelamento").show();
 				$("#m_responder").hide();
 
@@ -299,11 +327,11 @@ function visualizarPedidoHistorico(id) {
 				$("#m_resposta_motivos").hide();
 				$("#m_data_resposta").html(data.m_data_resposta);
 				$("#m_tempo_entrega").html(data.m_tempo_entrega);
-				
+
 				$("#m_data_cancelamento").html(data.DATA_CANCELAMENTO);
 				$("#m_motivo").html(data.DESC_MOTIVO);
 				$("#m_observ").html(data.DESC_OBS);
-				
+
 				if (data.darok == true) {
 					$("#m_finalizar").show();
 				} else {
@@ -325,7 +353,51 @@ function visualizarPedidoHistorico(id) {
 
 		},
 		error : function(data) {
+
+		}
+	});
+
+}
+
+function showProdsRecusaHist(id) {
+
+	$.ajax({
+		type : 'POST',
+		url : "home?ac=ajax",
+		data : {
+			cmd : "carregaPedido_fechado",
+			id : id
+
+		},
+		async : false,
+		dataType : 'json',
+		success : function(data) {
+			$("#msg_erro_aviso_sub").html("Produtos que foram marcados como 'em falta no estoque:'");
+			preventclean = true;
+			$("#modal_prodsrecusa").modal('show');
+			$("#modal_pedido").modal('hide');
+			$("#modal_prodsrecusa_btn_voltar").hide();
 			
+			
+
+			var html = [];
+
+			html.push("<table>");
+
+			for (t = 0; t < data.prods.length; t++) {
+				if (data.prods[t].FLAG_RECUSADO=='S') {
+					html.push(" <tr> <td style=\"padding-right: 10px;\"> ");
+					html.push("<label> " + data.prods[t].DESC_PROD + "</label> </div> 	</td> <tr>");
+				}
+
+			}
+
+			html.push("</table>");
+			$("#modal_prodsrecusa_div").html(html);
+		},
+		error : function(data) {
+			if (data.statusText != undefined)
+				sysMsg(data.statusText, 'E');
 		}
 	});
 
@@ -348,7 +420,7 @@ function loadhistoricos(pag, size) {
 
 	var sort = $("#sys_name").val();
 	var order = $("#sys_order").val();
-	
+
 	$.blockUI({
 		message : 'Carregando...'
 	});
@@ -371,10 +443,10 @@ function loadhistoricos(pag, size) {
 			val_fim_historico : val_fim_historico,
 			flag_situacao : flag_situacao,
 			flag_pedido_ret_entre : flag_pedido_ret_entre,
-			pag:pag,
-			size:size,
-			sort:sort,
-			order:order
+			pag : pag,
+			size : size,
+			sort : sort,
+			order : order
 
 		},
 		success : function(data) {
@@ -383,9 +455,10 @@ function loadhistoricos(pag, size) {
 			$('#table_pedidos_historico').bootstrapTable('resetView');
 			$('[data-toggle="tooltip"]').tooltip();
 
-		/*	$(".openpedido").click(function() {
-				visualizarPedidoHistorico($(this).attr("data-valor"));
-			});*/
+			/*
+			 * $(".openpedido").click(function() {
+			 * visualizarPedidoHistorico($(this).attr("data-valor")); });
+			 */
 			$(".th-inner").css("text-align", "center");
 
 			$.unblockUI();
@@ -393,7 +466,7 @@ function loadhistoricos(pag, size) {
 		},
 		error : function(msg) {
 			$.unblockUI();
-			
+
 		}
 	});
 

@@ -411,7 +411,7 @@ input:focus {
 							</h4>
 						</div>
 						<div class="modal-body" style="max-height: 750px; overflow: auto;">
-							<strong>Por favor, selecione os produtos que estão em falta no estoque:</strong>
+							<label style="padding-bottom: 5px" id="msg_erro_aviso_sub">Por favor, selecione os produtos que estão em falta no estoque:</label>
 							<br>
 							<div  style="max-height: 500px; overflow: auto" id="modal_prodsrecusa_div"></div>
 
