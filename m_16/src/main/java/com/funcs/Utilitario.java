@@ -10,6 +10,8 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.math.BigInteger;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.security.SecureRandom;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -26,6 +28,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Scanner;
 
 import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServletRequest;
@@ -731,37 +734,44 @@ public class Utilitario {
 
 	public static void main(String[] args) {
 		try {
+			String jsonResponse;
 
-			Calendar cal = Calendar.getInstance();
-			cal.setTime(new Date());
-			System.out.println(new Date());
-			int year = cal.get(Calendar.YEAR);
-			int month = cal.get(Calendar.MONTH);
+			URL url = new URL("https://onesignal.com/api/v1/notifications");
+			HttpURLConnection con = (HttpURLConnection) url.openConnection();
+			con.setUseCaches(false);
+			con.setDoOutput(true);
+			con.setDoInput(true);
 
-			
-			System.out.println(month);
-			
-			int cont = 0;
+			con.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
+			con.setRequestProperty("Authorization", "Basic NmJmN2VhMmQtNjJkMi00OTRkLTg4M2UtODhhNjkzNzcyYTg5");
+			con.setRequestMethod("POST");
 
-			LocalDate initial = LocalDate.of(2016, 11, 13);
-			LocalDate start = initial.withDayOfMonth(1);
-			LocalDate end = initial.withDayOfMonth(initial.lengthOfMonth());
+			String strJsonBody = "{" + "\"app_id\": \"6b1103df-ebeb-43e1-860b-e2903a9b12ae\"," + "\"included_segments\": [\"All\"]," + "\"data\": {\"foo\": \"bar\"}," + "\"contents\": {\"en\": \"English Message\"}" + "}";
 
-			;
-			
+			System.out.println("strJsonBody:\n" + strJsonBody);
 
-			while (cont < 13) {
+			byte[] sendBytes = strJsonBody.getBytes("UTF-8");
+			con.setFixedLengthStreamingMode(sendBytes.length);
 
-				System.out.println(month + " - " + year);
-				month = month - 1;
-				if (month == 0) {
-					month = 12;
-					year = year - 1;
-				}
-				cont++;
+			OutputStream outputStream = con.getOutputStream();
+			outputStream.write(sendBytes);
+
+			int httpResponse = con.getResponseCode();
+			System.out.println("httpResponse: " + httpResponse);
+
+			if (httpResponse >= HttpURLConnection.HTTP_OK && httpResponse < HttpURLConnection.HTTP_BAD_REQUEST) {
+				Scanner scanner = new Scanner(con.getInputStream(), "UTF-8");
+				jsonResponse = scanner.useDelimiter("\\A").hasNext() ? scanner.next() : "";
+				scanner.close();
+			} else {
+				Scanner scanner = new Scanner(con.getErrorStream(), "UTF-8");
+				jsonResponse = scanner.useDelimiter("\\A").hasNext() ? scanner.next() : "";
+				scanner.close();
 			}
+			System.out.println("jsonResponse:\n" + jsonResponse);
 
-		} catch (Exception e) {
+		} catch (Throwable t) {
+			t.printStackTrace();
 		}
 
 	}
