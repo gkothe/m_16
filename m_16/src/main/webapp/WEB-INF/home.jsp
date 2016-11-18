@@ -96,7 +96,7 @@ input:focus {
 			<div class="col-md-3 left_col menucustom">
 				<div class="left_col scroll-view menucustom">
 					<div class="navbar nav_title" style="border: 0;">
-						<a class="site_title"><image style="width: 200px"
+						<a style="height: 75px;" class="site_title"><image style="width: 200px"
 								src="images/logomenu.png"></image> </a>
 					</div>
 

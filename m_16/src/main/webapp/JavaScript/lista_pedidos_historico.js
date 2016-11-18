@@ -372,7 +372,7 @@ function showProdsRecusaHist(id) {
 		async : false,
 		dataType : 'json',
 		success : function(data) {
-			$("#msg_erro_aviso_sub").html("Produtos que foram marcados como 'em falta no estoque:'");
+			$("#msg_erro_aviso_sub").html("Produtos que foram marcados como 'em falta no estoque':");
 			preventclean = true;
 			$("#modal_prodsrecusa").modal('show');
 			$("#modal_pedido").modal('hide');
