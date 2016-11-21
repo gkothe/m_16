@@ -2861,11 +2861,10 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 						throw new Exception("Data de agendamento inválida.");
 					}
 					
-					if(new SimpleDateFormat("ddMMyyyyHHmm").parse(dataagendamento+dataagendamentohora).before(new Date())){
-						throw new Exception("Data de agendamento inválida.");
+					if(new SimpleDateFormat("dd/MM/yyyyHHmm").parse(dataagendamento+dataagendamentohora).before(new Date())){
+						throw new Exception("O horario de agendamento é ao horario atual.");
 					}
-					st.setTimestamp(20, Utilitario.getTimeStamp(new SimpleDateFormat("ddMMyyyyHHmm").parse(dataagendamento+dataagendamentohora)));
-					
+					st.setTimestamp(20, Utilitario.getTimeStamp(new SimpleDateFormat("dd/MM/yyyyHHmm").parse(dataagendamento+dataagendamentohora)));
 					
 				} else {
 					st.setNull(20, java.sql.Types.TIMESTAMP);
