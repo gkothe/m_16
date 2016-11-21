@@ -97,7 +97,7 @@ public class Home_ajax {
 				JSONObject pedidos = new JSONObject();
 
 				pedidos.put("num_ped", rs.getString("NUM_PED"));
-				pedidos.put("desc_bairro", rs.getString("DESC_BAIRRO"));
+				pedidos.put("desc_bairro", rs.getString("DESC_BAIRRO")==null?"Retirada no local" : rs.getString("DESC_BAIRRO")) ;
 				pedidos.put("valor", rs.getString("VAL_TOTALPROD"));
 				pedidos.put("id_pedido", rs.getString("id_pedido"));
 				flagvizu = "";
