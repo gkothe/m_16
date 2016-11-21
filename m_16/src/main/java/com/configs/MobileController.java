@@ -346,6 +346,14 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 
 		PrintWriter out = response.getWriter();
 
+		String datayar = request.getParameter("datayar") == null ? "" : request.getParameter("datayar");
+
+		try {
+			new SimpleDateFormat("dd/MM/yyyy").parse(datayar);
+		} catch (Exception e) {
+			throw new Exception("Data inválida.");
+		}
+		
 		JSONObject objRetorno = new JSONObject();
 
 		StringBuffer  varname1 = new StringBuffer();
@@ -363,7 +371,6 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 		varname1.append(" where id_usuario  = ?  limit 1;");
 
 
-
 		PreparedStatement st = conn.prepareStatement(varname1.toString());
 		st.setLong(1, cod_usuario);
 		ResultSet rs = st.executeQuery();
@@ -371,26 +378,39 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 		if (rs.next()) {
 			
 			StringBuffer  varname11 = new StringBuffer();
-			varname11.append("select * from distribuidora_bairro_entrega ");
+			varname11.append("select DATE_FORMAT(HORARIO_INI, '%H:%i') as HORARIO_INI,DATE_FORMAT(HORARIO_FIM, '%H:%i') as HORARIO_FIM from distribuidora_bairro_entrega ");
 			varname11.append("  ");
 			varname11.append("inner join distribuidora_horario_dia_entre ");
 			varname11.append("on distribuidora_horario_dia_entre.ID_DISTR_BAIRRO = distribuidora_bairro_entrega.ID_DISTR_BAIRRO ");
 			varname11.append(" ");
-			varname11.append("where cod_bairro = ? and distribuidora_bairro_entrega.id_distribuidora = ? and cod_dia = ? ");
+			varname11.append("where cod_bairro = ? and distribuidora_bairro_entrega.id_distribuidora = ? and cod_dia = ?  order by HORARIO_INI ");
 			varname11.append(" ");
 			
-			st = conn.prepareStatement(varname1.toString());
-			st.setLong(1, rs.getInt("cod_bairro"));
-			st.setLong(2, rs.getInt("id_distribuidora"));
-			ResultSet rs2 = st.executeQuery();
-			while(rs2.next()){
-				
-				
+			Calendar c = Calendar.getInstance();
+			c.setTime(new SimpleDateFormat("dd/MM/yyyy").parse(datayar));
+			int dayOfWeek = c.get(Calendar.DAY_OF_WEEK);
+			if(dayOfWeek==1){
+				dayOfWeek = 7;
+			}else{
+				dayOfWeek = dayOfWeek -1;	
 			}
 			
+			st = conn.prepareStatement(varname11.toString());
+			st.setLong(1, rs.getInt("cod_bairro"));
+			st.setLong(2, rs.getInt("id_distribuidora"));
+			st.setLong(3, dayOfWeek);
+			ResultSet rs2 = st.executeQuery();
+			String text = "Horários de atendimento no dia escolhido \n";
+			boolean temhora = false;
+			while(rs2.next()){
+				temhora = true;
+				text = text +"" + rs2.getString("HORARIO_INI") + " - " + rs2.getString("HORARIO_FIM")+" \n";
+			}
+			if(!temhora){
+				text = "Sem horários de atendimento para o dia escolhido.";	
+			}
 
-
-			objRetorno.put("txt_texto", "");
+			objRetorno.put("txt_texto", text);
 		} 
 
 		objRetorno.put("msg", "ok");
