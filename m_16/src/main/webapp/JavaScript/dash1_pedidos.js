@@ -47,8 +47,8 @@ $(document).ready(function() {
 
 	$("#btn_filtrar").click(function() {
 
-		$('#tabs_dash a[href="#dashboard1"]').tab('show')
-		// filtrar(true);
+		//$('#tabs_dash a[href="#dashboard1"]').tab('show')
+		 filtrar(false);
 	});
 
 	$("#btn_filtros_limpar").click(function() {

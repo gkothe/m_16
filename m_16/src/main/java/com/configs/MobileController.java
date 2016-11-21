@@ -244,6 +244,8 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 					servicoCarrinho(request, response, conn, cod_usuario);
 				} else if (cmd.equalsIgnoreCase("txt_obs_hora")) {
 					txtObsHora(request, response, conn, cod_usuario, sys);
+				} else if (cmd.equalsIgnoreCase("txt_horaatendimento")) {
+					txtHoraAtend(request, response, conn, cod_usuario, sys);
 				} else if (cmd.equalsIgnoreCase("finalizandoPedidoMobile")) {
 					Pedidos_ajax.finalizandoPedidoMobile(request, response, conn, cod_usuario);
 				}
@@ -340,6 +342,62 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 
 	}
 
+	public static void txtHoraAtend(HttpServletRequest request, HttpServletResponse response, Connection conn, long cod_usuario, Sys_parametros sys) throws Exception {
+
+		PrintWriter out = response.getWriter();
+
+		JSONObject objRetorno = new JSONObject();
+
+		StringBuffer  varname1 = new StringBuffer();
+		varname1.append("select distribuidora.id_distribuidora, carrinho.cod_bairro from carrinho ");
+		varname1.append("  ");
+		varname1.append(" inner join carrinho_item ");
+		varname1.append(" on carrinho_item.id_carrinho = carrinho.id_carrinho ");
+		varname1.append("  ");
+		varname1.append(" inner join produtos_distribuidora ");
+		varname1.append(" on produtos_distribuidora.ID_PROD_DIST = carrinho_item.ID_PROD_DIST ");
+		varname1.append("  ");
+		varname1.append(" inner join distribuidora ");
+		varname1.append(" on distribuidora.id_distribuidora = produtos_distribuidora.id_distribuidora ");
+		varname1.append("  ");
+		varname1.append(" where id_usuario  = ?  limit 1;");
+
+
+
+		PreparedStatement st = conn.prepareStatement(varname1.toString());
+		st.setLong(1, cod_usuario);
+		ResultSet rs = st.executeQuery();
+
+		if (rs.next()) {
+			
+			StringBuffer  varname11 = new StringBuffer();
+			varname11.append("select * from distribuidora_bairro_entrega ");
+			varname11.append("  ");
+			varname11.append("inner join distribuidora_horario_dia_entre ");
+			varname11.append("on distribuidora_horario_dia_entre.ID_DISTR_BAIRRO = distribuidora_bairro_entrega.ID_DISTR_BAIRRO ");
+			varname11.append(" ");
+			varname11.append("where cod_bairro = ? and distribuidora_bairro_entrega.id_distribuidora = ? and cod_dia = ? ");
+			varname11.append(" ");
+			
+			st = conn.prepareStatement(varname1.toString());
+			st.setLong(1, rs.getInt("cod_bairro"));
+			st.setLong(2, rs.getInt("id_distribuidora"));
+			ResultSet rs2 = st.executeQuery();
+			while(rs2.next()){
+				
+				
+			}
+			
+
+
+			objRetorno.put("txt_texto", "");
+		} 
+
+		objRetorno.put("msg", "ok");
+		out.print(objRetorno.toJSONString());
+
+	}
+	
 	public static void txtObsHora(HttpServletRequest request, HttpServletResponse response, Connection conn, long cod_usuario, Sys_parametros sys) throws Exception {
 
 		PrintWriter out = response.getWriter();
@@ -347,7 +405,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 		JSONObject objRetorno = new JSONObject();
 
 		StringBuffer sql = new StringBuffer();
-		sql.append("select txt_obs_hora from carrinho ");
+		sql.append("select txt_obs_hora,DESC_ENDERECO,NUM_ENDEREC,DESC_COMPLEMENTO,distribuidora.cod_bairro from carrinho ");
 		sql.append(" ");
 		sql.append(" inner join carrinho_item ");
 		sql.append(" on carrinho_item.id_carrinho = carrinho.id_carrinho ");
@@ -368,7 +426,43 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 		objRetorno.put("txt_obs_hora", "");
 
 		if (rs.next()) {
-			objRetorno.put("txt_obs_hora", rs.getString("txt_obs_hora"));
+			String endereço = rs.getString("DESC_ENDERECO");
+			String num = rs.getString("NUM_ENDEREC");
+			String compl = rs.getString("DESC_COMPLEMENTO");
+			String bairro = Utilitario.getNomeBairro(conn, rs.getInt("cod_bairro"), 0);
+
+			String endfinal = endereço + ", " + num + " " + compl + ", " + bairro + "/n";
+
+			objRetorno.put("txt_obs_hora", endfinal + rs.getString("txt_obs_hora"));
+		} else {
+			String iddistr = request.getParameter("iddistr") == null ? "" : request.getParameter("iddistr");
+			if (!iddistr.equalsIgnoreCase("")) {
+				sql = new StringBuffer();
+				sql.append("select  txt_obs_hora,DESC_ENDERECO,NUM_ENDEREC,DESC_COMPLEMENTO,distribuidora.cod_bairro,FLAG_ATIVO from distribuidora ");
+				sql.append(" ");
+				sql.append(" where id_distribuidora  = ? and FLAG_ATIVO_MASTER = 'S' ");
+				sql.append(" ");
+				sql.append(" limit 1");
+
+				st = conn.prepareStatement(sql.toString());
+				st.setLong(1, Long.parseLong(iddistr));
+				rs = st.executeQuery();
+				if (rs.next()) {
+					if (!rs.getString("flag_ativo").equalsIgnoreCase("S")) {
+						objRetorno.put("txt_obs_hora", "Esta distribuidora está offline no momento.");
+					} else {
+						String endereço = rs.getString("DESC_ENDERECO");
+						String num = rs.getString("NUM_ENDEREC");
+						String compl = rs.getString("DESC_COMPLEMENTO");
+						String bairro = Utilitario.getNomeBairro(conn, rs.getInt("cod_bairro"), 0);
+
+						String endfinal = endereço + ", " + num + " " + compl + ", " + bairro + "\n";
+
+						objRetorno.put("txt_obs_hora", endfinal + rs.getString("txt_obs_hora"));
+					}
+
+				}
+			}
 		}
 
 		objRetorno.put("msg", "ok");
@@ -478,7 +572,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 
 		st.executeUpdate();
 
-		String texto = " Bem vindo ao TragoAqui, para validar seu e-mail clique  <a href='" + sys.getUrl_system() + "mobile?ac=validar&token=" + validacao +"'> aqui. </a>";
+		String texto = " Bem vindo ao TragoAqui, para validar seu e-mail clique  <a href='" + sys.getUrl_system() + "mobile?ac=validar&token=" + validacao + "'> aqui. </a>";
 
 		Utilitario.sendEmail(desc_email, texto, "Ativação da sua conta no TragoAqui!", conn);
 
@@ -564,9 +658,8 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 
 				st.executeUpdate();
 
-				String texto = " Para validar seu novo e-mail clique   <a href='" + sys.getUrl_system() + "mobile?ac=validarEmail&token=" + validacao+ "' > aqui. </a>  "; 
+				String texto = " Para validar seu novo e-mail clique   <a href='" + sys.getUrl_system() + "mobile?ac=validarEmail&token=" + validacao + "' > aqui. </a>  ";
 
-				
 				Utilitario.sendEmail(te_email, texto, "Confirmação de novo e-mail - TragoAqui", conn);
 				objRetorno.put("msg", "ok");
 			}
@@ -2598,6 +2691,8 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 		String trocopara = request.getParameter("troco_para") == null ? "" : request.getParameter("troco_para");
 		String modoentrega = request.getParameter("modoentrega") == null ? "" : request.getParameter("modoentrega");
 		String dataagendamento = request.getParameter("dataagendamento") == null ? "" : request.getParameter("dataagendamento");
+		String dataagendamentohora = request.getParameter("dataagendamentohora") == null ? "" : request.getParameter("dataagendamentohora");
+		
 
 		if (!choiceserv.equals("T") && !choiceserv.equals("L")) {
 			throw new Exception("Tipo de serviço inválido.");
@@ -2742,10 +2837,16 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 				}
 
 				if (modoentrega.equalsIgnoreCase("A") && choiceserv.equalsIgnoreCase("T")) {// agendamento
-					if(dataagendamento.equalsIgnoreCase("")){
-						throw new Exception("Data de agendamento inválida.");	
+					if (dataagendamento.equalsIgnoreCase("")) {
+						throw new Exception("Data de agendamento inválida.");
 					}
-					st.setTimestamp(20, Utilitario.getTimeStamp(new SimpleDateFormat("ddMMyyyyHHmm").parse(dataagendamento)));
+					
+					if(new SimpleDateFormat("ddMMyyyyHHmm").parse(dataagendamento+dataagendamentohora).before(new Date())){
+						throw new Exception("Data de agendamento inválida.");
+					}
+					st.setTimestamp(20, Utilitario.getTimeStamp(new SimpleDateFormat("ddMMyyyyHHmm").parse(dataagendamento+dataagendamentohora)));
+					
+					
 				} else {
 					st.setNull(20, java.sql.Types.TIMESTAMP);
 				}
@@ -2879,12 +2980,11 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 							} catch (Exception e) {
 								throw new Exception("Troco inválido!");
 							}
-							
-							if(rs.getDouble("val_prod") > Double.parseDouble(trocopara) && Double.parseDouble(trocopara) != 0){
+
+							if (rs.getDouble("val_prod") > Double.parseDouble(trocopara) && Double.parseDouble(trocopara) != 0) {
 								throw new Exception("O valor de 'troco para' deve ser maior que o valor do pedido.");
 							}
-							
-							
+
 							sql = new StringBuffer();
 							sql.append("UPDATE pedido ");
 							sql.append("   SET `NUM_TROCOPARA` = ?  ");
