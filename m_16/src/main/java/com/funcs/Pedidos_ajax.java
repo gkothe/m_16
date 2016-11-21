@@ -907,12 +907,12 @@ public class Pedidos_ajax {
 					m_tempo_entrega_inp = "00:00";
 
 				} else {
-					if (rs.getString("flag_modoentrega").equalsIgnoreCase("T")) {
+					if (rs.getString("flag_modoentrega").equalsIgnoreCase("T") && rs.getString("flag_modoentrega").equalsIgnoreCase("T")) {
 						Date datatempoentregateste = Utilitario.testeHora("HH:mm", m_tempo_entrega_inp, "Tempo de entrega inválido!");// tempo de entrega da distri
 						Date datatempoentregateste2 = Utilitario.testeHora("HH:mm", rs.getString("TEMPO_ESTIMADO_DESEJADO"), "");
 						;// tempo de entrega do usuario
 
-						if (datatempoentregateste.after(datatempoentregateste2)) {// ;/
+						if (datatempoentregateste.after(datatempoentregateste2) && rs.getString("flag_modoentrega").equalsIgnoreCase("T")) {// ;/
 							throw new Exception("Tempo de entrega é acima do desejado!");
 						}
 					} else {

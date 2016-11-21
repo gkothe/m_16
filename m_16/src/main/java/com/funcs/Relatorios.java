@@ -176,7 +176,7 @@ public class Relatorios {
 			retorno.put("media", "R$ " + df2.format(0));
 		}
 
-		sql = "select TIME_FORMAT(SEC_TO_TIME(AVG(TIME_TO_SEC(TEMPO_ESTIMADO_DESEJADO))),'%H:%i:%s' ) as TEMPO_ESTIMADO_DESEJADO_MEDIO  , TIME_FORMAT(SEC_TO_TIME(AVG(TIME_TO_SEC(TEMPO_ESTIMADO_ENTREGA))),'%H:%i:%s' ) as TEMPO_ESTIMADO_ENTREGA_MEDIO   from pedido  where FLAG_PEDIDO_RET_ENTRE = 'T'  and id_distribuidora = ? and flag_status = 'O' ";
+		sql = "select TIME_FORMAT(SEC_TO_TIME(AVG(TIME_TO_SEC(TEMPO_ESTIMADO_DESEJADO))),'%H:%i:%s' ) as TEMPO_ESTIMADO_DESEJADO_MEDIO  , TIME_FORMAT(SEC_TO_TIME(AVG(TIME_TO_SEC(TEMPO_ESTIMADO_ENTREGA))),'%H:%i:%s' ) as TEMPO_ESTIMADO_ENTREGA_MEDIO   from pedido  where FLAG_PEDIDO_RET_ENTRE = 'T'  and id_distribuidora = ? and flag_status = 'O' and flag_modoentrega = 'T' ";
 
 		sql = parametrosDash(sql, hora_inicial, hora_final, dias_semana, cod_bairro, data_pedido_ini, data_pedido_fim, flag_servico);
 
@@ -1364,13 +1364,13 @@ public class Relatorios {
 
 			if (!(rel_ped_ini.equalsIgnoreCase(""))) {
 				sql.append("  and  num_ped >= ?");
-				hmParams.put("rel_ped_ini", rel_ped_ini+"");
+				hmParams.put("rel_ped_ini", rel_ped_ini + "");
 
 			}
 
 			if (!(rel_ped_fim.equalsIgnoreCase(""))) {
 				sql.append(" and  num_ped <= ?");
-				hmParams.put("rel_ped_fim", rel_ped_fim+"");
+				hmParams.put("rel_ped_fim", rel_ped_fim + "");
 			}
 
 			sql.append(" order by num_ped");
@@ -1409,20 +1409,16 @@ public class Relatorios {
 				st.setString(contparam, flag_pagamento);
 				contparam++;
 			}
-			
-
 
 			if (!rel_ped_ini.equalsIgnoreCase("")) {
 				st.setLong(contparam, Long.parseLong(rel_ped_ini));
 				contparam++;
 			}
-			
+
 			if (!rel_ped_fim.equalsIgnoreCase("")) {
 				st.setLong(contparam, Long.parseLong(rel_ped_fim));
 				contparam++;
 			}
-			
-			
 
 			ResultSet rs = st.executeQuery();
 			HashMap<String, Object> hmFat = new HashMap<String, Object>();
@@ -1666,7 +1662,7 @@ public class Relatorios {
 
 			StringBuffer varname1;
 			while (rs.next()) {
-
+				double vendabairro_total = 0;
 				hmFat = new HashMap<String, Object>();
 				hmFat.put("flag_ativo", rs.getString("FLAG_ATIVO").equalsIgnoreCase("S") ? "Ativado" : "Desativado");
 
@@ -1679,7 +1675,7 @@ public class Relatorios {
 				hmFat.put("id_prod", rs.getLong("id_prod"));
 				hmFat.put("qtd", df.format(rs.getLong("qtd")));
 				hmFat.put("val_totalprod", df2.format(rs.getDouble("total")));
-
+				vendabairro_total = rs.getLong("qtd");
 				varname1 = new StringBuffer();
 				varname1.append("select cod_bairro,sum(pedido_item.QTD_PROD) as qtd from pedido ");
 				varname1.append(" ");
@@ -1700,6 +1696,7 @@ public class Relatorios {
 
 				if (rs2.next()) {
 					hmFat.put("venda_local", df.format(rs2.getDouble("qtd")));
+					vendabairro_total = Math.abs(vendabairro_total  -  rs2.getDouble("qtd"));;
 				} else {
 					hmFat.put("venda_local", "0");
 				}
@@ -1771,7 +1768,8 @@ public class Relatorios {
 				} else {
 					hmFat.put("hora", "-");
 				}
-
+				hmFat.put("vendabairro_total", df.format(vendabairro_total));
+				
 				arrLinhas.add(hmFat);
 			}
 

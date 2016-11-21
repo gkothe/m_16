@@ -449,6 +449,7 @@ input:focus {
 							<h4 class="modal-title" id="">
 								<label style="font-size: 40px; color: green" id="m_lbl_titulo"></label>
 								<input type="hidden" id="m_flag_pedido_ret_entre">
+								<input id="flag_tipoentrega_pedatual" type="hidden">
 							</h4>
 						</div>
 						<div class="modal-body" style="max-height: 800px">
@@ -578,7 +579,7 @@ input:focus {
 
 								</div>
 
-								<div class="col-xs-6 col-sm-6 col-md-6 col-lg-6 m_enviado"
+								<div id='m_tempo_entrega_div' class="col-xs-6 col-sm-6 col-md-6 col-lg-6 m_enviado"
 									align="left">
 
 									<table>
@@ -762,6 +763,7 @@ input:focus {
 
 									</div>
 								</div>
+								
 								<div class="row" id="m_tempo_entrega_box"
 									style="margin-left: 0px; margin-right: 0px;">
 

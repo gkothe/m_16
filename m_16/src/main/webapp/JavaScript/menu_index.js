@@ -288,6 +288,7 @@ function limpaModal() {
 	$('.motivo').prop('checked', false);
 	$('.prodrecusa').prop('checked', false);
 	$("#modal_prodsrecusa_btn_prods").hide();
+	$("#flag_tipoentrega_pedatual").val("");
 	/*
 	 * $("#m_hora_entrega").autoNumeric('set', 0);
 	 * $("#m_minutos_entrega").autoNumeric('set', 0);
@@ -458,8 +459,11 @@ function showPop(id, num_pedpop) {
 }
 
 function testaAceitaRecusa() {
+	
+	
 	if ($('input[name=flag_aceita_recusa]:checked').val() == 'A') {
-		if ($('#m_flag_pedido_ret_entre').val() == "T") {
+		
+		if ($('#m_flag_pedido_ret_entre').val() == "T" && 	$("#flag_tipoentrega_pedatual").val()=="T") {
 			$('#m_tempo_entrega_box').show();
 			$("#m_tempo_entrega_inp").focus();
 		}
@@ -659,27 +663,32 @@ function visualizarPedido(id) {
 		success : function(data) {
 			$(".cancelamento").hide();
 			$("#m_finalizar").html("Finalizar");
+		
 			audio.pause();
 			audio.currentTime = 0;
 			if (data.tipo_servico == "T") {
 				$("#m_lbl_bairro").html("Bairro:");
-
+				
 				if (data.flag_modoentrega == 'A') {
 					$("#m_tempomax_div").hide();
 					$("#m_agendamento").html(data.data_agenda_entrega);
 					$("#m_agendamento_div").show();
+					$('#m_tempo_entrega_box').hide();
 				} else {
 					$("#m_agendamento_div").hide();
 					$("#m_tempomax_div").hide();
 					$("#m_tempo_max").html(data.m_tempo_max);
 					$("#m_tempomax_div").show();
+					$('#m_tempo_entrega_box').hide();
 				}
 
+				
 			} else {
 				$("#m_agendamento_div").hide();
 				$("#m_tempomax_div").hide();
 				$("#m_lbl_bairro").html("");
 			}
+			$("#flag_tipoentrega_pedatual").val(data.flag_modoentrega);
 			$("#m_flag_pedido_ret_entre").val(data.tipo_servico);
 			if (data.num_trocopara != undefined) {
 				$("#m_troco_para_div").show();
@@ -713,6 +722,10 @@ function visualizarPedido(id) {
 				$("#m_responder").show();
 				$("#m_finalizar").hide();
 
+				if (data.flag_modoentrega == 'A') {
+					$("#m_tempo_entrega_div").hide();
+				}
+				
 			} else if (data.flag_status == "E") {
 				$("#m_lbl_titulo").css("color", "green");
 
@@ -738,9 +751,16 @@ function visualizarPedido(id) {
 					$("#m_finalizar").hide();
 				}
 
+				
+				
 				$(".m_enviado").show();
 				$("#m_aberto").hide();
 
+				if (data.flag_modoentrega == 'A') {
+					$("#m_tempo_entrega_div").hide();
+				}
+				
+				
 			} else if (data.flag_status == "C") {
 				$("#m_lbl_titulo").css("color", "red");
 

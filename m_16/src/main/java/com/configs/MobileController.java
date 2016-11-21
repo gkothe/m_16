@@ -2881,7 +2881,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 							}
 							
 							if(rs.getDouble("val_prod") > Double.parseDouble(trocopara) && Double.parseDouble(trocopara) != 0){
-								throw new Exception("Mesnagem de troco");
+								throw new Exception("O valor de 'troco para' deve ser maior que o valor do pedido.");
 							}
 							
 							
