@@ -209,12 +209,12 @@ function addHorario() {
 				horario["HORARIO_" + diassemana[t]] = horariosstr;
 			}
 
-			console.log(horario);
 			horarios.push(horario);
 
 			$('#table_horarios').bootstrapTable('load', horarios);
 			$('#table_horarios').bootstrapTable('resetView');
-
+			$("#b_hora_inicial").val(""); 
+			$("#b_hora_final").val("");
 		} else {
 			throw "Horário invalido! Preencha ambos os campos.";
 		}

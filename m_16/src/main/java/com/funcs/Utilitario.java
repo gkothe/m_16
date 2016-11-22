@@ -17,6 +17,9 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
+import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -27,6 +30,7 @@ import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Scanner;
 
@@ -732,7 +736,8 @@ public class Utilitario {
 
 	}
 
-	public static void main(String[] args) {
+	public void oneSginal() {
+
 		try {
 			String jsonResponse;
 
@@ -746,11 +751,34 @@ public class Utilitario {
 			con.setRequestProperty("Authorization", "Basic NmJmN2VhMmQtNjJkMi00OTRkLTg4M2UtODhhNjkzNzcyYTg5");
 			con.setRequestMethod("POST");
 
+			JSONObject body = new JSONObject();
+			JSONObject data = new JSONObject();
+			data.put("msg", "oi");
+			JSONObject contents = new JSONObject();
+			contents.put("en", "Avião");
+			JSONArray filters = new JSONArray();
+			JSONObject filterchild = new JSONObject();
+			;
+
+			// filters.put("email", "g.kothe@hotmail.com");
+
+			filterchild.put("field", "tag");
+			filterchild.put("key", "email");
+			filterchild.put("relation", "=");
+			filterchild.put("value", "morratu@hotmail.com");
+			filters.add(filterchild);
+
+			body.put("app_id", "6b1103df-ebeb-43e1-860b-e2903a9b12ae");
+			body.put("included_segments", "All");
+			body.put("data", data);
+			body.put("contents", contents);
+			body.put("filters", filters);
+
 			String strJsonBody = "{" + "\"app_id\": \"6b1103df-ebeb-43e1-860b-e2903a9b12ae\"," + "\"included_segments\": [\"All\"]," + "\"data\": {\"foo\": \"bar\"}," + "\"contents\": {\"en\": \"English Message\"}" + "}";
 
 			System.out.println("strJsonBody:\n" + strJsonBody);
 
-			byte[] sendBytes = strJsonBody.getBytes("UTF-8");
+			byte[] sendBytes = body.toJSONString().getBytes("UTF-8");
 			con.setFixedLengthStreamingMode(sendBytes.length);
 
 			OutputStream outputStream = con.getOutputStream();
@@ -772,6 +800,21 @@ public class Utilitario {
 
 		} catch (Throwable t) {
 			t.printStackTrace();
+		}
+
+	}
+
+	public static DecimalFormatSymbols dfs = new DecimalFormatSymbols(new Locale("pt", "BR"));
+	public static NumberFormat df = new DecimalFormat("###,###.#", dfs);
+	public static NumberFormat df2 = new DecimalFormat("#,###,##0.00", dfs);
+	public static NumberFormat df3 = new DecimalFormat("#,###,##0.0", dfs);
+
+	public static void main(String[] args) {
+
+		try {
+System.out.println(df2.format(1111111123456789.23));
+		} catch (Exception e) {
+			System.out.println(e);
 		}
 
 	}

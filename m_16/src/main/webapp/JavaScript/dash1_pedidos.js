@@ -342,8 +342,8 @@ function dashVendaProdsQtd(consulta) {// Produtos mais vendidos
 						splitAreaType : {
 							show : true
 						},
-						margin : 3
-
+						margin : 3,
+						clickable:true
 					}
 				} ],
 				series : [ {
@@ -544,7 +544,8 @@ function dashVendaProdsVal(consulta) {// Produtos com mais faturamento
 						splitAreaType : {
 							show : true
 						},
-						margin : 3
+						margin : 3,
+						clickable:true
 
 					}
 				} ],
@@ -732,7 +733,8 @@ function dashBairrosLista(consulta) {// Produtos com mais faturamento
 						splitAreaType : {
 							show : true
 						},
-						margin : 3
+						margin : 3,
+						
 
 					}
 				} ],
@@ -1190,6 +1192,7 @@ function dashModo() {
 				html = html + "		</p>";
 				html = html + "	</td>";
 				html = html + "	<td style=\"text-align: center\">" + data[t].qtddf + "</td>";
+				html = html + "	<td style=\"text-align: center\">" + data[t].val_totalprod + "</td>";
 				html = html + "	<td style=\"text-align: center\">" + data[t].perc + "%</td>";
 				html = html + "</tr>";
 
@@ -2235,7 +2238,8 @@ function dashMeses(consulta) {// Produtos com mais faturamento
 					},
 					axisLabel : {
 						rotate : 45,
-						interval : 0
+						interval : 0,
+						clickable:true
 					}
 
 				} ],
@@ -2256,9 +2260,9 @@ function dashMeses(consulta) {// Produtos com mais faturamento
 							} else {
 								return valorFormater2(val)
 							}
-
+							
 						},
-
+						
 						margin : 3
 					}
 				} ],

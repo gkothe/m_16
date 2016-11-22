@@ -395,6 +395,10 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 				dayOfWeek = dayOfWeek -1;	
 			}
 			
+			if(rs.getInt("cod_bairro")==0){
+				throw new Exception("Nenhum bairro selecionado.");	
+			}
+			
 			st = conn.prepareStatement(varname11.toString());
 			st.setLong(1, rs.getInt("cod_bairro"));
 			st.setLong(2, rs.getInt("id_distribuidora"));

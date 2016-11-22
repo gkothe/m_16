@@ -56,7 +56,7 @@ public class MobileLogin {
 			MobileLogin mob = new MobileLogin();
 			objRetorno.put("token", mob.criaToken(user, pass, tempotoken, conn));//
 			objRetorno.put("maioridade", rs.getString("maior18").equalsIgnoreCase("")?"N":rs.getString("maior18"));//
-			
+			objRetorno.put("email", rs.getString("DESC_EMAIL"));//
 			if(rs.getLong("id_usuario")==sys.getId_usuario_admin()){
 				objRetorno.put("usrtype","admin" );//
 			}else if(rs.getLong("id_usuario")==sys.getSys_id_visistante()){

@@ -233,6 +233,57 @@ public class Relatorios {
 		out.print(retorno.toJSONString());
 	}
 
+	public static void dashPagamento(HttpServletRequest request, HttpServletResponse response, Connection conn, int coddistr) throws Exception {
+		JSONArray retorno = new JSONArray();
+		PrintWriter out = response.getWriter();
+
+		String data_pedido_ini = request.getParameter("data_pedido_ini") == null ? "" : request.getParameter("data_pedido_ini");
+		String data_pedido_fim = request.getParameter("data_pedido_fim") == null ? "" : request.getParameter("data_pedido_fim");
+		String cod_bairro = request.getParameter("cod_bairro") == null ? "" : request.getParameter("cod_bairro");
+		String hora_final = request.getParameter("hora_final") == null ? "" : request.getParameter("hora_final");
+		String hora_inicial = request.getParameter("hora_inicial") == null ? "" : request.getParameter("hora_inicial");
+		String flag_servico = request.getParameter("flag_servico") == null ? "" : request.getParameter("flag_servico");
+		String dias_semana = request.getParameter("dias_semana") == null ? "" : request.getParameter("dias_semana");
+
+		String sql = "select distinct FLAG_MODOPAGAMENTO, count(FLAG_MODOPAGAMENTO) as qtd,sum(val_totalprod) as val_totalprod from pedido  where id_distribuidora = ?  and flag_status = 'O' ";
+
+		sql = parametrosDash(sql, hora_inicial, hora_final, dias_semana, cod_bairro, data_pedido_ini, data_pedido_fim, flag_servico);
+
+		sql = sql + " group by FLAG_MODOPAGAMENTO ;";
+
+		PreparedStatement st = conn.prepareStatement(sql);
+		st.setInt(1, coddistr);
+		int contparam = 2;
+
+		parametrosDashSt(st, contparam, hora_inicial, hora_final, dias_semana, cod_bairro, data_pedido_ini, data_pedido_fim, flag_servico);
+
+		ResultSet rs = st.executeQuery();
+		while (rs.next()) {
+			JSONObject obj = new JSONObject();
+			obj.put("desc", rs.getString("FLAG_MODOPAGAMENTO").equalsIgnoreCase("C") ? "Cartão Créd." : "Dinheiro");
+			obj.put("qtd", rs.getInt("qtd"));
+			obj.put("qtddf", df.format(rs.getInt("qtd")));
+			obj.put("val_totalprod", "R$ "+df2.format(rs.getDouble("val_totalprod")));
+			retorno.add(obj);
+		}
+
+		double total = 0;
+		for (int i = 0; i < retorno.size(); i++) {
+			JSONObject obj = (JSONObject) retorno.get(i);
+			total = total + (Integer) obj.get("qtd");
+		}
+
+		for (int i = 0; i < retorno.size(); i++) {
+			JSONObject obj = (JSONObject) retorno.get(i);
+			int qtd = (Integer) obj.get("qtd");
+			obj.put("perc", df3.format((100 * qtd) / total));
+
+		}
+
+		out.print(retorno.toJSONString());
+	}
+
+	
 	public static void dashServico(HttpServletRequest request, HttpServletResponse response, Connection conn, int coddistr) throws Exception {
 		JSONArray retorno = new JSONArray();
 		PrintWriter out = response.getWriter();
@@ -263,7 +314,7 @@ public class Relatorios {
 			obj.put("desc", rs.getString("FLAG_PEDIDO_RET_ENTRE").equalsIgnoreCase("T") ? "Entrega" : "Retirada");
 			obj.put("qtd", rs.getInt("qtd"));
 			obj.put("qtddf", df.format(rs.getInt("qtd")));
-			obj.put("val_totalprod", df2.format(rs.getInt("val_totalprod")));
+			obj.put("val_totalprod", df2.format(rs.getDouble("val_totalprod")));
 			retorno.add(obj);
 		}
 
@@ -451,7 +502,7 @@ public class Relatorios {
 					qtdmax = rs.getInt("qtd");
 				}
 
-				if (rs.getInt("valprod") > fatmax) {
+				if (rs.getDouble("valprod") > fatmax) {
 					fatmax = rs.getDouble("valprod");
 				}
 
@@ -529,7 +580,7 @@ public class Relatorios {
 				qtdmax = rs.getInt("qtd");
 			}
 
-			if (rs.getInt("valtotal") > fatmax) {
+			if (rs.getDouble("valtotal") > fatmax) {
 				fatmax = rs.getDouble("valtotal");
 			}
 			obj.put("fatmax", Math.ceil(fatmax * 1.2));
@@ -573,7 +624,7 @@ public class Relatorios {
 					qtdmax = rs2.getInt("qtd");
 				}
 
-				if (rs2.getInt("valtotal") > fatmax) {
+				if (rs2.getDouble("valtotal") > fatmax) {
 					fatmax = rs2.getDouble("valtotal");
 				}
 				obj.put("fatmax", Math.ceil(fatmax * 1.2));
@@ -898,68 +949,20 @@ public class Relatorios {
 		while (rs.next()) {
 			JSONObject obj = new JSONObject();
 
-			if (rs.getInt("valsold") > qtdmax) {
+			if (rs.getDouble("valsold") > qtdmax) {
 				qtdmax = rs.getDouble("valsold");
 			}
 
 			obj.put("qtdmax", Math.ceil(qtdmax * 1.2));
 			obj.put("desc", rs.getString("desc_prod"));
-			obj.put("valsold", rs.getInt("valsold"));
-			obj.put("valsolddesc", df2.format(rs.getInt("valsold")));
+			obj.put("valsold", rs.getDouble("valsold"));
+			obj.put("valsolddesc", df2.format(rs.getDouble("valsold")));
 			retorno.add(obj);
 		}
 
 		out.print(retorno.toJSONString());
 	}
 
-	public static void dashPagamento(HttpServletRequest request, HttpServletResponse response, Connection conn, int coddistr) throws Exception {
-		JSONArray retorno = new JSONArray();
-		PrintWriter out = response.getWriter();
-
-		String data_pedido_ini = request.getParameter("data_pedido_ini") == null ? "" : request.getParameter("data_pedido_ini");
-		String data_pedido_fim = request.getParameter("data_pedido_fim") == null ? "" : request.getParameter("data_pedido_fim");
-		String cod_bairro = request.getParameter("cod_bairro") == null ? "" : request.getParameter("cod_bairro");
-		String hora_final = request.getParameter("hora_final") == null ? "" : request.getParameter("hora_final");
-		String hora_inicial = request.getParameter("hora_inicial") == null ? "" : request.getParameter("hora_inicial");
-		String flag_servico = request.getParameter("flag_servico") == null ? "" : request.getParameter("flag_servico");
-		String dias_semana = request.getParameter("dias_semana") == null ? "" : request.getParameter("dias_semana");
-
-		String sql = "select distinct FLAG_MODOPAGAMENTO, count(FLAG_MODOPAGAMENTO) as qtd from pedido  where id_distribuidora = ?  and flag_status = 'O' ";
-
-		sql = parametrosDash(sql, hora_inicial, hora_final, dias_semana, cod_bairro, data_pedido_ini, data_pedido_fim, flag_servico);
-
-		sql = sql + " group by FLAG_MODOPAGAMENTO ;";
-
-		PreparedStatement st = conn.prepareStatement(sql);
-		st.setInt(1, coddistr);
-		int contparam = 2;
-
-		parametrosDashSt(st, contparam, hora_inicial, hora_final, dias_semana, cod_bairro, data_pedido_ini, data_pedido_fim, flag_servico);
-
-		ResultSet rs = st.executeQuery();
-		while (rs.next()) {
-			JSONObject obj = new JSONObject();
-			obj.put("desc", rs.getString("FLAG_MODOPAGAMENTO").equalsIgnoreCase("C") ? "Cartão Créd." : "Dinheiro");
-			obj.put("qtd", rs.getInt("qtd"));
-			obj.put("qtddf", df.format(rs.getInt("qtd")));
-			retorno.add(obj);
-		}
-
-		double total = 0;
-		for (int i = 0; i < retorno.size(); i++) {
-			JSONObject obj = (JSONObject) retorno.get(i);
-			total = total + (Integer) obj.get("qtd");
-		}
-
-		for (int i = 0; i < retorno.size(); i++) {
-			JSONObject obj = (JSONObject) retorno.get(i);
-			int qtd = (Integer) obj.get("qtd");
-			obj.put("perc", df3.format((100 * qtd) / total));
-
-		}
-
-		out.print(retorno.toJSONString());
-	}
 
 	public static void dashMeses(HttpServletRequest request, HttpServletResponse response, Connection conn, int coddistr) throws Exception {
 		JSONArray retorno = new JSONArray();

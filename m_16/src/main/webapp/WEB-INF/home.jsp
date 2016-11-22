@@ -189,7 +189,7 @@ input:focus {
 
 							<li class=""><a href="javascript:;"
 								class="user-profile dropdown-toggle" data-toggle="dropdown"
-								aria-expanded="false"> Opções <span
+								aria-expanded="false"><label style="font-weight:900 ">Opções</label>  <span
 									class=" fa fa-angle-down"></span>
 							</a>
 								<ul class="dropdown-menu dropdown-usermenu pull-right">
@@ -197,7 +197,7 @@ input:focus {
 											class="fa fa-question pull-right"></i>Ajuda/Informações
 											gerais</a></li>
 									<li><a href="javascript:mutarsom();"><i
-											class="fa fa-sign-out pull-right"></i> Desabilitar som por 2
+											class="fa fa-pause-circle pull-right"></i> Desabilitar som por 2
 											min. </a></li>
 									<li><a href="home?ac=logout"><i
 											class="fa fa-sign-out pull-right"></i> Sair</a></li>
