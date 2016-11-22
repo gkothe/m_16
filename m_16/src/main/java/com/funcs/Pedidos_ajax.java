@@ -77,7 +77,7 @@ public class Pedidos_ajax {
 
 		String temfiltro = "N";
 
-		String sql = "select * from pedido left join bairros on bairros.cod_bairro = pedido.cod_bairro left join pedido_motivo_cancelamento on pedido_motivo_cancelamento.id_pedido = pedido.id_pedido  where ID_DISTRIBUIDORA = ? and (flag_status = 'A' or flag_status = 'E' or (flag_status = 'C' and FLAG_CONFIRMADO_DISTRIBUIDORA = 'N' ) )  order by flag_status asc , data_pedido asc";
+		String sql = "select * from pedido left join bairros on bairros.cod_bairro = pedido.cod_bairro left join pedido_motivo_cancelamento on pedido_motivo_cancelamento.id_pedido = pedido.id_pedido  where ID_DISTRIBUIDORA = ? and (flag_status = 'A' or flag_status = 'E' or (flag_status = 'C' and FLAG_CONFIRMADO_DISTRIBUIDORA = 'N' ) )  ";
 
 		if (!num_pedido_aberto.equalsIgnoreCase("")) {
 			sql = sql + " and NUM_PED  = ? ";
@@ -121,9 +121,9 @@ public class Pedidos_ajax {
 
 		if (!flag_visu.equalsIgnoreCase("")) {
 			if (flag_visu.equalsIgnoreCase("N"))
-				sql = sql + "  and  (flag_vizualizado = ? or FLAG_VIZUALIZADO_CANC = ?) ";
+				sql = sql + "  and  (flag_vizualizado = ? or FLAG_VIZUALIZADO_CANC = ? ) ";
 			else if (flag_visu.equalsIgnoreCase("S")) {
-				// sql = sql + " and flag_vizualizado = ? and Coalesce(FLAG_VIZUALIZADO_CANC,'S') = ? ";
+				 sql = sql + " and flag_vizualizado = ? and Coalesce(FLAG_VIZUALIZADO_CANC,'S') = ? ";
 			}
 			temfiltro = "S";
 		}
@@ -133,6 +133,10 @@ public class Pedidos_ajax {
 			temfiltro = "S";
 		}
 
+		sql = sql + "  order by flag_status asc , data_pedido asc ";
+		
+		
+		
 		PreparedStatement st = conn.prepareStatement(sql);
 		st.setInt(1, coddistr);
 

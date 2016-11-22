@@ -2860,10 +2860,44 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 					if (dataagendamento.equalsIgnoreCase("")) {
 						throw new Exception("Data de agendamento inválida.");
 					}
+					if (dataagendamentohora.equalsIgnoreCase("")) {
+						throw new Exception("Horário de entrega inválido.");
+					}
+					
 					
 					if(new SimpleDateFormat("dd/MM/yyyyHHmm").parse(dataagendamento+dataagendamentohora).before(new Date())){
 						throw new Exception("O horario de agendamento é ao horario atual.");
 					}
+					
+					
+					StringBuffer  varname11 = new StringBuffer();
+					varname11.append("select DATE_FORMAT(HORARIO_INI, '%H:%i') as HORARIO_INI,DATE_FORMAT(HORARIO_FIM, '%H:%i') as HORARIO_FIM from distribuidora_bairro_entrega ");
+					varname11.append("  ");
+					varname11.append("inner join distribuidora_horario_dia_entre ");
+					varname11.append("on distribuidora_horario_dia_entre.ID_DISTR_BAIRRO = distribuidora_bairro_entrega.ID_DISTR_BAIRRO ");
+					varname11.append(" ");
+					varname11.append("where cod_bairro = ? and distribuidora_bairro_entrega.id_distribuidora = ? and cod_dia = ? and ? between  HORARIO_INI and HORARIO_FIM order by HORARIO_INI ");
+					varname11.append(" ");
+					
+					Calendar c = Calendar.getInstance();
+					c.setTime(new SimpleDateFormat("dd/MM/yyyy").parse(dataagendamento));
+					int dayOfWeek = c.get(Calendar.DAY_OF_WEEK);
+					if(dayOfWeek==1){
+						dayOfWeek = 7;
+					}else{
+						dayOfWeek = dayOfWeek -1;	
+					}
+					
+					PreparedStatement st3 = conn.prepareStatement(varname11.toString());
+					st3.setLong(1, rs.getInt("cod_bairro"));
+					st3.setLong(2, rs.getInt("id_distribuidora"));
+					st3.setLong(3, dayOfWeek);
+					st3.setString(4,dataagendamentohora.substring(0, 1)+dataagendamentohora.substring(1, 2)+":"+dataagendamentohora.substring(2, 3)+dataagendamentohora.substring(3, 4));
+					ResultSet rs3 = st3.executeQuery();
+					if(!rs3.next()){
+						throw new Exception("A distribuidora não atende neste horário.");
+					}
+					
 					st.setTimestamp(20, Utilitario.getTimeStamp(new SimpleDateFormat("dd/MM/yyyyHHmm").parse(dataagendamento+dataagendamentohora)));
 					
 				} else {
