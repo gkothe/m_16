@@ -845,7 +845,7 @@ public class Relatorios {
 
 		}
 
-		System.out.println(retorno.toJSONString());
+		
 
 		out.print(retorno.toJSONString());
 	}

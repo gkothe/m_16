@@ -15,7 +15,7 @@ public class Sys_parametros {
 	String FACE_APP_TOKEN = "";
 	String FACE_REDIRECT_URI = "";
 	String url_system = "";
-	long sys_id_visistante= 0;
+	long sys_id_visistante = 0;
 	int sys_smtp_port = 0;
 	String sys_host_name_smtp = "";
 	String sys_email = "";
@@ -26,7 +26,33 @@ public class Sys_parametros {
 	int PED_HORASOKEY = 0;
 	int NUM_TEMPOMAXCANC_MINUTO = 0;
 	int cod_recusa_estoque = 0;
-	
+	String onesignal_key = "";
+	String onesignal_url = "";
+	String onesignal_appid = "";
+
+	public String getOnesignal_key() {
+		return onesignal_key;
+	}
+
+	public void setOnesignal_key(String onesignal_key) {
+		this.onesignal_key = onesignal_key;
+	}
+
+	public String getOnesignal_url() {
+		return onesignal_url;
+	}
+
+	public void setOnesignal_url(String onesignal_url) {
+		this.onesignal_url = onesignal_url;
+	}
+
+	public String getOnesignal_appid() {
+		return onesignal_appid;
+	}
+
+	public void setOnesignal_appid(String onesignal_appid) {
+		this.onesignal_appid = onesignal_appid;
+	}
 
 	public int getCod_recusa_estoque() {
 		return cod_recusa_estoque;
@@ -59,7 +85,7 @@ public class Sys_parametros {
 	public void setSys_id_visistante(long sys_id_visistante) {
 		this.sys_id_visistante = sys_id_visistante;
 	}
-	
+
 	public String getSys_host_name_smtp() {
 		return sys_host_name_smtp;
 	}
@@ -216,6 +242,9 @@ public class Sys_parametros {
 				this.setPED_HORASOKEY(rs.getInt("PED_HORASOKEY"));
 				this.setNUM_TEMPOMAXCANC_MINUTO(rs.getInt("NUM_TEMPOMAXCANC_MINUTO"));
 				this.setCod_recusa_estoque(rs.getInt("COD_RECUSA"));
+				this.setOnesignal_key(rs.getString("onesignal_key"));
+				this.setOnesignal_url(rs.getString("onesignal_url"));
+				this.setOnesignal_appid(rs.getString("onesignal_appid"));
 			}
 
 		} catch (Exception e) {

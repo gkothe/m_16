@@ -7,7 +7,7 @@ import java.util.Date;
 
 import com.configs.Conexao;
 
-public class Thread_ext extends Thread {
+public class Thread_OnOffEmp extends Thread {
 
 	Connection conn = null;
 	PreparedStatement st = null;

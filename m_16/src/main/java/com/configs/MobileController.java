@@ -209,7 +209,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 				} else if (cmd.equalsIgnoreCase("carregaPedidos")) {
 					carregaPedidos(request, response, conn, cod_usuario);
 				} else if (cmd.equalsIgnoreCase("carregaPedidoUnico")) {
-					carregaPedidoUnico(request, response, conn, cod_usuario);
+					carregaPedidoUnico(request, response, conn, cod_usuario,sys);
 				} else if (cmd.equalsIgnoreCase("carregaItemCarrinho")) {
 					carregaCarrinho(request, response, conn, cod_usuario, true);
 				} else if (cmd.equalsIgnoreCase("carregaCarrinho")) {
@@ -290,7 +290,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 		String paymentMethodId = request.getParameter("paymentMethodId");
 
 		org.codehaus.jettison.json.JSONObject payment = mp.post("/v1/payments", "{" + "'transaction_amount': 100," + "'token': " + token + "," + "'description': 'Title of what you are paying for'," + "'installments': 1," + "'payment_method_id': '" + paymentMethodId + "'," + "'payer': {" + "'email': '" + email + "'" + "}" + "}");
-		System.out.println(payment);
+
 		if (payment.get("status").toString().equalsIgnoreCase("400") || payment.get("status").toString().equalsIgnoreCase("404") || payment.get("status").toString().equalsIgnoreCase("403")) {
 			throw new Exception(((org.codehaus.jettison.json.JSONObject) payment.get("response")).get("message").toString());
 		}
@@ -353,10 +353,10 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 		} catch (Exception e) {
 			throw new Exception("Data inválida.");
 		}
-		
+
 		JSONObject objRetorno = new JSONObject();
 
-		StringBuffer  varname1 = new StringBuffer();
+		StringBuffer varname1 = new StringBuffer();
 		varname1.append("select distribuidora.id_distribuidora, carrinho.cod_bairro from carrinho ");
 		varname1.append("  ");
 		varname1.append(" inner join carrinho_item ");
@@ -370,14 +370,13 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 		varname1.append("  ");
 		varname1.append(" where id_usuario  = ?  limit 1;");
 
-
 		PreparedStatement st = conn.prepareStatement(varname1.toString());
 		st.setLong(1, cod_usuario);
 		ResultSet rs = st.executeQuery();
 
 		if (rs.next()) {
-			
-			StringBuffer  varname11 = new StringBuffer();
+
+			StringBuffer varname11 = new StringBuffer();
 			varname11.append("select DATE_FORMAT(HORARIO_INI, '%H:%i') as HORARIO_INI,DATE_FORMAT(HORARIO_FIM, '%H:%i') as HORARIO_FIM from distribuidora_bairro_entrega ");
 			varname11.append("  ");
 			varname11.append("inner join distribuidora_horario_dia_entre ");
@@ -385,20 +384,20 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 			varname11.append(" ");
 			varname11.append("where cod_bairro = ? and distribuidora_bairro_entrega.id_distribuidora = ? and cod_dia = ?  order by HORARIO_INI ");
 			varname11.append(" ");
-			
+
 			Calendar c = Calendar.getInstance();
 			c.setTime(new SimpleDateFormat("dd/MM/yyyy").parse(datayar));
 			int dayOfWeek = c.get(Calendar.DAY_OF_WEEK);
-			if(dayOfWeek==1){
+			if (dayOfWeek == 1) {
 				dayOfWeek = 7;
-			}else{
-				dayOfWeek = dayOfWeek -1;	
+			} else {
+				dayOfWeek = dayOfWeek - 1;
 			}
-			
-			if(rs.getInt("cod_bairro")==0){
-				throw new Exception("Nenhum bairro selecionado.");	
+
+			if (rs.getInt("cod_bairro") == 0) {
+				throw new Exception("Nenhum bairro selecionado.");
 			}
-			
+
 			st = conn.prepareStatement(varname11.toString());
 			st.setLong(1, rs.getInt("cod_bairro"));
 			st.setLong(2, rs.getInt("id_distribuidora"));
@@ -406,22 +405,22 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 			ResultSet rs2 = st.executeQuery();
 			String text = "Horários de atendimento no dia escolhido \n";
 			boolean temhora = false;
-			while(rs2.next()){
+			while (rs2.next()) {
 				temhora = true;
-				text = text +"" + rs2.getString("HORARIO_INI") + " - " + rs2.getString("HORARIO_FIM")+" \n";
+				text = text + "" + rs2.getString("HORARIO_INI") + " - " + rs2.getString("HORARIO_FIM") + " \n";
 			}
-			if(!temhora){
-				text = "Sem horários de atendimento para o dia escolhido.";	
+			if (!temhora) {
+				text = "Sem horários de atendimento para o dia escolhido.";
 			}
 
 			objRetorno.put("txt_texto", text);
-		} 
+		}
 
 		objRetorno.put("msg", "ok");
 		out.print(objRetorno.toJSONString());
 
 	}
-	
+
 	public static void txtObsHora(HttpServletRequest request, HttpServletResponse response, Connection conn, long cod_usuario, Sys_parametros sys) throws Exception {
 
 		PrintWriter out = response.getWriter();
@@ -1819,7 +1818,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 		out.print(ret.toJSONString());
 	}
 
-	private static void carregaPedidoUnico(HttpServletRequest request, HttpServletResponse response, Connection conn, long cod_usuario) throws Exception {
+	private static void carregaPedidoUnico(HttpServletRequest request, HttpServletResponse response, Connection conn, long cod_usuario, Sys_parametros sys) throws Exception {
 
 		PrintWriter out = response.getWriter();
 
@@ -1903,12 +1902,13 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 			ped.put("tempo_entrega", rs.getTimestamp("TEMPO_ESTIMADO_ENTREGA") == null ? "" : new SimpleDateFormat("HH:mm").format(rs.getTimestamp("TEMPO_ESTIMADO_ENTREGA")));
 
 			StringBuffer sql2 = new StringBuffer();
-			sql2.append("select DESC_PROD, VAL_UNIT, QTD_PROD, QTD_PROD * VAL_UNIT   as total, DESC_ABREVIADO, produtos.id_prod from pedido_item ");
+			sql2.append("select FLAG_RECUSADO,  DESC_PROD, VAL_UNIT, QTD_PROD, QTD_PROD * VAL_UNIT   as total, DESC_ABREVIADO, produtos.id_prod from pedido_item ");
 			sql2.append("inner join produtos ");
 			sql2.append("on produtos.ID_PROD  = pedido_item.ID_PROD ");
 			sql2.append("where id_pedido = ? order by desc_prod");
 
 			JSONArray produtos = new JSONArray();
+			JSONArray produtos_semestq = new JSONArray();
 
 			PreparedStatement st2 = conn.prepareStatement(sql2.toString());
 			st2.setLong(1, Long.parseLong(id_pedido));
@@ -1924,7 +1924,45 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 				prod.put("id_prod", rs2.getString("id_prod"));
 				prod.put("desc_abreviado", rs2.getString("DESC_ABREVIADO"));
 
+				if (rs2.getString("FLAG_RECUSADO").equalsIgnoreCase("S")) {
+					produtos_semestq.add(rs2.getString("DESC_PROD"));
+				}
+
 				produtos.add(prod);
+			}
+			ped.put("motrecusa", "");
+			if (rs.getString("FLAG_STATUS").equalsIgnoreCase("R")) {
+
+				sql2 = new StringBuffer();
+				sql2.append("select  * from pedido_motivos_recusa ");
+				sql2.append("inner join motivos_recusa ");
+				sql2.append("on motivos_recusa.COD_MOTIVO  = pedido_motivos_recusa.COD_MOTIVO ");
+				sql2.append("where id_pedido = ? order by DESC_MOTIVO");
+
+				JSONArray motivos = new JSONArray();
+
+				st2 = conn.prepareStatement(sql2.toString());
+				st2.setLong(1, Long.parseLong(id_pedido));
+				rs2 = st2.executeQuery();
+
+				String text_recusa = "";
+
+				while (rs2.next()) {
+					if (rs2.getInt("cod_motivo") != sys.getCod_recusa_estoque()) {
+						JSONObject mot = new JSONObject();
+						text_recusa = text_recusa + "" + rs2.getString("desc_motivo") + " \n";
+						mot.put("desc_motivo", rs2.getString("desc_motivo"));
+						motivos.add(mot);
+					}
+				}
+
+				if (produtos_semestq.size() != 0) {
+					for (int i = 0; i < produtos_semestq.size(); i++) {
+						text_recusa = text_recusa + "" + produtos_semestq.get(i) + " está em falta no estoque. \n";
+					}
+
+				}
+				ped.put("motrecusa", text_recusa);
 			}
 
 			ped.put("produtos", produtos);
@@ -2716,7 +2754,6 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 		String modoentrega = request.getParameter("modoentrega") == null ? "" : request.getParameter("modoentrega");
 		String dataagendamento = request.getParameter("dataagendamento") == null ? "" : request.getParameter("dataagendamento");
 		String dataagendamentohora = request.getParameter("dataagendamentohora") == null ? "" : request.getParameter("dataagendamentohora");
-		
 
 		if (!choiceserv.equals("T") && !choiceserv.equals("L")) {
 			throw new Exception("Tipo de serviço inválido.");
@@ -2867,14 +2904,12 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 					if (dataagendamentohora.equalsIgnoreCase("")) {
 						throw new Exception("Horário de entrega inválido.");
 					}
-					
-					
-					if(new SimpleDateFormat("dd/MM/yyyyHHmm").parse(dataagendamento+dataagendamentohora).before(new Date())){
+
+					if (new SimpleDateFormat("dd/MM/yyyyHHmm").parse(dataagendamento + dataagendamentohora).before(new Date())) {
 						throw new Exception("O horario de agendamento é ao horario atual.");
 					}
-					
-					
-					StringBuffer  varname11 = new StringBuffer();
+
+					StringBuffer varname11 = new StringBuffer();
 					varname11.append("select DATE_FORMAT(HORARIO_INI, '%H:%i') as HORARIO_INI,DATE_FORMAT(HORARIO_FIM, '%H:%i') as HORARIO_FIM from distribuidora_bairro_entrega ");
 					varname11.append("  ");
 					varname11.append("inner join distribuidora_horario_dia_entre ");
@@ -2882,28 +2917,28 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 					varname11.append(" ");
 					varname11.append("where cod_bairro = ? and distribuidora_bairro_entrega.id_distribuidora = ? and cod_dia = ? and ? between  HORARIO_INI and HORARIO_FIM order by HORARIO_INI ");
 					varname11.append(" ");
-					
+
 					Calendar c = Calendar.getInstance();
 					c.setTime(new SimpleDateFormat("dd/MM/yyyy").parse(dataagendamento));
 					int dayOfWeek = c.get(Calendar.DAY_OF_WEEK);
-					if(dayOfWeek==1){
+					if (dayOfWeek == 1) {
 						dayOfWeek = 7;
-					}else{
-						dayOfWeek = dayOfWeek -1;	
+					} else {
+						dayOfWeek = dayOfWeek - 1;
 					}
-					
+
 					PreparedStatement st3 = conn.prepareStatement(varname11.toString());
 					st3.setLong(1, rs.getInt("cod_bairro"));
 					st3.setLong(2, rs.getInt("id_distribuidora"));
 					st3.setLong(3, dayOfWeek);
-					st3.setString(4,dataagendamentohora.substring(0, 1)+dataagendamentohora.substring(1, 2)+":"+dataagendamentohora.substring(2, 3)+dataagendamentohora.substring(3, 4));
+					st3.setString(4, dataagendamentohora.substring(0, 1) + dataagendamentohora.substring(1, 2) + ":" + dataagendamentohora.substring(2, 3) + dataagendamentohora.substring(3, 4));
 					ResultSet rs3 = st3.executeQuery();
-					if(!rs3.next()){
+					if (!rs3.next()) {
 						throw new Exception("A distribuidora não atende neste horário.");
 					}
-					
-					st.setTimestamp(20, Utilitario.getTimeStamp(new SimpleDateFormat("dd/MM/yyyyHHmm").parse(dataagendamento+dataagendamentohora)));
-					
+
+					st.setTimestamp(20, Utilitario.getTimeStamp(new SimpleDateFormat("dd/MM/yyyyHHmm").parse(dataagendamento + dataagendamentohora)));
+
 				} else {
 					st.setNull(20, java.sql.Types.TIMESTAMP);
 				}

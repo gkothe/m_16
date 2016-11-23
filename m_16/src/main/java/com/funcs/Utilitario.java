@@ -736,71 +736,58 @@ public class Utilitario {
 
 	}
 
-	public static void oneSginal() {
+	public static void oneSginal(Sys_parametros sys, String email, String msg, JSONObject data) throws Exception {
 
-		try {
-			String jsonResponse;
+		String jsonResponse;
 
-			URL url = new URL("https://onesignal.com/api/v1/notifications");
-			HttpURLConnection con = (HttpURLConnection) url.openConnection();
-			con.setUseCaches(false);
-			con.setDoOutput(true);
-			con.setDoInput(true);
+		URL url = new URL(sys.getOnesignal_url());
+		HttpURLConnection con = (HttpURLConnection) url.openConnection();
+		con.setUseCaches(false);
+		con.setDoOutput(true);
+		con.setDoInput(true);
+		
 
-			con.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
-			con.setRequestProperty("Authorization", "Basic NmJmN2VhMmQtNjJkMi00OTRkLTg4M2UtODhhNjkzNzcyYTg5");
-			con.setRequestMethod("POST");
+		con.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
+		con.setRequestProperty("Authorization", "Basic " + sys.getOnesignal_key());
+		con.setRequestMethod("POST");
 
-			JSONObject body = new JSONObject();
-			JSONObject data = new JSONObject();
-			data.put("msg", "oi");
-			JSONObject contents = new JSONObject();
-			contents.put("en", "Avião");
-			JSONArray filters = new JSONArray();
-			JSONObject filterchild = new JSONObject();
-			;
+		JSONObject body = new JSONObject();
+		JSONObject contents = new JSONObject();
+		contents.put("en", msg);
+		JSONArray filters = new JSONArray();
+		JSONObject filterchild = new JSONObject();
 
-			// filters.put("email", "g.kothe@hotmail.com");
+		filterchild.put("field", "tag");
+		filterchild.put("key", "email");
+		filterchild.put("relation", "=");
+		filterchild.put("value", email);
+		filters.add(filterchild);
 
-			filterchild.put("field", "tag");
-			filterchild.put("key", "email");
-			filterchild.put("relation", "=");
-			filterchild.put("value", "morratu@hotmail.com");
-			filters.add(filterchild);
+		body.put("app_id", sys.getOnesignal_appid());
+		body.put("included_segments", "All");
+		body.put("data", data);
+		body.put("contents", contents);
+		body.put("filters", filters);
 
-			body.put("app_id", "6b1103df-ebeb-43e1-860b-e2903a9b12ae");
-			body.put("included_segments", "All");
-			body.put("data", data);
-			body.put("contents", contents);
-			body.put("filters", filters);
+		byte[] sendBytes = body.toJSONString().getBytes("UTF-8");
+		con.setFixedLengthStreamingMode(sendBytes.length);
 
-			String strJsonBody = "{" + "\"app_id\": \"6b1103df-ebeb-43e1-860b-e2903a9b12ae\"," + "\"included_segments\": [\"All\"]," + "\"data\": {\"foo\": \"bar\"}," + "\"contents\": {\"en\": \"English Message\"}" + "}";
+		OutputStream outputStream = con.getOutputStream();
+		outputStream.write(sendBytes);
 
-			System.out.println("strJsonBody:\n" + strJsonBody);
+		int httpResponse = con.getResponseCode();
+		System.out.println("httpResponse: " + httpResponse);
 
-			byte[] sendBytes = body.toJSONString().getBytes("UTF-8");
-			con.setFixedLengthStreamingMode(sendBytes.length);
-
-			OutputStream outputStream = con.getOutputStream();
-			outputStream.write(sendBytes);
-
-			int httpResponse = con.getResponseCode();
-			System.out.println("httpResponse: " + httpResponse);
-
-			if (httpResponse >= HttpURLConnection.HTTP_OK && httpResponse < HttpURLConnection.HTTP_BAD_REQUEST) {
-				Scanner scanner = new Scanner(con.getInputStream(), "UTF-8");
-				jsonResponse = scanner.useDelimiter("\\A").hasNext() ? scanner.next() : "";
-				scanner.close();
-			} else {
-				Scanner scanner = new Scanner(con.getErrorStream(), "UTF-8");
-				jsonResponse = scanner.useDelimiter("\\A").hasNext() ? scanner.next() : "";
-				scanner.close();
-			}
-			System.out.println("jsonResponse:\n" + jsonResponse);
-
-		} catch (Throwable t) {
-			t.printStackTrace();
+		if (httpResponse >= HttpURLConnection.HTTP_OK && httpResponse < HttpURLConnection.HTTP_BAD_REQUEST) {
+			Scanner scanner = new Scanner(con.getInputStream(), "UTF-8");
+			jsonResponse = scanner.useDelimiter("\\A").hasNext() ? scanner.next() : "";
+			scanner.close();
+		} else {
+			Scanner scanner = new Scanner(con.getErrorStream(), "UTF-8");
+			jsonResponse = scanner.useDelimiter("\\A").hasNext() ? scanner.next() : "";
+			scanner.close();
 		}
+		System.out.println("jsonResponse:\n" + jsonResponse);
 
 	}
 
@@ -810,14 +797,19 @@ public class Utilitario {
 	public static NumberFormat df3 = new DecimalFormat("#,###,##0.0", dfs);
 
 	public static void main(String[] args) {
-
+		Connection conn = null;
 		try {
-			//System.out.println(df2.format(1111111123456789.23));
-			oneSginal();
+			conn = Conexao.getConexao();
+			Sys_parametros sys = new Sys_parametros(conn);
+			oneSginal(sys, "morratu@hotmail.com", "aaaa", new JSONObject());
 		} catch (Exception e) {
 			System.out.println(e);
-		}
+			try {
+				conn.close();
+			} catch (Exception es) { // TODO: handle exception } }
+			}
 
+		}
 	}
 
 	/*

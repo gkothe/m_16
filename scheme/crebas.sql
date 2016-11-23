@@ -1,6 +1,6 @@
 /*==============================================================*/
 /* DBMS name:      MySQL 5.0                                    */
-/* Created on:     17/11/2016 3:40:45 PM                        */
+/* Created on:     23/11/2016 10:37:43 AM                       */
 /*==============================================================*/
 
 
@@ -326,7 +326,10 @@ create table SYS_PARAMETROS
    SYS_TLS              char(1),
    PED_HORASOKEY        int,
    NUM_TEMPOMAXCANC_MINUTO int,
-   COD_RECUSA           int
+   COD_RECUSA           int,
+   ONESIGNAL_KEY        text,
+   ONESIGNAL_APPID      text,
+   ONESIGNAL_URL        text
 );
 
 /*==============================================================*/

@@ -871,7 +871,7 @@ public class Pedidos_ajax {
 		 * if (min_entrega.equalsIgnoreCase("")) { min_entrega = "0"; }
 		 */
 
-		String sql = " 	select * from pedido  where ID_DISTRIBUIDORA = ? and id_pedido = ? and flag_status = 'A'  ";
+		String sql = " 	select * from pedido inner join usuario on usuario.id_usuario = pedido.id_usuario where ID_DISTRIBUIDORA = ? and id_pedido = ? and flag_status = 'A'  ";
 
 		PreparedStatement st = conn.prepareStatement(sql);
 		st.setInt(1, coddistr);
@@ -893,7 +893,9 @@ public class Pedidos_ajax {
 			if (status.equalsIgnoreCase("C")) {
 				throw new Exception("Este pedido foi cancelado.");
 			}
-
+			JSONObject data = new JSONObject();
+			data.put("id_ped", rs.getString("ID_PEDIDO"));
+			data.put("num_ped", rs.getString("NUM_PED"));
 			if (resposta.equalsIgnoreCase("A")) {
 
 				/*
@@ -930,6 +932,9 @@ public class Pedidos_ajax {
 				st.setInt(2, coddistr);
 				st.setInt(3, Integer.parseInt(id_pedido));
 				st.executeUpdate();
+				
+				Utilitario.oneSginal(sys, rs.getString("DESC_EMAIL"), "Seu pedido foi aceito!", data);
+				
 
 				objRetorno.put("msg", "ok");
 
@@ -1003,7 +1008,7 @@ public class Pedidos_ajax {
 					}
 
 				}
-
+				Utilitario.oneSginal(sys, rs.getString("DESC_EMAIL"), "Seu pedido foi recusado!", data);
 				objRetorno.put("msg", "ok");
 
 			} else {
