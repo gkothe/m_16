@@ -7,7 +7,7 @@ var y2_bar = 50;
 var widht_bar = "75%";
 
 // para os grafico de dia hora
-var x_bar2 = 80;
+var x_bar2 = 90;
 var y_bar2 = 40;
 var x2_bar2 = 40;
 var y2_bar2 = 70;
@@ -64,6 +64,8 @@ $(document).ready(function() {
 	$("#btn_showlist").click(function() {
 		divManage(true);
 		filtrarProds(false, true);
+		$("#id_produto_listagem").val("");
+		$("#desc_produto_listagem").val("");
 	});
 
 	$('a[data-toggle="pill"]').on('shown.bs.tab', function(evt) {
@@ -129,7 +131,8 @@ function filtrar(troca) {
 	dashPedidoHora('qtd');
 	dashPedidoDia('qtd');
 	dashBairrosLista('qtd');
-	filtrarProds(false, true);
+	filtrarProds(true, true);
+	
 	if (troca) {
 		$('#tabs_dash a[href="#dashboard1"]').tab('show')
 	}
@@ -146,7 +149,7 @@ function limparfiltros() {
 	$("#flag_servico").val("");
 	// $("#dias_semana").val("");
 	$("#dias_semana").multiselect('deselect', [ "1", "2", "3", "4", "5", "6", "7" ]);
-
+	filtrar(false);
 }
 
 function carregaBairros() {
@@ -519,7 +522,7 @@ function dashVendaProdsVal(consulta) {// Produtos com mais faturamento
 					boundaryGap : [ 0, 0.01 ],
 					axisLabel : {
 						formatter : function(val) {
-							return valorFormater2(val)
+							return "R$ "+ valorFormater2(val)
 						},
 
 					},
@@ -707,7 +710,7 @@ function dashBairrosLista(consulta) {// Produtos com mais faturamento
 						formatter : function(val) {
 
 							if (consulta == "valor") {
-								return valorFormater2(val)
+								return  "R$ "+ valorFormater2(val)
 							} else {
 								return valorFormater(val)
 							}
@@ -936,7 +939,7 @@ function dashPedidoHora(consulta) {
 							if (consulta == "qtd") {
 								return valorFormater(val)
 							} else {
-								return valorFormater2(val)
+								return  "R$ "+valorFormater2(val)
 							}
 
 						},
@@ -1099,7 +1102,7 @@ function dashPedidoDia(consulta) {
 							if (consulta == "qtd") {
 								return valorFormater(val)
 							} else {
-								return valorFormater2(val)
+								return  "R$ "+valorFormater2(val)
 							}
 
 						},
@@ -1478,7 +1481,7 @@ function dashProdDiaSingle(consulta) {
 								if (consulta == "qtd") {
 									return valorFormater(val)
 								} else {
-									return valorFormater2(val)
+									return  "R$ "+ valorFormater2(val)
 								}
 
 							},
@@ -1660,7 +1663,7 @@ function dashProdHora_single(consulta) {
 								if (consulta == "qtd") {
 									return valorFormater(val)
 								} else {
-									return valorFormater2(val)
+									return  "R$ "+ valorFormater2(val)
 								}
 
 							},
@@ -1861,7 +1864,7 @@ function dashProdBairroSingle(consulta) {// Produtos com mais faturamento
 								if (consulta == 'qtd')
 									return valorFormater(val)
 								else
-									return valorFormater2(val)
+									return  "R$ "+valorFormater2(val)
 							},
 
 						},
@@ -2061,7 +2064,7 @@ function dashDia(consulta) {// Produtos com mais faturamento
 							if (consulta == "qtd") {
 								return valorFormater(val)
 							} else {
-								return valorFormater2(val)
+								return  "R$ "+ valorFormater2(val)
 							}
 
 						},
@@ -2258,7 +2261,7 @@ function dashMeses(consulta) {// Produtos com mais faturamento
 							if (consulta == "qtd") {
 								return valorFormater(val)
 							} else {
-								return valorFormater2(val)
+								return   "R$ "+ valorFormater2(val)
 							}
 							
 						},

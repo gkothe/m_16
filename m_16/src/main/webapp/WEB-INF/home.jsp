@@ -85,6 +85,15 @@ input:focus {
 	width: 85%;
 	height: 85%;
 }
+.help_icon{
+
+color: blue !important;
+padding-top: 7px;
+padding-left: 3px;
+}
+
+
+
 </style>
 
 

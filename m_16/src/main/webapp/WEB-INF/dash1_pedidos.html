@@ -171,7 +171,8 @@
 
 
 		<ul class="nav nav-pills nav-justified" " id="tabs_dash">
-			<li class="active"><a data-toggle="pill" href="#filtros">Inf. Geral</a></li>
+			<li class="active"><a data-toggle="pill" href="#filtros">Inf.
+					Geral</a></li>
 			<li><a data-toggle="pill" href="#dashboard1">Resumo </a></li>
 			<li><a data-toggle="pill" href="#dashboard3">Pedidos</a></li>
 			<li><a data-toggle="pill" href="#dashboard2">Produto </a></li>
@@ -196,7 +197,12 @@
 							<div class="x_content">
 								<div class="row ">
 									<div class="col-md-4 col-sm-4 col-xs-4">
-										<label for="">Quantidade de pedidos</label>
+										<div data-toggle="tooltip" style="display: inline"
+											title="Aqui você encontra a quantidade total de pedidos relacionados aos filtros aplicados.">
+											<label for="">Quantidade de pedidos</label> <span
+												class="glyphicon glyphicon-question-sign help_icon"></span>
+										</div>
+
 										<div class="form-group">
 											<input type="text" readonly="readonly"
 												class="form-control field_dash" id="lbldash_qtdped" />
@@ -206,7 +212,11 @@
 
 									</div>
 									<div class="col-md-4 col-sm-4 col-xs-4">
-										<label for="">Valor total dos pedidos</label>
+										<div data-toggle="tooltip" style="display: inline"
+											title="Aqui você encontra o valor total dos pedidos relacionados aos filtros aplicados.">
+											<label for="">Valor total dos pedidos</label> <span
+												class="glyphicon glyphicon-question-sign help_icon"></span>
+										</div>
 										<div class="form-group">
 											<input type="text" readonly="readonly"
 												class="form-control field_dash" id="lbldash_valtotal" />
@@ -214,7 +224,11 @@
 										</div>
 									</div>
 									<div class="col-md-4 col-sm-4 col-xs-4">
-										<label for="">Valor médio por pedido</label>
+										<div data-toggle="tooltip" style="display: inline"
+											title="Aqui você encontra o valor médio por pedido relacionado aos filtros aplicados.">
+											<label for="">Valor médio por pedido</label><span
+												class="glyphicon glyphicon-question-sign help_icon"></span>
+										</div>
 										<div class="form-group">
 											<input type="text" readonly="readonly"
 												class="form-control field_dash" id="lbldash_media" />
@@ -224,7 +238,12 @@
 								</div>
 								<div class="row ">
 									<div class="col-md-4 col-sm-4 col-xs-4">
-										<label for="">Média tempo máximo desejado de entrega</label>
+
+										<div data-toggle="tooltip" style="display: inline"
+											title="Aqui você encontra a média de tempo máximo que os usuários desejam que a tele entrega seja realizada dentro dos filtros aplicados. OBS: Não leva em consideração pedidos de agendamento.">
+											<label for="">Média tempo máximo desejado de entrega</label><span
+												class="glyphicon glyphicon-question-sign help_icon"></span>
+										</div>
 										<div class="form-group">
 											<input type="text" readonly="readonly"
 												class="form-control field_dash" id="lbldash_temp1" />
@@ -232,14 +251,25 @@
 
 									</div>
 									<div class="col-md-4 col-sm-4 col-xs-4">
-										<label for="">Média tempo máximo previsto de entrega</label>
+										<div data-toggle="tooltip" style="display: inline"
+											title="Aqui você encontra a média de tempo de entrega máximo previsto pela distribuidora dentro dos filtros aplicados. OBS: Não leva em consideração pedidos de agendamento.">
+											<label for="">Média tempo máximo previsto de entrega</label><span
+												class="glyphicon glyphicon-question-sign help_icon"></span>
+										</div>
+
 										<div class="form-group">
 											<input type="text" readonly="readonly"
 												class="form-control field_dash" id="lbldash_temp2" />
 										</div>
 									</div>
+
+
 									<div class="col-md-4 col-sm-4 col-xs-4">
-										<label for="">Média tempo de resposta de pedido</label>
+										<div data-toggle="tooltip" style="display: inline"
+											title="Aqui você encontra a média de tempo de resposta da distribuidora para os pedidos dos clientes dentro dos filtros aplicados.">
+											<label for="">Média tempo de resposta de pedido</label><span
+												class="glyphicon glyphicon-question-sign help_icon"></span>
+										</div>
 										<div class="form-group">
 											<input type="text" readonly="readonly"
 												class="form-control field_dash" id="lbldash_temp3" />
@@ -261,7 +291,11 @@
 					<div class="col-md-12 col-sm-12 col-xs-12">
 						<div class="x_panel">
 							<div class="x_title">
-								<h2>Volume de vendas</h2>
+								<div data-toggle="tooltip" style="display: inline"
+									title="Neste gráfico você consegue obter informações relacionadas ao volume de vendas, tanto da quantidade de pedidos em determinado período, quanto o faturamento no mesmo(Você pode alterar o gráfico ao clicar na chave no topo direito), no canto superior direito da sessão você pode alterar o modo de apresentação do gráfico. Para maiores detalhes em um mês específico é possível clicar em sua respectiva coluna ou período (Ex:Jan/2016) no gráfico, acessando assim à uma visão dividida por dias. Os dados em ambos são exibidos de acordo com os filtros aplicados.">
+									<h2>Volume de vendas</h2>
+									<span class="glyphicon glyphicon-question-sign help_icon"></span>
+								</div>
 								<ul class="nav navbar-right panel_toolbox">
 									<li><a class="collapse-link"><i
 											class="fa fa-chevron-up"></i></a></li>
@@ -307,9 +341,11 @@
 					<div class="col-md-12 col-sm-12 col-xs-12 col-lg-6">
 						<div class="x_panel ">
 							<div class="x_title">
-								<h2>
-									Serviços realizados <small>Entrega/Retirada</small>
-								</h2>
+								<div data-toggle="tooltip" style="display: inline"
+									title="Este gráfico apresenta informações referentes ao tipo de serviços de entrega de pedidos (Retirada no local ou Tele entrega) no período especificado nos filtros, tanto quantidade vendida como valor faturado. Os dados são exibidos de acordo com os filtros aplicados.">
+									<h2>Serviços realizados</h2>
+									<span class="glyphicon glyphicon-question-sign help_icon"></span>
+								</div>
 								<ul class="nav navbar-right panel_toolbox">
 									<li><a class="collapse-link"><i
 											class="fa fa-chevron-up"></i></a></li>
@@ -336,6 +372,8 @@
 									</tr>
 
 								</table>
+								<br> <label style="color: red">*Este gráfico não é
+									afetado pelo seguinte filtro: Serviço.</label>
 							</div>
 						</div>
 					</div>
@@ -343,9 +381,12 @@
 					<div class="col-md-12 col-sm-12 col-xs-12 col-lg-6">
 						<div class="x_panel">
 							<div class="x_title">
-								<h2>
-									Modo de pagamento usados <small>Dinheiro/Cartão Créd.</small>
-								</h2>
+								<div data-toggle="tooltip" style="display: inline"
+									title="Este gráfico apresenta informações referentes ao método de pagamento usado nos pedidos (Cartão ou Dinheiro) como quantidade, percentual e valor faturado em cada método. Os dados são exibidos de acordo com os filtros aplicados.">
+									<h2>Modo de pagamento usados</h2>
+									<span class="glyphicon glyphicon-question-sign help_icon"></span>
+								</div>
+
 								<ul class="nav navbar-right panel_toolbox">
 									<li><a class="collapse-link"><i
 											class="fa fa-chevron-up"></i></a></li>
@@ -388,7 +429,12 @@
 					<div class="col-md-12 col-sm-12 col-xs-12 col-lg-6">
 						<div class="x_panel">
 							<div class="x_title">
-								<h2>Pedidos por horário</h2>
+								<div data-toggle="tooltip" style="display: inline"
+									title="Neste gráfico você consegue ver informações relacionadas à quantidade ou faturamento de pedidos por horário(você pode alterar o gráfico ao clicar na chave no topo direito), no canto superior direito da sessão você pode alterar o modo de apresentação do gráfico. Os dados são exibidos de acordo com os filtros aplicados.">
+									<h2>Pedidos por horário</h2>
+									<span class="glyphicon glyphicon-question-sign help_icon"></span>
+								</div>
+
 								<ul class="nav navbar-right panel_toolbox">
 									<li><a class="collapse-link"><i
 											class="fa fa-chevron-up"></i></a></li>
@@ -404,12 +450,20 @@
 								<div class="clearfix"></div>
 							</div>
 							<div class="x_content" id="dash_pedhora_holder"></div>
+								<br> <label style="color: red">*Este gráfico não é
+									afetado pelo seguinte filtro: Hora Inicial e Final
+									</label>
 						</div>
 					</div>
 					<div class="col-md-12 col-sm-12 col-xs-12 col-lg-6">
 						<div class="x_panel">
 							<div class="x_title">
-								<h2>Pedidos por dia</h2>
+								<div data-toggle="tooltip" style="display: inline"
+									title="Neste gráfico você consegue ver informações relacionadas à quantidade ou faturamento de pedidos por dia da semana(Você pode alterar o gráfico ao clicar na chave no topo direito), no canto superior direito da sessão você pode alterar o modo de apresentação do gráfico. Os dados são exibidos de acordo com os filtros aplicados.">
+									<h2>Pedidos por dia</h2>
+									<span class="glyphicon glyphicon-question-sign help_icon"></span>
+								</div>
+								<h2></h2>
 								<ul class="nav navbar-right panel_toolbox">
 									<li><a class="collapse-link"><i
 											class="fa fa-chevron-up"></i></a></li>
@@ -423,8 +477,12 @@
 
 								</ul>
 								<div class="clearfix"></div>
+							
 							</div>
 							<div class="x_content" id="dash_peddia_holder"></div>
+							<br> <label style="color: red">*Este gráfico não é
+									afetado pelos seguinte filtro: Dias da semana
+									</label>
 						</div>
 					</div>
 				</div>
@@ -433,7 +491,11 @@
 					<div class="col-md-12 col-sm-12 col-xs-12">
 						<div class="x_panel">
 							<div class="x_title">
-								<h2>Pedidos por bairro</h2>
+								<div data-toggle="tooltip" style="display: inline"
+									title="Neste gráfico você consegue ver informações relacionadas à quantidade e faturamento de pedidos por bairro(você pode alterar o gráfico ao clicar na chave no topo direito), no canto superior direito da sessão você pode alterar o modo de apresentação do gráfico. Os dados são exibidos de acordo com os filtros aplicados.">
+									<h2>Pedidos por bairro</h2>
+									<span class="glyphicon glyphicon-question-sign help_icon"></span>
+								</div>
 								<ul class="nav navbar-right panel_toolbox">
 									<li><a class="collapse-link"><i
 											class="fa fa-chevron-up"></i></a></li>
@@ -499,7 +561,12 @@
 						<div class="col-md-12 col-sm-12 col-xs-12">
 							<div class="x_panel">
 								<div class="x_title">
-									<h2 id="dashVendaProdsQtd_title">Produtos mais vendidos</h2>
+									<div data-toggle="tooltip" style="display: inline"
+										title="Neste gráfico você consegue ver informações relacionadas aos pedidos mais e menos vendidos(você pode alterar o gráfico ao clicar na chave no topo direito), no canto superior direito da sessão você pode alterar o modo de apresentação do gráfico. Os dados são exibidos de acordo com os filtros aplicados.Para maiores detalhes em um produto especifico é possivel clicar em sua respectiva coluna ou período (Ex:Cerveja Keineken 350ml lata) no gráfico para ter acesso à uma visão mais detalhada por produto.">
+										<h2 id="dashVendaProdsQtd_title">Produtos mais vendidos</h2>
+										<span class="glyphicon glyphicon-question-sign help_icon"></span>
+									</div>
+
 									<ul class="nav navbar-right panel_toolbox">
 										<li><a class="collapse-link"><i
 												class="fa fa-chevron-up"></i></a></li>
@@ -526,8 +593,12 @@
 						<div class="col-md-12 col-sm-12 col-xs-12">
 							<div class="x_panel">
 								<div class="x_title">
-									<h2 id="dashProdutosVal_title">>Produtos com mais
-										faturamento</h2>
+									<div data-toggle="tooltip" style="display: inline"
+										title="Neste gráfico você consegue ver informações relacionadas aos pedidos com maior e menor faturamento(você pode alterar o gráfico ao clicar na chave no topo direito), no canto superior direito da sessão você pode alterar o modo de apresentação do gráfico. Os dados são exibidos de acordo com os filtros aplicados.Para maiores detalhes em um produto especifico é possivel clicar em sua respectiva coluna ou período (Ex:Cerveja Keineken 350ml lata) no gráfico para ter acesso à uma visão mais detalhada por produto.">
+										<h2 id="dashVendaProdsQtd_title">Produtos com mais
+											faturamento</h2>
+										<span class="glyphicon glyphicon-question-sign help_icon"></span>
+									</div>
 									<ul class="nav navbar-right panel_toolbox">
 										<li><a class="collapse-link"><i
 												class="fa fa-chevron-up"></i></a></li>
@@ -558,7 +629,12 @@
 
 							<div class="x_panel ">
 								<div class="x_title">
-									<h2>Informações Gerais - Produto</h2>
+
+									<div data-toggle="tooltip" style="display: inline" title="Nesta seção você encontra informações gerais relacionadas ao produto escolhido e aos filtros aplicados.">
+										<h2>Informações Gerais - Produto</h2>
+										<span class="glyphicon glyphicon-question-sign help_icon"></span>
+									</div>
+
 									<ul class="nav navbar-right panel_toolbox">
 										<li><a class="collapse-link"><i
 												class="fa fa-chevron-up"></i></a></li>
@@ -618,7 +694,12 @@
 						<div class="col-md-12 col-sm-12 col-xs-12 col-lg-6">
 							<div class="x_panel">
 								<div class="x_title">
-									<h2>Quantidade por horário</h2>
+									<div data-toggle="tooltip" style="display: inline"
+										title="Neste gráfico você consegue ver informações relacionadas à quantidade e faturamento de venda do produto por horário(você pode alterar o gráfico ao clicar na chave no topo direito), no canto superior direito da sessão você pode alterar o modo de apresentação do gráfico. Os dados são exibidos de acordo com os filtros aplicados e o produto selecionado.">
+										<h2>Quantidade por horário</h2>
+										<span class="glyphicon glyphicon-question-sign help_icon"></span>
+									</div>
+
 									<ul class="nav navbar-right panel_toolbox">
 										<li><a class="collapse-link"><i
 												class="fa fa-chevron-up"></i></a></li>
@@ -634,12 +715,20 @@
 									<div class="clearfix"></div>
 								</div>
 								<div class="x_content" id="dash_prodhora_holder"></div>
+									<br> <label style="color: red">*Este gráfico não é
+									afetado pelo seguinte filtro: Hora Inicial e Final
+									</label>
 							</div>
 						</div>
 						<div class="col-md-12 col-sm-12 col-xs-12 col-lg-6">
 							<div class="x_panel">
 								<div class="x_title">
-									<h2>Quantidade por dia</h2>
+									<div data-toggle="tooltip" style="display: inline"
+										title="Neste gráfico você consegue ver informações relacionadas à quantidade e faturamento de venda do produto por dia da semana(você pode alterar o gráfico ao clicar na chave no topo direito), no canto superior direito da sessão você pode alterar o modo de apresentação do gráfico. Os dados são exibidos de acordo com os filtros aplicados e o produto selecionado.">
+										<h2>Quantidade por dia</h2>
+										<span class="glyphicon glyphicon-question-sign help_icon"></span>
+									</div>
+
 									<ul class="nav navbar-right panel_toolbox">
 										<li><a class="collapse-link"><i
 												class="fa fa-chevron-up"></i></a></li>
@@ -655,6 +744,9 @@
 									<div class="clearfix"></div>
 								</div>
 								<div class="x_content" id="dash_proddia_holder"></div>
+									<br> <label style="color: red">*Este gráfico não é
+									afetado pelo seguinte filtro: Dia da semana
+									</label>
 							</div>
 						</div>
 					</div>
@@ -662,7 +754,11 @@
 						<div class="col-md-12 col-sm-12 col-xs-12">
 							<div class="x_panel">
 								<div class="x_title">
-									<h2>Quantidade por local</h2>
+								<div data-toggle="tooltip" style="display: inline"
+										title="Neste gráfico você consegue ver informações relacionadas à quantidade e faturamento de venda do produto por local(você pode alterar o gráfico ao clicar na chave no topo direito), no canto superior direito da sessão você pode alterar o modo de apresentação do gráfico. Os dados são exibidos de acordo com os filtros aplicados e o produto selecionado.">
+											<h2>Quantidade por local</h2>
+										<span class="glyphicon glyphicon-question-sign help_icon"></span>
+									</div>
 									<ul class="nav navbar-right panel_toolbox">
 										<li><a class="collapse-link"><i
 												class="fa fa-chevron-up"></i></a></li>

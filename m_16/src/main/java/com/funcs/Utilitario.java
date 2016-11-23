@@ -736,7 +736,7 @@ public class Utilitario {
 
 	}
 
-	public void oneSginal() {
+	public static void oneSginal() {
 
 		try {
 			String jsonResponse;
@@ -812,7 +812,8 @@ public class Utilitario {
 	public static void main(String[] args) {
 
 		try {
-System.out.println(df2.format(1111111123456789.23));
+			//System.out.println(df2.format(1111111123456789.23));
+			oneSginal();
 		} catch (Exception e) {
 			System.out.println(e);
 		}
