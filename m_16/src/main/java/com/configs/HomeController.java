@@ -55,7 +55,7 @@ public class HomeController extends javax.servlet.http.HttpServlet {
 
 	public void processaRequisicoes(HttpServletRequest request, HttpServletResponse response) {
 
-		/*System.out.println("--------entro home");
+	/*	System.out.println("--------entro home");
 		Map map = request.getParameterMap();
 		for (Iterator iterator = map.keySet().iterator(); iterator.hasNext();) {
 			String type = (String) iterator.next();

@@ -380,19 +380,21 @@ function showProdsRecusaHist(id) {
 			
 			
 
-			var html = [];
+			var html = "";
 
-			html.push("<table>");
+			html = html + "<table>";
 
 			for (t = 0; t < data.prods.length; t++) {
 				if (data.prods[t].FLAG_RECUSADO=='S') {
-					html.push(" <tr> <td style=\"padding-right: 10px;\"> ");
-					html.push("<label> " + data.prods[t].DESC_PROD + "</label> </div> 	</td> <tr>");
+					html = html + " <tr> <td style=\"padding-right: 10px;\"> ";
+					html = html + "<label> " + data.prods[t].DESC_PROD + "</label> </td> <td><label>Qtd. requisitada: "+data.prods[t].QTD_PROD+"</label></td>";
+					html = html + "<td style='padding-left:10px'><label> Qtd. respondida: "+data.prods[t].RECUSADO_DISPONIVEL+"</td> </label><tr>";
+					
 				}
 
 			}
 
-			html.push("</table>");
+			html = html + "</table>";
 			$("#modal_prodsrecusa_div").html(html);
 		},
 		error : function(data) {

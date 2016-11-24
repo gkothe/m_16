@@ -209,7 +209,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 				} else if (cmd.equalsIgnoreCase("carregaPedidos")) {
 					carregaPedidos(request, response, conn, cod_usuario);
 				} else if (cmd.equalsIgnoreCase("carregaPedidoUnico")) {
-					carregaPedidoUnico(request, response, conn, cod_usuario,sys);
+					carregaPedidoUnico(request, response, conn, cod_usuario, sys);
 				} else if (cmd.equalsIgnoreCase("carregaItemCarrinho")) {
 					carregaCarrinho(request, response, conn, cod_usuario, true);
 				} else if (cmd.equalsIgnoreCase("carregaCarrinho")) {
@@ -248,6 +248,8 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 					txtHoraAtend(request, response, conn, cod_usuario, sys);
 				} else if (cmd.equalsIgnoreCase("finalizandoPedidoMobile")) {
 					Pedidos_ajax.finalizandoPedidoMobile(request, response, conn, cod_usuario);
+				} else if (cmd.equalsIgnoreCase("duplicarPedido")) {
+					duplicarPedido(request, response, conn, cod_usuario, sys);
 				}
 
 				else {
@@ -342,7 +344,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 
 	}
 
-	public static void txtHoraAtend(HttpServletRequest request, HttpServletResponse response, Connection conn, long cod_usuario, Sys_parametros sys) throws Exception {
+	private static void txtHoraAtend(HttpServletRequest request, HttpServletResponse response, Connection conn, long cod_usuario, Sys_parametros sys) throws Exception {
 
 		PrintWriter out = response.getWriter();
 
@@ -421,7 +423,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 
 	}
 
-	public static void txtObsHora(HttpServletRequest request, HttpServletResponse response, Connection conn, long cod_usuario, Sys_parametros sys) throws Exception {
+	private static void txtObsHora(HttpServletRequest request, HttpServletResponse response, Connection conn, long cod_usuario, Sys_parametros sys) throws Exception {
 
 		PrintWriter out = response.getWriter();
 
@@ -1737,7 +1739,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 
 		if (!(dataini.equalsIgnoreCase(""))) {
 
-			Date data = new SimpleDateFormat("dd/MM/yyyy HH:mm").parse(dataini + " " + "00:00");
+			Date data = new SimpleDateFormat("ddMMyyyy HH:mm").parse(dataini + " " + "00:00");
 			st.setString(contparam, new SimpleDateFormat("yyyy-MM-dd HH:mm").format(data));
 			contparam++;
 
@@ -1745,7 +1747,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 
 		if (!(datafim.equalsIgnoreCase(""))) {
 
-			Date data = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").parse(datafim + " " + "23:59:59");
+			Date data = new SimpleDateFormat("ddMMyyyy HH:mm:ss").parse(datafim + " " + "23:59:59");
 			st.setString(contparam, new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(data));
 			contparam++;
 		}
@@ -1848,7 +1850,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 		sql.append("       left JOIN bairros ");
 		sql.append("               ON bairros.cod_bairro = pedido.cod_bairro ");
 		sql.append(" WHERE  id_pedido = ? ");
-		sql.append("       AND id_usuario = ?");
+		sql.append("       AND id_usuario = ? order by num_ped desc");
 
 		PreparedStatement st = conn.prepareStatement(sql.toString());
 		st.setLong(1, Long.parseLong(id_pedido));
@@ -1902,7 +1904,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 			ped.put("tempo_entrega", rs.getTimestamp("TEMPO_ESTIMADO_ENTREGA") == null ? "" : new SimpleDateFormat("HH:mm").format(rs.getTimestamp("TEMPO_ESTIMADO_ENTREGA")));
 
 			StringBuffer sql2 = new StringBuffer();
-			sql2.append("select FLAG_RECUSADO,  DESC_PROD, VAL_UNIT, QTD_PROD, QTD_PROD * VAL_UNIT   as total, DESC_ABREVIADO, produtos.id_prod from pedido_item ");
+			sql2.append("select RECUSADO_DISPONIVEL,FLAG_RECUSADO,  DESC_PROD, VAL_UNIT, QTD_PROD, QTD_PROD * VAL_UNIT   as total, DESC_ABREVIADO, produtos.id_prod from pedido_item ");
 			sql2.append("inner join produtos ");
 			sql2.append("on produtos.ID_PROD  = pedido_item.ID_PROD ");
 			sql2.append("where id_pedido = ? order by desc_prod");
@@ -1925,7 +1927,8 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 				prod.put("desc_abreviado", rs2.getString("DESC_ABREVIADO"));
 
 				if (rs2.getString("FLAG_RECUSADO").equalsIgnoreCase("S")) {
-					produtos_semestq.add(rs2.getString("DESC_PROD"));
+					prod.put("recusado_disponivel", rs2.getString("RECUSADO_DISPONIVEL"));
+					produtos_semestq.add(prod);
 				}
 
 				produtos.add(prod);
@@ -1957,8 +1960,20 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 				}
 
 				if (produtos_semestq.size() != 0) {
+					text_recusa =text_recusa +  "Produtos insuficientes ou em falta no estoque: \n";
 					for (int i = 0; i < produtos_semestq.size(); i++) {
-						text_recusa = text_recusa + "" + produtos_semestq.get(i) + " está em falta no estoque. \n";
+						JSONObject obj = (JSONObject) produtos_semestq.get(i);
+						try {
+							int qtddis = Integer.parseInt(obj.get("recusado_disponivel").toString());
+							if (qtddis != 0) {
+								text_recusa = text_recusa + "" + obj.get("desc_prod") + " está parcialmente falta. Qtd. disponível: " + qtddis + " \n";
+							} else {
+								text_recusa = text_recusa + "" + obj.get("desc_prod") + " está em falta. \n";
+							}
+						} catch (Exception e) {
+							text_recusa = text_recusa + "" + obj.get("desc_prod") + " está em falta. \n";
+						}
+
 					}
 
 				}
@@ -1972,6 +1987,97 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 		}
 
 		out.print(ped.toJSONString());
+	}
+
+	private static void duplicarPedido(HttpServletRequest request, HttpServletResponse response, Connection conn, long cod_usuario, Sys_parametros sys) throws Exception {
+		JSONObject retorno = new JSONObject();
+		PrintWriter out = response.getWriter();
+
+		String id_pedido = request.getParameter("id_pedido") == null ? "" : request.getParameter("id_pedido");
+
+		if (!Utilitario.isNumeric(id_pedido)) {
+			throw new Exception("Pedido inválido!");
+		}
+
+		StringBuffer sql = new StringBuffer();
+		sql.append("SELECT * ");
+		sql.append(" FROM   pedido ");
+		sql.append("       INNER JOIN distribuidora ");
+		sql.append("               ON distribuidora.id_distribuidora = pedido.id_distribuidora ");
+		sql.append("       left JOIN bairros ");
+		sql.append("               ON bairros.cod_bairro = pedido.cod_bairro ");
+		sql.append(" WHERE  id_pedido = ? ");
+		sql.append("       AND id_usuario = ? order by num_ped desc");
+
+		PreparedStatement st = conn.prepareStatement(sql.toString());
+		st.setLong(1, Long.parseLong(id_pedido));
+		st.setLong(2, (cod_usuario));
+		boolean prods_notadded = false;
+		ResultSet rs = st.executeQuery();
+		String prods = "";
+		if (rs.next()) {
+
+			StringBuffer sql2 = new StringBuffer();
+			sql2.append("select * from carrinho ");
+			sql2.append("where ID_USUARIO = ? ");
+
+			PreparedStatement st2 = conn.prepareStatement(sql2.toString());
+			st2.setLong(1, cod_usuario);
+			ResultSet rs2 = st2.executeQuery();
+			if (rs2.next()) {
+
+				sql = new StringBuffer();// deleta item do carrinho se ele exister exite no carrinho, add depois
+				sql.append(" delete from carrinho_item where id_carrinho = ? ");
+				st = conn.prepareStatement(sql.toString());
+				st.setLong(1, (rs2.getInt("id_carrinho")));
+				st.executeUpdate();
+
+				sql = new StringBuffer();// deleta item do carrinho se ele exister exite no carrinho, add depois
+				sql.append(" delete from carrinho  where id_carrinho = ? ");
+				st = conn.prepareStatement(sql.toString());
+				st.setLong(1, (rs2.getInt("id_carrinho")));
+				st.executeUpdate();
+
+			}
+
+			sql2 = new StringBuffer();
+			sql2.append(" select  *, produtos.flag_ativo as ativo1,  produtos_distribuidora.flag_ativo as ativo2 from pedido_item ");
+			sql2.append(" inner join produtos ");
+			sql2.append(" on produtos.ID_PROD  = pedido_item.ID_PROD ");
+			sql2.append(" inner join produtos_distribuidora ");
+			sql2.append(" on produtos_distribuidora.ID_PROD  = produtos.ID_PROD and produtos_distribuidora.id_distribuidora = " + rs.getString("id_distribuidora"));
+			sql2.append(" where id_pedido = ?  order by desc_prod");
+
+			st2 = conn.prepareStatement(sql2.toString());
+			st2.setLong(1, Long.parseLong(id_pedido));
+			rs2 = st2.executeQuery();
+			
+			
+			while (rs2.next()) {
+				if (rs2.getString("ativo1").equalsIgnoreCase("S") && rs2.getString("ativo2").equalsIgnoreCase("S")) {
+
+					if (rs2.getString("FLAG_RECUSADO").equalsIgnoreCase("S")) {
+						if (rs2.getInt("RECUSADO_DISPONIVEL") > 0) {
+							addCarrinho(request, response, conn, cod_usuario, rs2.getString("ID_PROD_DIST"), rs2.getString("RECUSADO_DISPONIVEL"), rs.getString("cod_bairro"), rs.getString("FLAG_PEDIDO_RET_ENTRE"), false);
+						} else {
+							prods = prods + rs2.getString("DESC_ABREVIADO") +" \n ";
+							prods_notadded = true;
+						}
+					} else {
+						addCarrinho(request, response, conn, cod_usuario, rs2.getString("ID_PROD_DIST"), rs2.getString("QTD_PROD"), rs.getString("cod_bairro"), rs.getString("FLAG_PEDIDO_RET_ENTRE"), false);
+					}
+				} else {
+					prods = prods + rs2.getString("DESC_ABREVIADO") +" \n";
+					prods_notadded = true;
+				}
+			}
+		} else {
+			throw new Exception("Pedido não encontrado!");
+		}
+		retorno.put("prods", prods);
+		retorno.put("prods_notadded", prods_notadded);
+		retorno.put("msg", "ok");
+		out.print(retorno.toJSONString());
 	}
 
 	private static void carregaCarrinho(HttpServletRequest request, HttpServletResponse response, Connection conn, long cod_usuario, boolean single) throws Exception {
@@ -2168,34 +2274,44 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 	}
 
 	private static void addCarrinho(HttpServletRequest request, HttpServletResponse response, Connection conn, long cod_usuario) throws Exception {
-		PrintWriter out = response.getWriter();
-		JSONObject retorno = new JSONObject();
 
-		// String id_prod = request.getParameter("id_prod") == null ? "" : request.getParameter("id_prod");
 		String id_proddistr = request.getParameter("id_proddistr") == null ? "" : request.getParameter("id_proddistr"); // precisa receber
 		// String id_ditribuidora = request.getParameter("id_ditribuidora") == null ? "" : request.getParameter("id_ditribuidora");
 		String qtd = request.getParameter("qtd") == null ? "" : request.getParameter("qtd"); // precisa receber
 		String cod_bairro = request.getParameter("cod_bairro") == null ? "" : request.getParameter("cod_bairro"); // precisa receber
 		String choiceserv = request.getParameter("choiceserv") == null ? "" : request.getParameter("choiceserv");
+
+		addCarrinho(request, response, conn, cod_usuario, id_proddistr, qtd, cod_bairro, choiceserv, true);
+
+	}
+
+	private static void addCarrinho(HttpServletRequest request, HttpServletResponse response, Connection conn, long cod_usuario, String id_proddistr, String qtd, String cod_bairro, String choiceserv, boolean sendoutprint) throws Exception {
+		PrintWriter out = response.getWriter();
+		JSONObject retorno = new JSONObject();
+
 		boolean jatemcarrinho = false;
 		long idcarrinho = 0;
 		int id_distribuidora_prod = 0;
 		double valunit = 0;
 
+		if (!choiceserv.equalsIgnoreCase("L")) {
+
+			if (!Utilitario.isNumeric(cod_bairro)) {
+				throw new Exception("Bairro inválido!");
+			}
+
+			if (cod_bairro.equalsIgnoreCase("0")) {
+				throw new Exception("Bairro inválido!");
+			}
+
+		}
+
 		if (!Utilitario.isNumeric(id_proddistr)) {
 			throw new Exception("Produto inválido!");
 		}
 
-		if (!Utilitario.isNumeric(cod_bairro)) {
-			throw new Exception("Bairro inválido!");
-		}
-
 		if (!Utilitario.isNumeric(qtd)) {
 			throw new Exception("Quantidade inválida!");
-		}
-
-		if (cod_bairro.equalsIgnoreCase("0")) {
-			throw new Exception("Bairro inválido!");
 		}
 
 		if (id_proddistr.equalsIgnoreCase("0")) {
@@ -2215,11 +2331,16 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 
 		sql = new StringBuffer();// testa se o produto existe e pega id da distribuidora relacionada ao produto
 		sql.append(" select * from produtos_distribuidora ");
-		sql.append(" where ID_PROD_DIST = ? and flag_ativo = 'S' ");
+		sql.append(" where ID_PROD_DIST = ?  ");
 		st = conn.prepareStatement(sql.toString());
 		st.setLong(1, Long.parseLong(id_proddistr));
 		rs = st.executeQuery();
 		if (rs.next()) {
+
+			if (rs.getString("flag_ativo").equalsIgnoreCase("N")) {
+				throw new Exception("Produto está inativado!");
+			}
+
 			id_distribuidora_prod = rs.getInt("ID_DISTRIBUIDORA");
 			valunit = rs.getDouble("VAL_PROD");
 		} else {
@@ -2301,8 +2422,8 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 		}
 
 		retorno.put("msg", "ok");
-
-		out.print(retorno.toJSONString());
+		if (sendoutprint)
+			out.print(retorno.toJSONString());
 	}
 
 	private static void recalcularCarrinho(HttpServletRequest request, HttpServletResponse response, Connection conn, long cod_usuario) throws Exception {

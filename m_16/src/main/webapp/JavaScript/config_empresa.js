@@ -77,7 +77,7 @@ $(document).ready(function() {
 		$('#table_bairros').bootstrapTable('updateFooter');
 	});
 
-	$("#row_da_tabelabairro").find(".fixed-table-toolbar").append("<div class=\"pull-left \" style=\"padding-top: 10px;\"> <input type=\"checkbox\" id='check_custommode'> <label >Modo customizado</label></div>");
+	$("#row_da_tabelabairro").find(".fixed-table-toolbar").append("<div data-toggle='tooltip' title='Ao marcar o modo customizavel, sua loja estará operando SOMENTE com os horarios configurados para o dia: Feriado/Especial/Customizável' class=\"pull-left \" style=\"padding-top: 10px;\"> <input type=\"checkbox\" id='check_custommode'> <label >Modo Feriado/Especial/Customizável</label></div>");
 
 
 

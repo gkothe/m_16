@@ -1,6 +1,6 @@
 /*==============================================================*/
 /* DBMS name:      MySQL 5.0                                    */
-/* Created on:     23/11/2016 10:37:43 AM                       */
+/* Created on:     24/11/2016 9:35:30 AM                        */
 /*==============================================================*/
 
 
@@ -242,6 +242,7 @@ create table PEDIDO_ITEM
    ID_PROD              INT4 not null,
    QTD_PROD             INT8,
    FLAG_RECUSADO        char(1) default 'N',
+   RECUSADO_DISPONIVEL  int4,
    primary key (ID_PEDIDO, SEQ_ITEM)
 );
 

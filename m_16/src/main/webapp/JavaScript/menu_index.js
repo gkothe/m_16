@@ -14,6 +14,13 @@ var inteiro2 = {
 	vMin : 0
 };
 
+var inteiro4 = {
+	aSep : '',
+	aDec : '',
+	mDec : 0,
+	vMin : 0
+};
+
 var inteiro3 = {
 	aSep : '.',
 	aDec : ',',
@@ -459,11 +466,10 @@ function showPop(id, num_pedpop) {
 }
 
 function testaAceitaRecusa() {
-	
-	
+
 	if ($('input[name=flag_aceita_recusa]:checked').val() == 'A') {
-		
-		if ($('#m_flag_pedido_ret_entre').val() == "T" && 	$("#flag_tipoentrega_pedatual").val()=="T") {
+
+		if ($('#m_flag_pedido_ret_entre').val() == "T" && $("#flag_tipoentrega_pedatual").val() == "T") {
 			$('#m_tempo_entrega_box').show();
 			$("#m_tempo_entrega_inp").focus();
 		}
@@ -523,8 +529,7 @@ function loadMotivos() {
 
 			}
 
-			
-			for (t = 0; t < data.mot.length; t++) {  
+			for (t = 0; t < data.mot.length; t++) {
 
 				if ((motivo_estoque + "") == (data.mot[t].COD_MOTIVO + "")) {
 				} else {
@@ -538,7 +543,7 @@ function loadMotivos() {
 						if ((motivo_estoque + "") == (data.mot[t + 1].COD_MOTIVO + "")) {
 							t++;
 						}
-						if (data.mot[t] != undefined) { 
+						if (data.mot[t] != undefined) {
 							html.push("<td style=\"padding-right: 10px;\"> ");
 							html.push("<div class=\"checkbox\" style=\"margin-top: 0px; margin-bottom: 0px;\">");
 							html.push("<label> <input type=\"checkbox\" class=\"motivo\" value=\"" + data.mot[t + 1].COD_MOTIVO + "\"> " + data.mot[t + 1].DESC_MOTIVO + "</label> </div> 	</td>");
@@ -618,19 +623,48 @@ function showProdsRecusar(ajax) {
 				$("#modal_pedido").modal('hide');
 
 				$("#msg_erro_aviso_sub").html("Por favor, selecione os produtos que estão em falta no estoque:");
+
 				
-				var html = [];
+				
+				 var html = "";
+					html = html + ("<table style='min-width:300px'>");
+				
+					for (t = 0; t < data.prods.length; t++) {
 
-				html.push("<table>");
+						html = html + ("<tr> <td style=\"padding-right: 10px;\"> ");
+						html = html + ("<div class=\"\" style=\"margin-top: 0px; margin-bottom: 0px;\">");
+						html = html + ("<label style='padding-top: 15px'> <input type=\"checkbox\" class=\"prodrecusa\"  value=\"" + data.prods[t].SEQ_ITEM + "\"> " + data.prods[t].DESC_PROD + "   -   Quantidade requisitada:  "+data.prods[t].QTD_PROD+"</label> </div> 	</td>");
+						html = html + ("<td class='prodrec_qtds' id='prodrec_qtds_1" + data.prods[t].SEQ_ITEM + "'>Qtd. Disponível: <div style='margin-bottom: 0px;' class=\"form-group\"><input data-toggle='tooltip' title='Se você tem uma quantidade inferior a quantidade pedida, você pode informar aqui. Assim o se o cliente desejar, ele pode realizar um novo pedido com a quantidade disponível.' type=\"number\" value='0'  class=\"form-control recusa_qtdprod \" id=\"recusa_qtdproddisp" + data.prods[t].SEQ_ITEM + "\" /></div></td></tr>");
+						html = html + ("<tr class='prodrec_qtds' id='prodrec_qtds_2" + data.prods[t].SEQ_ITEM + "'><td colspan='100%' style='min-width:300px' ><div class='line'></div></td> </tr>");
 
-				for (t = 0; t < data.prods.length; t++) {
-					html.push(" <tr> <td style=\"padding-right: 10px;\"> ");
-					html.push("<div class=\"checkbox\" style=\"margin-top: 0px; margin-bottom: 0px;\">");
-					html.push("<label> <input type=\"checkbox\" class=\"prodrecusa\"  value=\"" + data.prods[t].SEQ_ITEM + "\"> " + data.prods[t].DESC_PROD + "</label> </div> 	</td>");
-				}
+					}
+				
 
-				html.push("</table>");
+					html = html + ("</table>");
+					
+				
 				$("#modal_prodsrecusa_div").html(html);
+
+				$(".prodrec_qtds").hide();
+				  
+				$('.prodrecusa').each(function() {
+
+					$(this).click(function() {
+
+						if ($(this).is(":checked")) {
+							$("#prodrec_qtds_1" + $(this).val()).show();
+							$("#prodrec_qtds_2" + $(this).val()).show();
+						} else {
+							$("#prodrec_qtds_1" + $(this).val()).hide();
+							$("#prodrec_qtds_2" + $(this).val()).hide();
+						}
+
+					})
+
+				});
+
+				$('[data-toggle="tooltip"]').tooltip();
+				// $(".recusa_qtdprod").autoNumeric('init', inteiro4);
 			},
 			error : function(data) {
 				if (data.statusText != undefined)
@@ -663,12 +697,12 @@ function visualizarPedido(id) {
 		success : function(data) {
 			$(".cancelamento").hide();
 			$("#m_finalizar").html("Finalizar");
-		
+
 			audio.pause();
 			audio.currentTime = 0;
 			if (data.tipo_servico == "T") {
 				$("#m_lbl_bairro").html("Bairro:");
-				
+
 				if (data.flag_modoentrega == 'A') {
 					$("#m_tempomax_div").hide();
 					$("#m_agendamento").html(data.data_agenda_entrega);
@@ -682,7 +716,6 @@ function visualizarPedido(id) {
 					$('#m_tempo_entrega_box').hide();
 				}
 
-				
 			} else {
 				$("#m_agendamento_div").hide();
 				$("#m_tempomax_div").hide();
@@ -725,7 +758,7 @@ function visualizarPedido(id) {
 				if (data.flag_modoentrega == 'A') {
 					$("#m_tempo_entrega_div").hide();
 				}
-				
+
 			} else if (data.flag_status == "E") {
 				$("#m_lbl_titulo").css("color", "green");
 
@@ -751,16 +784,13 @@ function visualizarPedido(id) {
 					$("#m_finalizar").hide();
 				}
 
-				
-				
 				$(".m_enviado").show();
 				$("#m_aberto").hide();
 
 				if (data.flag_modoentrega == 'A') {
 					$("#m_tempo_entrega_div").hide();
 				}
-				
-				
+
 			} else if (data.flag_status == "C") {
 				$("#m_lbl_titulo").css("color", "red");
 
@@ -892,7 +922,12 @@ function responderPedido() {
 			var prodsrecusados = [];
 			i = 0;
 			$('.prodrecusa:checked').each(function() {
-				prodsrecusados[i++] = $(this).val();
+				var item = {
+					'seq' : $(this).val(),
+					'qtd' : $("#recusa_qtdproddisp" + $(this).val()).val()
+				};
+				prodsrecusados[i++] = item;
+
 			});
 
 			var id = $("#m_id_pedido").val();

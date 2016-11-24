@@ -123,7 +123,7 @@ public class Pedidos_ajax {
 			if (flag_visu.equalsIgnoreCase("N"))
 				sql = sql + "  and  (flag_vizualizado = ? or FLAG_VIZUALIZADO_CANC = ? ) ";
 			else if (flag_visu.equalsIgnoreCase("S")) {
-				 sql = sql + " and flag_vizualizado = ? and Coalesce(FLAG_VIZUALIZADO_CANC,'S') = ? ";
+				sql = sql + " and flag_vizualizado = ? and Coalesce(FLAG_VIZUALIZADO_CANC,'S') = ? ";
 			}
 			temfiltro = "S";
 		}
@@ -134,9 +134,7 @@ public class Pedidos_ajax {
 		}
 
 		sql = sql + "  order by flag_status asc , data_pedido asc ";
-		
-		
-		
+
 		PreparedStatement st = conn.prepareStatement(sql);
 		st.setInt(1, coddistr);
 
@@ -571,6 +569,7 @@ public class Pedidos_ajax {
 				obj.put("VAL_UNIT", rs2.getDouble("VAL_UNIT"));
 				obj.put("VAL_TOTAL", rs2.getDouble("VAL_TOTAL"));
 				obj.put("FLAG_RECUSADO", rs2.getString("FLAG_RECUSADO"));
+				obj.put("RECUSADO_DISPONIVEL", rs2.getString("RECUSADO_DISPONIVEL"));
 
 				prods.add(obj);
 
@@ -616,7 +615,7 @@ public class Pedidos_ajax {
 					JSONObject obj = new JSONObject();
 					obj.put("desc_motivo", rs2.getString("desc_motivo"));
 					obj.put("cod_motivo", rs2.getString("cod_motivo"));
-					
+
 					motivos.add(obj);
 				}
 
@@ -913,7 +912,7 @@ public class Pedidos_ajax {
 					m_tempo_entrega_inp = "00:00";
 
 				} else {
-					if (rs.getString("flag_modoentrega").equalsIgnoreCase("T") && rs.getString("flag_modoentrega").equalsIgnoreCase("T")) {
+					if (rs.getString("FLAG_PEDIDO_RET_ENTRE").equalsIgnoreCase("T") && rs.getString("flag_modoentrega").equalsIgnoreCase("T")) {
 						Date datatempoentregateste = Utilitario.testeHora("HH:mm", m_tempo_entrega_inp, "Tempo de entrega inválido!");// tempo de entrega da distri
 						Date datatempoentregateste2 = Utilitario.testeHora("HH:mm", rs.getString("TEMPO_ESTIMADO_DESEJADO"), "");
 						;// tempo de entrega do usuario
@@ -932,9 +931,8 @@ public class Pedidos_ajax {
 				st.setInt(2, coddistr);
 				st.setInt(3, Integer.parseInt(id_pedido));
 				st.executeUpdate();
-				
+
 				Utilitario.oneSginal(sys, rs.getString("DESC_EMAIL"), "Seu pedido foi aceito!", data);
-				
 
 				objRetorno.put("msg", "ok");
 
@@ -976,6 +974,7 @@ public class Pedidos_ajax {
 
 				if (recusaestoque) {
 					int seqitem = 0;
+					int qtd = 0;
 					JSONArray prodsrecusados = (JSONArray) new JSONParser().parse(prodsrecusadosjson);
 					if (prodsrecusados.size() == 0) {
 						throw new Exception("Você escolheu recusar o pedido por falta de estoque. Por favor informe qual produto que está em falta. ");
@@ -983,14 +982,23 @@ public class Pedidos_ajax {
 					PreparedStatement st2;
 					ResultSet rs2;
 					for (int i = 0; i < prodsrecusados.size(); i++) {
+						JSONObject obj = (JSONObject) prodsrecusados.get(i);
 
 						try {
-							seqitem = Integer.parseInt(prodsrecusados.get(i).toString());
+							seqitem = Integer.parseInt(obj.get("seq").toString());
+
 						} catch (Exception e) {
 							throw new Exception("Erro no processamento dos 'produtos recusados'. Entre em contato com suporte. ");
 						}
 
-						sql = " select * from pedido_item where SEQ_ITEM = ? and id_pedido = ?  ";
+						try {
+
+							qtd = Integer.parseInt(obj.get("qtd").toString());
+						} catch (Exception e) {
+							qtd = 0;
+						}
+
+						sql = " select * from pedido_item inner join produtos on pedido_item.id_prod = pedido_item.id_prod where SEQ_ITEM = ? and id_pedido = ?  ";
 
 						st2 = conn.prepareStatement(sql);
 						st2.setInt(1, (seqitem));
@@ -998,13 +1006,20 @@ public class Pedidos_ajax {
 						rs2 = st2.executeQuery();
 						if (!rs2.next()) {
 							throw new Exception("Item do pedido inválido.");
-						}
+						} else {
 
-						sql = "UPDATE pedido_item set FLAG_RECUSADO = 'S' where SEQ_ITEM = ? and id_pedido = ? ";
-						st = conn.prepareStatement(sql);
-						st.setInt(1, (seqitem));
-						st.setInt(2, Integer.parseInt(id_pedido));
-						st.executeUpdate();
+							if (rs2.getInt("QTD_PROD") <= qtd) {
+								throw new Exception("A quantidade disponível informada (" + qtd + ") é maior/igual quantidade no pedido (" + rs2.getInt("QTD_PROD") + ") para o produto " + rs2.getString("DESC_PROD"));
+							}
+
+							sql = "UPDATE pedido_item set FLAG_RECUSADO = 'S' , RECUSADO_DISPONIVEL = ? where SEQ_ITEM = ? and id_pedido = ?  ";
+							st = conn.prepareStatement(sql);
+							st.setInt(1, qtd);
+							st.setInt(2, (seqitem));
+							st.setInt(3, Integer.parseInt(id_pedido));
+
+							st.executeUpdate();
+						}
 					}
 
 				}

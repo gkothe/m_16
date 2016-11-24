@@ -85,15 +85,18 @@ input:focus {
 	width: 85%;
 	height: 85%;
 }
-.help_icon{
 
-color: blue !important;
-padding-top: 7px;
-padding-left: 3px;
+.help_icon {
+	color: blue !important;
+	padding-top: 7px;
+	padding-left: 3px;
 }
 
-
-
+.line {
+	width: 100%;
+	height: 5px;
+	border-bottom: 1px solid black;
+}
 </style>
 
 
@@ -105,8 +108,8 @@ padding-left: 3px;
 			<div class="col-md-3 left_col menucustom">
 				<div class="left_col scroll-view menucustom">
 					<div class="navbar nav_title" style="border: 0;">
-						<a style="height: 75px;" class="site_title"><image style="width: 200px"
-								src="images/logomenu.png"></image> </a>
+						<a style="height: 75px;" class="site_title"><image
+								style="width: 200px" src="images/logomenu.png"></image> </a>
 					</div>
 
 					<div class="clearfix"></div>
@@ -198,16 +201,15 @@ padding-left: 3px;
 
 							<li class=""><a href="javascript:;"
 								class="user-profile dropdown-toggle" data-toggle="dropdown"
-								aria-expanded="false"><label style="font-weight:900 ">Opções</label>  <span
-									class=" fa fa-angle-down"></span>
-							</a>
+								aria-expanded="false"><label style="font-weight: 900">Opções</label>
+									<span class=" fa fa-angle-down"></span> </a>
 								<ul class="dropdown-menu dropdown-usermenu pull-right">
 									<li><a href="javascript:showHelp();"><i
 											class="fa fa-question pull-right"></i>Ajuda/Informações
 											gerais</a></li>
 									<li><a href="javascript:mutarsom();"><i
-											class="fa fa-pause-circle pull-right"></i> Desabilitar som por 2
-											min. </a></li>
+											class="fa fa-pause-circle pull-right"></i> Desabilitar som
+											por 2 min. </a></li>
 									<li><a href="home?ac=logout"><i
 											class="fa fa-sign-out pull-right"></i> Sair</a></li>
 								</ul></li>
@@ -360,8 +362,9 @@ padding-left: 3px;
 
 			<div id="modal_cancelamentos"></div>
 
-			<div class="modal fade bs-example-modal-lg" tabindex="-5" style="z-index:2000"
-				role="dialog" id="modal_erros" aria-hidden="true">
+			<div class="modal fade bs-example-modal-lg" tabindex="-5"
+				style="z-index: 2000" role="dialog" id="modal_erros"
+				aria-hidden="true">
 				<div class="modal-dialog modal-lg">
 					<div class="modal-content">
 
@@ -405,7 +408,7 @@ padding-left: 3px;
 
 
 
-			<div class="modal fade bs-example-modal-lg"  tabindex="5"
+			<div class="modal fade bs-example-modal-lg" tabindex="5"
 				role="dialog" id="modal_prodsrecusa" aria-hidden="true">
 				<div class="modal-dialog modal-lg">
 					<div class="modal-content">
@@ -420,24 +423,26 @@ padding-left: 3px;
 							</h4>
 						</div>
 						<div class="modal-body" style="max-height: 750px; overflow: auto;">
-							<label style="padding-bottom: 5px" id="msg_erro_aviso_sub">Por favor, selecione os produtos que estão em falta no estoque:</label>
-							<br>
-							<div  style="max-height: 500px; overflow: auto" id="modal_prodsrecusa_div"></div>
+							<label style="padding-bottom: 5px" id="msg_erro_aviso_sub">Por
+								favor, selecione os produtos que estão em falta no estoque:</label> <br>
+							<div style="max-height: 500px; overflow: auto"
+								id="modal_prodsrecusa_div"></div>
 
 						</div>
 						<div class="modal-footer">
 
 							<div class="row">
 
-								<div class="col-xs-10 col-sm-10 col-md-10 col-lg-10 " align="left">
-								<button type="button" class="btn btn-primary" id="modal_prodsrecusa_btn_voltar"
-										data-dismiss="modal">Cancelar</button>
+								<div class="col-xs-10 col-sm-10 col-md-10 col-lg-10 "
+									align="left">
+									<button type="button" class="btn btn-primary"
+										id="modal_prodsrecusa_btn_voltar" data-dismiss="modal">Cancelar</button>
 								</div>
 
 
 								<div class="col-xs-2 col-sm-2 col-md-2 col-lg-2 " align="right">
-									<button type="button" class="btn btn-primary" id="modal_prodsrecusa_btn_continuar"
-										data-dismiss="modal">Continuar</button>
+									<button type="button" class="btn btn-primary"
+										id="modal_prodsrecusa_btn_continuar" data-dismiss="modal">Continuar</button>
 								</div>
 
 							</div>
@@ -457,8 +462,8 @@ padding-left: 3px;
 							</button>
 							<h4 class="modal-title" id="">
 								<label style="font-size: 40px; color: green" id="m_lbl_titulo"></label>
-								<input type="hidden" id="m_flag_pedido_ret_entre">
-								<input id="flag_tipoentrega_pedatual" type="hidden">
+								<input type="hidden" id="m_flag_pedido_ret_entre"> <input
+									id="flag_tipoentrega_pedatual" type="hidden">
 							</h4>
 						</div>
 						<div class="modal-body" style="max-height: 800px">
@@ -588,7 +593,8 @@ padding-left: 3px;
 
 								</div>
 
-								<div id='m_tempo_entrega_div' class="col-xs-6 col-sm-6 col-md-6 col-lg-6 m_enviado"
+								<div id='m_tempo_entrega_div'
+									class="col-xs-6 col-sm-6 col-md-6 col-lg-6 m_enviado"
 									align="left">
 
 									<table>
@@ -772,7 +778,7 @@ padding-left: 3px;
 
 									</div>
 								</div>
-								
+
 								<div class="row" id="m_tempo_entrega_box"
 									style="margin-left: 0px; margin-right: 0px;">
 
@@ -793,7 +799,7 @@ padding-left: 3px;
 												<!-- 													name="m_minutos_entrega"></td> -->
 												<!-- 												<td style="padding-right: 5px;">&nbsp;<label for="">Minutos(s)</label></td> -->
 												<td><input data-toggle="tooltip"
-													title="Aqui você preenche o tempo previsto que levará para realizar a entrega do pedido. Por exemplo, se você acha que vai levar 30 minutos para entregar. Você deve escrever 0:30 "
+													title="Aqui você preenche o tempo previsto que levará para realizar a entrega do pedido. Por exemplo, se você acha que vai levar 30 minutos para entregar. Você deve escrever 00:30 "
 													class='hora form-control' id="m_tempo_entrega_inp"
 													style="width: 100px" placeholder="Ex: 0:30"></td>
 											</tr>
