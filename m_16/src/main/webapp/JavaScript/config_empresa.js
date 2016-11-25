@@ -20,23 +20,21 @@ $(document).ready(function() {
 	$("#val_min_entrega").autoNumeric('init', numerico);
 	$("#val_padrao_tele").autoNumeric('init', numerico);
 	$("#b_val_tele").autoNumeric('init', numerico);
-	
+
 	$('.lbl_save').blink({
 		delay : 600
-	});	
-	
-	
+	});
 
-	 $(".hora").inputmask("h:s",{ "placeholder": "00:00" });
-	
-//	$("#lbl_save").show();	
-	
-/*	$('.hora').timepicker({
-		minuteStep : 1,
-		showSeconds : false,
-		showMeridian : false,
-		defaultTime : false
-	});*/
+	$(".hora").inputmask("h:s", {
+		"placeholder" : "00:00"
+	});
+
+	// $("#lbl_save").show();
+
+	/*
+	 * $('.hora').timepicker({ minuteStep : 1, showSeconds : false, showMeridian :
+	 * false, defaultTime : false });
+	 */
 
 	$('.keep-open', $('.fixed-table-toolbar')).prependTo($('#colunas'));
 	$('.fixed-table-toolbar').remove();
@@ -79,16 +77,14 @@ $(document).ready(function() {
 
 	$("#row_da_tabelabairro").find(".fixed-table-toolbar").append("<div data-toggle='tooltip' title='Ao marcar o modo customizavel, sua loja estará operando SOMENTE com os horarios configurados para o dia: Feriado/Especial/Customizável' class=\"pull-left \" style=\"padding-top: 10px;\"> <input type=\"checkbox\" id='check_custommode'> <label >Modo Feriado/Especial/Customizável</label></div>");
 
-
-
 	$("#check_custommode").change(function() {
 		ativaWarningSalvar();
 	});
-	
+
 	$("#flag_modopag").change(function() {
 		ativaWarningSalvar();
 	});
-	
+
 	$("#flag_entre_ret").change(function() {
 		ativaWarningSalvar();
 	});
@@ -98,11 +94,11 @@ $(document).ready(function() {
 	$("#cod_bairro_distr").change(function() {
 		ativaWarningSalvar();
 	});
-	
-	$(".warn-change").change(function(){
+
+	$(".warn-change").change(function() {
 		ativaWarningSalvar();
 	});
-	
+
 	$("#p_add_bairro").click(function() {
 		addBairro();
 	});
@@ -149,8 +145,6 @@ $(document).ready(function() {
 	loadBairrosParam();
 	loadDiasSemana();
 
-
-
 	$('[data-toggle="tooltip"]').tooltip();
 });
 
@@ -178,29 +172,50 @@ function btnFormater_horario(value, row, index) {
 
 function removerBairro(bairro, desc) {
 
-	if (confirm("Tem certeza que deseja remover o bairro " + desc + "?")) {
-
-		for (t = 0; t < horarios_bairros.length; t++) {
-
-			if (horarios_bairros[t].cod_bairro == bairro) {
-				horarios_bairros[t] = null;
+	BootstrapDialog.show({
+		message : "Tem certeza que deseja remover o bairro " + desc + "?",
+		title : "Aviso!",
+		buttons : [ {
+			label : 'Não',
+			// no title as it is optional
+			cssClass : 'btn-primary first_btn_confirm',
+			action : function(dialogItself) {
+				dialogItself.close();
 			}
+		}, {
+			label : 'Sim',
+			// no title as it is optional
+			cssClass : 'btn-primary',
+			action : function(dialogItself) {
 
-		}
+				dialogItself.close();
 
-		horarios_bairros = horarios_bairros.filter(function(n) {
-			return n != undefined
-		});
+				for (t = 0; t < horarios_bairros.length; t++) {
 
-		$('#table_bairros').bootstrapTable('load', horarios_bairros);
-		$('#table_bairros').bootstrapTable('resetView');
-		
-		ativaWarningSalvar();
-	}
+					if (horarios_bairros[t].cod_bairro == bairro) {
+						horarios_bairros[t] = null;
+					}
+
+				}
+
+				horarios_bairros = horarios_bairros.filter(function(n) {
+					return n != undefined
+				});
+
+				$('#table_bairros').bootstrapTable('load', horarios_bairros);
+				$('#table_bairros').bootstrapTable('resetView');
+
+				ativaWarningSalvar();
+
+			}
+		} ]
+	});
+
+	
 
 }
 
-function ativaWarningSalvar(){
+function ativaWarningSalvar() {
 	$(".lbl_save").show();
 }
 
@@ -260,15 +275,13 @@ function carregaBairros() {
 
 			$("#cod_bairro").html(html);
 			$("#cod_bairro_distr").html(html);
-			
-			
-			
+
 			$.unblockUI();
 			loadDados();
 		},
 		error : function(msg) {
 			$.unblockUI();
-			
+
 		}
 	});
 
@@ -302,8 +315,7 @@ function salvarTela() {
 	var flag_entre_ret = $("#flag_entre_ret").val();
 	var txt_obs_hora = $("#txt_obs_hora").val();
 	var cod_bairro_distr = $("#cod_bairro_distr").val();
-	
-	
+
 	var flag_custom = "";
 
 	if ($("#check_custommode").is(":checked")) {
@@ -334,24 +346,25 @@ function salvarTela() {
 			flag_online : flag_online,
 			flag_custom : flag_custom,
 			bairros : bairros,
-			desc_mail:desc_mail,
-			flag_modopag:flag_modopag,
-			flag_entre_ret:flag_entre_ret,
-			txt_obs_hora:txt_obs_hora,
-			cod_bairro_distr:cod_bairro_distr
-			
+			desc_mail : desc_mail,
+			flag_modopag : flag_modopag,
+			flag_entre_ret : flag_entre_ret,
+			txt_obs_hora : txt_obs_hora,
+			cod_bairro_distr : cod_bairro_distr
 
 		},
 		success : function(data) {
 
 			if (data.msg == 'ok') {
 
-				sysMsg("Dado salvos!",'M')
+				sysMsg("Dado salvos!", 'M')
 				$(".lbl_save").hide();
-				setTimeout(function(){ location.reload(true); }, 1500);
-				
+				setTimeout(function() {
+					location.reload(true);
+				}, 1500);
+
 			} else {
-				 sysMsg(data.erro,'E')
+				sysMsg(data.erro, 'E')
 
 			}
 
@@ -388,8 +401,8 @@ function addBairro() {
 			for (t = 0; t < horarios_bairros.length; t++) {
 
 				if (horarios_bairros[t].cod_bairro == $("#cod_bairro").val()) {
-					sysMsg("Atenção! Bairro já existe na relação de bairros para entrega. O sistema irá carregar as informações existentes.",'A')
-					
+					sysMsg("Atenção! Bairro já existe na relação de bairros para entrega. O sistema irá carregar as informações existentes.", 'A')
+
 					jatem = true;
 					loadDadosBairro($("#cod_bairro").val());
 					break;
@@ -409,18 +422,17 @@ function addBairro() {
 			loadDadosBairro($("#cod_bairro").val());
 		}
 	} else {
-		sysMsg("Escolha um bairro",'E')
-		
+		sysMsg("Escolha um bairro", 'E')
+
 	}
 }
 
 function loadDadosBairro(codbairro) {
-	
-	
-	$('input:radio[name="radioDiasemana"]').each(function(){
+
+	$('input:radio[name="radioDiasemana"]').each(function() {
 		$(this).prop('checked', false);
-	 });
-	
+	});
+
 	bairro_edicao = "";
 	for (t = 0; t < horarios_bairros.length; t++) {
 
@@ -443,7 +455,6 @@ function loadDadosBairro(codbairro) {
 	}
 
 	$("#b_modal_bairro").modal("show");
-
 
 }
 
@@ -493,7 +504,7 @@ function loadCidade() {
 		},
 		error : function(msg) {
 			$.unblockUI();
-			
+
 		}
 	});
 
@@ -525,7 +536,7 @@ function loadBairrosParam() {
 		},
 		error : function(msg) {
 			$.unblockUI();
-			
+
 		}
 	});
 
@@ -562,9 +573,9 @@ function loadDados() {
 			$("#emp_logo").attr("src", data[0].nome_img);
 			$("#flag_entre_ret").val(data[0].flag_entre_ret);
 			$("#cod_bairro_distr").val(data[0].cod_bairro);
-			
+
 			$("#txt_obs_hora").val(data[0].txt_obs_hora);
-			
+
 			if (data[0].flag_custom == 'S') {
 				$("#check_custommode").prop('checked', true);
 			} else {
@@ -578,7 +589,7 @@ function loadDados() {
 		},
 		error : function(msg) {
 			$.unblockUI();
-			
+
 		}
 	});
 
@@ -586,83 +597,78 @@ function loadDados() {
 
 function addHorario() {
 
-	
 	try {
-	
-	
+
 		if ($("#b_hora_inicial").val() != "" && $("#b_hora_final").val() != "") {
 			var horario = new Object();
-	
+
 			var horaini = "";
 			var horafim = "";
-	
+
 			if ($("#b_hora_inicial").val().length == 4) {
 				horaini = "0" + $("#b_hora_inicial").val();
 			} else {
 				horaini = $("#b_hora_inicial").val();
 			}
-	
+
 			if ($("#b_hora_final").val().length == 4) {
 				horafim = "0" + $("#b_hora_final").val();
 			} else {
 				horafim = $("#b_hora_final").val();
 			}
-	
+
 			var horaini_teste = parseFloat(horaini.replace(":", "."));
 			var horafim_teste = parseFloat(horafim.replace(":", "."));
-	
+
 			if (horaini_teste >= horafim_teste) {
-	
-				 throw "Horário invalido! A hora inicial deve ser maior que a hora final.";
-				
-			}else{
-				
-			
+
+				throw "Horário invalido! A hora inicial deve ser maior que a hora final.";
+
+			} else {
+
 				var casa_dia = 0;
 				for (t = 0; t < bairro_edicao.dias.length; t++) {
-	
+
 					if (bairro_edicao.dias[t].cod_dia == $("input[name=radioDiasemana]:radio").filter(':checked').val()) {
 						casa_dia = t;
 						break;
 					}
 				}
-				
+
 				for (t = 0; t < bairro_edicao.dias[casa_dia].horarios.length; t++) {
-					
+
 					var p_ini = parseFloat(bairro_edicao.dias[casa_dia].horarios[t]["HORARIO_INI"].replace(":", "."));
 					var p_fim = parseFloat(bairro_edicao.dias[casa_dia].horarios[t]["HORARIO_FIM"].replace(":", "."));
-					
-					if(horaini_teste>=p_ini && horaini_teste<=p_fim){
-						throw "O horario inicial adicionado conflita com o horario de " + bairro_edicao.dias[casa_dia].horarios[t]["HORARIO_INI"] + " até "+ bairro_edicao.dias[casa_dia].horarios[t]["HORARIO_FIM"];
+
+					if (horaini_teste >= p_ini && horaini_teste <= p_fim) {
+						throw "O horario inicial adicionado conflita com o horario de " + bairro_edicao.dias[casa_dia].horarios[t]["HORARIO_INI"] + " até " + bairro_edicao.dias[casa_dia].horarios[t]["HORARIO_FIM"];
 					}
-					
-					if(horafim_teste>=p_ini && horafim_teste<=p_fim){
-						throw "O horario inicial adicionado conflita com o horario de " + bairro_edicao.dias[casa_dia].horarios[t]["HORARIO_INI"] + " até "+ bairro_edicao.dias[casa_dia].horarios[t]["HORARIO_FIM"];
+
+					if (horafim_teste >= p_ini && horafim_teste <= p_fim) {
+						throw "O horario inicial adicionado conflita com o horario de " + bairro_edicao.dias[casa_dia].horarios[t]["HORARIO_INI"] + " até " + bairro_edicao.dias[casa_dia].horarios[t]["HORARIO_FIM"];
 					}
-					
-					
+
 				}
-				
+
 				horario["HORARIO_INI"] = horaini;
 				horario["HORARIO_FIM"] = horafim;
-	
+
 				horario["id_horario"] = id_horariomax++;
-	
+
 				bairro_edicao.dias[casa_dia].horarios.push(horario);
 				$('#table_horarios').bootstrapTable('load', bairro_edicao.dias[casa_dia].horarios);
 				$('#table_horarios').bootstrapTable('resetView');
-	
+
 				$("#b_hora_inicial").val("");
 				$("#b_hora_final").val("");
 				ativaWarningSalvar();
 			}
-		}else{
+		} else {
 			throw "Horário invalido! Preencha ambos os campos.";
 		}
-	
-	}
-	catch(err) {
-		 sysMsg(err,'E')
+
+	} catch (err) {
+		sysMsg(err, 'E')
 	}
 }
 
@@ -724,7 +730,7 @@ function loadDiasSemana() {
 
 		},
 		error : function(data) {
-			
+
 		}
 	});
 

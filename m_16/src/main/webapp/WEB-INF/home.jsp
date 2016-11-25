@@ -97,6 +97,14 @@ input:focus {
 	height: 5px;
 	border-bottom: 1px solid black;
 }
+.first_btn_confirm{
+
+    margin-bottom: 0px !important;
+    margin-right: 80% !important;
+
+
+}
+
 </style>
 
 
@@ -959,8 +967,8 @@ input:focus {
 		src="JavaScript/inputmask/jquery.inputmask.js"></script>
 	<script type="text/javascript"
 		src="JavaScript/boostrap_multiselect/bootstrap-multiselect.js"></script>
-
-
+	<script type="text/javascript"
+		src="JavaScript/bootstrap3-dialog-master/dist/js/bootstrap-dialog.js"></script>	
 
 </body>
 

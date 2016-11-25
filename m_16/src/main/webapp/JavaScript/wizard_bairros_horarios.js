@@ -26,8 +26,8 @@ $(document).ready(function() {
 	$("#btn_getgrade").click(function() {
 
 		var nome = "Grade de horários"
-		var w = window.open("home/"+nome+".pdf?ac=rel_gradehorarios", '_blank');
-	    
+		var w = window.open("home/" + nome + ".pdf?ac=rel_gradehorarios", '_blank');
+
 	});
 	$('[data-toggle="tooltip"]').tooltip();
 
@@ -48,9 +48,27 @@ $(document).ready(function() {
 	});
 
 	$("#btn_prox_3").click(function() {
-		if (confirm("Tem certeza que deseja continuar?")) {
-			salvarconfigs();
-		}
+
+		BootstrapDialog.show({
+			message : "Tem certeza que deseja continuar?",
+			title : "Aviso!",
+			buttons : [ {
+				label : 'Não',
+				// no title as it is optional
+				cssClass : 'btn-primary first_btn_confirm',
+				action : function(dialogItself) {
+					dialogItself.close();
+				}
+			}, {
+				label : 'Sim',
+				// no title as it is optional
+				cssClass : 'btn-primary',
+				action : function(dialogItself) {
+					dialogItself.close();
+					salvarconfigs();
+				}
+			} ]
+		});
 
 	});
 
@@ -142,12 +160,11 @@ function salvarconfigs() {
 
 			if (data.msg == 'ok') {
 
-				
-				sysMsg("Configurações de bairros/horários salvos!",'M')
+				sysMsg("Configurações de bairros/horários salvos!", 'M')
 				location.reload(true);
 
 			} else {
-				sysMsg(data.erro,'E')
+				sysMsg(data.erro, 'E')
 			}
 			$.unblockUI();
 		},
@@ -204,8 +221,8 @@ function addHorario() {
 			var horario = new Object();
 			horario.id_horario = counter;
 			for (t = 0; t < diassemana.length; t++) { // o código esta fixo na
-														// tabela, horario_1 =
-														// segunda-fera, e etc
+				// tabela, horario_1 =
+				// segunda-fera, e etc
 				horario["HORARIO_" + diassemana[t]] = horariosstr;
 			}
 
@@ -213,15 +230,15 @@ function addHorario() {
 
 			$('#table_horarios').bootstrapTable('load', horarios);
 			$('#table_horarios').bootstrapTable('resetView');
-			$("#b_hora_inicial").val(""); 
+			$("#b_hora_inicial").val("");
 			$("#b_hora_final").val("");
 		} else {
 			throw "Horário invalido! Preencha ambos os campos.";
 		}
 
 	} catch (err) {
-		sysMsg(err,'E')
-		
+		sysMsg(err, 'E')
+
 	}
 }
 
@@ -288,8 +305,8 @@ function addHorario2() {
 		}
 
 	} catch (err) {
-		sysMsg(err,'E')
-		
+		sysMsg(err, 'E')
+
 	}
 }
 
@@ -324,7 +341,7 @@ function loadBairrosWizard() {
 			$("#tab_wizard_bairros").html(html.toString());
 		},
 		error : function(data) {
-			
+
 		}
 	});
 
@@ -371,7 +388,7 @@ function loadDiasWizard() {
 			$("#tab_wizard_dias").html(html.toString());
 		},
 		error : function(data) {
-			
+
 		}
 	});
 

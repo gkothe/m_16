@@ -624,29 +624,27 @@ function showProdsRecusar(ajax) {
 
 				$("#msg_erro_aviso_sub").html("Por favor, selecione os produtos que estão em falta no estoque:");
 
-				
-				
-				 var html = "";
-					html = html + ("<table style='min-width:300px'>");
-				
-					for (t = 0; t < data.prods.length; t++) {
+				var html = "";
+				html = html + ("<table style='min-width:300px'>");
 
-						html = html + ("<tr> <td style=\"padding-right: 10px;\"> ");
-						html = html + ("<div class=\"\" style=\"margin-top: 0px; margin-bottom: 0px;\">");
-						html = html + ("<label style='padding-top: 15px'> <input type=\"checkbox\" class=\"prodrecusa\"  value=\"" + data.prods[t].SEQ_ITEM + "\"> " + data.prods[t].DESC_PROD + "   -   Quantidade requisitada:  "+data.prods[t].QTD_PROD+"</label> </div> 	</td>");
-						html = html + ("<td class='prodrec_qtds' id='prodrec_qtds_1" + data.prods[t].SEQ_ITEM + "'>Qtd. Disponível: <div style='margin-bottom: 0px;' class=\"form-group\"><input data-toggle='tooltip' title='Se você tem uma quantidade inferior a quantidade pedida, você pode informar aqui. Assim o se o cliente desejar, ele pode realizar um novo pedido com a quantidade disponível.' type=\"number\" value='0'  class=\"form-control recusa_qtdprod \" id=\"recusa_qtdproddisp" + data.prods[t].SEQ_ITEM + "\" /></div></td></tr>");
-						html = html + ("<tr class='prodrec_qtds' id='prodrec_qtds_2" + data.prods[t].SEQ_ITEM + "'><td colspan='100%' style='min-width:300px' ><div class='line'></div></td> </tr>");
+				for (t = 0; t < data.prods.length; t++) {
 
-					}
-				
+					html = html + ("<tr> <td style=\"padding-right: 10px;\"> ");
+					html = html + ("<div class=\"\" style=\"margin-top: 0px; margin-bottom: 0px;\">");
+					html = html + ("<label style='padding-top: 15px'> <input type=\"checkbox\" class=\"prodrecusa\"  value=\"" + data.prods[t].SEQ_ITEM + "\"> " + data.prods[t].DESC_PROD + "   -   Quantidade requisitada:  " + data.prods[t].QTD_PROD + "</label> </div> 	</td>");
+					html = html
+							+ ("<td class='prodrec_qtds' id='prodrec_qtds_1" + data.prods[t].SEQ_ITEM + "'>Qtd. Disponível: <div style='margin-bottom: 0px;' class=\"form-group\"><input data-toggle='tooltip' title='Se você tem uma quantidade inferior a quantidade pedida, você pode informar aqui. Assim o se o cliente desejar, ele pode realizar um novo pedido com a quantidade disponível.' type=\"number\" value='0'  class=\"form-control recusa_qtdprod \" id=\"recusa_qtdproddisp"
+									+ data.prods[t].SEQ_ITEM + "\" /></div></td></tr>");
+					html = html + ("<tr class='prodrec_qtds' id='prodrec_qtds_2" + data.prods[t].SEQ_ITEM + "'><td colspan='100%' style='min-width:300px' ><div class='line'></div></td> </tr>");
 
-					html = html + ("</table>");
-					
-				
+				}
+
+				html = html + ("</table>");
+
 				$("#modal_prodsrecusa_div").html(html);
 
 				$(".prodrec_qtds").hide();
-				  
+
 				$('.prodrecusa').each(function() {
 
 					$(this).click(function() {
@@ -724,8 +722,7 @@ function visualizarPedido(id) {
 			$("#flag_tipoentrega_pedatual").val(data.flag_modoentrega);
 			$("#m_flag_pedido_ret_entre").val(data.tipo_servico);
 			$("#m_modo_pagamento").html(data.FLAG_MODOPAGAMENTO);
-			
-			
+
 			if (data.num_trocopara != undefined) {
 				$("#m_troco_para_div").show();
 				$("#m_troco_para").html(data.num_trocopara);
@@ -747,14 +744,13 @@ function visualizarPedido(id) {
 			$("#m_total_produtos").autoNumeric('set', data.VAL_TOTALPROD);
 			$("#m_data_pedido").html(data.data_pedido);
 			$("#m_id_pedido").val(data.ID_PEDIDO);
-			
+
 			if (data.tipo_servico == "T") {
 				$("#m_tempo_entrega_div").show();
 			} else {
 				$("#m_tempo_entrega_div").hide();
 			}
 
-			
 			var num_ped = data.num_ped;
 			if (data.flag_status == "A") {
 				$("#m_lbl_titulo").html("Pedido em aberto! Número: " + num_ped);
@@ -766,9 +762,9 @@ function visualizarPedido(id) {
 				$("#m_responder").show();
 				$("#m_finalizar").hide();
 
-//				if (data.flag_modoentrega == 'A') {
-//					$("#m_tempo_entrega_div").hide();
-//				}
+				// if (data.flag_modoentrega == 'A') {
+				// $("#m_tempo_entrega_div").hide();
+				// }
 				$("#m_tempo_entrega_div").hide();
 
 			} else if (data.flag_status == "E") {
@@ -856,56 +852,75 @@ function visualizarPedido(id) {
 
 function finalizarPedido() {
 
-	if (confirm("Tem certeza que deseja finalizar este pedido? Ele podera ser consultado futuramente na tela de histórico de pedidos.")) {
 
-		$.blockUI({
-			message : 'Finalizando...'
-		});
-
-		var id_pedido = $("#m_id_pedido").val();
-
-		$.ajax({
-			type : "POST",
-			url : "home?ac=ajax",
-			dataType : "json",
-			async : true,
-			data : {
-				cmd : 'finalizandoPedido',
-				id_pedido : id_pedido
-
-			},
-			success : function(data) {
-
-				if (data.msg == 'ok') {
-
-					sysMsg("Pedido finalizado!", 'M')
-					checarPedidos();
-
-					try {
-						loadAbertos(true);
-					} catch (err) {
-
-					}
-
-					$('#modal_pedido').modal('hide');
-					limpaModal();
-
-				} else if (data.erro != undefined) {
-					sysMsg(data.erro, 'E')
+		
+		BootstrapDialog.show({
+			message : "Tem certeza que deseja finalizar este pedido? Ele podera ser consultado futuramente na tela de histórico de pedidos.",
+			title : "Aviso!",
+			buttons : [ {
+				label : 'Não',
+				// no title as it is optional
+				cssClass : 'btn-primary first_btn_confirm',
+				action : function(dialogItself) {
+					dialogItself.close();
 				}
+			}, {
+				label : 'Sim',
+				// no title as it is optional
+				cssClass : 'btn-primary',
+				action : function(dialogItself) {
+					dialogItself.close();
+					$.blockUI({
+						message : 'Finalizando...'
+					});
 
-				$.unblockUI();
+					var id_pedido = $("#m_id_pedido").val();
 
-			},
-			error : function(msg) {
-				$.unblockUI();
+					$.ajax({
+						type : "POST",
+						url : "home?ac=ajax",
+						dataType : "json",
+						async : true,
+						data : {
+							cmd : 'finalizandoPedido',
+							id_pedido : id_pedido
 
-			}
+						},
+						success : function(data) {
+
+							if (data.msg == 'ok') {
+
+								sysMsg("Pedido finalizado!", 'M')
+								checarPedidos();
+
+								try {
+									loadAbertos(true);
+								} catch (err) {
+
+								}
+
+								$('#modal_pedido').modal('hide');
+								limpaModal();
+
+							} else if (data.erro != undefined) {
+								sysMsg(data.erro, 'E')
+							}
+
+							$.unblockUI();
+						},
+						error : function(msg) {
+							$.unblockUI();
+						}
+					});
+					
+				}
+			} ]
 		});
+		
+		
 
 	}
 
-}
 
 function responderPedido() {
 
@@ -914,97 +929,112 @@ function responderPedido() {
 		var resposta = $('input[name=flag_aceita_recusa]:checked').val();
 		var msg = (resposta == "A" ? "Tem certeza que deseja ACEITAR este pedido?" : "Tem certeza que deseja RECUSAR este pedido?");
 
-		if (confirm(msg)) {
+		BootstrapDialog.show({
+			message : msg,
+			title : "Aviso!",
+			buttons : [ {
+				label : 'Não',
+				// no title as it is optional
+				cssClass : 'btn-primary first_btn_confirm',
+				action : function(dialogItself) {
+					dialogItself.close();
+				}
+			}, {
+				label : 'Sim',
+				// no title as it is optional
+				cssClass : 'btn-primary',
+				action : function(dialogItself) {
+					dialogItself.close();
+					$.blockUI({
+						message : 'Respondendo...'
+					});
 
-			$.blockUI({
-				message : 'Respondendo...'
-			});
+					// var hora_entrega = $("#m_hora_entrega").val();
+					// var min_entrega = $("#m_minutos_entrega").val();
+					var m_tempo_entrega_inp = $("#m_tempo_entrega_inp").val();
 
-			// var hora_entrega = $("#m_hora_entrega").val();
-			// var min_entrega = $("#m_minutos_entrega").val();
-			var m_tempo_entrega_inp = $("#m_tempo_entrega_inp").val();
+					var motivos = [];
+					var i = 0;
 
-			var motivos = [];
-			var i = 0;
+					$('.motivo:checked').each(function() {
+						motivos[i++] = $(this).val();
+					});
 
-			$('.motivo:checked').each(function() {
-				motivos[i++] = $(this).val();
-			});
+					var prodsrecusados = [];
+					i = 0;
+					$('.prodrecusa:checked').each(function() {
+						var item = {
+							'seq' : $(this).val(),
+							'qtd' : $("#recusa_qtdproddisp" + $(this).val()).val()
+						};
+						prodsrecusados[i++] = item;
 
-			var prodsrecusados = [];
-			i = 0;
-			$('.prodrecusa:checked').each(function() {
-				var item = {
-					'seq' : $(this).val(),
-					'qtd' : $("#recusa_qtdproddisp" + $(this).val()).val()
-				};
-				prodsrecusados[i++] = item;
+					});
 
-			});
+					var id = $("#m_id_pedido").val();
+					var motivos_json = JSON.stringify(motivos);
+					var prodsrecusadosjson = JSON.stringify(prodsrecusados);
 
-			var id = $("#m_id_pedido").val();
-			var motivos_json = JSON.stringify(motivos);
-			var prodsrecusadosjson = JSON.stringify(prodsrecusados);
+					$.ajax({
+						type : "POST",
+						url : "home?ac=ajax",
+						dataType : "json",
+						async : true,
+						data : {
+							cmd : 'responderPedido',
+							motivos_json : motivos_json,
+							m_tempo_entrega_inp : m_tempo_entrega_inp,
+							id : id,
+							resposta : resposta,
+							prodsrecusadosjson : prodsrecusadosjson
 
-			$.ajax({
-				type : "POST",
-				url : "home?ac=ajax",
-				dataType : "json",
-				async : true,
-				data : {
-					cmd : 'responderPedido',
-					motivos_json : motivos_json,
-					m_tempo_entrega_inp : m_tempo_entrega_inp,
-					id : id,
-					resposta : resposta,
-					prodsrecusadosjson : prodsrecusadosjson
+						},
+						success : function(data) {
 
-				},
-				success : function(data) {
+							if (data.msg == 'ok') {
+								if (resposta == "A") {
 
-					if (data.msg == 'ok') {
-						if (resposta == "A") {
+									sysMsg("Pedido Respondido", 'M')
 
-							sysMsg("Pedido Respondido", 'M')
+								}
 
+								if (resposta == "R") {
+									sysMsg("Pedido Recusado", 'M')
+
+								}
+
+								checarPedidos();
+
+								try {
+									loadAbertos(true);
+								} catch (err) {
+
+								}
+
+								$('#modal_pedido').modal('hide');
+								limpaModal()
+								if (resposta == "A") {
+
+									setTimeout(function() {
+										visualizarPedido(id);
+									}, 700);
+
+								}
+
+							} else if (data.erro != undefined) {
+								sysMsg(data.erro, 'E')
+							}
+
+							$.unblockUI();
+						},
+						error : function(msg) {
+							$.unblockUI();
 						}
-
-						if (resposta == "R") {
-							sysMsg("Pedido Recusado", 'M')
-
-						}
-
-						checarPedidos();
-
-						try {
-							loadAbertos(true);
-						} catch (err) {
-
-						}
-
-						$('#modal_pedido').modal('hide');
-						limpaModal()
-						if (resposta == "A") {
-
-							setTimeout(function() {
-								visualizarPedido(id);
-							}, 700);
-
-						}
-
-					} else if (data.erro != undefined) {
-						sysMsg(data.erro, 'E')
-					}
-
-					$.unblockUI();
-
-				},
-				error : function(msg) {
-					$.unblockUI();
+					});
 
 				}
-			});
-		}
+			} ]
+		});
 
 	} else {
 		sysMsg("Você deve aceitar ou recusar o pedido.", 'A')
