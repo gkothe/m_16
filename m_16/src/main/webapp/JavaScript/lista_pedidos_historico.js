@@ -194,17 +194,20 @@ function visualizarPedidoHistorico(id) {
 					$("#m_tempomax_div").hide();
 					$("#m_agendamento").html(data.data_agenda_entrega);
 					$("#m_agendamento_div").show();
+					$("#m_tempo_entrega_div").hide();
 				} else {
 					$("#m_agendamento_div").hide();
 					$("#m_tempomax_div").hide();
 					$("#m_tempo_max").html(data.m_tempo_max);
 					$("#m_tempomax_div").show();
+					$("#m_tempo_entrega_div").show();
 				}
 
 			} else {
 				$("#m_agendamento_div").hide();
 				$("#m_tempomax_div").hide();
 				$("#m_lbl_bairro").html("");
+				$("#m_tempo_entrega_div").hide();
 			}
 
 			if (data.num_trocopara != undefined) {
@@ -215,7 +218,7 @@ function visualizarPedidoHistorico(id) {
 				$("#m_troco_para_div").hide();
 				$("#m_troco_para").html("");
 			}
-
+			$("#m_modo_pagamento").html(data.FLAG_MODOPAGAMENTO);
 			$("#m_desc_bairro").html(data.desc_bairro);
 			$("#m_total_pedido").autoNumeric('set', parseFloat(data.VAL_ENTREGA) + parseFloat(data.VAL_TOTALPROD));
 			$("#m_total_tele").autoNumeric('set', data.VAL_ENTREGA);

@@ -476,7 +476,8 @@ public class Pedidos_ajax {
 			objRetorno.put("DESCPROD", prods);
 			objRetorno.put("qtdprod", qtdprod);
 			objRetorno.put("data_formatada", new SimpleDateFormat("dd/MM/yyyy HH:mm").format(rs.getTimestamp("DATA_PEDIDO")));
-			objRetorno.put("data_formatada_resposta", new SimpleDateFormat("dd/MM/yyyy HH:mm").format(rs.getTimestamp("DATA_PEDIDO_RESPOSTA")));
+			if (rs.getTimestamp("DATA_PEDIDO_RESPOSTA") != null)
+				objRetorno.put("data_formatada_resposta", new SimpleDateFormat("dd/MM/yyyy HH:mm").format(rs.getTimestamp("DATA_PEDIDO_RESPOSTA")));
 			objRetorno.put("NUM_PED", rs.getString("NUM_PED"));
 
 			if (rs.getString("FLAG_PEDIDO_RET_ENTRE").equalsIgnoreCase("L")) {
@@ -537,6 +538,7 @@ public class Pedidos_ajax {
 			objRetorno.put("VAL_ENTREGA", rs.getString("VAL_ENTREGA"));
 			objRetorno.put("ID_PEDIDO", rs.getString("ID_PEDIDO"));
 			objRetorno.put("num_ped", rs.getString("num_ped"));
+			objRetorno.put("FLAG_MODOPAGAMENTO", Utilitario.returnModoPagamento(rs.getString("FLAG_MODOPAGAMENTO")));
 
 			if (rs.getDouble("NUM_TROCOPARA") != 0.0) {
 				objRetorno.put("num_trocopara", "R$ " + df2.format(rs.getDouble("NUM_TROCOPARA")));
@@ -670,6 +672,7 @@ public class Pedidos_ajax {
 			objRetorno.put("VAL_ENTREGA", rs.getString("VAL_ENTREGA"));
 			objRetorno.put("num_ped", rs.getString("num_ped"));
 			objRetorno.put("ID_PEDIDO", rs.getString("ID_PEDIDO"));
+			objRetorno.put("FLAG_MODOPAGAMENTO", Utilitario.returnModoPagamento(rs.getString("FLAG_MODOPAGAMENTO")));
 
 			if (rs.getTimestamp("DATA_AGENDA_ENTREGA") != null) {
 				objRetorno.put("data_agenda_entrega", new SimpleDateFormat("dd/MM/yyyy HH:mm").format(rs.getTimestamp("DATA_AGENDA_ENTREGA")));

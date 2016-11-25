@@ -263,7 +263,7 @@ public class Relatorios {
 			obj.put("desc", rs.getString("FLAG_MODOPAGAMENTO").equalsIgnoreCase("C") ? "Cartão Créd." : "Dinheiro");
 			obj.put("qtd", rs.getInt("qtd"));
 			obj.put("qtddf", df.format(rs.getInt("qtd")));
-			obj.put("val_totalprod", "R$ "+df2.format(rs.getDouble("val_totalprod")));
+			obj.put("val_totalprod", "R$ " + df2.format(rs.getDouble("val_totalprod")));
 			retorno.add(obj);
 		}
 
@@ -283,7 +283,6 @@ public class Relatorios {
 		out.print(retorno.toJSONString());
 	}
 
-	
 	public static void dashServico(HttpServletRequest request, HttpServletResponse response, Connection conn, int coddistr) throws Exception {
 		JSONArray retorno = new JSONArray();
 		PrintWriter out = response.getWriter();
@@ -845,8 +844,6 @@ public class Relatorios {
 
 		}
 
-		
-
 		out.print(retorno.toJSONString());
 	}
 
@@ -962,7 +959,6 @@ public class Relatorios {
 
 		out.print(retorno.toJSONString());
 	}
-
 
 	public static void dashMeses(HttpServletRequest request, HttpServletResponse response, Connection conn, int coddistr) throws Exception {
 		JSONArray retorno = new JSONArray();
@@ -1267,6 +1263,8 @@ public class Relatorios {
 			PreparedStatement st2 = null;
 			ResultSet rs2 = null;
 
+			Sys_parametros sys = new Sys_parametros(conn);
+
 			String dataini = request.getParameter("dataini") == null ? "" : request.getParameter("dataini");
 			String datafim = request.getParameter("datafim") == null ? "" : request.getParameter("datafim");
 			String flag_situacao = request.getParameter("flag_situacao") == null ? "" : request.getParameter("flag_situacao");
@@ -1284,7 +1282,12 @@ public class Relatorios {
 
 			hmParams.put("dataini", "");
 			hmParams.put("datafim", "");
-			hmParams.put("situacao", Utilitario.returnStatusPedidoFlag(flag_situacao));
+			if (flag_situacao.equalsIgnoreCase("E")) {
+				hmParams.put("situacao", "Em envio/Em espera");
+			} else {
+				hmParams.put("situacao", Utilitario.returnStatusPedidoFlag(flag_situacao, ""));
+			}
+
 			hmParams.put("servico", Utilitario.returnDistrTiposPedido(flag_servico));
 			hmParams.put("modo_pay", Utilitario.returnModoPagamento(flag_pagamento));
 			if (!cod_bairro.equalsIgnoreCase(""))
@@ -1294,7 +1297,7 @@ public class Relatorios {
 
 			StringBuffer sql = new StringBuffer();
 
-			sql.append("SELECT desc_prod, ");
+			sql.append("SELECT desc_prod,pedido.id_pedido, ");
 			sql.append("       pedido_item.val_unit, ");
 			sql.append("       qtd_prod, ");
 			sql.append("       pedido_item.val_unit * qtd_prod          AS val_subtotalprod, ");
@@ -1425,6 +1428,8 @@ public class Relatorios {
 
 			ResultSet rs = st.executeQuery();
 			HashMap<String, Object> hmFat = new HashMap<String, Object>();
+			JSONArray produtos_semestq = new JSONArray();
+
 			double val_totalprod = 0;
 
 			double val_entrega = 0;
@@ -1435,7 +1440,7 @@ public class Relatorios {
 			while (rs.next()) {
 				hmFat = new HashMap<String, Object>();
 				hmFat.put("flag_status", (rs.getString("flag_status")));
-				hmFat.put("desc_status", Utilitario.returnStatusPedidoFlag(rs.getString("flag_status")));
+				hmFat.put("desc_status", Utilitario.returnStatusPedidoFlag(rs.getString("flag_status"), rs.getString("flag_pedido_ret_entre")));
 				hmFat.put("data_pedido", rs.getTimestamp("DATA_PEDIDO"));
 				hmFat.put("data_pedido_resposta", rs.getTimestamp("DATA_PEDIDO_RESPOSTA"));
 				hmFat.put("num_ped", rs.getLong("NUM_PED"));
@@ -1468,6 +1473,10 @@ public class Relatorios {
 					id_ped = rs.getLong("id_pedido");
 				}
 
+				if (rs.getString("FLAG_STATUS").equalsIgnoreCase("R")) {
+					hmFat = getMotivosRecusaRelPedido(rs.getString("id_pedido"), conn, st2, rs2, hmFat, sys);
+				}
+
 				hmFat.put("qtd_pedido", qtd_ped);
 				hmFat.put("summary_prodtotal", new BigDecimal(val_totalprod));
 				hmFat.put("summary_fretetotal", new BigDecimal(val_entrega));
@@ -1484,6 +1493,86 @@ public class Relatorios {
 
 		JRMapCollectionDataSource objRetorno = new JRMapCollectionDataSource(arrLinhas);
 		return objRetorno;
+
+	}
+
+	private static HashMap<String, Object> getMotivosRecusaRelPedido(String id_pedido, Connection conn, PreparedStatement st2, ResultSet rs2, HashMap<String, Object> hmFat, Sys_parametros sys) throws Exception {
+
+		StringBuffer sql2 = new StringBuffer();
+		sql2.append("select RECUSADO_DISPONIVEL,FLAG_RECUSADO,  DESC_PROD, VAL_UNIT, QTD_PROD, QTD_PROD * VAL_UNIT   as total, DESC_ABREVIADO, produtos.id_prod from pedido_item ");
+		sql2.append("inner join produtos ");
+		sql2.append("on produtos.ID_PROD  = pedido_item.ID_PROD ");
+		sql2.append("where id_pedido = ? order by desc_prod");
+
+		JSONArray produtos = new JSONArray();
+		JSONArray produtos_semestq = new JSONArray();
+
+		st2 = conn.prepareStatement(sql2.toString());
+		st2.setLong(1, Long.parseLong(id_pedido));
+		rs2 = st2.executeQuery();
+
+		while (rs2.next()) {
+			JSONObject prod = new JSONObject();
+
+			prod.put("desc_prod", rs2.getString("DESC_PROD"));
+			prod.put("val_unit", df2.format(rs2.getDouble("VAL_UNIT")));
+			prod.put("qtd_prod", rs2.getString("QTD_PROD"));
+			prod.put("total", df2.format(rs2.getDouble("total")));
+			prod.put("id_prod", rs2.getString("id_prod"));
+			prod.put("desc_abreviado", rs2.getString("DESC_ABREVIADO"));
+
+			if (rs2.getString("FLAG_RECUSADO").equalsIgnoreCase("S")) {
+				prod.put("recusado_disponivel", rs2.getString("RECUSADO_DISPONIVEL"));
+				produtos_semestq.add(prod);
+			}
+
+			produtos.add(prod);
+		}
+
+		sql2 = new StringBuffer();
+		sql2.append("select  * from pedido_motivos_recusa ");
+		sql2.append("inner join motivos_recusa ");
+		sql2.append("on motivos_recusa.COD_MOTIVO  = pedido_motivos_recusa.COD_MOTIVO ");
+		sql2.append("where id_pedido = ? order by DESC_MOTIVO");
+
+		JSONArray motivos = new JSONArray();
+
+		st2 = conn.prepareStatement(sql2.toString());
+		st2.setLong(1, Long.parseLong(id_pedido));
+		rs2 = st2.executeQuery();
+
+		String text_recusa = "";
+
+		while (rs2.next()) {
+			if (rs2.getInt("cod_motivo") != sys.getCod_recusa_estoque()) {
+				JSONObject mot = new JSONObject();
+				text_recusa = text_recusa + "" + rs2.getString("desc_motivo") + " \n";
+				mot.put("desc_motivo", rs2.getString("desc_motivo"));
+				motivos.add(mot);
+			}
+		}
+
+		if (produtos_semestq.size() != 0) {
+			text_recusa = text_recusa + "Produtos insuficientes ou em falta no estoque: \n";
+			for (int i = 0; i < produtos_semestq.size(); i++) {
+				JSONObject obj = (JSONObject) produtos_semestq.get(i);
+				try {
+					int qtddis = Integer.parseInt(obj.get("recusado_disponivel").toString());
+					if (qtddis != 0) {
+						text_recusa = text_recusa + "" + obj.get("desc_prod") + " está parcialmente falta. Qtd. disponível: " + qtddis + " \n";
+					} else {
+						text_recusa = text_recusa + "" + obj.get("desc_prod") + " está em falta. \n";
+					}
+				} catch (Exception e) {
+					text_recusa = text_recusa + "" + obj.get("desc_prod") + " está em falta. \n";
+				}
+
+			}
+
+		}
+		hmFat.put("motivos_recusa", text_recusa);
+
+		return hmFat;
 
 	}
 
@@ -1621,7 +1710,16 @@ public class Relatorios {
 				hmParams.put("datafim", "");
 			}
 
-			hmParams.put("situacao", Utilitario.returnStatusPedidoFlag(flag_situacao));
+			if (flag_situacao.equalsIgnoreCase("")) {
+				hmParams.put("situacao", "Ambos");
+
+			} else if (flag_situacao.equalsIgnoreCase("S")) {
+				hmParams.put("situacao", "Ativos");
+
+			} else if (flag_situacao.equalsIgnoreCase("N")) {
+
+				hmParams.put("situacao", "Desativados");
+			}
 
 			StringBuffer sql = new StringBuffer();
 
@@ -1699,7 +1797,8 @@ public class Relatorios {
 
 				if (rs2.next()) {
 					hmFat.put("venda_local", df.format(rs2.getDouble("qtd")));
-					vendabairro_total = Math.abs(vendabairro_total  -  rs2.getDouble("qtd"));;
+					vendabairro_total = Math.abs(vendabairro_total - rs2.getDouble("qtd"));
+					;
 				} else {
 					hmFat.put("venda_local", "0");
 				}
@@ -1772,7 +1871,7 @@ public class Relatorios {
 					hmFat.put("hora", "-");
 				}
 				hmFat.put("vendabairro_total", df.format(vendabairro_total));
-				
+
 				arrLinhas.add(hmFat);
 			}
 

@@ -1795,15 +1795,10 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 			prod.put("NUM_PED", rs.getString("NUM_PED"));
 			prod.put("DATA_PEDIDO", new SimpleDateFormat("dd/MM/yyyy").format(rs.getDate("DATA_PEDIDO")));
 			prod.put("VAL_TOTAL", df2.format(rs.getDouble("VAL_TOTALPROD") + rs.getDouble("VAL_ENTREGA")));
+			prod.put("FLAG_STATUS", Utilitario.returnStatusPedidoFlag(rs.getString("FLAG_STATUS"), rs.getString("FLAG_PEDIDO_RET_ENTRE")));
 			if (rs.getString("FLAG_PEDIDO_RET_ENTRE").equalsIgnoreCase("T")) {
-				prod.put("FLAG_STATUS", Utilitario.returnStatusPedidoFlag(rs.getString("FLAG_STATUS")));
 				prod.put("desc_bairro", Utilitario.getNomeBairro(conn, rs.getInt("cod_bairro"), 0));
 			} else {
-				if (rs.getString("FLAG_STATUS").equalsIgnoreCase("E")) {
-					prod.put("FLAG_STATUS", Utilitario.returnStatusPedidoFlag("S"));// se for do tipo local, retorna "em espera"
-				} else {
-					prod.put("FLAG_STATUS", Utilitario.returnStatusPedidoFlag(rs.getString("FLAG_STATUS")));
-				}
 				prod.put("desc_bairro", "Retirar no local");
 
 			}
@@ -1818,6 +1813,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 		ret.put("maxvalue", Math.ceil(maxvalue));
 
 		out.print(ret.toJSONString());
+
 	}
 
 	private static void carregaPedidoUnico(HttpServletRequest request, HttpServletResponse response, Connection conn, long cod_usuario, Sys_parametros sys) throws Exception {
@@ -1842,7 +1838,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 		sql.append("       data_pedido, ");
 		sql.append("       data_pedido_resposta, ");
 		sql.append("       TEMPO_ESTIMADO_ENTREGA, ");
-		sql.append("       DESC_NOME_ABREV, FLAG_PEDIDO_RET_ENTRE,TEMPO_ESTIMADO_DESEJADO,FLAG_PEDIDO_RET_ENTRE,");
+		sql.append("       DESC_NOME_ABREV, FLAG_PEDIDO_RET_ENTRE,TEMPO_ESTIMADO_DESEJADO,FLAG_PEDIDO_RET_ENTRE,pedido.FLAG_MODOPAGAMENTO,");
 		sql.append("       flag_status,id_pedido,bairros.desc_bairro ,desc_endereco_num_entrega,desc_endereco_complemento_entrega ");
 		sql.append(" FROM   pedido ");
 		sql.append("       INNER JOIN distribuidora ");
@@ -1869,18 +1865,8 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 				ped.put("data_pedidoresp", "Não respondido.");
 			}
 			ped.put("val_totalprod", "R$ " + df2.format(rs.getDouble("VAL_TOTALPROD")));
-
-			if (rs.getString("FLAG_PEDIDO_RET_ENTRE").equalsIgnoreCase("T")) {
-				ped.put("flag_status", Utilitario.returnStatusPedidoFlag(rs.getString("FLAG_STATUS")));
-			} else {
-				if (rs.getString("FLAG_STATUS").equalsIgnoreCase("E")) {
-					ped.put("flag_status", Utilitario.returnStatusPedidoFlag("S"));// se for do tipo local, retorna "em espera"
-				} else {
-					ped.put("flag_status", Utilitario.returnStatusPedidoFlag(rs.getString("FLAG_STATUS")));
-				}
-
-			}
-
+			ped.put("flag_status", Utilitario.returnStatusPedidoFlag(rs.getString("FLAG_STATUS"),rs.getString("FLAG_PEDIDO_RET_ENTRE")));
+			
 			ped.put("flag_status2", (rs.getString("FLAG_STATUS")));
 
 			ped.put("tempo_entrega_max", rs.getTimestamp("TEMPO_ESTIMADO_DESEJADO") == null ? "" : new SimpleDateFormat("HH:mm").format(rs.getTimestamp("TEMPO_ESTIMADO_DESEJADO")));
@@ -1960,7 +1946,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 				}
 
 				if (produtos_semestq.size() != 0) {
-					text_recusa =text_recusa +  "Produtos insuficientes ou em falta no estoque: \n";
+					text_recusa = text_recusa + "Produtos insuficientes ou em falta no estoque: \n";
 					for (int i = 0; i < produtos_semestq.size(); i++) {
 						JSONObject obj = (JSONObject) produtos_semestq.get(i);
 						try {
@@ -2051,8 +2037,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 			st2 = conn.prepareStatement(sql2.toString());
 			st2.setLong(1, Long.parseLong(id_pedido));
 			rs2 = st2.executeQuery();
-			
-			
+
 			while (rs2.next()) {
 				if (rs2.getString("ativo1").equalsIgnoreCase("S") && rs2.getString("ativo2").equalsIgnoreCase("S")) {
 
@@ -2060,14 +2045,14 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 						if (rs2.getInt("RECUSADO_DISPONIVEL") > 0) {
 							addCarrinho(request, response, conn, cod_usuario, rs2.getString("ID_PROD_DIST"), rs2.getString("RECUSADO_DISPONIVEL"), rs.getString("cod_bairro"), rs.getString("FLAG_PEDIDO_RET_ENTRE"), false);
 						} else {
-							prods = prods + rs2.getString("DESC_ABREVIADO") +" \n ";
+							prods = prods + rs2.getString("DESC_ABREVIADO") + " \n ";
 							prods_notadded = true;
 						}
 					} else {
 						addCarrinho(request, response, conn, cod_usuario, rs2.getString("ID_PROD_DIST"), rs2.getString("QTD_PROD"), rs.getString("cod_bairro"), rs.getString("FLAG_PEDIDO_RET_ENTRE"), false);
 					}
 				} else {
-					prods = prods + rs2.getString("DESC_ABREVIADO") +" \n";
+					prods = prods + rs2.getString("DESC_ABREVIADO") + " \n";
 					prods_notadded = true;
 				}
 			}

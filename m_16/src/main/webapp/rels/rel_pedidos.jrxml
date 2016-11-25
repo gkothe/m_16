@@ -2,7 +2,7 @@
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="rel_gradehorario" pageWidth="842" pageHeight="595" orientation="Landscape" whenNoDataType="AllSectionsNoDetail" columnWidth="802" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="4e56c072-32bc-4521-b4c2-2f64501d11e8">
 	<property name="ireport.zoom" value="1.6105100000000134"/>
 	<property name="ireport.x" value="0"/>
-	<property name="ireport.y" value="189"/>
+	<property name="ireport.y" value="192"/>
 	<subDataset name="PRODUTOS" uuid="8915ee26-d983-4741-84f8-37606df93cd9">
 		<property name="id_pedido" value="$F{id_pedido}"/>
 		<queryString language="SQL">
@@ -142,6 +142,7 @@ FROM   pedido
 	<field name="qtd_pedido" class="java.lang.Long">
 		<fieldDescription><![CDATA[]]></fieldDescription>
 	</field>
+	<field name="motivos_recusa" class="java.lang.String"/>
 	<variable name="variable1" class="java.lang.Integer" incrementType="Group" incrementGroup="A" calculation="Count">
 		<variableExpression><![CDATA[1]]></variableExpression>
 		<initialValueExpression><![CDATA[0]]></initialValueExpression>
@@ -323,6 +324,32 @@ FROM   pedido
 		</groupHeader>
 		<groupFooter>
 			<band/>
+		</groupFooter>
+	</group>
+	<group name="motvios_recusado">
+		<groupExpression><![CDATA[$F{id_pedido}]]></groupExpression>
+		<groupHeader>
+			<band/>
+		</groupHeader>
+		<groupFooter>
+			<band height="43">
+				<printWhenExpression><![CDATA[$F{flag_status}.equalsIgnoreCase("R") && $P{show_info}]]></printWhenExpression>
+				<staticText>
+					<reportElement x="0" y="0" width="799" height="15" uuid="031e9e81-c13f-472d-a48e-22ff136ccac9"/>
+					<box rightPadding="2"/>
+					<textElement textAlignment="Center">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Motivos da recusa]]></text>
+				</staticText>
+				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true">
+					<reportElement x="0" y="15" width="799" height="24" uuid="aff50f6b-0f94-45f4-ba67-fa97da40695c"/>
+					<textElement textAlignment="Center">
+						<font size="8"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{motivos_recusa}]]></textFieldExpression>
+				</textField>
+			</band>
 		</groupFooter>
 	</group>
 	<group name="Produtos" keepTogether="true">
@@ -618,7 +645,7 @@ FROM   pedido
 					</textElement>
 					<textFieldExpression><![CDATA[$F{data_cancelamento}]]></textFieldExpression>
 				</textField>
-				<textField isStretchWithOverflow="true" pattern="dd/MM/yyyy HH:mm" isBlankWhenNull="true">
+				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true">
 					<reportElement x="342" y="20" width="457" height="15" uuid="f88b515b-6747-4764-9bbd-670400790cde"/>
 					<textElement textAlignment="Center">
 						<font size="8"/>

@@ -723,6 +723,9 @@ function visualizarPedido(id) {
 			}
 			$("#flag_tipoentrega_pedatual").val(data.flag_modoentrega);
 			$("#m_flag_pedido_ret_entre").val(data.tipo_servico);
+			$("#m_modo_pagamento").html(data.FLAG_MODOPAGAMENTO);
+			
+			
 			if (data.num_trocopara != undefined) {
 				$("#m_troco_para_div").show();
 				$("#m_troco_para").html(data.num_trocopara);
@@ -744,6 +747,14 @@ function visualizarPedido(id) {
 			$("#m_total_produtos").autoNumeric('set', data.VAL_TOTALPROD);
 			$("#m_data_pedido").html(data.data_pedido);
 			$("#m_id_pedido").val(data.ID_PEDIDO);
+			
+			if (data.tipo_servico == "T") {
+				$("#m_tempo_entrega_div").show();
+			} else {
+				$("#m_tempo_entrega_div").hide();
+			}
+
+			
 			var num_ped = data.num_ped;
 			if (data.flag_status == "A") {
 				$("#m_lbl_titulo").html("Pedido em aberto! Número: " + num_ped);
@@ -755,9 +766,10 @@ function visualizarPedido(id) {
 				$("#m_responder").show();
 				$("#m_finalizar").hide();
 
-				if (data.flag_modoentrega == 'A') {
-					$("#m_tempo_entrega_div").hide();
-				}
+//				if (data.flag_modoentrega == 'A') {
+//					$("#m_tempo_entrega_div").hide();
+//				}
+				$("#m_tempo_entrega_div").hide();
 
 			} else if (data.flag_status == "E") {
 				$("#m_lbl_titulo").css("color", "green");

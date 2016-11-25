@@ -542,6 +542,24 @@ input:focus {
 							</div>
 							<br>
 
+							<div class="row">
+
+								<div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+
+
+									<table>
+										<tr>
+											<td style="padding-right: 5px;"><label for="">Modo de pagamento: </label></td>
+											<td><label id=""> </label><label id="m_modo_pagamento"></label></td>
+
+										</tr>
+									</table>
+
+
+								</div>
+
+							</div>
+
 
 							<div class="row">
 
@@ -594,7 +612,7 @@ input:focus {
 								</div>
 
 								<div id='m_tempo_entrega_div'
-									class="col-xs-6 col-sm-6 col-md-6 col-lg-6 m_enviado"
+									class="col-xs-6 col-sm-6 col-md-6 col-lg-6"
 									align="left">
 
 									<table>

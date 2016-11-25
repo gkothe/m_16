@@ -129,9 +129,9 @@ public class Utilitario {
 		return new BigInteger(a, random).toString(b);
 	}
 
-	public static String returnStatusPedidoFlag(String flag) {
+	public static String returnStatusPedidoFlag(String flag, String serv) {
 
-		if (flag.equalsIgnoreCase("E")) {
+		if (flag.equalsIgnoreCase("E") && serv.equalsIgnoreCase("T")) {
 			return "Em envio";
 		} else if (flag.equalsIgnoreCase("R")) {
 			return "Recusado";
@@ -139,7 +139,7 @@ public class Utilitario {
 			return "Finalizado";
 		} else if (flag.equalsIgnoreCase("A")) {
 			return "Aberto";
-		} else if (flag.equalsIgnoreCase("S")) {
+		} else if (flag.equalsIgnoreCase("E") && serv.equalsIgnoreCase("L")) {
 			return "Em espera";
 		} else if (flag.equalsIgnoreCase("C")) {
 			return "Cancelado";
@@ -285,9 +285,9 @@ public class Utilitario {
 	public static String returnModoPagamento(String flag) {
 
 		if (flag.equalsIgnoreCase("D")) {
-			return "Dinhero";
+			return "Dinheiro";
 		} else if (flag.equalsIgnoreCase("C")) {
-			return "Cartão";
+			return "Cartão Créd.";
 		} else if (flag.equalsIgnoreCase("A")) {
 			return "Ambos";
 		} else if (flag.equalsIgnoreCase("")) {
