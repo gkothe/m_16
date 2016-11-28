@@ -349,6 +349,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 		PrintWriter out = response.getWriter();
 
 		String datayar = request.getParameter("datayar") == null ? "" : request.getParameter("datayar");
+		String codbairro = request.getParameter("codbairro") == null ? "" : request.getParameter("codbairro");
 
 		try {
 			new SimpleDateFormat("dd/MM/yyyy").parse(datayar);
@@ -401,7 +402,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 			}
 
 			st = conn.prepareStatement(varname11.toString());
-			st.setLong(1, rs.getInt("cod_bairro"));
+			st.setLong(1, Integer.parseInt(codbairro));
 			st.setLong(2, rs.getInt("id_distribuidora"));
 			st.setLong(3, dayOfWeek);
 			ResultSet rs2 = st.executeQuery();
@@ -416,6 +417,8 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 			}
 
 			objRetorno.put("txt_texto", text);
+		}else{
+			objRetorno.put("txt_texto", "");
 		}
 
 		objRetorno.put("msg", "ok");
@@ -721,7 +724,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 
 	}
 
-	private static void saveLocationUser(HttpServletRequest request, HttpServletResponse response, Connection conn, long cod_usuario) throws Exception {
+	private static void saveLocationUser(HttpServletRequest request, HttpServletResponse response, Connection conn, long cod_usuario) throws Exception {// é mais uma validação do que save de fato.
 
 		PrintWriter out = response.getWriter();
 
@@ -762,22 +765,15 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 			}
 		}
 
-		StringBuffer sql2 = new StringBuffer();
-		sql2.append("UPDATE usuario ");
+		StringBuffer sql2 = new StringBuffer();// acho que nao precisaria salvar a cidade, mas agora é indiferente.
+		sql2.append("UPDATE usuario ");// antigamentente aqui se salvava o bairro, mas agora o bairro no usuario nao muda, a nao ser que ele qeira. Se futuramente mudar o esqema de cidade, vai ter q ser parecido com bioarro
 		sql2.append("   SET  ");
-		if (servico.equalsIgnoreCase("T")) {
-			// sql2.append(" `COD_BAIRRO` = ?, ");
-		}
+
 		sql2.append("       `COD_CIDADE` = ? ");
 		sql2.append("WHERE  `ID_USUARIO` = ?;");
 
 		st = conn.prepareStatement(sql2.toString());
 		int contparam = 1;
-
-		if (servico.equalsIgnoreCase("T")) {
-			// st.setLong(contparam, Long.parseLong(codbairro));
-			// contparam++;
-		}
 
 		st.setLong(contparam, Long.parseLong(codcidade));
 		contparam++;
@@ -1136,7 +1132,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 			codcidade = rs.getInt("cod_cidade");
 		}
 
-		if (codcidade == 0) {
+		if (codcidade == 0) {// aqui estamos conisderando que o sistema vai ter um banco por cidade. //TODO
 			codcidade = sys.getCod_cidade();
 		}
 
@@ -1865,8 +1861,8 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 				ped.put("data_pedidoresp", "Não respondido.");
 			}
 			ped.put("val_totalprod", "R$ " + df2.format(rs.getDouble("VAL_TOTALPROD")));
-			ped.put("flag_status", Utilitario.returnStatusPedidoFlag(rs.getString("FLAG_STATUS"),rs.getString("FLAG_PEDIDO_RET_ENTRE")));
-			
+			ped.put("flag_status", Utilitario.returnStatusPedidoFlag(rs.getString("FLAG_STATUS"), rs.getString("FLAG_PEDIDO_RET_ENTRE")));
+
 			ped.put("flag_status2", (rs.getString("FLAG_STATUS")));
 
 			ped.put("tempo_entrega_max", rs.getTimestamp("TEMPO_ESTIMADO_DESEJADO") == null ? "" : new SimpleDateFormat("HH:mm").format(rs.getTimestamp("TEMPO_ESTIMADO_DESEJADO")));
@@ -2151,31 +2147,38 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 
 			carrinho.put("produtos", carrinhoitem);
 
-			sql = new StringBuffer();
-			sql.append(" select * from usuario ");
-			sql.append(" where id_usuario = ? ");
+			try {
 
-			st = conn.prepareStatement(sql.toString());
-			st.setLong(1, (cod_usuario));
+				sql = new StringBuffer();
+				sql.append(" select * from usuario ");
+				sql.append(" where id_usuario = ? ");
 
-			rs = st.executeQuery();
+				st = conn.prepareStatement(sql.toString());
+				st.setLong(1, (cod_usuario));
 
-			if (rs.next()) {
-				JSONObject obj = new JSONObject();
-				carrinho.put("desc_mail", rs.getString("DESC_EMAIL"));
-				carrinho.put("desc_endereco", rs.getString("DESC_ENDERECO"));
-				carrinho.put("desc_endereco_num", rs.getString("DESC_ENDERECO_NUM"));
-				carrinho.put("desc_endereco_complemento", rs.getString("DESC_ENDERECO_COMPLEMENTO"));
-				carrinho.put("desc_cartao", rs.getString("DESC_CARTAO"));
-				carrinho.put("data_exp_mes", rs.getString("DATA_EXP_MES"));
-				carrinho.put("data_exp_ano", rs.getString("DATA_EXP_ANO"));
-				carrinho.put("desc_cardholdername", rs.getString("DESC_CARDHOLDERNAME"));
-				carrinho.put("pay_id", rs.getString("PAY_ID"));
-				carrinho.put("desc_cpf", rs.getString("DESC_CPF"));
+				rs = st.executeQuery();
 
-				carrinho.put("seccode", "");
-				carrinho.put("doctype", "CPF");
+				if (rs.next()) {
+					JSONObject obj = new JSONObject();
+					if (Integer.parseInt(cod_bairro) == rs.getInt("cod_bairro")) {
+						// carrinho.put("desc_mail", rs.getString("DESC_EMAIL"));
+						carrinho.put("desc_endereco", rs.getString("DESC_ENDERECO"));
+						carrinho.put("desc_endereco_num", rs.getString("DESC_ENDERECO_NUM"));
+						carrinho.put("desc_endereco_complemento", rs.getString("DESC_ENDERECO_COMPLEMENTO"));
+						// carrinho.put("desc_cartao", rs.getString("DESC_CARTAO"));
+						// carrinho.put("data_exp_mes", rs.getString("DATA_EXP_MES"));
+						// carrinho.put("data_exp_ano", rs.getString("DATA_EXP_ANO"));
+						// carrinho.put("desc_cardholdername", rs.getString("DESC_CARDHOLDERNAME"));
+						// carrinho.put("pay_id", rs.getString("PAY_ID"));
+						// carrinho.put("desc_cpf", rs.getString("DESC_CPF"));
 
+						carrinho.put("seccode", "");
+					}
+
+				}
+
+			} catch (Exception e) {
+				// TODO: handle exception
 			}
 
 		} else {
@@ -2199,9 +2202,9 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 		String descender = request.getParameter("descender") == null ? "" : request.getParameter("descender"); // precisa receber
 
 		StringBuffer sql = new StringBuffer();
-		sql.append(" select DESC_ENDERECO_ENTREGA,DESC_ENDERECO_NUM_ENTREGA,DESC_ENDERECO_COMPLEMENTO_ENTREGA from pedido");
+		sql.append(" select DESC_ENDERECO_ENTREGA,DESC_ENDERECO_NUM_ENTREGA,DESC_ENDERECO_COMPLEMENTO_ENTREGA,cod_bairro from pedido");
 		sql.append(" where id_usuario = ?  and   (CONCAT(Coalesce(DESC_ENDERECO_ENTREGA,''),Coalesce(DESC_ENDERECO_NUM_ENTREGA,''),Coalesce(DESC_ENDERECO_COMPLEMENTO_ENTREGA,''))  like ? )");
-		sql.append(" group by DESC_ENDERECO_ENTREGA,DESC_ENDERECO_NUM_ENTREGA,DESC_ENDERECO_COMPLEMENTO_ENTREGA  order by DESC_ENDERECO_ENTREGA ");
+		sql.append(" group by DESC_ENDERECO_ENTREGA,DESC_ENDERECO_NUM_ENTREGA,DESC_ENDERECO_COMPLEMENTO_ENTREGA,cod_bairro  order by DESC_ENDERECO_ENTREGA ");
 
 		PreparedStatement st = conn.prepareStatement(sql.toString());
 		st.setLong(1, (cod_usuario));
@@ -2222,6 +2225,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 				obj.put("desc_endereco_entrega", rs.getString("DESC_ENDERECO_ENTREGA") == null ? "" : rs.getString("DESC_ENDERECO_ENTREGA"));
 				obj.put("desc_endereco_num_entrega", rs.getString("DESC_ENDERECO_NUM_ENTREGA") == null ? "" : rs.getString("DESC_ENDERECO_NUM_ENTREGA"));
 				obj.put("desc_endereco_complemento_entrega", rs.getString("DESC_ENDERECO_COMPLEMENTO_ENTREGA") == null ? "" : rs.getString("DESC_ENDERECO_COMPLEMENTO_ENTREGA"));
+				obj.put("cod_bairro", rs.getString("cod_bairro"));
 
 				enderecos.add(obj);
 			}
@@ -2279,6 +2283,10 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 		int id_distribuidora_prod = 0;
 		double valunit = 0;
 
+		if (!choiceserv.equals("T") && !choiceserv.equals("L")) {
+			throw new Exception("Tipo de serviço inválido.");
+		}
+		
 		if (!choiceserv.equalsIgnoreCase("L")) {
 
 			if (!Utilitario.isNumeric(cod_bairro)) {
@@ -2579,11 +2587,11 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 			ResultSet rs = st.executeQuery();
 			if (rs.next()) {
 				if (!rs.getString("FLAG_ATIVO").equalsIgnoreCase("S")) {
-					throw new Exception("Distribuidora está offline no momento.");
+					throw new Exception("Distribuidora que se encontra no seu carrinho está offline no momento.");
 				}
 
 				if (!rs.getString("FLAG_ATIVO_MASTER").equalsIgnoreCase("S")) {
-					throw new Exception("Distribuidora está desativada.");
+					throw new Exception("Distribuidora que se encontra no seu carrinho está desativada.");
 				}
 
 				return rs.getDouble("VAL_ENTREGA_MIN");// aproveitei pra trazer o valor junto, pra nao precisar faze otra função e consulta
@@ -2731,14 +2739,22 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 	}
 
 	private static void testesMudaBairroCarrinho(HttpServletRequest request, HttpServletResponse response, Connection conn, long cod_usuario) throws Exception {
-		PrintWriter out = response.getWriter();
-		JSONObject retorno = new JSONObject();
 
 		String novobairro = request.getParameter("novobairro") == null ? "" : request.getParameter("novobairro");
 		String choiceserv = request.getParameter("choiceserv") == null ? "" : request.getParameter("choiceserv");
 
-		if (!choiceserv.equals("T") && !choiceserv.equals("L")) {
-			throw new Exception("Tipo de serviço inválido.");
+		testesMudaBairroCarrinho(request, response, conn, cod_usuario, novobairro, choiceserv, true);
+
+	}
+
+	private static void testesMudaBairroCarrinho(HttpServletRequest request, HttpServletResponse response, Connection conn, long cod_usuario, String novobairro, String choiceserv, boolean outprint) throws Exception {
+		PrintWriter out = response.getWriter();
+		JSONObject retorno = new JSONObject();
+
+		if (choiceserv.equals("L")) {
+
+			// if (!choiceserv.equals("T") && !choiceserv.equals("L")) {
+			throw new Exception("Tipo de serviço inválido. Teste.");
 		}
 
 		if (novobairro.equalsIgnoreCase("") || !Utilitario.isNumeric(novobairro)) {
@@ -2841,8 +2857,8 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 			}
 		}
 		retorno.put("msg", "ok");
-
-		out.print(retorno.toJSONString());
+		if (outprint)
+			out.print(retorno.toJSONString());
 
 	}
 
@@ -2860,6 +2876,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 		String modoentrega = request.getParameter("modoentrega") == null ? "" : request.getParameter("modoentrega");
 		String dataagendamento = request.getParameter("dataagendamento") == null ? "" : request.getParameter("dataagendamento");
 		String dataagendamentohora = request.getParameter("dataagendamentohora") == null ? "" : request.getParameter("dataagendamentohora");
+		String bairro = request.getParameter("bairro") == null ? "" : request.getParameter("bairro");
 
 		if (!choiceserv.equals("T") && !choiceserv.equals("L")) {
 			throw new Exception("Tipo de serviço inválido.");
@@ -2881,6 +2898,8 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 			Utilitario.testeHora("HHmm", tempomax, "Tempo de entrega inválidos!");
 
 		}
+
+		testesMudaBairroCarrinho(request, response, conn, cod_usuario, bairro, choiceserv, false);
 
 		long idcarrinho = 0;
 
@@ -2997,7 +3016,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 					if (modoentrega.equalsIgnoreCase("A") || modoentrega.equalsIgnoreCase("T")) {
 						st.setString(19, modoentrega);
 					} else {
-						throw new Exception("Modo de entrega inválido!");
+						throw new Exception("Modo de entrega não foi selecionado!");
 					}
 				} else {
 					st.setNull(19, java.sql.Types.VARCHAR);
@@ -3012,7 +3031,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 					}
 
 					if (new SimpleDateFormat("dd/MM/yyyyHHmm").parse(dataagendamento + dataagendamentohora).before(new Date())) {
-						throw new Exception("O horario de agendamento é ao horario atual.");
+						throw new Exception("O horario de agendamento é anterior ao horario atual.");
 					}
 
 					StringBuffer varname11 = new StringBuffer();
