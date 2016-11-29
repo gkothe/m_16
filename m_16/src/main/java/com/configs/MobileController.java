@@ -2587,7 +2587,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 			ResultSet rs = st.executeQuery();
 			if (rs.next()) {
 				if (!rs.getString("FLAG_ATIVO").equalsIgnoreCase("S")) {
-					throw new Exception("Distribuidora que se encontra no seu carrinho está offline no momento.");
+					throw new Exception("Distribuidora que se encontra no seu carrinho está offline no momento. Limpe seu carrinho primeiramente para proceder.");
 				}
 
 				if (!rs.getString("FLAG_ATIVO_MASTER").equalsIgnoreCase("S")) {
