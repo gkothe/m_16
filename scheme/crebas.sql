@@ -1,6 +1,6 @@
 /*==============================================================*/
 /* DBMS name:      MySQL 5.0                                    */
-/* Created on:     24/11/2016 9:35:30 AM                        */
+/* Created on:     30/11/2016 4:17:29 PM                        */
 /*==============================================================*/
 
 
@@ -227,6 +227,9 @@ create table PEDIDO
    NUM_TROCOPARA        numeric(12,2),
    DATA_AGENDA_ENTREGA  datetime,
    FLAG_MODOENTREGA     char(1),
+   FLAG_NOT_FINAL       char(1) default 'N',
+   FLAG_NOT_FINAL_AVISA_LOJA char(1) default 'N',
+   FLAG_RESPOSTA_USUARIO char(1),
    primary key (ID_PEDIDO)
 )
 auto_increment = 1;
@@ -326,11 +329,13 @@ create table SYS_PARAMETROS
    SYS_FROMDESC         text,
    SYS_TLS              char(1),
    PED_HORASOKEY        int,
+   NUM_MINUTOS_NOT_FINAL int,
    NUM_TEMPOMAXCANC_MINUTO int,
    COD_RECUSA           int,
    ONESIGNAL_KEY        text,
    ONESIGNAL_APPID      text,
-   ONESIGNAL_URL        text
+   ONESIGNAL_URL        text,
+   NUM_SEGS_NOT_FINAL_EXEC int
 );
 
 /*==============================================================*/

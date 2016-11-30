@@ -77,7 +77,7 @@ public class Pedidos_ajax {
 
 		String temfiltro = "N";
 
-		String sql = "select * from pedido left join bairros on bairros.cod_bairro = pedido.cod_bairro left join pedido_motivo_cancelamento on pedido_motivo_cancelamento.id_pedido = pedido.id_pedido  where ID_DISTRIBUIDORA = ? and (flag_status = 'A' or flag_status = 'E' or (flag_status = 'C' and FLAG_CONFIRMADO_DISTRIBUIDORA = 'N' ) )  ";
+		String sql = "select   * , Addtime(COALESCE(data_agenda_entrega, data_pedido),tempo_estimado_desejado) AS tempoteste  from pedido left join bairros on bairros.cod_bairro = pedido.cod_bairro left join pedido_motivo_cancelamento on pedido_motivo_cancelamento.id_pedido = pedido.id_pedido  where ID_DISTRIBUIDORA = ? and (flag_status = 'A' or flag_status = 'E' or (flag_status = 'C' and FLAG_CONFIRMADO_DISTRIBUIDORA = 'N' ) )  ";
 
 		if (!num_pedido_aberto.equalsIgnoreCase("")) {
 			sql = sql + " and NUM_PED  = ? ";
@@ -241,6 +241,16 @@ public class Pedidos_ajax {
 			objRetorno.put("VAL_TOTALPROD", rs.getString("VAL_TOTALPROD"));
 
 			objRetorno.put("ID_PEDIDO", rs.getString("ID_PEDIDO"));
+
+			objRetorno.put("atrasado", false);
+			if (rs.getString("flag_resposta_usuario") != null && rs.getString("flag_resposta_usuario").equalsIgnoreCase("N") && rs.getString("FLAG_PEDIDO_RET_ENTRE").equalsIgnoreCase("T")) {
+
+				Calendar data6 = Calendar.getInstance();
+				data6.setTime(rs.getTimestamp("tempoteste"));
+				if (data6.getTime().before(new Date())) {
+					objRetorno.put("atrasado", true);
+				}
+			}
 
 			if (rs.getString("FLAG_VIZUALIZADO_CANC") != null && !rs.getString("FLAG_VIZUALIZADO_CANC").equalsIgnoreCase("")) {
 				if (rs.getString("FLAG_VIZUALIZADO_CANC").equalsIgnoreCase("N")) {
@@ -840,7 +850,7 @@ public class Pedidos_ajax {
 			throw new Exception("Pedido inválido! Entre em contato com o suporte");
 		} else {
 
-			sql = " update  pedido  set flag_status = 'O' where id_pedido = ? and ID_USUARIO = ?  ";
+			sql = " update  pedido  set flag_status = 'O' , flag_resposta_usuario = 'S'  where id_pedido = ? and ID_USUARIO = ?  ";
 			st = conn.prepareStatement(sql);
 			st.setInt(1, Integer.parseInt(id_pedido));
 			st.setLong(2, idusario);

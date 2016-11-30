@@ -108,15 +108,15 @@
 						<tr>
 							<th data-visible="false" data-field="ID_PEDIDO"></th>
 							<th data-field="NUM_PED" data-width="7%" data-sortable="true"
-								data-align="center">Número</th>
+								data-formatter="atrasadoFormater" data-align="center">Número</th>
 							<th data-field="DESCPROD" data-width="30%"
 								data-formatter="qtdProdFormatter" data-align="left">Produto</th>
 							<th data-field="data_formatada" data-width="20%"
-								data-sortable="true" data-align="center">Data</th>
+								data-formatter="atrasadoFormater" data-sortable="true" data-align="center">Data</th>
 							<th data-field="DESC_BAIRRO" data-width="15%"
-								data-sortable="true" data-align="center">Bairro/Serviço</th>
+								data-formatter="atrasadoFormater" data-sortable="true" data-align="center">Bairro/Serviço</th>
 							<th data-field="VAL_TOTALPROD" data-width="15%"
-								data-align="right" data-formatter="valorFormater"
+								data-align="right" data-formatter="valorFormater_aberto"
 								data-sortable="true">Valor</th>
 							<th data-field="flag_visu" data-formatter="visuFormater"
 								data-width="5%" data-sortable="true" data-align="center">Visualizado</th>
@@ -124,6 +124,7 @@
 								data-width="5%" data-sortable="true" data-align="center">Situação</th>
 							<th data-sortable="false" data-width="10%" data-align="center"
 								data-formatter="btnFormater">Opções</th>
+							<th data-visible="false" data-field="atrasado"></th>
 						</tr>
 					</thead>
 					<tbody>

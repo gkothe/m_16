@@ -1,28 +1,5 @@
 
 
-Motivo distribuidora
-
-
-
-
-
-1	Falta de estoque
-2	Falta de motoboy
-3	Bairro não acessivel
-4   Outros
-
-
-
-
-
-Motivos de cancelamento    
-
-1	Distribuidora pediu para cancelar
-2   Demora na entrega
-4   Ninguém no local da entrega
-5   Falta de dinheiro
-3   Outros 
-
 
 1 notificação dps do tempo de entrega + 20 minutos.
 tela com sim e nao
@@ -34,9 +11,6 @@ se ele apertar não, a empresa recebe uma notificação que o usuario x nao rece
 
 
 
- 
- 
- 
  
  
  

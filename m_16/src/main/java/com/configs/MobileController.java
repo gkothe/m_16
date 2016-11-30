@@ -250,6 +250,8 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 					Pedidos_ajax.finalizandoPedidoMobile(request, response, conn, cod_usuario);
 				} else if (cmd.equalsIgnoreCase("duplicarPedido")) {
 					duplicarPedido(request, response, conn, cod_usuario, sys);
+				} else if (cmd.equalsIgnoreCase("pedidonaorecebido")) {
+					pedidoNaoRecebido(request, response, conn, cod_usuario, sys);
 				}
 
 				else {
@@ -417,7 +419,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 			}
 
 			objRetorno.put("txt_texto", text);
-		}else{
+		} else {
 			objRetorno.put("txt_texto", "");
 		}
 
@@ -1812,6 +1814,44 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 
 	}
 
+	private static void pedidoNaoRecebido(HttpServletRequest request, HttpServletResponse response, Connection conn, long cod_usuario, Sys_parametros sys) throws Exception {
+
+		PrintWriter out = response.getWriter();
+
+		JSONObject objRetorno = new JSONObject();
+
+		String id_pedido = request.getParameter("id_pedido") == null ? "" : request.getParameter("id_pedido");
+
+		if (!Utilitario.isNumeric(id_pedido)) {
+			throw new Exception("Pedido inválido!");
+		}
+
+		StringBuffer sql = new StringBuffer();
+		sql.append("SELECT * ");
+
+		sql.append(" FROM   pedido ");
+		sql.append(" WHERE  id_pedido = ? and flag_status = 'E' and FLAG_PEDIDO_RET_ENTRE = 'T' ");
+		sql.append("       AND id_usuario = ? ");
+
+		PreparedStatement st = conn.prepareStatement(sql.toString());
+		st.setLong(1, Long.parseLong(id_pedido));
+		st.setLong(2, (cod_usuario));
+		ResultSet rs = st.executeQuery();
+		if (!rs.next()) {
+			throw new Exception("Pedido inválido!");
+		}
+		
+		sql = new StringBuffer();
+		sql.append(" update pedido set  flag_not_final_avisa_loja = 'S'  , flag_resposta_usuario = 'N' where id_pedido = ? ");
+		st = conn.prepareStatement(sql.toString());
+		st.setLong(1, Long.parseLong(id_pedido));
+		st.executeUpdate();
+
+		objRetorno.put("msg", "ok");
+		out.print(objRetorno.toJSONString());
+
+	}
+
 	private static void carregaPedidoUnico(HttpServletRequest request, HttpServletResponse response, Connection conn, long cod_usuario, Sys_parametros sys) throws Exception {
 
 		PrintWriter out = response.getWriter();
@@ -1864,6 +1904,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 			ped.put("flag_status", Utilitario.returnStatusPedidoFlag(rs.getString("FLAG_STATUS"), rs.getString("FLAG_PEDIDO_RET_ENTRE")));
 
 			ped.put("flag_status2", (rs.getString("FLAG_STATUS")));
+			ped.put("flag_serv", (rs.getString("FLAG_PEDIDO_RET_ENTRE")));
 
 			ped.put("tempo_entrega_max", rs.getTimestamp("TEMPO_ESTIMADO_DESEJADO") == null ? "" : new SimpleDateFormat("HH:mm").format(rs.getTimestamp("TEMPO_ESTIMADO_DESEJADO")));
 
@@ -2286,7 +2327,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 		if (!choiceserv.equals("T") && !choiceserv.equals("L")) {
 			throw new Exception("Tipo de serviço inválido.");
 		}
-		
+
 		if (!choiceserv.equalsIgnoreCase("L")) {
 
 			if (!Utilitario.isNumeric(cod_bairro)) {

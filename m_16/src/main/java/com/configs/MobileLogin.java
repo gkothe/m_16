@@ -159,6 +159,7 @@ public class MobileLogin {
 			objRetorno.put("name", rs.getString("DESC_NOME").split(" ")[0]);
 			objRetorno.put("usrtype","user" );//
 			objRetorno.put("maioridade", rs.getString("maior18").equalsIgnoreCase("")?"N":rs.getString("maior18"));//
+			objRetorno.put("email", rs.getString("DESC_EMAIL"));//
 		} else {
 
 			JSONObject info = cadastrausuario(request, response, tokentest, conn, sys);
@@ -166,6 +167,7 @@ public class MobileLogin {
 			objRetorno.put("name", info.get("name").toString());
 			objRetorno.put("usrtype","user" );//
 			objRetorno.put("maioridade", "N");//
+			objRetorno.put("email", rs.getString("DESC_EMAIL"));//
 
 		}
 		objRetorno.put("msg", "ok");

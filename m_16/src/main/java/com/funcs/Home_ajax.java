@@ -143,6 +143,25 @@ public class Home_ajax {
 		}
 
 		objRetorno.put("pedidos", pedidos_todos);
+		
+		sql = "select * from pedido  where ID_DISTRIBUIDORA = ? and flag_not_final_avisa_loja = 'S' and flag_resposta_usuario = 'N'  ";
+		st = conn.prepareStatement(sql);
+		st.setInt(1, coddistr);
+		rs = st.executeQuery();
+		objRetorno.put("ped_naorec", false);
+
+		if (rs.next()) {
+			objRetorno.put("ped_naorec", true);
+			objRetorno.put("id_pedpop", rs.getString("id_pedido"));
+			objRetorno.put("num_pedpop", rs.getString("num_ped"));
+
+			sql = " UPDATE pedido  SET flag_not_final_avisa_loja = 'N'  where   id_pedido = " + rs.getString("id_pedido");
+
+			st = conn.prepareStatement(sql.toString());
+			st.executeUpdate();
+		}
+
+		
 
 		out.print(objRetorno.toJSONString());
 

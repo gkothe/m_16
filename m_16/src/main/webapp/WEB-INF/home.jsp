@@ -104,6 +104,14 @@ input:focus {
 
 
 }
+.ped_atrasado{
+min-width:100% !important;
+min-height:100% !important;
+width: 100% !important;
+height: 100% !important; 
+background-color: yellow;
+}
+
 
 </style>
 

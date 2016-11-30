@@ -29,6 +29,9 @@ public class Sys_parametros {
 	String onesignal_key = "";
 	String onesignal_url = "";
 	String onesignal_appid = "";
+	int num_minutos_not_final = 0;
+	int num_segs_not_final_exec = 0;
+	
 
 	public String getOnesignal_key() {
 		return onesignal_key;
@@ -40,6 +43,22 @@ public class Sys_parametros {
 
 	public String getOnesignal_url() {
 		return onesignal_url;
+	}
+
+	public int getNum_minutos_not_final() {
+		return num_minutos_not_final;
+	}
+
+	public void setNum_minutos_not_final(int num_minutos_not_final) {
+		this.num_minutos_not_final = num_minutos_not_final;
+	}
+
+	public int getNum_segs_not_final_exec() {
+		return num_segs_not_final_exec;
+	}
+
+	public void setNum_segs_not_final_exec(int num_segs_not_final_exec) {
+		this.num_segs_not_final_exec = num_segs_not_final_exec;
 	}
 
 	public void setOnesignal_url(String onesignal_url) {
@@ -245,6 +264,10 @@ public class Sys_parametros {
 				this.setOnesignal_key(rs.getString("onesignal_key"));
 				this.setOnesignal_url(rs.getString("onesignal_url"));
 				this.setOnesignal_appid(rs.getString("onesignal_appid"));
+				this.setNum_minutos_not_final(rs.getInt("num_minutos_not_final"));
+				this.setNum_segs_not_final_exec(rs.getInt("num_segs_not_final_exec"));
+				
+				
 			}
 
 		} catch (Exception e) {
