@@ -1,10 +1,10 @@
+Quando abre o pedido, ele mostra o tempo restante do tempo maximo desejado. Se o tempo extorou, ele mostra "tempo expirado".
 
+Quando está em envio, o que devemos mostrar?
+quando o tempo expirar, devemos recusar o pedido automaticamente?
+Botar um botao ao lado do tempo estimado de entrega para setar o tempo maximo possivel?
 
-
-1 notificação dps do tempo de entrega + 20 minutos.
-tela com sim e nao
-se marcar sim ,finaliza o pedido.Manda pra tela de pesquisa (mobile).
-se ele apertar não, a empresa recebe uma notificação que o usuario x nao recebeu o pedido. e pedido continua em aberto. Manda pra tela de pesquisa (mobile).  Na distribuidora, abre o dialog do pedido.
+questoes de tempo não sao consideradas em agendamento.
 
 
 

@@ -71,7 +71,7 @@ public class Thread_NotPedidoFim extends Thread {
 		varname1.append(" FROM   pedido ");
 		varname1.append("       INNER JOIN usuario ");
 		varname1.append("               ON usuario.id_usuario = pedido.id_usuario ");
-		varname1.append(" WHERE  flag_status = 'E' and FLAG_PEDIDO_RET_ENTRE = 'T'");
+		varname1.append(" WHERE  flag_status = 'E' and FLAG_PEDIDO_RET_ENTRE = 'T' ");//flag_resposta_usuario?
 		varname1.append("       AND flag_not_final = 'N'");
 		
 		try {
@@ -98,12 +98,12 @@ public class Thread_NotPedidoFim extends Thread {
 					
 					Utilitario.oneSginal(sys, rs.getString("mail"), "Você recebeu o pedido no endereço "+endfinal+"? Por favor nos informe!", data);
 
-					st = conn.prepareStatement("update pedido set FLAG_NOT_FINAL = 'S' where id_pedido = ? ");
+					st = conn.prepareStatement("update pedido set FLAG_NOT_FINAL = 'S'  where id_pedido = ? ");
 					st.setInt(1, rs.getInt("id_pedido"));
 					st.executeUpdate();
 				}
 
-			}
+			}   
 
 		} catch (Exception e) {
 			e.printStackTrace();

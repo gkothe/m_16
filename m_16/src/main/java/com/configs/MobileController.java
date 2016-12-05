@@ -252,6 +252,8 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 					duplicarPedido(request, response, conn, cod_usuario, sys);
 				} else if (cmd.equalsIgnoreCase("pedidonaorecebido")) {
 					pedidoNaoRecebido(request, response, conn, cod_usuario, sys);
+				} else if (cmd.equalsIgnoreCase("loadFreteBairro")) {
+					loadFreteBairro(request, response, conn, cod_usuario);
 				}
 
 				else {
@@ -990,7 +992,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 					throw new Exception("Este pedido já foi recusado.");
 				}
 
-				if (statuspedido.equalsIgnoreCase("E") || statuspedido.equalsIgnoreCase("S")) {
+				if (statuspedido.equalsIgnoreCase("E")) {// se for em envio/em local
 
 					Calendar data6 = Calendar.getInstance();
 					data6.setTime(rs.getTimestamp("tempocanc"));
@@ -1048,7 +1050,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 
 					}
 
-					if (rs.getString("FLAG_MODOPAGAMENTO").equalsIgnoreCase("C")) {// cancelamento em pagamento por cartao.
+					if (rs.getString("FLAG_MODOPAGAMENTO").equalsIgnoreCase("C")) {// cancelamento em pagamento por cartao. poreqnto mesma coisa q o dinheiro
 						// TODO como sera feito os refunds?
 						sql = new StringBuffer();
 						sql.append(" INSERT INTO pedido_motivo_cancelamento ");
@@ -1827,7 +1829,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 		}
 
 		StringBuffer sql = new StringBuffer();
-		sql.append("SELECT * ");
+		sql.append("SELECT  * , ADDTIME(DATA_PEDIDO, TEMPO_ESTIMADO_DESEJADO) as tempocanc ");
 
 		sql.append(" FROM   pedido ");
 		sql.append(" WHERE  id_pedido = ? and flag_status = 'E' and FLAG_PEDIDO_RET_ENTRE = 'T' ");
@@ -1838,9 +1840,18 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 		st.setLong(2, (cod_usuario));
 		ResultSet rs = st.executeQuery();
 		if (!rs.next()) {
+
 			throw new Exception("Pedido inválido!");
+		} else {
+			Calendar data6 = Calendar.getInstance();
+			data6.setTime(rs.getTimestamp("tempocanc"));
+
+			if (data6.getTime().after(new Date())) {
+				throw new Exception("Você deve esperar o tempo maximo de entrega desejado para informar que não recebeu seu pedido.");
+			}
+
 		}
-		
+
 		sql = new StringBuffer();
 		sql.append(" update pedido set  flag_not_final_avisa_loja = 'S'  , flag_resposta_usuario = 'N' where id_pedido = ? ");
 		st = conn.prepareStatement(sql.toString());
@@ -2903,6 +2914,64 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 
 	}
 
+	private static void loadFreteBairro(HttpServletRequest request, HttpServletResponse response, Connection conn, long cod_usuario) throws Exception {
+		PrintWriter out = response.getWriter();
+		JSONObject retorno = new JSONObject();
+		String bairro = request.getParameter("codbairro") == null ? "" : request.getParameter("codbairro");
+		retorno.put("val_entrega", 0 );
+		if (!bairro.equalsIgnoreCase("")) {
+
+			StringBuffer varname1 = new StringBuffer();
+			varname1.append("SELECT distribuidora.id_distribuidora ");
+			varname1.append("FROM   carrinho ");
+			varname1.append("       INNER JOIN carrinho_item ");
+			varname1.append("               ON carrinho_item.id_carrinho = carrinho.id_carrinho ");
+			varname1.append("       INNER JOIN produtos_distribuidora ");
+			varname1.append("               ON produtos_distribuidora.id_prod_dist = ");
+			varname1.append("                  carrinho_item.id_prod_dist ");
+			varname1.append("       INNER JOIN produtos ");
+			varname1.append("               ON produtos_distribuidora.id_prod = produtos.id_prod ");
+			varname1.append("       INNER JOIN distribuidora ");
+			varname1.append("               ON distribuidora.id_distribuidora = ");
+			varname1.append("                  produtos_distribuidora.id_distribuidora");
+			varname1.append(" where carrinho.id_usuario = ? ");
+
+			PreparedStatement st = conn.prepareStatement(varname1.toString());
+
+			st.setLong(1, (cod_usuario));
+			ResultSet rs = st.executeQuery();
+			int dits = 0;
+			if (rs.next()) {
+				dits = rs.getInt("id_distribuidora");
+			}
+
+			varname1 = new StringBuffer();
+			varname1.append("SELECT CASE ");
+			varname1.append("         WHEN flag_telebairro = 'S' THEN ");
+			varname1.append("         distribuidora_bairro_entrega.val_tele_entrega ");
+			varname1.append("         ELSE distribuidora.val_tele_entrega ");
+			varname1.append("       END AS VAL_TELE_ENTREGA ");
+			varname1.append("FROM   distribuidora ");
+			varname1.append("       LEFT JOIN distribuidora_bairro_entrega ");
+			varname1.append("              ON distribuidora_bairro_entrega.id_distribuidora = ");
+			varname1.append("                 distribuidora.id_distribuidora ");
+			varname1.append("WHERE  distribuidora_bairro_entrega.cod_bairro = ? ");
+			varname1.append("       AND distribuidora.id_distribuidora = ? ");
+			varname1.append("GROUP  BY val_tele_entrega");
+
+			st = conn.prepareStatement(varname1.toString());
+			st.setLong(1, Integer.parseInt((bairro)));
+			st.setLong(2, (dits));
+
+			rs = st.executeQuery();
+			if (rs.next()) {
+				retorno.put("val_entrega", rs.getDouble("VAL_TELE_ENTREGA"));
+			}
+		}
+		retorno.put("msg", "ok");
+		out.print(retorno.toJSONString());
+	}
+
 	private static void criarPedido(HttpServletRequest request, HttpServletResponse response, Connection conn, long cod_usuario) throws Exception {
 		PrintWriter out = response.getWriter();
 		JSONObject retorno = new JSONObject();
@@ -3072,7 +3141,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 					}
 
 					if (new SimpleDateFormat("dd/MM/yyyyHHmm").parse(dataagendamento + dataagendamentohora).before(new Date())) {
-						throw new Exception("O horario de agendamento é anterior ao horario atual.");
+						throw new Exception("O horario de agendamento é anterior ao horário atual.");
 					}
 
 					StringBuffer varname11 = new StringBuffer();
@@ -3100,7 +3169,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 					st3.setString(4, dataagendamentohora.substring(0, 1) + dataagendamentohora.substring(1, 2) + ":" + dataagendamentohora.substring(2, 3) + dataagendamentohora.substring(3, 4));
 					ResultSet rs3 = st3.executeQuery();
 					if (!rs3.next()) {
-						throw new Exception("A distribuidora não atende neste horário.");
+						throw new Exception("A loja não atende neste horário.");
 					}
 
 					st.setTimestamp(20, Utilitario.getTimeStamp(new SimpleDateFormat("dd/MM/yyyyHHmm").parse(dataagendamento + dataagendamentohora)));
@@ -3287,7 +3356,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 		try {
 			conn = Conexao.getConexao();
 
-			Utilitario.retornaIdinsertChaveSecundaria("pedido_item", "id_pedido", "5", "seq_item", conn);
+			// Utilitario.retornaIdinsertChaveSecundaria("pedido_item", "id_pedido", "5", "seq_item", conn);
 			/*
 			 * SecretKey secretKey = KeyGenerator.getInstance("AES").generateKey(); // get base64 encoded version of the key String encodedKey = Base64.getEncoder().encodeToString(secretKey.getEncoded());
 			 * 

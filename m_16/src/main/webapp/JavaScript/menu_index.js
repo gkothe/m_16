@@ -82,7 +82,7 @@ function sysMsg(text, tipo) {
 
 }
 
-function trocaPag(pag, jsp, e) {
+function trocaPag(pag, jsp, e, extraparam) {
 
 	var link = $(pag).attr('linkmenu');
 	var men = "";
@@ -92,10 +92,14 @@ function trocaPag(pag, jsp, e) {
 		men = "s"
 	}
 
+	if (extraparam == undefined) {
+		extraparam = "";
+	}
+
 	if (e && (e.which == 2 || e.button == 4)) {
-		window.open("home?link=" + link + "&jsp=" + jsp + "&m=" + men, '_blank');
+		window.open("home?link=" + link + "&jsp=" + jsp + "&m=" + men + "&extra=" + extraparam, '_blank');
 	} else {
-		document.location.href = "home?link=" + link + "&jsp=" + jsp + "&m=" + men;
+		document.location.href = "home?link=" + link + "&jsp=" + jsp + "&m=" + men + "&extra=" + extraparam;
 	}
 
 }
@@ -410,6 +414,10 @@ function checarPedidos() {
 				showPop(data.id_pedpop, data.num_pedpop);
 			}
 
+			if (data.ped_naorec == true) {
+				showPop2(data.id_pedpop, data.num_pedpop);
+			}
+
 		},
 		error : function(data) {
 			changeTitle(false, "");
@@ -460,6 +468,41 @@ function showPop(id, num_pedpop) {
 	$('#modalcanc_id_' + id + '_' + random).modal('show');
 
 	$("#btn_vizu_" + random).click(function() {
+		visualizarPedido($(this).attr('idped'));
+	});
+
+}
+
+function showPop2(id, num_pedpop) {
+	random++;
+	var html = '<div id="modalatrasado_id_' + id + '_' + random + '" class="modal fade" tabindex="-1" role="dialog">';
+	html = html + '<div class="modal-dialog" role="document">';
+	html = html + '	<div class="modal-content">';
+	html = html + '		<div class="modal-header">';
+	html = html + '			<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>';
+	html = html + '			<h4 style="color:red" class="modal-title">Pedido Número: ' + num_pedpop + ' ainda não foi entregue!</h4>';
+	html = html + '		</div>';
+	html = html + '		<div class="modal-body">';
+	html = html + '		   <div class="row">	';
+	html = html + '			   <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12" align="center">	';
+	html = html + '					<p>Atenção! O cliente informou que o pedido ' + num_pedpop + ' ainda não foi entregue!. <br> Clique em visualizar para conferir as informações do pedido. <br> Na listagem de pedidos, o pedido está destacado com uma linha amarela. </p>';
+	html = html + '		      </div>';
+	html = html + '		  </div>';
+	html = html + '		</div>';
+	html = html + '      <div class="modal-footer">';
+	html = html + '		   <div class="row">	';
+	html = html + '			   <div class="col-xs-3 col-sm-3 col-md-3 col-lg-3" align="left"> <button type="button" class="btn btn-primary" data-dismiss="modal">Fechar</button>	</div>';
+	html = html + '		       <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6 ">   </div> ';
+	html = html + '		       <div class="col-xs-3 col-sm-3 col-md-3 col-lg-3 " align="right"><button type="button" idped=' + id + '  id="btn_vizuatraso_' + random + '" class="btn btn-primary" data-dismiss="modal">Visualizar</button> </div>';
+	html = html + '        </div>';
+	html = html + '	</div>';
+	html = html + '</div>';
+	html = html + '</div>';
+
+	$("#modal_atrasados").append(html);
+	$('#modalatrasado_id_' + id + '_' + random).modal('show');
+
+	$("#btn_vizuatraso_" + random).click(function() {
 		visualizarPedido($(this).attr('idped'));
 	});
 
@@ -852,75 +895,70 @@ function visualizarPedido(id) {
 
 function finalizarPedido() {
 
+	BootstrapDialog.show({
+		message : "Tem certeza que deseja finalizar este pedido? Ele podera ser consultado futuramente na tela de histórico de pedidos.",
+		title : "Aviso!",
+		buttons : [ {
+			label : 'Não',
+			// no title as it is optional
+			cssClass : 'btn-primary first_btn_confirm',
+			action : function(dialogItself) {
+				dialogItself.close();
+			}
+		}, {
+			label : 'Sim',
+			// no title as it is optional
+			cssClass : 'btn-primary',
+			action : function(dialogItself) {
+				dialogItself.close();
+				$.blockUI({
+					message : 'Finalizando...'
+				});
 
-		
-		BootstrapDialog.show({
-			message : "Tem certeza que deseja finalizar este pedido? Ele podera ser consultado futuramente na tela de histórico de pedidos.",
-			title : "Aviso!",
-			buttons : [ {
-				label : 'Não',
-				// no title as it is optional
-				cssClass : 'btn-primary first_btn_confirm',
-				action : function(dialogItself) {
-					dialogItself.close();
-				}
-			}, {
-				label : 'Sim',
-				// no title as it is optional
-				cssClass : 'btn-primary',
-				action : function(dialogItself) {
-					dialogItself.close();
-					$.blockUI({
-						message : 'Finalizando...'
-					});
+				var id_pedido = $("#m_id_pedido").val();
 
-					var id_pedido = $("#m_id_pedido").val();
+				$.ajax({
+					type : "POST",
+					url : "home?ac=ajax",
+					dataType : "json",
+					async : true,
+					data : {
+						cmd : 'finalizandoPedido',
+						id_pedido : id_pedido
 
-					$.ajax({
-						type : "POST",
-						url : "home?ac=ajax",
-						dataType : "json",
-						async : true,
-						data : {
-							cmd : 'finalizandoPedido',
-							id_pedido : id_pedido
+					},
+					success : function(data) {
 
-						},
-						success : function(data) {
+						if (data.msg == 'ok') {
 
-							if (data.msg == 'ok') {
+							sysMsg("Pedido finalizado!", 'M')
+							checarPedidos();
 
-								sysMsg("Pedido finalizado!", 'M')
-								checarPedidos();
+							try {
+								loadAbertos(true);
+							} catch (err) {
 
-								try {
-									loadAbertos(true);
-								} catch (err) {
-
-								}
-
-								$('#modal_pedido').modal('hide');
-								limpaModal();
-
-							} else if (data.erro != undefined) {
-								sysMsg(data.erro, 'E')
 							}
 
-							$.unblockUI();
-						},
-						error : function(msg) {
-							$.unblockUI();
+							$('#modal_pedido').modal('hide');
+							limpaModal();
+
+						} else if (data.erro != undefined) {
+							sysMsg(data.erro, 'E')
 						}
-					});
-					
-				}
-			} ]
-		});
-		
-		
 
-	}
+						$.unblockUI();
+					},
+					error : function(msg) {
+						$.unblockUI();
+					}
+				});
 
+			}
+		} ]
+	});
+
+}
 
 function responderPedido() {
 
@@ -946,9 +984,10 @@ function responderPedido() {
 				action : function(dialogItself) {
 					dialogItself.close();
 					$.blockUI({
-						message : 'Respondendo...'
+						message : 'Respondendo...',
+						baseZ : 9000
 					});
-
+					$('#modal_pedido').modal('hide');
 					// var hora_entrega = $("#m_hora_entrega").val();
 					// var min_entrega = $("#m_minutos_entrega").val();
 					var m_tempo_entrega_inp = $("#m_tempo_entrega_inp").val();
@@ -1011,21 +1050,35 @@ function responderPedido() {
 
 								}
 
-								$('#modal_pedido').modal('hide');
-								limpaModal()
-								if (resposta == "A") {
+								setTimeout(function() {
+									visualizarPedido(id);
+									$.unblockUI();
+								}, 700);
 
-									setTimeout(function() {
-										visualizarPedido(id);
-									}, 700);
-
-								}
+								// $('#modal_pedido').modal('hide');
+								// limpaModal()
+								// if (resposta == "A") {
+								//
+								// setTimeout(function() {
+								// visualizarPedido(id);
+								// $.unblockUI();
+								// }, 700);
+								//
+								// }else{
+								// $.unblockUI();
+								// }
 
 							} else if (data.erro != undefined) {
 								sysMsg(data.erro, 'E')
+								setTimeout(function() {
+									visualizarPedido(id);
+									$.unblockUI();
+								}, 700);
+								
+								
+								
 							}
 
-							$.unblockUI();
 						},
 						error : function(msg) {
 							$.unblockUI();

@@ -77,65 +77,78 @@ public class Pedidos_ajax {
 
 		String temfiltro = "N";
 
-		String sql = "select   * , Addtime(COALESCE(data_agenda_entrega, data_pedido),tempo_estimado_desejado) AS tempoteste  from pedido left join bairros on bairros.cod_bairro = pedido.cod_bairro left join pedido_motivo_cancelamento on pedido_motivo_cancelamento.id_pedido = pedido.id_pedido  where ID_DISTRIBUIDORA = ? and (flag_status = 'A' or flag_status = 'E' or (flag_status = 'C' and FLAG_CONFIRMADO_DISTRIBUIDORA = 'N' ) )  ";
+		StringBuffer sql = new StringBuffer();
+		sql.append("SELECT *, ");
+		sql.append("       Addtime(COALESCE(data_agenda_entrega, data_pedido), tempo_estimado_desejado)                                                  AS tempoteste, ");
+		sql.append("       Timestampdiff(second, Now(), Addtime (COALESCE(data_agenda_entrega, data_pedido), tempo_estimado_desejado))                   AS secs ");
+		sql.append("FROM   pedido ");
+		sql.append("       LEFT JOIN bairros ");
+		sql.append("              ON bairros.cod_bairro = pedido.cod_bairro ");
+		sql.append("       LEFT JOIN pedido_motivo_cancelamento ");
+		sql.append("              ON pedido_motivo_cancelamento.id_pedido = pedido.id_pedido ");
+		sql.append("WHERE  id_distribuidora = ? ");
+		sql.append("       AND ( flag_status = 'A' ");
+		sql.append("              OR flag_status = 'E' ");
+		sql.append("              OR ( flag_status = 'C' ");
+		sql.append("                   AND flag_confirmado_distribuidora = 'N' ) )");
 
 		if (!num_pedido_aberto.equalsIgnoreCase("")) {
-			sql = sql + " and NUM_PED  = ? ";
+			sql.append(" and NUM_PED  = ? ");
 			temfiltro = "S";
 		}
 
 		if (!flag_situacao.equalsIgnoreCase("")) {
-			sql = sql + " and flag_status  = ? ";
+			sql.append(" and flag_status  = ? ");
 			temfiltro = "S";
 		}
 
 		if (!id_produto.equalsIgnoreCase("")) {
-			sql = sql + " and id_pedido in (select id_pedido from pedido_item where id_prod = ? ) ";
+			sql.append(" and id_pedido in (select id_pedido from pedido_item where id_prod = ? ) ");
 			temfiltro = "S";
 		}
 
 		if (!cod_bairro_aberto.equalsIgnoreCase("")) {
-			sql = sql + " and pedido. COD_BAIRRO = ? ";
+			sql.append(" and pedido. COD_BAIRRO = ? ");
 			temfiltro = "S";
 		}
 
 		if (!(data_pedido_ini.equalsIgnoreCase("")) && data_pedido_ini_hora != null) {
-			sql = sql + "  and  data_pedido >= ?";
+			sql.append("  and  data_pedido >= ?");
 			temfiltro = "S";
 		}
 
 		if (!(data_pedido_fim.equalsIgnoreCase("")) && data_pedido_fim_hora != null) {
-			sql = sql + "  and  data_pedido <= ?";
+			sql.append("  and  data_pedido <= ?");
 			temfiltro = "S";
 		}
 
 		if (!val_ini_aberto.equalsIgnoreCase("")) {
-			sql = sql + "  and  VAL_TOTALPROD >= ? ";
+			sql.append("  and  VAL_TOTALPROD >= ? ");
 			temfiltro = "S";
 		}
 
 		if (!val_fim_aberto.equalsIgnoreCase("")) {
-			sql = sql + "  and  VAL_TOTALPROD <= ? ";
+			sql.append("  and  VAL_TOTALPROD <= ? ");
 			temfiltro = "S";
 		}
 
 		if (!flag_visu.equalsIgnoreCase("")) {
 			if (flag_visu.equalsIgnoreCase("N"))
-				sql = sql + "  and  (flag_vizualizado = ? or FLAG_VIZUALIZADO_CANC = ? ) ";
+				sql.append("  and  (flag_vizualizado = ? or FLAG_VIZUALIZADO_CANC = ? ) ");
 			else if (flag_visu.equalsIgnoreCase("S")) {
-				sql = sql + " and flag_vizualizado = ? and Coalesce(FLAG_VIZUALIZADO_CANC,'S') = ? ";
+				sql.append(" and flag_vizualizado = ? and Coalesce(FLAG_VIZUALIZADO_CANC,'S') = ? ");
 			}
 			temfiltro = "S";
 		}
 
 		if (!flag_pedido_ret_entre.equalsIgnoreCase("")) {
-			sql = sql + "  and  flag_pedido_ret_entre = ? ";
+			sql.append("  and  flag_pedido_ret_entre = ? ");
 			temfiltro = "S";
 		}
 
-		sql = sql + "  order by flag_status asc , data_pedido asc ";
+		sql.append("  order by flag_status asc , data_pedido asc ");
 
-		PreparedStatement st = conn.prepareStatement(sql);
+		PreparedStatement st = conn.prepareStatement(sql.toString());
 		st.setInt(1, coddistr);
 
 		int contparam = 2;
@@ -201,10 +214,11 @@ public class Pedidos_ajax {
 		ResultSet rs = st.executeQuery();
 		PreparedStatement st2;
 		ResultSet rs2;
+		String sql2;
 		while (rs.next()) {
 			JSONObject objRetorno = new JSONObject();
-			sql = " SELECT cONCAT('',QTD_PROD ,' x ', DESC_ABREVIADO) AS DESCPROD FROM PEDIDO_ITEM INNER JOIN produtos ON produtos.ID_PROD  =  PEDIDO_ITEM.ID_PROD AND ID_PEDIDO = ?  ";
-			st2 = conn.prepareStatement(sql);
+			sql2 = " SELECT cONCAT('',QTD_PROD ,' x ', DESC_ABREVIADO) AS DESCPROD FROM PEDIDO_ITEM INNER JOIN produtos ON produtos.ID_PROD  =  PEDIDO_ITEM.ID_PROD AND ID_PEDIDO = ?  ";
+			st2 = conn.prepareStatement(sql2);
 			st2.setInt(1, rs.getInt("id_pedido"));
 			rs2 = st2.executeQuery();
 			String prods = "";
@@ -235,7 +249,12 @@ public class Pedidos_ajax {
 				objRetorno.put("DESC_BAIRRO", "Retirar no local");
 				objRetorno.put("FLAG_STATUS", rs.getString("FLAG_STATUS").equalsIgnoreCase("E") ? "S" : rs.getString("FLAG_STATUS"));
 			} else {
-				objRetorno.put("DESC_BAIRRO", rs.getString("DESC_BAIRRO"));
+
+				if (rs.getString("flag_modoentrega").equalsIgnoreCase("A")) {
+					objRetorno.put("DESC_BAIRRO", rs.getString("DESC_BAIRRO") + " - Agendamento");
+				} else {
+					objRetorno.put("DESC_BAIRRO", rs.getString("DESC_BAIRRO"));
+				}
 			}
 
 			objRetorno.put("VAL_TOTALPROD", rs.getString("VAL_TOTALPROD"));
@@ -648,7 +667,10 @@ public class Pedidos_ajax {
 		String id_pedido = request.getParameter("id") == null ? "" : request.getParameter("id"); //
 
 		StringBuffer varname1 = new StringBuffer();
-		varname1.append("SELECT * ");
+		varname1.append("SELECT *, ");
+		varname1.append("       Addtime(COALESCE(data_agenda_entrega, data_pedido), tempo_estimado_desejado)                                                  AS tempoteste, ");
+		varname1.append("       Timestampdiff(second, Now(), Addtime (COALESCE(data_agenda_entrega, data_pedido), tempo_estimado_desejado))                   AS secs, ");
+		varname1.append("       case when flag_modoentrega = 'T' then SEC_TO_TIME( abs(TIMESTAMPDIFF(second,NOW(),Addtime (COALESCE(data_agenda_entrega,data_pedido),tempo_estimado_desejado)))) else '00:00:00' end as timedif ");
 		varname1.append("FROM   pedido ");
 		varname1.append("       left JOIN bairros ");
 		varname1.append("               ON bairros.cod_bairro = pedido.cod_bairro ");
@@ -673,7 +695,11 @@ public class Pedidos_ajax {
 			if (rs.getString("FLAG_PEDIDO_RET_ENTRE").equalsIgnoreCase("L")) {
 				objRetorno.put("desc_bairro", "Retirar no local");
 			} else {
-				objRetorno.put("m_tempo_max", new SimpleDateFormat("HH:mm").format(rs.getTimestamp("TEMPO_ESTIMADO_DESEJADO")));
+				if (rs.getInt("secs") > 0) {
+					objRetorno.put("m_tempo_max", new SimpleDateFormat("HH:mm").format(rs.getTimestamp("timedif")));
+				} else {
+					objRetorno.put("m_tempo_max", "Expirado!");
+				}
 				objRetorno.put("desc_bairro", rs.getString("DESC_BAIRRO"));
 			}
 
@@ -883,9 +909,20 @@ public class Pedidos_ajax {
 		 * if (min_entrega.equalsIgnoreCase("")) { min_entrega = "0"; }
 		 */
 
-		String sql = " 	select * from pedido inner join usuario on usuario.id_usuario = pedido.id_usuario where ID_DISTRIBUIDORA = ? and id_pedido = ? and flag_status = 'A'  ";
+		String sql = " ";
 
-		PreparedStatement st = conn.prepareStatement(sql);
+		StringBuffer varname1 = new StringBuffer();
+		varname1.append("SELECT *, ");
+		varname1.append("       Timestampdiff(second, Now(), Addtime (COALESCE(data_agenda_entrega, data_pedido), tempo_estimado_desejado))                   AS secs, ");
+		varname1.append("       case when flag_modoentrega = 'T' then SEC_TO_TIME( abs(TIMESTAMPDIFF(second,NOW(),Addtime (COALESCE(data_agenda_entrega,data_pedido),tempo_estimado_desejado)))) else '00:00:00' end as timedif ");
+		varname1.append("FROM   pedido ");
+		varname1.append("       INNER JOIN usuario ");
+		varname1.append("               ON usuario.id_usuario = pedido.id_usuario ");
+		varname1.append("WHERE  id_distribuidora = ? ");
+		varname1.append("       AND id_pedido = ? ");
+		varname1.append("       AND flag_status = 'A'");
+
+		PreparedStatement st = conn.prepareStatement(varname1.toString());
 		st.setInt(1, coddistr);
 		st.setInt(2, Integer.parseInt(id_pedido));
 		ResultSet rs = st.executeQuery();
@@ -926,13 +963,26 @@ public class Pedidos_ajax {
 
 				} else {
 					if (rs.getString("FLAG_PEDIDO_RET_ENTRE").equalsIgnoreCase("T") && rs.getString("flag_modoentrega").equalsIgnoreCase("T")) {
-						Date datatempoentregateste = Utilitario.testeHora("HH:mm", m_tempo_entrega_inp, "Tempo de entrega inválido!");// tempo de entrega da distri
-						Date datatempoentregateste2 = Utilitario.testeHora("HH:mm", rs.getString("TEMPO_ESTIMADO_DESEJADO"), "");
-						;// tempo de entrega do usuario
 
-						if (datatempoentregateste.after(datatempoentregateste2) && rs.getString("flag_modoentrega").equalsIgnoreCase("T")) {// ;/
+						// Date datatempoentregateste = Utilitario.testeHora("HH:mm", m_tempo_entrega_inp, "Tempo de entrega inválido!");// tempo de entrega da distri
+						// Date datatempoentregateste2 = Utilitario.testeHora("HH:mm", rs.getString("TEMPO_ESTIMADO_DESEJADO"), "");
+						// if (datatempoentregateste.after(datatempoentregateste2) && rs.getString("flag_modoentrega").equalsIgnoreCase("T")) {// ;/
+						// throw new Exception("Tempo de entrega é acima do desejado!");
+						// }
+
+						Date datatempoentregateste = Utilitario.testeHora("HH:mm", m_tempo_entrega_inp, "Tempo de entrega inválido!");// tempo de entrega da distri
+						Date datatempoentregateste2 = Utilitario.testeHora("HH:mm", rs.getString("timedif"), "");
+						if ((datatempoentregateste.after(datatempoentregateste2)) && rs.getString("flag_modoentrega").equalsIgnoreCase("T")) {// ;/
 							throw new Exception("Tempo de entrega é acima do desejado!");
 						}
+						try {
+							if (rs.getLong("secs") < 0) {
+								throw new Exception("Tempo de entrega expirou!");
+							}
+						} catch (Exception e) {
+							throw new Exception("Tempo de entrega expirou!");
+						}
+
 					} else {
 						m_tempo_entrega_inp = "00:00";
 					}

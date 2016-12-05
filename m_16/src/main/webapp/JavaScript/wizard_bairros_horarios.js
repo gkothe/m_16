@@ -42,6 +42,35 @@ $(document).ready(function() {
 		addHorario();
 	});
 
+	
+	$("#btn_clean").click(function() {
+		
+		BootstrapDialog.show({
+			message : "Tem certeza que deseja APAGAR TODAS configurações atuais de bairro/horário? Este processo não pode ser revertido.",
+			title : "Aviso!",
+			buttons : [ {
+				label : 'Não',
+				// no title as it is optional
+				cssClass : 'btn-primary first_btn_confirm',
+				action : function(dialogItself) {
+					dialogItself.close();
+				}
+			}, {
+				label : 'Sim',
+				// no title as it is optional
+				cssClass : 'btn-primary',
+				action : function(dialogItself) {
+					dialogItself.close();
+					cleaninfos();
+				}
+			} ]
+		});
+
+		
+		
+
+	});
+	
 	$("#btn_prox_0").click(function() {
 		$('#tabs_horarios a[href="#bairros"]').tab('show')
 
@@ -120,6 +149,39 @@ function removerPeriodo(periodo) {
 
 }
 
+
+function cleaninfos(){
+	
+	
+	$.ajax({
+		type : 'POST',
+		url : "home?ac=ajax",
+		data : {
+			cmd : "cleanBairrosHorarios",
+
+		},
+		async : true,
+		dataType : 'json',
+		success : function(data) {
+
+			if (data.msg == 'ok') {
+
+				sysMsg("Informações apagadas!", 'M')
+
+			} else {
+				sysMsg(data.erro, 'E')
+			}
+			$.unblockUI();
+		},
+			
+		error : function(data) {
+
+		}
+	});
+	
+	
+}
+
 function salvarconfigs() {
 	$.blockUI({
 		message : 'Salvando...'
@@ -161,7 +223,8 @@ function salvarconfigs() {
 			if (data.msg == 'ok') {
 
 				sysMsg("Configurações de bairros/horários salvos!", 'M')
-				location.reload(true);
+				setTimeout(function(){ location.reload(true); }, 1500);
+				
 
 			} else {
 				sysMsg(data.erro, 'E')

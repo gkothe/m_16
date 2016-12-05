@@ -266,7 +266,7 @@ public class Utilitario {
 
 		obj = new JSONObject();
 		obj.put("id", "E");
-		obj.put("desc", "Em envio");
+		obj.put("desc", "Em envio/Em espera");
 		retornoarray.add(obj);
 
 		// obj = new JSONObject();
@@ -740,6 +740,7 @@ public class Utilitario {
 
 		String jsonResponse;
 
+		
 		URL url = new URL(sys.getOnesignal_url());
 		HttpURLConnection con = (HttpURLConnection) url.openConnection();
 		con.setUseCaches(false);

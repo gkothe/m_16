@@ -337,31 +337,31 @@ public class InsertDados {
 				varname1.append(" VALUES      (" + idpedido + ",");
 				varname1.append("             " + iddistr + ", ");
 				varname1.append("             " + usuario + ", ");
-				varname1.append("             '" + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(dateped) + "', ");
-				varname1.append("             'A', ");
-				varname1.append("             '" + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(dateped) + "', ");
+				varname1.append("             '" + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(dateped) + "', "); //data_pedido
+				varname1.append("             'A', ");//aberto
+				varname1.append("             '" + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(dateped) + "', ");//resposta
 				varname1.append("             " + Utilitario.getNextNumpad(conn, iddistr) + ", ");
 				if (servico.equalsIgnoreCase("T")) {
 					varname1.append("             " + cod_bairro + ", ");
 				}
-				varname1.append("             '999999999', ");
+				varname1.append("             '999999999', ");//telefone
 				if (servico.equalsIgnoreCase("T")) {
-					varname1.append("             '01:00:00', ");
+					varname1.append("             '01:00:00', "); //tempo estmiado entrega
 				} else {
-					varname1.append("             '00:00:00', ");
+					varname1.append("             '00:00:00', ");//tempo estmiado entrega
 				}
 
-				varname1.append("             '', ");
-				varname1.append("             '', ");
-				varname1.append("             '', ");
-				varname1.append("             'S', ");
-				varname1.append("             '" + (Math.random() < 0.5 ? "D" : "C") + "', ");
+				varname1.append("             'Rua borges de medeiros', ");
+				varname1.append("             '715', ");
+				varname1.append("             'Sobrado', ");
+				varname1.append("             'S', ");//vizualizado
+				varname1.append("             '" + (Math.random() < 0.5 ? "D" : "C") + "', "); //pagamento
+				varname1.append("             '', ");//nome
 				varname1.append("             'Gabriel Dalcin Kothe', ");
 				varname1.append("             '', ");
 				varname1.append("             '', ");
 				varname1.append("             '', ");
-				varname1.append("             '', ");
-				varname1.append("             '" + servico + "', ");
+				varname1.append("             '" + servico + "', "); //entrega ou retirada
 				if (servico.equalsIgnoreCase("T")) {
 					varname1.append("             '01:00:00' ,  ");
 				} else {
@@ -517,45 +517,50 @@ public class InsertDados {
 				varname1.append("             pag_mail, ");
 				varname1.append("             pag_payid_tipocartao, ");
 				varname1.append("             flag_pedido_ret_entre, ");
-				varname1.append("             tempo_estimado_desejado) ");
+				varname1.append("             tempo_estimado_desejado,flag_modoentrega) ");
 				varname1.append(" VALUES      (" + idpedido + ",");
 				varname1.append("             " + iddistr + ", ");
 				varname1.append("             " + usuario + ", ");
-				varname1.append("             '" + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(dateped) + "', ");
-				varname1.append("             'O', ");
-				varname1.append("             '" + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(dateped) + "', ");
+				varname1.append("             '" + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(dateped) + "', "); //data_pedido
+				varname1.append("             'O', ");//aberto
+				varname1.append("             '" + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(dateped) + "', ");//resposta
 				varname1.append("             " + Utilitario.getNextNumpad(conn, iddistr) + ", ");
 				if (servico.equalsIgnoreCase("T")) {
 					varname1.append("             " + cod_bairro + ", ");
 				}
-				varname1.append("             '999999999', ");
+				varname1.append("             '999999999', ");//telefone
 				if (servico.equalsIgnoreCase("T")) {
-					varname1.append("             '01:00:00', ");
+					varname1.append("             '01:00:00', "); //tempo estmiado entrega
 				} else {
-					varname1.append("             '00:00:00', ");
+					varname1.append("             '00:00:00', ");//tempo estmiado entrega
 				}
 
-				varname1.append("             '', ");
-				varname1.append("             '', ");
-				varname1.append("             '', ");
-				varname1.append("             'S', ");
-				varname1.append("             '" + (Math.random() < 0.5 ? "D" : "C") + "', ");
+				varname1.append("             'Rua borges de medeiros', ");
+				varname1.append("             '715', ");
+				varname1.append("             'Sobrado', ");
+				varname1.append("             'S', ");//vizualizado
+				varname1.append("             '" + (Math.random() < 0.5 ? "D" : "C") + "', "); //pagamento
+				varname1.append("             '', ");//nome
 				varname1.append("             'Gabriel Dalcin Kothe', ");
 				varname1.append("             '', ");
 				varname1.append("             '', ");
 				varname1.append("             '', ");
-				varname1.append("             '', ");
-				varname1.append("             '" + servico + "', ");
+				varname1.append("             '" + servico + "', "); //entrega ou retirada
 				if (servico.equalsIgnoreCase("T")) {
-					varname1.append("             '01:00:00' ) ");
+					varname1.append("             '01:00:00' ,  ");
 				} else {
-					varname1.append("             '00:00:00' ) ");
+					varname1.append("             '00:00:00' ,");
+				}
+				if (servico.equalsIgnoreCase("T")) {
+					varname1.append("             'T' ) ");
+				} else {
+					varname1.append("             '' ) ");
 				}
 
 				st = conn.prepareStatement(varname1.toString());
 				st.executeUpdate();
 				val_totalprod = 0;
-				qtdprods = ThreadLocalRandom.current().nextInt(50, 70 + 1);
+				qtdprods = ThreadLocalRandom.current().nextInt(1, 15 + 1);
 				countprod = 0;
 				while (countprod < qtdprods) {
 					sql = "select * from  produtos_distribuidora where id_distribuidora = " + iddistr + " and id_prod in (select id_prod from produtos  ORDER BY RAND() ) ORDER BY RAND()";
@@ -624,7 +629,7 @@ public class InsertDados {
 		// insertRandomPeds(1, 17, "2016-01-01 00:00:00", "2016-10-31 23:59:59", 500);
 		// insertRandomPeds(1, 17, "2016-01-01 00:00:00", "2016-10-31 23:59:59", 500);
 		// insertRandomPeds(1, 17, "2016-01-01 00:00:00", "2016-10-31 23:59:59", 500);
-		insertRandomPedsAberto(1, 17, "2016-11-24 08:00:00", "2016-11-17 15:20:00", 25);
+		insertRandomPedsAberto(1, 17, "2016-12-5 16:30:00", "2016-12-5 16:31:00", 10); 
 		// insertRandomPeds(1, 17, "2015-01-01 00:00:00", "2015-11-30 23:59:59", 500);
 		// insertRandomPeds(1, 17, "2015-01-01 00:00:00", "2015-11-30 23:59:59", 500);
 		// insertRandomPeds(1, 17, "2015-01-01 00:00:00", "2015-11-30 23:59:59", 500);

@@ -99,7 +99,7 @@ $(document).ready(function() {
 	loadAbertos(true);
 
 	window.setInterval(function() {
-		// loadAbertos(false);
+		 loadAbertos(false);
 	}, 5000);
 
 	loadAbertos();
@@ -232,6 +232,12 @@ function carregaBairros() {
 
 function loadAbertos(blockui) {
 
+	if($("#extra_paramfield").val()=='canc'){
+		$("#flag_situacao").val("C")
+		$("#extra_paramfield").val("");
+	}  
+	
+	
 	var num_pedido_aberto = $("#num_pedido_aberto").val();
 	var id_produto = $("#id_produto").val();
 	var cod_bairro_aberto = $("#cod_bairro_aberto").val();

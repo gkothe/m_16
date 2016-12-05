@@ -97,22 +97,19 @@ input:focus {
 	height: 5px;
 	border-bottom: 1px solid black;
 }
-.first_btn_confirm{
 
-    margin-bottom: 0px !important;
-    margin-right: 80% !important;
-
-
-}
-.ped_atrasado{
-min-width:100% !important;
-min-height:100% !important;
-width: 100% !important;
-height: 100% !important; 
-background-color: yellow;
+.first_btn_confirm {
+	margin-bottom: 0px !important;
+	margin-right: 80% !important;
 }
 
-
+.ped_atrasado {
+	min-width: 100% !important;
+	min-height: 100% !important;
+	width: 100% !important;
+	height: 100% !important;
+	background-color: yellow;
+}
 </style>
 
 
@@ -169,12 +166,13 @@ background-color: yellow;
 									<ul class="nav child_menu">
 										<li class=''><a linkmenu="listaprod"
 											onclick="trocaPag(this,'N',event);" class="clickmenu">Produtos</a></li>
-										<li><a linkmenu="listaconfigemp"
-											onclick="trocaPag(this,'N',event);" class="clickmenu">Configurações
-												da empresa</a></li>
 										<li><a linkmenu="wizardhorarios"
 											onclick="trocaPag(this,'N',event);" class="clickmenu">Configurações
 												de horários</a></li>
+										<li><a linkmenu="listaconfigemp"
+											onclick="trocaPag(this,'N',event);" class="clickmenu">Configurações
+												da empresa</a></li>
+										
 									</ul></li>
 								<li><a class="clickmenu2"><i
 										class="fa fa-edit clickmenu2"></i> Relatórios <span
@@ -250,7 +248,7 @@ background-color: yellow;
 
 										<td width="25%" align="left">
 											<div style="cursor: pointer;" id="msg_cancholder">
-												<a onclick="trocaPag(this,'N');" linkmenu="listaped"> <span
+												<a onclick="trocaPag(this,'N','','canc');" linkmenu="listaped"> <span
 													class="label label-primary " id="msg_cancelados"
 													style="font-size: 145%;">Pedidos cancelados! </span>
 												</a>
@@ -377,6 +375,7 @@ background-color: yellow;
 			</div>
 
 			<div id="modal_cancelamentos"></div>
+			<div id="modal_atrasados"></div>
 
 			<div class="modal fade bs-example-modal-lg" tabindex="-5"
 				style="z-index: 2000" role="dialog" id="modal_erros"
@@ -565,7 +564,8 @@ background-color: yellow;
 
 									<table>
 										<tr>
-											<td style="padding-right: 5px;"><label for="">Modo de pagamento: </label></td>
+											<td style="padding-right: 5px;"><label for="">Modo
+													de pagamento: </label></td>
 											<td><label id=""> </label><label id="m_modo_pagamento"></label></td>
 
 										</tr>
@@ -628,8 +628,7 @@ background-color: yellow;
 								</div>
 
 								<div id='m_tempo_entrega_div'
-									class="col-xs-6 col-sm-6 col-md-6 col-lg-6"
-									align="left">
+									class="col-xs-6 col-sm-6 col-md-6 col-lg-6" align="left">
 
 									<table>
 										<tr>
@@ -914,7 +913,7 @@ background-color: yellow;
 
 		</div>
 	</div>
-
+	<input type="hidden" id="extra_paramfield">
 	<!-- jQuery jQuery v2.2.3  -->
 	<script src="gentelella-master/vendors/jquery/dist/jquery.min.js"></script>
 	<!-- Bootstrap -->
@@ -976,7 +975,7 @@ background-color: yellow;
 	<script type="text/javascript"
 		src="JavaScript/boostrap_multiselect/bootstrap-multiselect.js"></script>
 	<script type="text/javascript"
-		src="JavaScript/bootstrap3-dialog-master/dist/js/bootstrap-dialog.js"></script>	
+		src="JavaScript/bootstrap3-dialog-master/dist/js/bootstrap-dialog.js"></script>
 
 </body>
 
@@ -984,19 +983,22 @@ background-color: yellow;
 	var url = "";
 	var php = "";
 	var menu = "";
-
+var extraparam= "";
 	$(document).ready(function() {
 <%boolean link = false;
 			if (request.getParameter("link") != null && !(request.getParameter("link").equalsIgnoreCase(""))) {%>
 	url = '<%=request.getParameter("link")%>';
 	jsp = '<%=request.getParameter("jsp")%>';
 	menu ='<%=request.getParameter("m")%>';
+	extraparam ='<%=request.getParameter("extra")%>';
 <%} else {%>
 	url = "listaped"
 		jsp = "N"
 		menu = "m"
+		extraparam = "";
 <%}%>
-	//	$('#mainpage').load('home?ac=listaped');
+	$("#extra_paramfield").val(extraparam);
+		//	$('#mainpage').load('home?ac=listaped');
 
 	});
 </script>

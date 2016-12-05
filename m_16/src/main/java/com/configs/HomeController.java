@@ -55,12 +55,9 @@ public class HomeController extends javax.servlet.http.HttpServlet {
 
 	public void processaRequisicoes(HttpServletRequest request, HttpServletResponse response) {
 
-	/*	System.out.println("--------entro home");
-		Map map = request.getParameterMap();
-		for (Iterator iterator = map.keySet().iterator(); iterator.hasNext();) {
-			String type = (String) iterator.next();
-			System.out.println(type + " : " + request.getParameter(type));
-		}*/
+		/*
+		 * System.out.println("--------entro home"); Map map = request.getParameterMap(); for (Iterator iterator = map.keySet().iterator(); iterator.hasNext();) { String type = (String) iterator.next(); System.out.println(type + " : " + request.getParameter(type)); }
+		 */
 
 		try {
 
@@ -98,13 +95,13 @@ public class HomeController extends javax.servlet.http.HttpServlet {
 
 				else if (strTipo.equalsIgnoreCase("rel_pedidos")) {
 					relPedidos(request, response);
-				}else if (strTipo.equalsIgnoreCase("rel_produtos")) {
+				} else if (strTipo.equalsIgnoreCase("rel_produtos")) {
 					relProdutos(request, response);
 				} else if (strTipo.equalsIgnoreCase("rel_pedidospdf")) {
 					Relatorios.relPedidos(request, response, Integer.parseInt(request.getSession(false).getAttribute("coddis").toString()));
 				} else if (strTipo.equalsIgnoreCase("rel_produtospdf")) {
 					Relatorios.relProdutos(request, response, Integer.parseInt(request.getSession(false).getAttribute("coddis").toString()));
-				}else if (strTipo.equalsIgnoreCase("rel_gradehorarios")) {
+				} else if (strTipo.equalsIgnoreCase("rel_gradehorarios")) {
 					rel_gradehorarios(request, response);
 				} else if (strTipo.equalsIgnoreCase("logout")) {
 					request.getSession().invalidate();
@@ -193,6 +190,8 @@ public class HomeController extends javax.servlet.http.HttpServlet {
 				Pedidos_ajax.responderPedido(request, response, conn, coddistr);
 			} else if (cmd.equalsIgnoreCase("carregaProdutos")) {
 				Parametros_ajax.carregaProdutos(request, response, conn, coddistr);
+			} else if (cmd.equalsIgnoreCase("cleanBairrosHorarios")) {
+				Parametros_ajax.limparBairros(request, response, conn, coddistr);
 			} else if (cmd.equalsIgnoreCase("salvar_prod")) {
 				Parametros_ajax.salvarProd(request, response, conn, coddistr);
 			} else if (cmd.equalsIgnoreCase("loadProduto")) {
@@ -225,29 +224,25 @@ public class HomeController extends javax.servlet.http.HttpServlet {
 				Relatorios.dashHoraPed(request, response, conn, coddistr);
 			} else if (cmd.equalsIgnoreCase("dashDayPed")) {
 				Relatorios.dashDayPed(request, response, conn, coddistr);
-			}else if (cmd.equalsIgnoreCase("dashListaBairros")) {
+			} else if (cmd.equalsIgnoreCase("dashListaBairros")) {
 				Relatorios.dashListaBairros(request, response, conn, coddistr);
-			}else if (cmd.equalsIgnoreCase("dashProdBairroSingle")) {
+			} else if (cmd.equalsIgnoreCase("dashProdBairroSingle")) {
 				Relatorios.dashProdBairro_single(request, response, conn, coddistr);
-			}else if (cmd.equalsIgnoreCase("dashProdHoraSingle")) {
+			} else if (cmd.equalsIgnoreCase("dashProdHoraSingle")) {
 				Relatorios.dashProdHora_single(request, response, conn, coddistr);
-			}else if (cmd.equalsIgnoreCase("dashProdDiaSingle")) {
+			} else if (cmd.equalsIgnoreCase("dashProdDiaSingle")) {
 				Relatorios.dashProdDia_single(request, response, conn, coddistr);
-			}else if (cmd.equalsIgnoreCase("dashProdInfosgerais_single")) {
+			} else if (cmd.equalsIgnoreCase("dashProdInfosgerais_single")) {
 				Relatorios.dashProdInfosgerais_single(request, response, conn, coddistr);
-			}else if (cmd.equalsIgnoreCase("dashMeses")) {
+			} else if (cmd.equalsIgnoreCase("dashMeses")) {
 				Relatorios.dashMeses(request, response, conn, coddistr);
-			}else if (cmd.equalsIgnoreCase("dashDiasDoMes")) {
+			} else if (cmd.equalsIgnoreCase("dashDiasDoMes")) {
 				Relatorios.dashDiasDoMes(request, response, conn, coddistr);
-			}else if (cmd.equalsIgnoreCase("getfullprodname")) {
+			} else if (cmd.equalsIgnoreCase("getfullprodname")) {
+				Utilitario.getFullProdname(request, response, conn);
+			} else if (cmd.equalsIgnoreCase("getfullprodname")) {
 				Utilitario.getFullProdname(request, response, conn);
 			}
-			
-			
-			
-			
-			
-			
 
 			conn.commit();
 		} catch (Exception ex) {
@@ -330,6 +325,7 @@ public class HomeController extends javax.servlet.http.HttpServlet {
 		} finally {
 		}
 	}
+
 	private void listaprod(HttpServletRequest request, HttpServletResponse response) throws Exception {
 		try {
 			request.getRequestDispatcher("/WEB-INF/produtos_distribuidora.html").forward(request, response);

@@ -713,6 +713,24 @@ public class Parametros_ajax {
 		out.print(ret.toJSONString());
 	}
 
+	public static void limparBairros(HttpServletRequest request, HttpServletResponse response, Connection conn, int coddistr) throws Exception {
+		PrintWriter out = response.getWriter();
+		JSONObject ret = new JSONObject();
+
+		PreparedStatement st = null;
+
+		st = conn.prepareStatement("delete from distribuidora_horario_dia_entre where id_distribuidora = ? ");
+		st.setInt(1, coddistr);
+		st.executeUpdate();
+
+		st = conn.prepareStatement("delete from distribuidora_bairro_entrega where id_distribuidora = ? ");
+		st.setInt(1, coddistr);
+		st.executeUpdate();
+
+		ret.put("msg", "ok");
+		out.print(ret.toJSONString());
+	}
+
 	public static void salvarConfigsHorariosBairrosNovo(HttpServletRequest request, HttpServletResponse response, Connection conn, int coddistr) throws Exception {
 		PrintWriter out = response.getWriter();
 		JSONObject ret = new JSONObject();

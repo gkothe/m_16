@@ -12,6 +12,7 @@ public class Tasker implements ServletContextListener {
 	private Thread_NotPedidoFim myThread2 = null;
 
 	public void contextInitialized(ServletContextEvent sce) {
+
 		if ((myThread == null) || (!myThread.isAlive())) {
 			myThread = new Thread_OnOffEmp();
 			myThread.start();
@@ -32,10 +33,11 @@ public class Tasker implements ServletContextListener {
 
 		try {
 
-		} catch (Exception e) {
-
 			myThread2.doShutdown();
 			myThread2.interrupt();
+
+		} catch (Exception e) {
+
 			// TODO: handle exception
 		}
 	}
