@@ -172,7 +172,7 @@ input:focus {
 										<li><a linkmenu="listaconfigemp"
 											onclick="trocaPag(this,'N',event);" class="clickmenu">Configurações
 												da empresa</a></li>
-										
+
 									</ul></li>
 								<li><a class="clickmenu2"><i
 										class="fa fa-edit clickmenu2"></i> Relatórios <span
@@ -248,9 +248,10 @@ input:focus {
 
 										<td width="25%" align="left">
 											<div style="cursor: pointer;" id="msg_cancholder">
-												<a onclick="trocaPag(this,'N','','canc');" linkmenu="listaped"> <span
-													class="label label-primary " id="msg_cancelados"
-													style="font-size: 145%;">Pedidos cancelados! </span>
+												<a onclick="trocaPag(this,'N','','canc');"
+													linkmenu="listaped"> <span class="label label-primary "
+													id="msg_cancelados" style="font-size: 145%;">Pedidos
+														cancelados! </span>
 												</a>
 											</div>
 										</td>
@@ -308,71 +309,6 @@ input:focus {
 			</footer>
 			<!-- /footer content -->
 
-
-
-			<div class="modal fade bs-example-modal-lg" tabindex="-5"
-				role="dialog" id="modal_ajuda" aria-hidden="true">
-				<div class="modal-dialog modal-lg">
-					<div class="modal-content">
-
-						<div class="modal-header" align="center">
-							<button type="button" class="close" data-dismiss="modal">
-								<span aria-hidden="true">×</span>
-							</button>
-							<h4 class="modal-title" id="">
-								<label style="font-size: 20px; color: black" id="">Ajuda/Informações
-									do TragoAqui!</label>
-							</h4>
-						</div>
-						<div class="modal-body" style="max-height: 800px; overflow: auto;">
-
-							<div class="row">
-
-								<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 ">
-									<strong>Bem-vindo ao TragoAqui!</strong><br> Para
-									visualizar pedidos abertos vá no menu no lado esquerdo da tela,
-									clique em "Pedidos" e em seguida "Abertos". <br> Para
-									visualizar o histórico de pedidos vá no menu no lado esquerdo
-									da tela, clique em "Pedidos" e em seguida "Histórico". <br>
-									Para ativar,desativar e mudar o preço de produtos, vá no menu
-									no lado esquerdo da tela, clique em "Parâmetros" e em seguida
-									"Produtos". <br> Para modificar dados de cadastro,
-									funcionamento, bairros e horarios da empresa, vá no menu no
-									lado esquerdo da tela, clique em "Parâmetros" e em seguida
-									"Configurações da empresa". <br>
-								</div>
-
-
-							</div>
-							<br>
-							<div class="row">
-
-								<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 ">
-									Para maiores informações entre em contato consoco pelo email
-									######@$$$$.com ou pelo telefone (051)0000-11111.</div>
-
-
-							</div>
-
-
-						</div>
-						<div class="modal-footer">
-
-							<div class="row">
-
-								<div class="col-xs-10 col-sm-10 col-md-10 col-lg-10 "></div>
-
-
-								<div class="col-xs-2 col-sm-2 col-md-2 col-lg-2 " align="right">
-									<button type="button" class="btn btn-primary"
-										data-dismiss="modal">Fechar</button>
-								</div>
-
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
 
 			<div id="modal_cancelamentos"></div>
 			<div id="modal_atrasados"></div>
@@ -835,6 +771,17 @@ input:focus {
 													title="Aqui você preenche o tempo previsto que levará para realizar a entrega do pedido. Por exemplo, se você acha que vai levar 30 minutos para entregar. Você deve escrever 00:30 "
 													class='hora form-control' id="m_tempo_entrega_inp"
 													style="width: 100px" placeholder="Ex: 0:30"></td>
+												<td>&nbsp;&nbsp;</td>
+												<td>
+													<div class="checkbox" data-toggle="tooltip"
+														title="Ao marcar esta opção, você estara usando o tempo máximo disponivel para a entrega e qualquer valor de tempo informado no campo aolado será ignorado. Por ex: Se o tempo máximo for 00:52, e você marcar esta opção, o efeito será o mesmo que digitar 00:52 minutos no campo ao lado."
+														style="margin-top: 0px; margin-bottom: 0px">
+														<label> <input type="checkbox"
+															id="flag_usartempomax" style="color: black !important"
+															value="S"> Usar o tempo maximo disponivel.
+														</label>
+													</div>
+												</td>
 											</tr>
 
 										</table>

@@ -315,7 +315,7 @@ public class InsertDados {
 				varname1.append("             id_usuario, ");
 				varname1.append("             data_pedido, ");
 				varname1.append("             flag_status, ");
-				varname1.append("             data_pedido_resposta, ");
+//				varname1.append("             data_pedido_resposta, ");
 				varname1.append("             num_ped, ");
 				if (servico.equalsIgnoreCase("T")) {
 					varname1.append("             cod_bairro, ");
@@ -339,14 +339,14 @@ public class InsertDados {
 				varname1.append("             " + usuario + ", ");
 				varname1.append("             '" + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(dateped) + "', "); //data_pedido
 				varname1.append("             'A', ");//aberto
-				varname1.append("             '" + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(dateped) + "', ");//resposta
+//				varname1.append("             '" + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(dateped) + "', ");//resposta
 				varname1.append("             " + Utilitario.getNextNumpad(conn, iddistr) + ", ");
 				if (servico.equalsIgnoreCase("T")) {
 					varname1.append("             " + cod_bairro + ", ");
 				}
 				varname1.append("             '999999999', ");//telefone
 				if (servico.equalsIgnoreCase("T")) {
-					varname1.append("             '01:00:00', "); //tempo estmiado entrega
+					varname1.append("             '00:00:00', "); //tempo estmiado entrega
 				} else {
 					varname1.append("             '00:00:00', ");//tempo estmiado entrega
 				}
@@ -629,7 +629,7 @@ public class InsertDados {
 		// insertRandomPeds(1, 17, "2016-01-01 00:00:00", "2016-10-31 23:59:59", 500);
 		// insertRandomPeds(1, 17, "2016-01-01 00:00:00", "2016-10-31 23:59:59", 500);
 		// insertRandomPeds(1, 17, "2016-01-01 00:00:00", "2016-10-31 23:59:59", 500);
-		insertRandomPedsAberto(1, 17, "2016-12-5 16:30:00", "2016-12-5 16:31:00", 10); 
+		   insertRandomPedsAberto(1, 17, "2016-12-6 8:45:00", "2016-12-6 8:58:00", 10); 
 		// insertRandomPeds(1, 17, "2015-01-01 00:00:00", "2015-11-30 23:59:59", 500);
 		// insertRandomPeds(1, 17, "2015-01-01 00:00:00", "2015-11-30 23:59:59", 500);
 		// insertRandomPeds(1, 17, "2015-01-01 00:00:00", "2015-11-30 23:59:59", 500);

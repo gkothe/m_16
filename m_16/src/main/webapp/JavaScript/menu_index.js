@@ -63,8 +63,7 @@ $(window).resize(function() {
 
 function showHelp() {
 
-	$("#modal_ajuda").modal("show");
-
+	window.open("manual.pdf", '_blank');
 }
 
 function sysMsg(text, tipo) {
@@ -298,6 +297,8 @@ function limpaModal() {
 	$('input[type=radio][name=flag_aceita_recusa]').prop('checked', false);
 	$('.motivo').prop('checked', false);
 	$('.prodrecusa').prop('checked', false);
+	$('#flag_usartempomax').prop('checked', false);
+
 	$("#modal_prodsrecusa_btn_prods").hide();
 	$("#flag_tipoentrega_pedatual").val("");
 	/*
@@ -1014,6 +1015,14 @@ function responderPedido() {
 					var motivos_json = JSON.stringify(motivos);
 					var prodsrecusadosjson = JSON.stringify(prodsrecusados);
 
+					var flag_usartempomax ;
+
+					if ($("#flag_usartempomax").is(":checked")) {
+						flag_usartempomax = "S"
+					} else {
+						flag_usartempomax = "N"
+					}
+
 					$.ajax({
 						type : "POST",
 						url : "home?ac=ajax",
@@ -1025,7 +1034,8 @@ function responderPedido() {
 							m_tempo_entrega_inp : m_tempo_entrega_inp,
 							id : id,
 							resposta : resposta,
-							prodsrecusadosjson : prodsrecusadosjson
+							prodsrecusadosjson : prodsrecusadosjson,
+							flag_usartempomax:flag_usartempomax
 
 						},
 						success : function(data) {
@@ -1074,9 +1084,7 @@ function responderPedido() {
 									visualizarPedido(id);
 									$.unblockUI();
 								}, 700);
-								
-								
-								
+
 							}
 
 						},

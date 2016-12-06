@@ -31,7 +31,16 @@ public class Sys_parametros {
 	String onesignal_appid = "";
 	int num_minutos_not_final = 0;
 	int num_segs_not_final_exec = 0;
+	int cod_cancelamentosys = 0; 
 	
+
+	public int getCod_cancelamentosys() {
+		return cod_cancelamentosys;
+	}
+
+	public void setCod_cancelamentosys(int cod_cancelamentosys) {
+		this.cod_cancelamentosys = cod_cancelamentosys;
+	}
 
 	public String getOnesignal_key() {
 		return onesignal_key;
@@ -266,6 +275,7 @@ public class Sys_parametros {
 				this.setOnesignal_appid(rs.getString("onesignal_appid"));
 				this.setNum_minutos_not_final(rs.getInt("num_minutos_not_final"));
 				this.setNum_segs_not_final_exec(rs.getInt("num_segs_not_final_exec"));
+				this.setCod_cancelamentosys(rs.getInt("cod_cancelamentosys"));
 				
 				
 			}

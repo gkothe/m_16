@@ -945,16 +945,21 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 
 	private static void cancelaPedido(HttpServletRequest request, HttpServletResponse response, Connection conn, long cod_usuario, Sys_parametros sys) throws Exception {
 
-		PrintWriter out = response.getWriter();
+		String id_pedido = request.getParameter("id_pedido") == null ? "" : request.getParameter("id_pedido");
+		String descobs = request.getParameter("descobs") == null ? "" : request.getParameter("descobs");
+		String motivo = request.getParameter("motivo") == null ? "" : request.getParameter("motivo");
+
+		cancelaPedido(request, response, conn, cod_usuario, sys, id_pedido, descobs, motivo, true);
+
+	}
+
+	public static JSONObject cancelaPedido(HttpServletRequest request, HttpServletResponse response, Connection conn, long cod_usuario, Sys_parametros sys, String id_pedido, String descobs, String motivo, boolean outprint) throws Exception {
+
 		JSONObject objRetorno = new JSONObject();
 		// if (cod_usuario.equalsIgnoreCase("") || cod_usuario == null || cod_usuario.equalsIgnoreCase("0")) {
 		// throw new Exception("Usuário inválido.");
 		// } else
 		{
-
-			String id_pedido = request.getParameter("id_pedido") == null ? "" : request.getParameter("id_pedido");
-			String descobs = request.getParameter("descobs") == null ? "" : request.getParameter("descobs");
-			String motivo = request.getParameter("motivo") == null ? "" : request.getParameter("motivo");
 
 			if (id_pedido.equalsIgnoreCase("")) {
 				throw new Exception("Pedido inválido");
@@ -1050,8 +1055,8 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 
 					}
 
-					if (rs.getString("FLAG_MODOPAGAMENTO").equalsIgnoreCase("C")) {// cancelamento em pagamento por cartao. poreqnto mesma coisa q o dinheiro
-						// TODO como sera feito os refunds?
+					if (rs.getString("FLAG_MODOPAGAMENTO").equalsIgnoreCase("C")) {// cancelamento em pagamento por cartao. poreqnto mesma coisa q o dinheiro. dia q sistema fazer pagamento de cartao , vai ser diferente
+
 						sql = new StringBuffer();
 						sql.append(" INSERT INTO pedido_motivo_cancelamento ");
 						sql.append("  (`ID_PEDIDO`, `COD_MOTIVO`, `DESC_OBS`, `DATA_CANCELAMENTO`,FLAG_CONFIRMADO_DISTRIBUIDORA,FLAG_POPUPINICIAL,FLAG_VIZUALIZADO_CANC) ");
@@ -1073,9 +1078,11 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 			objRetorno.put("msg", "ok");
 
 		}
-
-		out.print(objRetorno.toJSONString());
-
+		if (outprint) {
+			PrintWriter out = response.getWriter();
+			out.print(objRetorno.toJSONString());
+		}
+		return objRetorno;
 	}
 
 	private static void carregaUser(HttpServletRequest request, HttpServletResponse response, Connection conn, long cod_usuario) throws Exception {
@@ -1886,7 +1893,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 		sql.append("       data_pedido_resposta, ");
 		sql.append("       TEMPO_ESTIMADO_ENTREGA, ");
 		sql.append("       DESC_NOME_ABREV, FLAG_PEDIDO_RET_ENTRE,TEMPO_ESTIMADO_DESEJADO,FLAG_PEDIDO_RET_ENTRE,pedido.FLAG_MODOPAGAMENTO,");
-		sql.append("       flag_status,id_pedido,bairros.desc_bairro ,desc_endereco_num_entrega,desc_endereco_complemento_entrega ");
+		sql.append("       flag_status,id_pedido,bairros.desc_bairro ,desc_endereco_num_entrega,desc_endereco_complemento_entrega,  Addtime (DATA_PEDIDO_RESPOSTA, TEMPO_ESTIMADO_ENTREGA) as hora_entrega ");
 		sql.append(" FROM   pedido ");
 		sql.append("       INNER JOIN distribuidora ");
 		sql.append("               ON distribuidora.id_distribuidora = pedido.id_distribuidora ");
@@ -1935,7 +1942,8 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 			ped.put("desc_endereco_entrega", rs.getString("desc_endereco_entrega"));
 			ped.put("desc_endereco_num_entrega", rs.getString("desc_endereco_num_entrega"));
 			ped.put("desc_endereco_complemento_entrega", rs.getString("desc_endereco_complemento_entrega"));
-			ped.put("tempo_entrega", rs.getTimestamp("TEMPO_ESTIMADO_ENTREGA") == null ? "" : new SimpleDateFormat("HH:mm").format(rs.getTimestamp("TEMPO_ESTIMADO_ENTREGA")));
+			ped.put("tempo_entrega2", rs.getTimestamp("TEMPO_ESTIMADO_ENTREGA") == null ? "" : new SimpleDateFormat("HH:mm").format(rs.getTimestamp("TEMPO_ESTIMADO_ENTREGA")));
+			ped.put("tempo_entrega", rs.getTimestamp("hora_entrega") == null ? "" : new SimpleDateFormat("dd/MM/yyyy HH:mm").format(rs.getTimestamp("hora_entrega")));
 
 			StringBuffer sql2 = new StringBuffer();
 			sql2.append("select RECUSADO_DISPONIVEL,FLAG_RECUSADO,  DESC_PROD, VAL_UNIT, QTD_PROD, QTD_PROD * VAL_UNIT   as total, DESC_ABREVIADO, produtos.id_prod from pedido_item ");
@@ -2918,7 +2926,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 		PrintWriter out = response.getWriter();
 		JSONObject retorno = new JSONObject();
 		String bairro = request.getParameter("codbairro") == null ? "" : request.getParameter("codbairro");
-		retorno.put("val_entrega", 0 );
+		retorno.put("val_entrega", 0);
 		if (!bairro.equalsIgnoreCase("")) {
 
 			StringBuffer varname1 = new StringBuffer();

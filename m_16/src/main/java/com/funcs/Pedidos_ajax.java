@@ -670,8 +670,11 @@ public class Pedidos_ajax {
 		varname1.append("SELECT *, ");
 		varname1.append("       Addtime(COALESCE(data_agenda_entrega, data_pedido), tempo_estimado_desejado)                                                  AS tempoteste, ");
 		varname1.append("       Timestampdiff(second, Now(), Addtime (COALESCE(data_agenda_entrega, data_pedido), tempo_estimado_desejado))                   AS secs, ");
-		varname1.append("       case when flag_modoentrega = 'T' then SEC_TO_TIME( abs(TIMESTAMPDIFF(second,NOW(),Addtime (COALESCE(data_agenda_entrega,data_pedido),tempo_estimado_desejado)))) else '00:00:00' end as timedif ");
-		varname1.append("FROM   pedido ");
+		varname1.append("       case when flag_modoentrega = 'T' then SEC_TO_TIME( abs(TIMESTAMPDIFF(second,NOW(),Addtime (COALESCE(data_agenda_entrega,data_pedido),tempo_estimado_desejado)))) else '00:00:00' end as timedif, "); // tempo para entrega antes de responder
+		varname1.append(" tIMESTAMPDIFF(SECOND,Addtime(DATA_PEDIDO_RESPOSTA,TEMPO_ESTIMADO_ENTREGA),now() ) as sec2, ");// diferença em segs para campo abaixo
+		varname1.append(" SEC_TO_TIME( abs(tIMESTAMPDIFF(SECOND,Addtime(DATA_PEDIDO_RESPOSTA,TEMPO_ESTIMADO_ENTREGA),now() ))) as temprest "); // (data_resposta + tempo_entrega) - now() ; tempo restante para entrega do pedido a partir da reposta da loja (TEMPO_ESTIMADO_ENTREGA) dps de respondido
+
+		varname1.append(" FROM   pedido ");
 		varname1.append("       left JOIN bairros ");
 		varname1.append("               ON bairros.cod_bairro = pedido.cod_bairro ");
 		varname1.append("       LEFT JOIN pedido_motivo_cancelamento ");
@@ -780,6 +783,12 @@ public class Pedidos_ajax {
 				if (data6.getTime().before(new Date())) {
 					objRetorno.put("darok", true);
 
+				}
+
+				if (rs.getString("FLAG_PEDIDO_RET_ENTRE").equalsIgnoreCase("T") && rs.getString("flag_modoentrega").equalsIgnoreCase("T")) {
+					objRetorno.put("m_tempo_max", new SimpleDateFormat("HH:mm").format(rs.getTimestamp("temprest")));
+				} else {
+					objRetorno.put("m_tempo_max", "");
 				}
 
 			}
@@ -902,6 +911,7 @@ public class Pedidos_ajax {
 		String resposta = request.getParameter("resposta") == null ? "" : request.getParameter("resposta");
 		String m_tempo_entrega_inp = request.getParameter("m_tempo_entrega_inp") == null ? "" : request.getParameter("m_tempo_entrega_inp");
 		String prodsrecusadosjson = request.getParameter("prodsrecusadosjson") == null ? "" : request.getParameter("prodsrecusadosjson");
+		String flag_usartempomax = request.getParameter("flag_usartempomax") == null ? "N" : request.getParameter("flag_usartempomax");
 
 		/*
 		 * if (hora_entrega.equalsIgnoreCase("")) { hora_entrega = "0"; }
@@ -962,7 +972,7 @@ public class Pedidos_ajax {
 					m_tempo_entrega_inp = "00:00";
 
 				} else {
-					if (rs.getString("FLAG_PEDIDO_RET_ENTRE").equalsIgnoreCase("T") && rs.getString("flag_modoentrega").equalsIgnoreCase("T")) {
+					if (rs.getString("FLAG_PEDIDO_RET_ENTRE").equalsIgnoreCase("T") && rs.getString("flag_modoentrega").equalsIgnoreCase("T") && flag_usartempomax.equalsIgnoreCase("N")) {
 
 						// Date datatempoentregateste = Utilitario.testeHora("HH:mm", m_tempo_entrega_inp, "Tempo de entrega inválido!");// tempo de entrega da distri
 						// Date datatempoentregateste2 = Utilitario.testeHora("HH:mm", rs.getString("TEMPO_ESTIMADO_DESEJADO"), "");
@@ -975,17 +985,20 @@ public class Pedidos_ajax {
 						if ((datatempoentregateste.after(datatempoentregateste2)) && rs.getString("flag_modoentrega").equalsIgnoreCase("T")) {// ;/
 							throw new Exception("Tempo de entrega é acima do desejado!");
 						}
-						try {
-							if (rs.getLong("secs") < 0) {
-								throw new Exception("Tempo de entrega expirou!");
-							}
-						} catch (Exception e) {
-							throw new Exception("Tempo de entrega expirou!");
-						}
 
+					} else if (flag_usartempomax.equalsIgnoreCase("S")) {
+						m_tempo_entrega_inp = new SimpleDateFormat("HH:mm").format(rs.getTimestamp("timedif"));
 					} else {
 						m_tempo_entrega_inp = "00:00";
 					}
+				}
+
+				try {
+					if (rs.getLong("secs") < 0) {
+						throw new Exception("Tempo de entrega expirou!");
+					}
+				} catch (Exception e) {
+					throw new Exception("Tempo de entrega expirou!");
 				}
 
 				sql = "update  pedido  set flag_status = 'E', `TEMPO_ESTIMADO_ENTREGA` =  ? , `DATA_PEDIDO_RESPOSTA` = NOW()  where ID_DISTRIBUIDORA = ? and id_pedido = ? and flag_status = 'A' ";

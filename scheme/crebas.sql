@@ -1,6 +1,6 @@
 /*==============================================================*/
 /* DBMS name:      MySQL 5.0                                    */
-/* Created on:     30/11/2016 4:17:29 PM                        */
+/* Created on:     6/12/2016 11:00:24 AM                        */
 /*==============================================================*/
 
 
@@ -335,7 +335,8 @@ create table SYS_PARAMETROS
    ONESIGNAL_KEY        text,
    ONESIGNAL_APPID      text,
    ONESIGNAL_URL        text,
-   NUM_SEGS_NOT_FINAL_EXEC int
+   NUM_SEGS_NOT_FINAL_EXEC int,
+   COD_CANCELAMENTOSYS  int
 );
 
 /*==============================================================*/
