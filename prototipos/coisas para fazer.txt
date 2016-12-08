@@ -2,7 +2,7 @@ Quando abre o pedido, ele mostra o tempo restante do tempo maximo desejado. Se o
 
 Quando está em envio, o que devemos mostrar?
 quando o tempo expirar, devemos recusar o pedido automaticamente?Somente em pedido aberto.  Função para de cancelamento expiradoo. de x tempo x. 5 min. se pedido tiver experido, faz processo de cancelamento e seta motivo como "expirado". Notificação, seu pedido foi cancelado por se expirado.
-Botar um botao ao lado do tempo estimado de entrega para setar o tempo maximo possivel? sim
+
 
 
 

@@ -1327,7 +1327,12 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 		String idproddistr = request.getParameter("idproddistr") == null ? "" : request.getParameter("idproddistr");
 		String fp_flag_entre_ret = request.getParameter("fp_flag_entre_ret") == null ? "" : request.getParameter("fp_flag_entre_ret");
 		String fp_ordem = request.getParameter("fp_ordem") == null ? "" : request.getParameter("fp_ordem");
+		String pag = request.getParameter("pag") == null ? "" : request.getParameter("pag");
 
+		if(pag.equalsIgnoreCase("")){
+			pag = "1";
+		}
+		
 		if (!fp_flag_entre_ret.equals("T") && !fp_flag_entre_ret.equals("L")) {
 			throw new Exception("Você deve escolher um tipo de serviço!");
 		}
@@ -1505,9 +1510,9 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 		}
 
 		if (fp_ordem.equalsIgnoreCase("P")) {
-			sql.append(" order by tab.val_prod asc limit 20");
+			sql.append(" order by tab.val_prod asc limit " + 20 + " OFFSET " + (Integer.parseInt(20+"") * (Integer.parseInt(pag) - 1)) );
 		} else if (fp_ordem.equalsIgnoreCase("N")) {
-			sql.append(" order by tab.DESC_PROD asc limit 20");
+			sql.append(" order by tab.DESC_PROD asc limit " + 20 + " OFFSET " + (Integer.parseInt(20+"") * (Integer.parseInt(pag) - 1)) );
 		}
 
 		Calendar cal = Calendar.getInstance();

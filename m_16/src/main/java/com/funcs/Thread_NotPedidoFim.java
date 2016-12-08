@@ -37,7 +37,6 @@ public class Thread_NotPedidoFim extends Thread {
 			rodateste = secs_param * 1000;
 
 			while (true) {
-				System.out.println(new Date());
 				sendNotificacao(conn, sys);
 				checkExpired(conn, sys);
 				this.sleep(rodateste);
