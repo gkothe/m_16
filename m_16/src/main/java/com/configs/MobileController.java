@@ -1694,8 +1694,24 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 		String distribuidora = request.getParameter("distribuidora") == null ? "" : request.getParameter("distribuidora");
 		String desc_prod = request.getParameter("desc_prod") == null ? "" : request.getParameter("desc_prod");
 		String cod_bairro = request.getParameter("cod_bairro") == null ? "" : request.getParameter("cod_bairro");
+		String pag = request.getParameter("pag") == null ? "" : request.getParameter("pag");
 
 		StringBuffer sql = new StringBuffer();
+		sql.append(" select max( VAL_TOTALPROD ) as  VAL_TOTALPROD from pedido where id_usuario = ?");
+		PreparedStatement st = conn.prepareStatement(sql.toString());
+
+		
+		
+		st.setLong(1, cod_usuario);
+		double maxvalue = 0.0;
+		ResultSet rs = st.executeQuery();
+	
+		if (rs.next()) {
+			maxvalue = rs.getDouble("VAL_TOTALPROD");
+		}
+		
+		
+		 sql = new StringBuffer();
 		sql.append(" select pedido.cod_bairro,NUM_PED,DATA_PEDIDO,VAL_TOTALPROD,FLAG_STATUS,Coalesce(VAL_ENTREGA,0) as VAL_ENTREGA,DESC_NOME_ABREV,id_pedido,FLAG_PEDIDO_RET_ENTRE from pedido ");
 		sql.append(" inner join distribuidora ");
 		sql.append(" on distribuidora.ID_DISTRIBUIDORA  = pedido.ID_DISTRIBUIDORA ");
@@ -1738,9 +1754,11 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 
 		sql.append("  and  id_usuario = ? ");
 
-		sql.append("  order by  data_pedido desc limit 20 ");
+		sql.append("  order by  data_pedido desc limit " + 20 + " OFFSET " + (Integer.parseInt(20+"") * (Integer.parseInt(pag) - 1)) );
+		
+		
 
-		PreparedStatement st = conn.prepareStatement(sql.toString());
+		 st = conn.prepareStatement(sql.toString());
 
 		int contparam = 1;
 
@@ -1796,13 +1814,12 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 		}
 
 		st.setLong(contparam, cod_usuario);
-		double maxvalue = 0.0;
-		ResultSet rs = st.executeQuery();
+		
+		 rs = st.executeQuery();
 		JSONObject ret = new JSONObject();
 		JSONArray prods = new JSONArray();
 		while (rs.next()) {
 
-			maxvalue = maxvalue < rs.getDouble("VAL_TOTALPROD") + rs.getDouble("VAL_ENTREGA") ? rs.getDouble("VAL_TOTALPROD") + rs.getDouble("VAL_ENTREGA") : maxvalue;
 			JSONObject prod = new JSONObject();
 			prod.put("NUM_PED", rs.getString("NUM_PED"));
 			prod.put("DATA_PEDIDO", new SimpleDateFormat("dd/MM/yyyy").format(rs.getDate("DATA_PEDIDO")));
@@ -1820,7 +1837,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 
 			prods.add(prod);
 		}
-
+		ret.put("msg", "ok");
 		ret.put("pedidos", prods);
 		ret.put("maxvalue", Math.ceil(maxvalue));
 
