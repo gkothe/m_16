@@ -463,7 +463,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 			String compl = rs.getString("DESC_COMPLEMENTO");
 			String bairro = Utilitario.getNomeBairro(conn, rs.getInt("cod_bairro"), 0);
 
-			String endfinal = endereço + ", " + num + " " + compl + ", " + bairro + "/n";
+			String endfinal = endereço + ", " + num + " " + compl + ", " + bairro + " \n";
 
 			objRetorno.put("txt_obs_hora", endfinal + rs.getString("txt_obs_hora"));
 		} else {
