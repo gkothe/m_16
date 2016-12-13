@@ -698,10 +698,24 @@ public class Pedidos_ajax {
 			if (rs.getString("FLAG_PEDIDO_RET_ENTRE").equalsIgnoreCase("L")) {
 				objRetorno.put("desc_bairro", "Retirar no local");
 			} else {
-				if (rs.getInt("secs") > 0) {
-					objRetorno.put("m_tempo_max", new SimpleDateFormat("HH:mm").format(rs.getTimestamp("timedif")));
+
+				if (rs.getString("FLAG_PEDIDO_RET_ENTRE").equalsIgnoreCase("T") && rs.getString("flag_modoentrega").equalsIgnoreCase("T")) {
+					if (rs.getInt("secs") > 0) {
+						objRetorno.put("m_tempo_max", new SimpleDateFormat("HH:mm").format(rs.getTimestamp("timedif")));
+					} else {
+						objRetorno.put("m_tempo_max", "Expirado!");
+					}
+
+					if (rs.getInt("sec2") != 0 && rs.getTimestamp("data_pedido_resposta") != null) {
+						if (rs.getInt("sec2") > 0) {
+							objRetorno.put("m_tempo_max", "Expirado!");
+						} else {
+							objRetorno.put("m_tempo_max", new SimpleDateFormat("HH:mm").format(rs.getTimestamp("temprest")));
+						}
+
+					}
 				} else {
-					objRetorno.put("m_tempo_max", "Expirado!");
+					objRetorno.put("m_tempo_max", "");
 				}
 				objRetorno.put("desc_bairro", rs.getString("DESC_BAIRRO"));
 			}
@@ -783,12 +797,6 @@ public class Pedidos_ajax {
 				if (data6.getTime().before(new Date())) {
 					objRetorno.put("darok", true);
 
-				}
-
-				if (rs.getString("FLAG_PEDIDO_RET_ENTRE").equalsIgnoreCase("T") && rs.getString("flag_modoentrega").equalsIgnoreCase("T")) {
-					objRetorno.put("m_tempo_max", new SimpleDateFormat("HH:mm").format(rs.getTimestamp("temprest")));
-				} else {
-					objRetorno.put("m_tempo_max", "");
 				}
 
 			}
@@ -993,12 +1001,14 @@ public class Pedidos_ajax {
 					}
 				}
 
-				try {
-					if (rs.getLong("secs") < 0) {
+				if (!rs.getString("FLAG_PEDIDO_RET_ENTRE").equalsIgnoreCase("L")) {
+					try {
+						if (rs.getLong("secs") < 0) {
+							throw new Exception("Tempo de entrega expirou!");
+						}
+					} catch (Exception e) {
 						throw new Exception("Tempo de entrega expirou!");
 					}
-				} catch (Exception e) {
-					throw new Exception("Tempo de entrega expirou!");
 				}
 
 				sql = "update  pedido  set flag_status = 'E', `TEMPO_ESTIMADO_ENTREGA` =  ? , `DATA_PEDIDO_RESPOSTA` = NOW()  where ID_DISTRIBUIDORA = ? and id_pedido = ? and flag_status = 'A' ";

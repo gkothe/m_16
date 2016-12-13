@@ -16,7 +16,9 @@ $(document).ready(function() {
 		$("#modal_filtros_aberto").modal('hide');
 
 		loadAbertos(true);
-
+		
+		
+		$('#table_pedidos_abertos').bootstrapTable('selectPage',1);
 	});
 
 	$('#msg_filtros').blink({
@@ -45,6 +47,7 @@ $(document).ready(function() {
 		$("#flag_pedido_ret_entre").val("")
 
 		loadAbertos(true);
+		$('#table_pedidos_abertos').bootstrapTable('selectPage',1);
 	});
 
 	$("#val_ini_aberto").autoNumeric('init', numerico);

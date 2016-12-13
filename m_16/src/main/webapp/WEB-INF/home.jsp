@@ -598,8 +598,8 @@ input:focus {
 									class="col-xs-6 col-sm-6 col-md-6 col-lg-6" align="">
 									<table>
 										<tr>
-											<td style="padding-right: 5px;"><label for="">Tempo
-													máximo desejado para a entrega: </label></td>
+											<td style="padding-right: 5px;"><label id="m_tempo_max_lbl"
+												for="">Tempo máximo desejado para a entrega: </label></td>
 											<td><label id="m_tempo_max"></label></td>
 
 										</tr>

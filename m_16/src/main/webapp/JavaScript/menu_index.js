@@ -739,7 +739,7 @@ function visualizarPedido(id) {
 		success : function(data) {
 			$(".cancelamento").hide();
 			$("#m_finalizar").html("Finalizar");
-
+			$("#m_tempo_max_lbl").html("Tempo máximo desejado para a entrega");
 			audio.pause();
 			audio.currentTime = 0;
 			if (data.tipo_servico == "T") {
@@ -843,6 +843,9 @@ function visualizarPedido(id) {
 					$("#m_tempo_entrega_div").hide();
 				}
 
+				
+				$("#m_tempo_max_lbl").html("Tempo restante para realizar a entrega:");
+				
 			} else if (data.flag_status == "C") {
 				$("#m_lbl_titulo").css("color", "red");
 
