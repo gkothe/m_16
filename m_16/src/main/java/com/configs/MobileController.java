@@ -237,7 +237,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 				} else if (cmd.equalsIgnoreCase("cancelaPedido")) {
 					cancelaPedido(request, response, conn, cod_usuario, sys);
 				} else if (cmd.equalsIgnoreCase("infosCancel")) {
-					infosCancel(request, response, conn, cod_usuario);
+					infosCancel(request, response, conn, cod_usuario, sys);
 				} else if (cmd.equalsIgnoreCase("testesMudaServico")) {
 					testesMudaServico(request, response, conn, cod_usuario);
 				} else if (cmd.equalsIgnoreCase("servicoCarrinho")) {
@@ -898,7 +898,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 
 	}
 
-	private static void infosCancel(HttpServletRequest request, HttpServletResponse response, Connection conn, long cod_usuario) throws Exception {
+	private static void infosCancel(HttpServletRequest request, HttpServletResponse response, Connection conn, long cod_usuario, Sys_parametros sys) throws Exception {
 
 		PrintWriter out = response.getWriter();
 		JSONObject objRetorno = new JSONObject();
@@ -935,6 +935,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 				}
 			}
 
+			objRetorno.put("motivoexp", sys.getCod_cancelamentosys() + "");
 			objRetorno.put("msg", "ok");
 
 		}
@@ -969,6 +970,12 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 				throw new Exception("Motivo inválido");
 			}
 
+			if (outprint) {// se outprint qer dizer que veio pelo mobile
+				if (Integer.parseInt(motivo) == sys.getCod_cancelamentosys()) {
+					throw new Exception("Motivo inválido");
+				}
+			}
+
 			String sql2 = "SELECT * from  motivos_cancelamento where cod_motivo  = ? ";
 			PreparedStatement st = conn.prepareStatement(sql2);
 			st.setLong(1, Long.parseLong(motivo));
@@ -987,7 +994,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 			} else {
 				String statuspedido = rs.getString("FLAG_STATUS");
 
-				if (statuspedido.equalsIgnoreCase("F")) {
+				if (statuspedido.equalsIgnoreCase("O")) {
 					throw new Exception("Este pedido já foi finanalizado.");
 				}
 				if (statuspedido.equalsIgnoreCase("C")) {
@@ -1157,6 +1164,8 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 		JSONArray retorno = new JSONArray();
 		PrintWriter out = response.getWriter();
 
+		String firstopt = request.getParameter("firstopt") == null ? "" : request.getParameter("firstopt");
+
 		String sql = "SELECT cod_cidade from  usuario where id_usuario  = ? ";
 		PreparedStatement st = conn.prepareStatement(sql);
 		st.setLong(1, cod_usuario);
@@ -1177,7 +1186,11 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 
 		JSONObject bairro = new JSONObject();
 		bairro.put("cod_bairro", "");
-		bairro.put("desc_bairro", "Escolha um bairro");
+		if (firstopt.equalsIgnoreCase("")) {
+			bairro.put("desc_bairro", "Escolha um bairro");
+		} else {
+			bairro.put("desc_bairro", firstopt);
+		}
 
 		retorno.add(bairro);
 
@@ -1329,10 +1342,10 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 		String fp_ordem = request.getParameter("fp_ordem") == null ? "" : request.getParameter("fp_ordem");
 		String pag = request.getParameter("pag") == null ? "" : request.getParameter("pag");
 
-		if(pag.equalsIgnoreCase("")){
+		if (pag.equalsIgnoreCase("")) {
 			pag = "1";
 		}
-		
+
 		if (!fp_flag_entre_ret.equals("T") && !fp_flag_entre_ret.equals("L")) {
 			throw new Exception("Você deve escolher um tipo de serviço!");
 		}
@@ -1510,9 +1523,9 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 		}
 
 		if (fp_ordem.equalsIgnoreCase("P")) {
-			sql.append(" order by tab.val_prod asc limit " + 20 + " OFFSET " + (Integer.parseInt(20+"") * (Integer.parseInt(pag) - 1)) );
+			sql.append(" order by tab.val_prod asc limit " + 20 + " OFFSET " + (Integer.parseInt(20 + "") * (Integer.parseInt(pag) - 1)));
 		} else if (fp_ordem.equalsIgnoreCase("N")) {
-			sql.append(" order by tab.DESC_PROD asc limit " + 20 + " OFFSET " + (Integer.parseInt(20+"") * (Integer.parseInt(pag) - 1)) );
+			sql.append(" order by tab.DESC_PROD asc limit " + 20 + " OFFSET " + (Integer.parseInt(20 + "") * (Integer.parseInt(pag) - 1)));
 		}
 
 		Calendar cal = Calendar.getInstance();
@@ -1700,18 +1713,15 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 		sql.append(" select max( VAL_TOTALPROD+VAL_ENTREGA) as  VAL_TOTALPROD from pedido where id_usuario = ? ");
 		PreparedStatement st = conn.prepareStatement(sql.toString());
 
-		
-		
 		st.setLong(1, cod_usuario);
 		double maxvalue = 0.0;
 		ResultSet rs = st.executeQuery();
-	
+
 		if (rs.next()) {
 			maxvalue = rs.getDouble("VAL_TOTALPROD");
 		}
-		
-		
-		 sql = new StringBuffer();
+
+		sql = new StringBuffer();
 		sql.append(" select pedido.cod_bairro,NUM_PED,DATA_PEDIDO,VAL_TOTALPROD,FLAG_STATUS,Coalesce(VAL_ENTREGA,0) as VAL_ENTREGA,DESC_NOME_ABREV,id_pedido,FLAG_PEDIDO_RET_ENTRE from pedido ");
 		sql.append(" inner join distribuidora ");
 		sql.append(" on distribuidora.ID_DISTRIBUIDORA  = pedido.ID_DISTRIBUIDORA ");
@@ -1754,11 +1764,9 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 
 		sql.append("  and  id_usuario = ? ");
 
-		sql.append("  order by  data_pedido desc limit " + 20 + " OFFSET " + (Integer.parseInt(20+"") * (Integer.parseInt(pag) - 1)) );
-		
-		
+		sql.append("  order by  data_pedido desc limit " + 20 + " OFFSET " + (Integer.parseInt(20 + "") * (Integer.parseInt(pag) - 1)));
 
-		 st = conn.prepareStatement(sql.toString());
+		st = conn.prepareStatement(sql.toString());
 
 		int contparam = 1;
 
@@ -1769,7 +1777,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 
 		if (!(dataini.equalsIgnoreCase(""))) {
 
-			Date data = new SimpleDateFormat("ddMMyyyy HH:mm").parse(dataini + " " + "00:00");
+			Date data = new SimpleDateFormat("dd/MM/yyyy HH:mm").parse(dataini + " " + "00:00");
 			st.setString(contparam, new SimpleDateFormat("yyyy-MM-dd HH:mm").format(data));
 			contparam++;
 
@@ -1777,7 +1785,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 
 		if (!(datafim.equalsIgnoreCase(""))) {
 
-			Date data = new SimpleDateFormat("ddMMyyyy HH:mm:ss").parse(datafim + " " + "23:59:59");
+			Date data = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").parse(datafim + " " + "23:59:59");
 			st.setString(contparam, new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(data));
 			contparam++;
 		}
@@ -1814,8 +1822,8 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 		}
 
 		st.setLong(contparam, cod_usuario);
-		
-		 rs = st.executeQuery();
+
+		rs = st.executeQuery();
 		JSONObject ret = new JSONObject();
 		JSONArray prods = new JSONArray();
 		while (rs.next()) {
@@ -1959,6 +1967,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 			String compl = rs.getString("desc_endereco_complemento_entrega") == null ? "" : rs.getString("desc_endereco_complemento_entrega");
 
 			ped.put("endereco_completo", end + " " + num + " " + compl);
+			ped.put("endereco_completo2", end + " " + num + " " + compl + " " + rs.getString("desc_bairro"));
 			ped.put("desc_razao_social", rs.getString("desc_razao_social"));
 			ped.put("desc_bairro", rs.getString("desc_bairro"));
 			ped.put("desc_endereco_entrega", rs.getString("desc_endereco_entrega"));
@@ -1971,11 +1980,10 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 			sql2.append("select ID_PROD_DIST, RECUSADO_DISPONIVEL,FLAG_RECUSADO,  DESC_PROD, VAL_UNIT, QTD_PROD, QTD_PROD * VAL_UNIT   as total, DESC_ABREVIADO, produtos.id_prod from pedido_item ");
 			sql2.append("inner join produtos ");
 			sql2.append("on produtos.ID_PROD  = pedido_item.ID_PROD ");
-			
-			sql2.append(" inner join produtos_distribuidora ");
-			sql2.append(" on produtos_distribuidora.id_prod = pedido_item.id_prod and id_distribuidora = " +rs.getInt("id_distribuidora"));
 
-			
+			sql2.append(" inner join produtos_distribuidora ");
+			sql2.append(" on produtos_distribuidora.id_prod = pedido_item.id_prod and id_distribuidora = " + rs.getInt("id_distribuidora"));
+
 			sql2.append(" where id_pedido = ? order by desc_prod");
 
 			JSONArray produtos = new JSONArray();
@@ -2194,7 +2202,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 		String desc_bairro = "";
 		String id_distribuidora = "";
 		String DESC_RAZAO_SOCIAL = "";
-		String VAL_ENTREGA_MIN = "";
+		double VAL_ENTREGA_MIN = 0;
 		double subtotal = 0;
 		double frete = 0;
 		JSONArray carrinhoitem = new JSONArray();
@@ -2203,25 +2211,33 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 				JSONObject obj = new JSONObject();
 				// preguiça
 				id_carrinho = rs.getString("id_carrinho");
-				cod_bairro = rs.getString("cod_bairro");
+				cod_bairro = rs.getString("cod_bairro")==null?"":rs.getString("cod_bairro");
 				desc_bairro = rs.getString("desc_bairro");
 				obj.put("seq_item", rs.getString("seq_item"));
 				obj.put("id_prod_dist", rs.getString("ID_PROD_DIST"));
 				obj.put("qtd", rs.getString("qtd"));
-				obj.put("val_prod", rs.getString("val_prod"));
-				obj.put("total", rs.getInt("qtd") * rs.getDouble("val_prod"));
+
+				obj.put("val_prod", "" + df2.format(rs.getDouble("VAL_PROD")));//
+
+				obj.put("total", df2.format(rs.getInt("qtd") * rs.getDouble("val_prod")));
 				obj.put("desc_prod", rs.getString("DESC_PROD"));
 				obj.put("desc_abreviado", rs.getString("DESC_ABREVIADO"));
 				id_distribuidora = rs.getString("id_distribuidora");
 				DESC_RAZAO_SOCIAL = rs.getString("DESC_RAZAO_SOCIAL");
-				VAL_ENTREGA_MIN = rs.getString("VAL_ENTREGA_MIN");
+				VAL_ENTREGA_MIN = rs.getDouble("VAL_ENTREGA_MIN");
 				subtotal = subtotal + (rs.getInt("qtd") * rs.getDouble("val_prod"));
 				frete = rs.getDouble("VAL_TELE_ENTREGA");
 
 				carrinhoitem.add(obj);
 
 			}
-
+			if (!cod_bairro.equalsIgnoreCase("")) {
+				if (subtotal < VAL_ENTREGA_MIN) {
+					carrinho.put("valorbaixo", true);
+				} else {
+					carrinho.put("valorbaixo", false);
+				}
+			}
 			carrinho.put("id_carrinho", id_carrinho);
 			carrinho.put("cod_bairro", cod_bairro);
 			carrinho.put("desc_bairro", desc_bairro);
@@ -2294,18 +2310,13 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 		sql.append(" group by DESC_ENDERECO_ENTREGA,DESC_ENDERECO_NUM_ENTREGA,DESC_ENDERECO_COMPLEMENTO_ENTREGA,cod_bairro  ");
 		sql.append(" union");
 		sql.append(" select DESC_ENDERECO,DESC_ENDERECO_NUM,DESC_ENDERECO_COMPLEMENTO,COD_BAIRRO from usuario where  id_usuario = ?  and   (CONCAT(Coalesce(DESC_ENDERECO,''),Coalesce(DESC_ENDERECO_NUM,''),Coalesce(DESC_ENDERECO_COMPLEMENTO,''))  like ? ) ");
-		sql.append(" order by DESC_ENDERECO_ENTREGA"); 
+		sql.append(" order by DESC_ENDERECO_ENTREGA");
 
-		 
-
-		  
-		
 		PreparedStatement st = conn.prepareStatement(sql.toString());
 		st.setLong(1, (cod_usuario));
 		st.setString(2, "%" + descender + "%");
 		st.setLong(3, (cod_usuario));
 		st.setString(4, "%" + descender + "%");
-
 
 		ResultSet rs = st.executeQuery();
 		JSONArray enderecos = new JSONArray();
@@ -2323,6 +2334,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 				obj.put("desc_endereco_num_entrega", rs.getString("DESC_ENDERECO_NUM_ENTREGA") == null ? "" : rs.getString("DESC_ENDERECO_NUM_ENTREGA"));
 				obj.put("desc_endereco_complemento_entrega", rs.getString("DESC_ENDERECO_COMPLEMENTO_ENTREGA") == null ? "" : rs.getString("DESC_ENDERECO_COMPLEMENTO_ENTREGA"));
 				obj.put("cod_bairro", rs.getString("cod_bairro"));
+				obj.put("desc_bairro", Utilitario.getNomeBairro(conn, rs.getInt("cod_bairro"), 0));
 
 				enderecos.add(obj);
 			}
@@ -3054,7 +3066,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 
 		}
 
-		if(choiceserv.equalsIgnoreCase("T"))
+		if (choiceserv.equalsIgnoreCase("T"))
 			testesMudaBairroCarrinho(request, response, conn, cod_usuario, bairro, choiceserv, false);
 
 		long idcarrinho = 0;
