@@ -115,6 +115,8 @@ public class Thread_NotPedidoFim extends Thread {
 		}
 
 	}
+	
+	
 
 	private void checkExpired(Connection conn, Sys_parametros sys) {
 

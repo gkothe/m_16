@@ -1004,7 +1004,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 					throw new Exception("Este pedido já foi recusado.");
 				}
 
-				if (statuspedido.equalsIgnoreCase("E")) {// se for em envio/em local
+				if (statuspedido.equalsIgnoreCase("E")) {// se for em envio/em local/agendamento
 
 					Calendar data6 = Calendar.getInstance();
 					data6.setTime(rs.getTimestamp("tempocanc"));
@@ -1044,7 +1044,8 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 
 				}
 
-				if (statuspedido.equalsIgnoreCase("E") || statuspedido.equalsIgnoreCase("S")) {// em envio
+				if (statuspedido.equalsIgnoreCase("E") ){
+					//|| statuspedido.equalsIgnoreCase("S")) {//"S" a principio nao esta sendo usado. para espera é  "E" +  e tipo de serviço "L" local  
 
 					if (rs.getString("FLAG_MODOPAGAMENTO").equalsIgnoreCase("D")) {// cancelamento em pagamento por dinhero. só cancelar e avisar a distribuidora.
 
