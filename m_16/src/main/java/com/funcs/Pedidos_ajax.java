@@ -20,6 +20,8 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
+import com.configs.MobileController;
+
 public class Pedidos_ajax {
 
 	// public static int horas_fim_pedido = 6;
@@ -55,6 +57,88 @@ public class Pedidos_ajax {
 		}
 
 		out.print(retorno.toJSONString());
+	}
+
+	public static void InsertPedidoDistri(HttpServletRequest request, HttpServletResponse response, Connection conn, int coddistr) throws Exception {
+
+		JSONObject retorno = new JSONObject();
+		PrintWriter out = response.getWriter();
+		String prodsjson = request.getParameter("prodsjson") == null ? "" : request.getParameter("prodsjson"); //
+		String mod_pagamento = request.getParameter("mod_pagamento") == null ? "" : request.getParameter("mod_pagamento"); //
+		JSONArray prods = (JSONArray) new JSONParser().parse(prodsjson);
+
+		JSONObject objRetorno = new JSONObject();
+		String sql = " select * from distribuidora where ID_DISTRIBUIDORA = ? ";
+		PreparedStatement st2 = conn.prepareStatement(sql);
+		st2.setInt(1, coddistr);
+		ResultSet rs2 = st2.executeQuery();
+		long iduser = 0;
+		if (rs2.next()) {
+
+			iduser = rs2.getLong("ID_USUARIO_INSERT");
+
+		} else {
+			throw new Exception("Nenhum usuário cadastro para a loja.");
+		}
+
+		for (int i = 0; i < prods.size(); i++) {
+
+			JSONObject obj = (JSONObject) prods.get(i);
+			int idprod = Integer.parseInt(obj.get("id").toString());
+			int qtd = Integer.parseInt(obj.get("qtd").toString());
+
+			MobileController.addCarrinho(request, response, conn, iduser, getidProddistr(coddistr, idprod, conn) + "", qtd + "", "", "L", false);
+
+		}
+
+		JSONObject param = new JSONObject();
+
+		param.put("tipo_pagamento", mod_pagamento);
+		param.put("desc_endereco", "");
+		param.put("desc_endereco_num", "");
+		param.put("desc_endereco_complemento", "");
+		param.put("tempomax", "");
+		param.put("choiceserv", "L");
+		param.put("trocopara", "");
+		param.put("modoentrega", "");
+		param.put("dataagendamento", "");
+		param.put("dataagendamentohora", "");
+		param.put("bairro", "");
+
+		param = MobileController.criarPedido(request, response, conn, iduser, param, false);
+
+		param.put("motivos_json", "");
+		param.put("resposta", "A");
+		param.put("m_tempo_entrega_inp", "");
+		param.put("prodsrecusadosjson", "");
+		param.put("flag_usartempomax", "");
+
+		responderPedido(request, response, conn, coddistr, param, false);
+
+		finalizandoPedido(request, response, conn, coddistr, param.get("id_pedido").toString(), false, true);
+
+		retorno.put("msg", "ok");
+
+		out.print(retorno.toJSONString());
+	}
+
+	public static long getidProddistr(int coddistr, int idprod, Connection conn) throws Exception {
+
+		JSONObject objRetorno = new JSONObject();
+		String sql = " select * from produtos_distribuidora where ID_DISTRIBUIDORA = ? and ID_PROD = ? ";
+		PreparedStatement st2 = conn.prepareStatement(sql);
+		st2.setInt(1, coddistr);
+		st2.setInt(2, idprod);
+		ResultSet rs2 = st2.executeQuery();
+
+		if (rs2.next()) {
+
+			return rs2.getLong("ID_PROD_DIST");
+
+		} else {
+			throw new Exception("Produto inválido");
+		}
+
 	}
 
 	public static void carregaPedidosAbertos(HttpServletRequest request, HttpServletResponse response, Connection conn, int coddistr) throws Exception {
@@ -828,13 +912,18 @@ public class Pedidos_ajax {
 	}
 
 	public static void finalizandoPedido(HttpServletRequest request, HttpServletResponse response, Connection conn, int coddistr) throws Exception {
+
+		String id_pedido = request.getParameter("id_pedido") == null ? "" : request.getParameter("id_pedido"); //
+		finalizandoPedido(request, response, conn, coddistr, id_pedido, true, false);
+
+	}
+
+	public static void finalizandoPedido(HttpServletRequest request, HttpServletResponse response, Connection conn, int coddistr, String id_pedido, boolean outprint, boolean avoidteste) throws Exception {
 		Sys_parametros sys = new Sys_parametros(conn);
 		PrintWriter out = response.getWriter();
 		JSONObject objRetorno = new JSONObject();
 
-		String id_pedido = request.getParameter("id_pedido") == null ? "" : request.getParameter("id_pedido"); //
-
-		String sql = " select * from  pedido  left join pedido_motivo_cancelamento on pedido_motivo_cancelamento.id_pedido = pedido.id_pedido  where pedido.id_pedido = ? and ID_DISTRIBUIDORA = ? and (flag_status = 'E' or flag_status = 'S' or (flag_status = 'C' and FLAG_CONFIRMADO_DISTRIBUIDORA = 'N' ) ) ";
+		String sql = " select * from  pedido  left join pedido_motivo_cancelamento on pedido_motivo_cancelamento.id_pedido = pedido.id_pedido  where pedido.id_pedido = ? and ID_DISTRIBUIDORA = ? and (flag_status = 'E'  or (flag_status = 'C' and FLAG_CONFIRMADO_DISTRIBUIDORA = 'N' ) ) ";
 
 		PreparedStatement st = conn.prepareStatement(sql);
 		st.setInt(1, Integer.parseInt(id_pedido));
@@ -857,9 +946,10 @@ public class Pedidos_ajax {
 
 			} else {
 
-				if (data6.getTime().after(new Date())) {
-					throw new Exception("A hora atual deve exceder em " + sys.getPED_HORASOKEY() + "h a data de resposta para o pedido ser finalizado manualmente.");
-				}
+				if (!avoidteste)
+					if (data6.getTime().after(new Date())) {
+						throw new Exception("A hora atual deve exceder em " + sys.getPED_HORASOKEY() + "h a data de resposta para o pedido ser finalizado manualmente.");
+					}
 
 				sql = " update  pedido  set flag_status = 'O' where id_pedido = ? and ID_DISTRIBUIDORA = ?  ";
 				st = conn.prepareStatement(sql);
@@ -872,8 +962,8 @@ public class Pedidos_ajax {
 		}
 
 		objRetorno.put("msg", "ok");
-
-		out.print(objRetorno.toJSONString());
+		if (outprint)
+			out.print(objRetorno.toJSONString());
 
 	}
 
@@ -909,17 +999,37 @@ public class Pedidos_ajax {
 
 	public static void responderPedido(HttpServletRequest request, HttpServletResponse response, Connection conn, int coddistr) throws Exception {
 
-		PrintWriter out = response.getWriter();
-		JSONObject objRetorno = new JSONObject();
-		Sys_parametros sys = new Sys_parametros(conn);
 		String id_pedido = request.getParameter("id") == null ? "" : request.getParameter("id"); //
 		String motivos_json = request.getParameter("motivos_json") == null ? "" : request.getParameter("motivos_json");
-		// String hora_entrega = request.getParameter("hora_entrega") == null ? "" : request.getParameter("hora_entrega");
-		// String min_entrega = request.getParameter("min_entrega") == null ? "" : request.getParameter("min_entrega");
 		String resposta = request.getParameter("resposta") == null ? "" : request.getParameter("resposta");
 		String m_tempo_entrega_inp = request.getParameter("m_tempo_entrega_inp") == null ? "" : request.getParameter("m_tempo_entrega_inp");
 		String prodsrecusadosjson = request.getParameter("prodsrecusadosjson") == null ? "" : request.getParameter("prodsrecusadosjson");
 		String flag_usartempomax = request.getParameter("flag_usartempomax") == null ? "N" : request.getParameter("flag_usartempomax");
+
+		JSONObject param = new JSONObject();
+
+		param.put("id_pedido", id_pedido);
+		param.put("motivos_json", motivos_json);
+		param.put("resposta", resposta);
+		param.put("m_tempo_entrega_inp", m_tempo_entrega_inp);
+		param.put("prodsrecusadosjson", prodsrecusadosjson);
+		param.put("flag_usartempomax", flag_usartempomax);
+
+		responderPedido(request, response, conn, coddistr, param, true);
+	}
+
+	public static void responderPedido(HttpServletRequest request, HttpServletResponse response, Connection conn, int coddistr, JSONObject param, boolean outprint) throws Exception {
+
+		PrintWriter out = response.getWriter();
+		JSONObject objRetorno = new JSONObject();
+		Sys_parametros sys = new Sys_parametros(conn);
+
+		String id_pedido = param.get("id_pedido").toString();
+		String motivos_json = param.get("motivos_json").toString();
+		String resposta = param.get("resposta").toString();
+		String m_tempo_entrega_inp = param.get("m_tempo_entrega_inp").toString();
+		String prodsrecusadosjson = param.get("prodsrecusadosjson").toString();
+		String flag_usartempomax = param.get("flag_usartempomax").toString();
 
 		/*
 		 * if (hora_entrega.equalsIgnoreCase("")) { hora_entrega = "0"; }
@@ -1118,8 +1228,8 @@ public class Pedidos_ajax {
 		}
 
 		objRetorno.put("msg", "ok");
-
-		out.print(objRetorno.toJSONString());
+		if (outprint)
+			out.print(objRetorno.toJSONString());
 
 	}
 

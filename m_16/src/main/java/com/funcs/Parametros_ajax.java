@@ -46,7 +46,7 @@ public class Parametros_ajax {
 		String val_fim = request.getParameter("val_fim") == null ? "" : request.getParameter("val_fim");
 		String flag_situacao = request.getParameter("flag_situacao") == null ? "" : request.getParameter("flag_situacao");
 
-		String sql = "select produtos.id_prod, desc_prod,Coalesce(val_prod,0) as val_prod, Coalesce(produtos_distribuidora.flag_ativo,'N') as flag_ativo from produtos  left join produtos_distribuidora on produtos.id_prod = produtos_distribuidora.id_prod	 and ID_DISTRIBUIDORA = ? where (produtos.flag_ativo = 'S') ";
+		String sql = "select produtos.id_prod, desc_prod, DESC_ABREVIADO, Coalesce(val_prod,0) as val_prod, Coalesce(produtos_distribuidora.flag_ativo,'N') as flag_ativo from produtos  left join produtos_distribuidora on produtos.id_prod = produtos_distribuidora.id_prod	 and ID_DISTRIBUIDORA = ? where (produtos.flag_ativo = 'S') ";
 
 		if (!flag_situacao.equalsIgnoreCase("")) {
 			sql = sql + " and  Coalesce(produtos_distribuidora.flag_ativo,'N')  = ? ";
@@ -94,6 +94,7 @@ public class Parametros_ajax {
 
 			obj.put("id_prod", rs.getString("id_prod"));
 			obj.put("desc_prod", rs.getString("desc_prod"));
+			obj.put("desc_abreviado", rs.getString("desc_abreviado"));
 			obj.put("val_prod", rs.getString("val_prod"));
 			obj.put("flag_ativo", rs.getString("flag_ativo"));
 

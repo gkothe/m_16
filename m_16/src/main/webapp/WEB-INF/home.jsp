@@ -154,7 +154,9 @@ input:focus {
 										class="fa fa-home clickmenu2"></i> Pedidos <span
 										class="fa fa-chevron-down clickmenu"></span></a>
 									<ul class="nav child_menu">
-
+										<li><a linkmenu="inserirpedido"
+											onclick="trocaPag(this,'N',event);" class="clickmenu">Inserir
+												pedido</a></li>
 										<li><a linkmenu="listaped"
 											onclick="trocaPag(this,'N',event);" class="clickmenu">Abertos</a></li>
 										<li><a linkmenu="listapedfechado"
@@ -598,8 +600,9 @@ input:focus {
 									class="col-xs-6 col-sm-6 col-md-6 col-lg-6" align="">
 									<table>
 										<tr>
-											<td style="padding-right: 5px;"><label id="m_tempo_max_lbl"
-												for="">Tempo máximo desejado para a entrega: </label></td>
+											<td style="padding-right: 5px;"><label
+												id="m_tempo_max_lbl" for="">Tempo máximo desejado
+													para a entrega: </label></td>
 											<td><label id="m_tempo_max"></label></td>
 
 										</tr>

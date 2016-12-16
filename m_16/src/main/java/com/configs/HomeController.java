@@ -55,12 +55,12 @@ public class HomeController extends javax.servlet.http.HttpServlet {
 
 	public void processaRequisicoes(HttpServletRequest request, HttpServletResponse response) {
 
-//		System.out.println("--------entro home");
-//		Map map = request.getParameterMap();
-//		for (Iterator iterator = map.keySet().iterator(); iterator.hasNext();) {
-//			String type = (String) iterator.next();
-//			System.out.println(type + " : " + request.getParameter(type));
-//		}
+		// System.out.println("--------entro home");
+		// Map map = request.getParameterMap();
+		// for (Iterator iterator = map.keySet().iterator(); iterator.hasNext();) {
+		// String type = (String) iterator.next();
+		// System.out.println(type + " : " + request.getParameter(type));
+		// }
 
 		try {
 
@@ -94,9 +94,9 @@ public class HomeController extends javax.servlet.http.HttpServlet {
 					home(request, response);
 				} else if (strTipo.equalsIgnoreCase("dashpedidos")) {
 					dashpedidos(request, response);
-				}
-
-				else if (strTipo.equalsIgnoreCase("rel_pedidos")) {
+				} else if (strTipo.equalsIgnoreCase("inserirpedido")) {
+					inserirPedido(request, response);
+				} else if (strTipo.equalsIgnoreCase("rel_pedidos")) {
 					relPedidos(request, response);
 				} else if (strTipo.equalsIgnoreCase("rel_produtos")) {
 					relProdutos(request, response);
@@ -191,7 +191,9 @@ public class HomeController extends javax.servlet.http.HttpServlet {
 				Pedidos_ajax.finalizandoPedido(request, response, conn, coddistr);
 			} else if (cmd.equalsIgnoreCase("responderPedido")) {
 				Pedidos_ajax.responderPedido(request, response, conn, coddistr);
-			} else if (cmd.equalsIgnoreCase("carregaProdutos")) {
+			} else if (cmd.equalsIgnoreCase("insertpedidodistri")) {
+				Pedidos_ajax.InsertPedidoDistri(request, response, conn, coddistr);
+			}  else if (cmd.equalsIgnoreCase("carregaProdutos")) {
 				Parametros_ajax.carregaProdutos(request, response, conn, coddistr);
 			} else if (cmd.equalsIgnoreCase("cleanBairrosHorarios")) {
 				Parametros_ajax.limparBairros(request, response, conn, coddistr);
@@ -297,6 +299,17 @@ public class HomeController extends javax.servlet.http.HttpServlet {
 			throw e;
 		} finally {
 		}
+	}
+
+	private void inserirPedido(HttpServletRequest request, HttpServletResponse response) throws Exception {
+		try {
+			request.getRequestDispatcher("/WEB-INF/inserir_pedido.html").forward(request, response);
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw e;
+		} finally {
+		}
+
 	}
 
 	private void listapedfechado(HttpServletRequest request, HttpServletResponse response) throws Exception {

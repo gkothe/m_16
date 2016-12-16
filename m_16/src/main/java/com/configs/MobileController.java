@@ -1004,7 +1004,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 					throw new Exception("Este pedido já foi recusado.");
 				}
 
-				if (statuspedido.equalsIgnoreCase("E")) {// se for em envio/em local/agendamento
+				if (statuspedido.equalsIgnoreCase("E")) {// TODO se for em envio/em local/agendamento
 
 					Calendar data6 = Calendar.getInstance();
 					data6.setTime(rs.getTimestamp("tempocanc"));
@@ -1044,8 +1044,8 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 
 				}
 
-				if (statuspedido.equalsIgnoreCase("E") ){
-					//|| statuspedido.equalsIgnoreCase("S")) {//"S" a principio nao esta sendo usado. para espera é  "E" +  e tipo de serviço "L" local  
+				if (statuspedido.equalsIgnoreCase("E")) {
+					// || statuspedido.equalsIgnoreCase("S")) {//"S" a principio nao esta sendo usado. para espera é "E" + e tipo de serviço "L" local
 
 					if (rs.getString("FLAG_MODOPAGAMENTO").equalsIgnoreCase("D")) {// cancelamento em pagamento por dinhero. só cancelar e avisar a distribuidora.
 
@@ -2212,7 +2212,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 				JSONObject obj = new JSONObject();
 				// preguiça
 				id_carrinho = rs.getString("id_carrinho");
-				cod_bairro = rs.getString("cod_bairro")==null?"":rs.getString("cod_bairro");
+				cod_bairro = rs.getString("cod_bairro") == null ? "" : rs.getString("cod_bairro");
 				desc_bairro = rs.getString("desc_bairro");
 				obj.put("seq_item", rs.getString("seq_item"));
 				obj.put("id_prod_dist", rs.getString("ID_PROD_DIST"));
@@ -2384,7 +2384,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 
 	}
 
-	private static void addCarrinho(HttpServletRequest request, HttpServletResponse response, Connection conn, long cod_usuario, String id_proddistr, String qtd, String cod_bairro, String choiceserv, boolean sendoutprint) throws Exception {
+	public static void addCarrinho(HttpServletRequest request, HttpServletResponse response, Connection conn, long cod_usuario, String id_proddistr, String qtd, String cod_bairro, String choiceserv, boolean sendoutprint) throws Exception {
 		PrintWriter out = response.getWriter();
 		JSONObject retorno = new JSONObject();
 
@@ -3031,8 +3031,6 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 	}
 
 	private static void criarPedido(HttpServletRequest request, HttpServletResponse response, Connection conn, long cod_usuario) throws Exception {
-		PrintWriter out = response.getWriter();
-		JSONObject retorno = new JSONObject();
 
 		String tipo_pagamento = request.getParameter("tipo_pagamento") == null ? "" : request.getParameter("tipo_pagamento");
 		String desc_endereco = request.getParameter("desc_endereco") == null ? "" : request.getParameter("desc_endereco");
@@ -3045,6 +3043,40 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 		String dataagendamento = request.getParameter("dataagendamento") == null ? "" : request.getParameter("dataagendamento");
 		String dataagendamentohora = request.getParameter("dataagendamentohora") == null ? "" : request.getParameter("dataagendamentohora");
 		String bairro = request.getParameter("bairro") == null ? "" : request.getParameter("bairro");
+
+		JSONObject param = new JSONObject();
+
+		param.put("tipo_pagamento", tipo_pagamento);
+		param.put("desc_endereco", desc_endereco);
+		param.put("desc_endereco_num", desc_endereco_num);
+		param.put("desc_endereco_complemento", desc_endereco_complemento);
+		param.put("tempomax", tempomax);
+		param.put("choiceserv", choiceserv);
+		param.put("trocopara", trocopara);
+		param.put("modoentrega", modoentrega);
+		param.put("dataagendamento", dataagendamento);
+		param.put("dataagendamentohora", dataagendamentohora);
+		param.put("bairro", bairro);
+
+		criarPedido(request, response, conn, cod_usuario, param, true);
+
+	}
+
+	public static JSONObject criarPedido(HttpServletRequest request, HttpServletResponse response, Connection conn, long cod_usuario, JSONObject param, boolean outprint) throws Exception {
+		PrintWriter out = response.getWriter();
+		JSONObject retorno = new JSONObject();
+
+		String tipo_pagamento = param.get("tipo_pagamento").toString();
+		String desc_endereco = param.get("desc_endereco").toString();
+		String desc_endereco_num = param.get("desc_endereco_num").toString();
+		String desc_endereco_complemento = param.get("desc_endereco_complemento").toString();
+		String tempomax = param.get("tempomax").toString();
+		String choiceserv = param.get("choiceserv").toString();
+		String trocopara = param.get("trocopara").toString();
+		String modoentrega = param.get("modoentrega").toString();
+		String dataagendamento = param.get("dataagendamento").toString();
+		String dataagendamentohora = param.get("dataagendamentohora").toString();
+		String bairro = param.get("bairro").toString();
 
 		if (!choiceserv.equals("T") && !choiceserv.equals("L")) {
 			throw new Exception("Tipo de serviço inválido.");
@@ -3110,7 +3142,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 		st.setLong(1, (cod_usuario));
 		ResultSet rs = st.executeQuery();
 		ResultSet rs2 = null;
-
+		long idped = 0;
 		String email = "";
 		if (rs.next()) {
 			idcarrinho = rs.getLong("id_carrinho");
@@ -3143,7 +3175,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 
 				st = conn.prepareStatement(sql.toString());
 
-				long idped = Utilitario.retornaIdinsertLong("pedido", "ID_PEDIDO", conn);
+				idped = Utilitario.retornaIdinsertLong("pedido", "ID_PEDIDO", conn);
 				st.setLong(1, idped);
 				st.setLong(2, rs.getInt("ID_DISTRIBUIDORA"));
 				st.setLong(3, cod_usuario);
@@ -3405,8 +3437,13 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 			throw new Exception("Não há itens em seu carrinho!");
 		}
 		retorno.put("msg", "ok");
-
-		out.print(retorno.toJSONString());
+		if (outprint)
+			out.print(retorno.toJSONString());
+		else{
+			retorno.put("id_pedido", idped);
+		}
+		
+		return retorno;
 	}
 
 	public static void main(String[] args) {
