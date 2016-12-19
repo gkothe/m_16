@@ -12,13 +12,22 @@ $(window).resize(function() {
 
 $(document).ready(function() {
 
-	$("#btn_filtrar").click(function() {
+	$("#btn_filtrarprodped").click(function() {
 		loadProdutos();
 	});
 
 	$("#p_salvar").click(function() {
 		salvarpedido();
 	});
+	
+	$('#descricaoprod').keyup(function(e){
+	    if(e.keyCode == 13)
+	    {
+	    	loadProdutos();
+	    }
+	});
+	
+	
 
 	$('.keep-open', $('.fixed-table-toolbar')).prependTo($('#colunas'));
 	$('.fixed-table-toolbar').remove();
@@ -48,7 +57,7 @@ $(document).ready(function() {
 
 	loadProdutos();
 
-	$("#row_da_tabelaprod").find(".fixed-table-toolbar").append("<div class=\"pull-left \" style=\"padding-top: 10px;\"> <label>Listagem de produtos</label> </div>");
+	$('.fixed-table-toolbar').remove();
 
 });
 
@@ -74,8 +83,12 @@ function addprod(id, desc) {
 
 		$("#add_items").append(html);
 
+		$("#div_scroll").animate({ scrollTop: $('#div_scroll').prop("scrollHeight")}, 100);
+		$("#lbl_nenhumprod").hide();
 	}
 
+	
+	
 }
 
 function salvarpedido() {
@@ -154,7 +167,7 @@ function salvarpedido() {
 function loadProdutos() {
 
 	var flag_situacao = $("#flag_situacao").val();
-
+	var descricaoprod = $("#descricaoprod").val();
 	$.blockUI({
 		message : 'Carregando...'
 	});
@@ -166,7 +179,7 @@ function loadProdutos() {
 		async : true,
 		data : {
 			cmd : 'carregaProdutos',
-
+			descricaoprod:descricaoprod,
 			flag_situacao : "S"
 
 		},

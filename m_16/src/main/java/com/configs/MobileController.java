@@ -1491,9 +1491,18 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 		}
 
 		sql.append(" where 1=1 ");
-
+		String[] keys = null;
 		if (listagem) {// se for listagem de todos produtos ou de um especifico, tela de detalhes.
-			sql.append(" and tab.desc_prod  like ? ");
+
+			if (!desc_pesquisa.equalsIgnoreCase("")) {
+
+				keys = desc_pesquisa.split(" ");
+				for (int i = 0; i < keys.length; i++) {
+					sql.append(" and tab.desc_prod  like ? ");
+				}
+
+			}
+
 		} else {
 			// sql.append(" and tab.id_prod = ? ");
 			sql.append(" and tab.ID_PROD_DIST  =  ?  ");
@@ -1553,8 +1562,18 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 			contparam++;
 		}
 		if (listagem) {
-			st.setString(contparam, "%" + desc_pesquisa + "%");
-			contparam++;
+
+			if (!desc_pesquisa.equalsIgnoreCase("")) {
+
+				keys = desc_pesquisa.split(" ");
+				for (int i = 0; i < keys.length; i++) {
+					st.setString(contparam, "%" + keys[i] + "%");
+					contparam++;
+				}
+
+			}
+
+		
 		} else {
 			st.setInt(contparam, Integer.parseInt(idproddistr));
 			contparam++;
@@ -3439,10 +3458,10 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 		retorno.put("msg", "ok");
 		if (outprint)
 			out.print(retorno.toJSONString());
-		else{
+		else {
 			retorno.put("id_pedido", idped);
 		}
-		
+
 		return retorno;
 	}
 

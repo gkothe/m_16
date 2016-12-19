@@ -21,6 +21,25 @@
 
 		<br>
 
+		<div class="row rowpad">
+
+			<div class="col-xs-1 col-sm-1 col-md-1 col-lg-1 filtros"
+				align="right">
+				<label for=""> Descrição Produto</label>
+			</div>
+			<div class="col-xs-4 col-sm-4 col-md-4	 col-lg-4">
+				<input id="descricaoprod" style="width: 100%" class="form-control"
+					type="text" maxlength="" value="" name="descricaoprod">
+			</div>
+			<div class="col-xs-6 col-sm-6 col-md-6 col-lg-6 " align="left">
+				<button class="btn btn-primary " type="button" id="btn_filtrarprodped"
+					id="btn_filtrarprodped">Filtrar</button>
+
+
+			</div>
+
+		</div>
+		<br>
 		<div class="row" id="row_da_tabelaprod">
 			<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
 				<table id="table_produtos" data-toggle="table" data-height="300"
@@ -65,21 +84,34 @@
 					</select>
 				</div>
 			</div>
+
+			<div class="col-xs-1 col-sm-1 col-md-1 col-lg-1"></div>
+
+			<div class="col-xs-5 col-md-5 col-lg-5 ">
+				<label for=""> </label>
+				<div class="form-group"></div>
+			</div>
+
+
 		</div>
+		<div> <label style="font-weight: 900">Produtos</label> </div>
+		<div style="height: 200px; overflow-y: scroll;" id="div_scroll">
+			<div style="width: 95% !important;" class="row">
 
-
-		<div class="row">
-
-			<div class="col-xs-12 col-md-12 col-lg-12 ">
-				<table id="add_items">
-				</table>
+				<div class="col-xs-12 col-md-12 col-lg-12 ">
+					<table id="add_items">
+						
+						<tr id="lbl_nenhumprod">
+							<th>Nenhum produto adicionado.</th>
+						</tr>
+					</table>
+				</div>
 			</div>
 		</div>
 
 		<div class="row">
 			<div class="col-xs-12 col-md-12 col-lg-12 ">
-				<button class="btn btn-primary  " type="button" id="p_salvar"
-					id="">Salvar</button>
+				<button class="btn btn-primary  " type="button" id="p_salvar" id="">Salvar</button>
 			</div>
 		</div>
 

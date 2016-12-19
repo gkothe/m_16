@@ -23,6 +23,7 @@ $(document).ready(function() {
 		$("#val_ini").autoNumeric('set', "");
 		$("#val_fim").autoNumeric('set', "");
 		$("#flag_situacao").val("");
+		$("#descricaoprod").val("");
 
 		loadProdutos();
 	});
@@ -75,6 +76,13 @@ $(document).ready(function() {
 	loadProdutos();
 
 	$("#row_da_tabelaprod").find(".fixed-table-toolbar").append("<div class=\"pull-left \" style=\"padding-top: 10px;\"> <label>Listagem de produtos</label> </div>");
+	
+	$('#descricaoprod').keyup(function(e){
+	    if(e.keyCode == 13)
+	    {
+	    	loadProdutos();
+	    }
+	});
 	
 
 });
@@ -137,7 +145,7 @@ function editarProduto(id_produto) {
 
 			$("#m_lbl_produto_nome").html("Cód " + data.p_id_produto +" - " +data.nome_abreviado);
 			$("#p_nome_reduzido").html(data.nome_abreviado);
-			$("#p_nome_completo").html(data.nome_completo);
+			$("#p_nome_completo").val(data.nome_completo);
 			$("#m_val_prod").autoNumeric('set', data.valor_unit);
 			$("#p_flag_status").val(data.flag_ativo);
 			$("#p_id_produto").val(data.p_id_produto);
@@ -162,11 +170,13 @@ function cleanModalprod() {
 
 	$("#m_lbl_produto_nome").html("");
 	$("#p_nome_reduzido").html("");
-	$("#p_nome_completo").html("");
+	$("#p_nome_completo").val("");
 	$("#m_val_prod").autoNumeric('set', 0);
 	$("#p_flag_status").val("");
 	$("#p_id_produto").val("");
-
+	
+	
+	
 	$("#p_img_prod").attr("src", "");
 
 }
@@ -217,7 +227,10 @@ function loadProdutos() {
 	var val_ini = $("#val_ini").autoNumeric('get');
 	var val_fim = $("#val_fim").autoNumeric('get');
 	var flag_situacao = $("#flag_situacao").val();
-
+	var descricaoprod = $("#descricaoprod").val();
+	
+	
+	
 	$.blockUI({
 		message : 'Carregando...'
 	});
@@ -232,7 +245,8 @@ function loadProdutos() {
 			id_produto : id_produto,
 			val_ini : val_ini,
 			val_fim : val_fim,
-			flag_situacao : flag_situacao
+			flag_situacao : flag_situacao,
+			descricaoprod:descricaoprod
 
 		},
 		success : function(data) {

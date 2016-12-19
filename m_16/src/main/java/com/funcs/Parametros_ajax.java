@@ -45,6 +45,7 @@ public class Parametros_ajax {
 		String val_ini = request.getParameter("val_ini") == null ? "" : request.getParameter("val_ini");
 		String val_fim = request.getParameter("val_fim") == null ? "" : request.getParameter("val_fim");
 		String flag_situacao = request.getParameter("flag_situacao") == null ? "" : request.getParameter("flag_situacao");
+		String descricaoprod = request.getParameter("descricaoprod") == null ? "" : request.getParameter("descricaoprod");
 
 		String sql = "select produtos.id_prod, desc_prod, DESC_ABREVIADO, Coalesce(val_prod,0) as val_prod, Coalesce(produtos_distribuidora.flag_ativo,'N') as flag_ativo from produtos  left join produtos_distribuidora on produtos.id_prod = produtos_distribuidora.id_prod	 and ID_DISTRIBUIDORA = ? where (produtos.flag_ativo = 'S') ";
 
@@ -62,6 +63,16 @@ public class Parametros_ajax {
 
 		if (!val_fim.equalsIgnoreCase("")) {
 			sql = sql + " and   Coalesce(VAL_PROD,0) <= ? ";
+		}
+
+		String[] keys = null;
+		if (!descricaoprod.equalsIgnoreCase("")) {
+
+			keys = descricaoprod.split(" ");
+			for (int i = 0; i < keys.length; i++) {
+				sql = sql + " and   desc_prod like  ? ";
+			}
+
 		}
 
 		PreparedStatement st = conn.prepareStatement(sql);
@@ -86,6 +97,15 @@ public class Parametros_ajax {
 		if (!val_fim.equalsIgnoreCase("")) {
 			st.setDouble(contparam, Double.parseDouble(val_fim));
 			contparam++;
+		}
+		if (!descricaoprod.equalsIgnoreCase("")) {
+
+			keys = descricaoprod.split(" ");
+			for (int i = 0; i < keys.length; i++) {
+				st.setString(contparam, "%" + keys[i] + "%");
+				contparam++;
+			}
+
 		}
 
 		ResultSet rs = st.executeQuery();
