@@ -2324,20 +2324,32 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 
 		String descender = request.getParameter("descender") == null ? "" : request.getParameter("descender"); // precisa receber
 
-		StringBuffer sql = new StringBuffer();
-		sql.append(" select DESC_ENDERECO_ENTREGA,DESC_ENDERECO_NUM_ENTREGA,DESC_ENDERECO_COMPLEMENTO_ENTREGA,cod_bairro from pedido");
-		sql.append(" where id_usuario = ?  and   (CONCAT(Coalesce(DESC_ENDERECO_ENTREGA,''),Coalesce(DESC_ENDERECO_NUM_ENTREGA,''),Coalesce(DESC_ENDERECO_COMPLEMENTO_ENTREGA,''))  like ? )");
-		sql.append(" group by DESC_ENDERECO_ENTREGA,DESC_ENDERECO_NUM_ENTREGA,DESC_ENDERECO_COMPLEMENTO_ENTREGA,cod_bairro  ");
-		sql.append(" union");
-		sql.append(" select DESC_ENDERECO,DESC_ENDERECO_NUM,DESC_ENDERECO_COMPLEMENTO,COD_BAIRRO from usuario where  id_usuario = ?  and   (CONCAT(Coalesce(DESC_ENDERECO,''),Coalesce(DESC_ENDERECO_NUM,''),Coalesce(DESC_ENDERECO_COMPLEMENTO,''))  like ? ) ");
-		sql.append(" order by DESC_ENDERECO_ENTREGA");
+		StringBuffer  sql = new StringBuffer();
+		sql.append("select DESC_ENDERECO_ENTREGA,DESC_ENDERECO_NUM_ENTREGA,DESC_ENDERECO_COMPLEMENTO_ENTREGA,pedido.cod_bairro,  desc_bairro  from pedido ");
+		sql.append("  ");
+		sql.append(" inner join bairros ");
+		sql.append(" on bairros.cod_bairro = pedido.cod_bairro ");
+		sql.append(" ");
+		sql.append(" where id_usuario = ?  and   (CONCAT(Coalesce(DESC_ENDERECO_ENTREGA,''),Coalesce(DESC_ENDERECO_NUM_ENTREGA,''),Coalesce(DESC_ENDERECO_COMPLEMENTO_ENTREGA,''))  like ? ) ");
+		sql.append(" group by DESC_ENDERECO_ENTREGA,DESC_ENDERECO_NUM_ENTREGA,DESC_ENDERECO_COMPLEMENTO_ENTREGA,pedido.cod_bairro ");
+		sql.append(" union ");
+		sql.append(" select DESC_ENDERECO,DESC_ENDERECO_NUM,DESC_ENDERECO_COMPLEMENTO,usuario.COD_BAIRRO, desc_bairro from usuario ");
+		sql.append(" ");
+		sql.append(" inner join bairros ");
+		sql.append(" on bairros.cod_bairro = usuario.cod_bairro ");
+		sql.append(" ");
+		sql.append(" where  id_usuario = ?  and   (CONCAT(Coalesce(DESC_ENDERECO,''),Coalesce(DESC_ENDERECO_NUM,''),Coalesce(DESC_ENDERECO_COMPLEMENTO,''),Coalesce(DESC_BAIRRO,''))  like ? ) ");
+		sql.append(" ");
+		sql.append(" ");
+		sql.append(" order by desc_bairro, DESC_ENDERECO_ENTREGA");
 
 		PreparedStatement st = conn.prepareStatement(sql.toString());
 		st.setLong(1, (cod_usuario));
 		st.setString(2, "%" + descender + "%");
 		st.setLong(3, (cod_usuario));
 		st.setString(4, "%" + descender + "%");
-
+		
+		
 		ResultSet rs = st.executeQuery();
 		JSONArray enderecos = new JSONArray();
 		while (rs.next()) {

@@ -365,10 +365,14 @@ function checarPedidos() {
 			$("#msg_holder2").hide();
 			$("#menu_notification").html("");
 			$("#h_qtd_pedz").html("");
+			$("#h_qtd_pedz_agend").html("");
+			$("#menu_notification_agend").html("");
 
 			if (data.errologin != undefined) {
 				window.location.href = "";
-			} else if (data.tem == "true") {
+			} 
+			
+			if (data.tem == "true") {
 				changeTitle(true, data.qtd);
 
 				$("#msg_holder").show();
@@ -393,7 +397,7 @@ function checarPedidos() {
 
 				$("#menu_notification").html($("#menu_notification").html() + html);
 
-				$(".not_numerico").autoNumeric('init', numerico);
+//				$(".not_numerico").autoNumeric('init', numerico);
 
 				if (data.flag_vizualizado == "N") {
 					playAudioPedido();
@@ -404,6 +408,54 @@ function checarPedidos() {
 				changeTitle(false, "");
 
 			}
+			
+
+
+			
+			console.log("aaa");
+			
+			
+			
+			if (data.temagend == "true") {
+
+				var html = "";
+
+				$("#h_qtd_pedz_agend").html(data.qtd_agend);
+				
+				html = ("<li> <div class=\"text-center\"> <a   > <strong> Pedidos agendados para serem entregues dentro da próxima hora.  </strong>  </a> </div> </li>");
+
+				$("#menu_notification_agend").html($("#menu_notification_agend").html() + html);
+
+				
+				for (t = 0; t < data.pedidosagend.length; t++) {
+					var html = "";
+					html = html + (" <li> <a onClick=\"visualizarPedido(" + data.pedidosagend[t].id_pedido + ")\" >     ");
+					html = html + ("	<span class=\"message\">Número do pedido:  " + data.pedidosagend[t].num_ped + " <span class=\"time\">Hora: " + data.pedidosagend[t].horario + " </span> </span>    ");
+					html = html + ("	<span class=\"message\">Bairro: " + data.pedidosagend[t].desc_bairro + "  </span>    ");
+					html = html + ("	<span class=\"message\">Valor: R$ <label style='font-weight:normal !important;' id='lbl_notval1_" + t + "'>   </span>  	</a> </li> ");
+
+					$("#menu_notification_agend").html($("#menu_notification_agend").html() + html);
+					$("#lbl_notval1_" + t).autoNumeric('init', numerico);
+					$("#lbl_notval1_" + t).autoNumeric('set', data.pedidos[t].valor);
+
+				}
+				
+
+
+
+//				$(".not_numerico").autoNumeric('init', numerico);
+
+				
+
+			}
+			
+			
+			
+			
+			
+			
+			
+			
 
 			if (data.canc_vizu == true) {
 				$("#msg_cancholder").show();

@@ -8,6 +8,7 @@ import java.sql.Statement;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -97,7 +98,7 @@ public class Home_ajax {
 				JSONObject pedidos = new JSONObject();
 
 				pedidos.put("num_ped", rs.getString("NUM_PED"));
-				pedidos.put("desc_bairro", rs.getString("DESC_BAIRRO")==null?"Retirada no local" : rs.getString("DESC_BAIRRO")) ;
+				pedidos.put("desc_bairro", rs.getString("DESC_BAIRRO") == null ? "Retirada no local" : rs.getString("DESC_BAIRRO"));
 				pedidos.put("valor", rs.getString("VAL_TOTALPROD"));
 				pedidos.put("id_pedido", rs.getString("id_pedido"));
 				flagvizu = "";
@@ -143,7 +144,7 @@ public class Home_ajax {
 		}
 
 		objRetorno.put("pedidos", pedidos_todos);
-		
+
 		sql = "select * from pedido  where ID_DISTRIBUIDORA = ? and flag_not_final_avisa_loja = 'S' and flag_resposta_usuario = 'N'  ";
 		st = conn.prepareStatement(sql);
 		st.setInt(1, coddistr);
@@ -161,7 +162,57 @@ public class Home_ajax {
 			st.executeUpdate();
 		}
 
+		{
+
+			GregorianCalendar calendar = new GregorianCalendar();
+			calendar.setTime(new Date());
+			calendar.add(Calendar.HOUR, 1);
+
+			sql = "select count(id_pedido) as qtd from pedido  where ID_DISTRIBUIDORA = ? and flag_status = 'E' and DATA_AGENDA_ENTREGA is not null and DATA_AGENDA_ENTREGA >= ? and DATA_AGENDA_ENTREGA <= ? ";
+
+			st = conn.prepareStatement(sql);
+			st.setInt(1, coddistr);
+
+			st.setString(2, new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
+			st.setString(3, new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(calendar.getTime()));
+
+			rs = st.executeQuery();
+
+			objRetorno.put("temagend", "false");
+
+			if (rs.next()) {
+				if (rs.getInt("qtd") != 0) {
+					objRetorno.put("qtd_agend", rs.getInt("qtd"));
+					objRetorno.put("temagend", "true");
+				}
+
+			}
+
+			sql = "select * from pedido left join bairros on bairros.cod_bairro = pedido.cod_bairro  where ID_DISTRIBUIDORA = ? and flag_status = 'E' and DATA_AGENDA_ENTREGA is not null and DATA_AGENDA_ENTREGA >= ? and DATA_AGENDA_ENTREGA <= ? ";
+
+			st = conn.prepareStatement(sql);
+			st.setInt(1, coddistr);
+
+			st.setString(2, new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
+			st.setString(3, new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(calendar.getTime()));
+
+			rs = st.executeQuery();
+			JSONArray pedido1_agend = new JSONArray();
+			while (rs.next()) {
+				JSONObject pedidos = new JSONObject();
+
+				pedidos.put("horario", new SimpleDateFormat("HH:mm").format(rs.getTimestamp("DATA_AGENDA_ENTREGA")));
+				
+				pedidos.put("num_ped", rs.getString("NUM_PED"));
+				pedidos.put("desc_bairro", rs.getString("DESC_BAIRRO") == null ? "Retirada no local" : rs.getString("DESC_BAIRRO"));
+				pedidos.put("valor", rs.getString("VAL_TOTALPROD"));
+				pedidos.put("id_pedido", rs.getString("id_pedido"));
+				pedido1_agend.add(pedidos);
+			}
 		
+			objRetorno.put("pedidosagend", pedido1_agend);
+
+		}
 
 		out.print(objRetorno.toJSONString());
 
@@ -211,7 +262,7 @@ public class Home_ajax {
 		}
 
 		Sys_parametros sys = new Sys_parametros(conn);
-		
+
 		objret.put("mot", motivos);
 		objret.put("estoque", sys.getCod_recusa_estoque());
 

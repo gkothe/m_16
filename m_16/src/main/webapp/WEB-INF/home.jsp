@@ -243,6 +243,20 @@ input:focus {
 
 
 								</ul></li>
+
+
+							<li role="presentation" data-toggle="tooltip"
+								
+								class="dropdown"><a href="javascript:;"
+								class="dropdown-toggle info-number" data-toggle="dropdown"
+								aria-expanded="false"> <i class="fa fa-clock-o"></i> <span
+									class="badge bg-red" id="h_qtd_pedz_agend"></span>
+							</a>
+								<ul id="menu_notification_agend"
+									class="dropdown-menu list-unstyled msg_list" role="menu">
+
+
+								</ul></li>
 							<li class=""><div style="width: 10px">&nbsp;&nbsp;</div>
 							<li style="margin-top: 15px; width: 70%">
 								<table style="width: 100%">
