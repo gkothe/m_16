@@ -436,7 +436,7 @@ function checarPedidos() {
 
 					$("#menu_notification_agend").html($("#menu_notification_agend").html() + html);
 					$("#lbl_notval1_" + t).autoNumeric('init', numerico);
-					$("#lbl_notval1_" + t).autoNumeric('set', data.pedidos[t].valor);
+					$("#lbl_notval1_" + t).autoNumeric('set', data.pedidosagend[t].valor);
 
 				}
 				

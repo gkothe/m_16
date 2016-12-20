@@ -253,7 +253,7 @@ input:focus {
 									class="badge bg-red" id="h_qtd_pedz_agend"></span>
 							</a>
 								<ul id="menu_notification_agend"
-									class="dropdown-menu list-unstyled msg_list" role="menu">
+										style="overflow: auto; max-height: 300px"  class="dropdown-menu list-unstyled msg_list" role="menu">
 
 
 								</ul></li>
