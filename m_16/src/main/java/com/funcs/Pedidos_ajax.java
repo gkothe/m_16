@@ -225,7 +225,16 @@ public class Pedidos_ajax {
 			temfiltro = "S";
 		}
 
-		if (!flag_pedido_ret_entre.equalsIgnoreCase("")) {
+		if (flag_pedido_ret_entre.equalsIgnoreCase("A")) {
+
+			sql.append("  and  flag_pedido_ret_entre = 'T' and flag_modoentrega = 'A' ");
+			temfiltro = "S";
+		}
+		else if (flag_pedido_ret_entre.equalsIgnoreCase("T")) {
+
+			sql.append("  and  flag_pedido_ret_entre = 'T' and flag_modoentrega = 'T' ");
+			temfiltro = "S";
+		} else if (!flag_pedido_ret_entre.equalsIgnoreCase("")) {
 			sql.append("  and  flag_pedido_ret_entre = ? ");
 			temfiltro = "S";
 		}
@@ -289,8 +298,9 @@ public class Pedidos_ajax {
 			st.setString(contparam, (flag_visu));
 			contparam++;
 		}
-
-		if (!flag_pedido_ret_entre.equalsIgnoreCase("")) {
+		if (flag_pedido_ret_entre.equalsIgnoreCase("A") || flag_pedido_ret_entre.equalsIgnoreCase("T")) {
+			// faz nada
+		} else if (!flag_pedido_ret_entre.equalsIgnoreCase("")) {
 			st.setString(contparam, (flag_pedido_ret_entre));
 			contparam++;
 		}

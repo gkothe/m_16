@@ -83,14 +83,14 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 	public void processaRequisicoes(HttpServletRequest request, HttpServletResponse response) {
 
 		try {
-
+/*
 			System.out.println("----------entro mob");
 
 			Map map = request.getParameterMap();
 			for (Iterator iterator = map.keySet().iterator(); iterator.hasNext();) {
 				String type = (String) iterator.next();
 				System.out.println(type + " : " + request.getParameter(type));
-			}
+			}*/
 
 			String strTipo = request.getParameter("ac"); // acho que aqui soh vai ter ajax, mas vo dexa assim por enqto.
 			if (strTipo == null) {
@@ -1004,7 +1004,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 					throw new Exception("Este pedido já foi recusado.");
 				}
 
-				if (statuspedido.equalsIgnoreCase("E")) {// TODO se for em envio/em local/agendamento
+/*				if (statuspedido.equalsIgnoreCase("E")) {// TODO se for em envio/em local/agendamento
 
 					Calendar data6 = Calendar.getInstance();
 					data6.setTime(rs.getTimestamp("tempocanc"));
@@ -1014,7 +1014,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 						throw new Exception("Tempo para cancelamento esgotado. Você tem " + sys.getNUM_TEMPOMAXCANC_MINUTO() + " minutos após o tempo maximo desejado de entrega para cancelar o pedido. Se você realmente deseja cancelar este pedido, entre em contato com o " + sys.getSys_fromdesc());
 					}
 
-				}
+				}*/
 
 				// datateste =now - (datapedido + tempo desjada de entrega)
 
@@ -3468,10 +3468,12 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 			throw new Exception("Não há itens em seu carrinho!");
 		}
 		retorno.put("msg", "ok");
+		retorno.put("id_pedido", idped);
+		
 		if (outprint)
 			out.print(retorno.toJSONString());
 		else {
-			retorno.put("id_pedido", idped);
+		
 		}
 
 		return retorno;

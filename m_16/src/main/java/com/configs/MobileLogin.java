@@ -167,7 +167,7 @@ public class MobileLogin {
 			objRetorno.put("name", info.get("name").toString());
 			objRetorno.put("usrtype","user" );//
 			objRetorno.put("maioridade", "N");//
-			objRetorno.put("email", rs.getString("DESC_EMAIL"));//
+			objRetorno.put("email", info.get("email"));//
 
 		}
 		objRetorno.put("msg", "ok");
@@ -290,6 +290,7 @@ public class MobileLogin {
 			objjson.put("name", name.split(" ")[0]);
 			objjson.put("pass", pass);
 			objjson.put("user", email);
+			objjson.put("email", email);
 
 		}
 
