@@ -229,8 +229,7 @@ public class Pedidos_ajax {
 
 			sql.append("  and  flag_pedido_ret_entre = 'T' and flag_modoentrega = 'A' ");
 			temfiltro = "S";
-		}
-		else if (flag_pedido_ret_entre.equalsIgnoreCase("T")) {
+		} else if (flag_pedido_ret_entre.equalsIgnoreCase("T")) {
 
 			sql.append("  and  flag_pedido_ret_entre = 'T' and flag_modoentrega = 'T' ");
 			temfiltro = "S";
@@ -885,12 +884,21 @@ public class Pedidos_ajax {
 				objRetorno.put("m_data_resposta", new SimpleDateFormat("dd/MM/yyyy HH:mm").format(rs.getTimestamp("DATA_PEDIDO_RESPOSTA")));
 
 				Calendar data6 = Calendar.getInstance();
-				data6.setTime(rs.getTimestamp("DATA_PEDIDO_RESPOSTA"));
-				data6.add(Calendar.HOUR_OF_DAY, sys.getPED_HORASOKEY());
 
-				if (data6.getTime().before(new Date())) {
+				if (rs.getString("FLAG_PEDIDO_RET_ENTRE").equalsIgnoreCase("L")) {
 					objRetorno.put("darok", true);
+				} else {
+					if (rs.getTimestamp("DATA_AGENDA_ENTREGA") != null) {
+						data6.setTime(rs.getTimestamp("DATA_AGENDA_ENTREGA"));
+					} else {
+						data6.setTime(rs.getTimestamp("DATA_PEDIDO_RESPOSTA"));
+					}
+					data6.add(Calendar.HOUR_OF_DAY, sys.getPED_HORASOKEY());
 
+					if (data6.getTime().before(new Date())) {
+						objRetorno.put("darok", true);
+
+					}
 				}
 
 			}
@@ -944,7 +952,12 @@ public class Pedidos_ajax {
 		} else {
 
 			Calendar data6 = Calendar.getInstance();
-			data6.setTime(rs.getTimestamp("DATA_PEDIDO_RESPOSTA"));
+			if (rs.getTimestamp("DATA_AGENDA_ENTREGA") != null) {
+				data6.setTime(rs.getTimestamp("DATA_AGENDA_ENTREGA"));
+			} else {
+				data6.setTime(rs.getTimestamp("DATA_PEDIDO_RESPOSTA"));
+			}
+
 			data6.add(Calendar.HOUR_OF_DAY, sys.getPED_HORASOKEY());
 
 			if (rs.getString("flag_status").equalsIgnoreCase("C")) {
@@ -956,10 +969,12 @@ public class Pedidos_ajax {
 
 			} else {
 
-				if (!avoidteste)
-					if (data6.getTime().after(new Date())) {
-						throw new Exception("A hora atual deve exceder em " + sys.getPED_HORASOKEY() + "h a data de resposta para o pedido ser finalizado manualmente.");
-					}
+				if (rs.getString("FLAG_PEDIDO_RET_ENTRE").equalsIgnoreCase("T")) {
+					if (!avoidteste)
+						if (data6.getTime().after(new Date())) {
+							throw new Exception("A hora atual deve exceder em " + sys.getPED_HORASOKEY() + "h a data de resposta para o pedido ser finalizado manualmente.");
+						}
+				}
 
 				sql = " update  pedido  set flag_status = 'O' where id_pedido = ? and ID_DISTRIBUIDORA = ?  ";
 				st = conn.prepareStatement(sql);

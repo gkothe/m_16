@@ -740,13 +740,11 @@ public class Utilitario {
 
 		String jsonResponse;
 
-		
 		URL url = new URL(sys.getOnesignal_url());
 		HttpURLConnection con = (HttpURLConnection) url.openConnection();
 		con.setUseCaches(false);
 		con.setDoOutput(true);
 		con.setDoInput(true);
-		
 
 		con.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
 		con.setRequestProperty("Authorization", "Basic " + sys.getOnesignal_key());
@@ -777,7 +775,7 @@ public class Utilitario {
 		outputStream.write(sendBytes);
 
 		int httpResponse = con.getResponseCode();
-//		System.out.println("httpResponse: " + httpResponse);
+		// System.out.println("httpResponse: " + httpResponse);
 
 		if (httpResponse >= HttpURLConnection.HTTP_OK && httpResponse < HttpURLConnection.HTTP_BAD_REQUEST) {
 			Scanner scanner = new Scanner(con.getInputStream(), "UTF-8");
@@ -788,7 +786,7 @@ public class Utilitario {
 			jsonResponse = scanner.useDelimiter("\\A").hasNext() ? scanner.next() : "";
 			scanner.close();
 		}
-//		System.out.println("jsonResponse:\n" + jsonResponse);
+		// System.out.println("jsonResponse:\n" + jsonResponse);
 
 	}
 
@@ -797,16 +795,46 @@ public class Utilitario {
 	public static NumberFormat df2 = new DecimalFormat("#,###,##0.00", dfs);
 	public static NumberFormat df3 = new DecimalFormat("#,###,##0.0", dfs);
 
+	public static void renamefiles() throws IOException {
+
+		for (int i = 0; i < 150; i++) {
+			
+			File file = new File("D:/phonegap_projects/m_16/m_16/src/main/webapp/images/produtos/"+i+".jpg");
+
+			// File (or directory) with new name
+			File file2 = new File("D:/phonegap_projects/m_16/m_16/src/main/webapp/images/produtos/"+i+"_1.jpg");
+
+			if (file2.exists())
+				throw new java.io.IOException("file exists");
+
+			// Rename file (or directory)
+			boolean success = file.renameTo(file2);
+
+			if (!success) {
+				// File was not successfully renamed
+			}
+			
+			
+		}
+		
+		// File (or directory) with old name
+	
+
+	}
+
 	public static void main(String[] args) {
 		Connection conn = null;
-		
-System.out.println(new Date());
-		
+
+		System.out.println(new Date());
+
 		try {
 			conn = Conexao.getConexao();
 			Sys_parametros sys = new Sys_parametros(conn);
-			oneSginal(sys, "g.kothe@hotmail.com", "aaaa", new JSONObject());
-			oneSginal(sys, "morratu@hotmail.com", "aaaa", new JSONObject());
+			
+			renamefiles();
+			
+			// oneSginal(sys, "g.kothe@hotmail.com", "aaaa", new JSONObject());
+			// oneSginal(sys, "morratu@hotmail.com", "aaaa", new JSONObject());
 		} catch (Exception e) {
 			System.out.println(e);
 			try {

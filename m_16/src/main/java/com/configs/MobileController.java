@@ -83,14 +83,11 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 	public void processaRequisicoes(HttpServletRequest request, HttpServletResponse response) {
 
 		try {
-/*
-			System.out.println("----------entro mob");
-
-			Map map = request.getParameterMap();
-			for (Iterator iterator = map.keySet().iterator(); iterator.hasNext();) {
-				String type = (String) iterator.next();
-				System.out.println(type + " : " + request.getParameter(type));
-			}*/
+			/*
+			 * System.out.println("----------entro mob");
+			 * 
+			 * Map map = request.getParameterMap(); for (Iterator iterator = map.keySet().iterator(); iterator.hasNext();) { String type = (String) iterator.next(); System.out.println(type + " : " + request.getParameter(type)); }
+			 */
 
 			String strTipo = request.getParameter("ac"); // acho que aqui soh vai ter ajax, mas vo dexa assim por enqto.
 			if (strTipo == null) {
@@ -254,6 +251,8 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 					pedidoNaoRecebido(request, response, conn, cod_usuario, sys);
 				} else if (cmd.equalsIgnoreCase("loadFreteBairro")) {
 					loadFreteBairro(request, response, conn, cod_usuario);
+				} else if (cmd.equalsIgnoreCase("enviarMsgContato")) {
+					enviarMsgContato(request, response, conn, cod_usuario, sys);
 				}
 
 				else {
@@ -401,7 +400,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 				dayOfWeek = dayOfWeek - 1;
 			}
 
-			if (rs.getInt("cod_bairro") == 0) {
+			if (codbairro.equalsIgnoreCase("")) {
 				throw new Exception("Nenhum bairro selecionado.");
 			}
 
@@ -1004,17 +1003,15 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 					throw new Exception("Este pedido já foi recusado.");
 				}
 
-/*				if (statuspedido.equalsIgnoreCase("E")) {// TODO se for em envio/em local/agendamento
-
-					Calendar data6 = Calendar.getInstance();
-					data6.setTime(rs.getTimestamp("tempocanc"));
-					data6.add(Calendar.MINUTE, sys.getNUM_TEMPOMAXCANC_MINUTO());
-
-					if (data6.getTime().before(new Date())) {
-						throw new Exception("Tempo para cancelamento esgotado. Você tem " + sys.getNUM_TEMPOMAXCANC_MINUTO() + " minutos após o tempo maximo desejado de entrega para cancelar o pedido. Se você realmente deseja cancelar este pedido, entre em contato com o " + sys.getSys_fromdesc());
-					}
-
-				}*/
+				/*
+				 * if (statuspedido.equalsIgnoreCase("E")) {// TODO se for em envio/em local/agendamento
+				 * 
+				 * Calendar data6 = Calendar.getInstance(); data6.setTime(rs.getTimestamp("tempocanc")); data6.add(Calendar.MINUTE, sys.getNUM_TEMPOMAXCANC_MINUTO());
+				 * 
+				 * if (data6.getTime().before(new Date())) { throw new Exception("Tempo para cancelamento esgotado. Você tem " + sys.getNUM_TEMPOMAXCANC_MINUTO() + " minutos após o tempo maximo desejado de entrega para cancelar o pedido. Se você realmente deseja cancelar este pedido, entre em contato com o " + sys.getSys_fromdesc()); }
+				 * 
+				 * }
+				 */
 
 				// datateste =now - (datapedido + tempo desjada de entrega)
 
@@ -1286,7 +1283,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 		sql.append(" produtos_distribuidora.ID_PROD_DIST, ");
 		sql.append(" DESC_NOME_ABREV , ");
 		sql.append(" carrinho_item.QTD, ");
-		sql.append(" distribuidora.VAL_ENTREGA_MIN ");
+		sql.append(" distribuidora.VAL_ENTREGA_MIN,QTD_IMAGES ");
 		sql.append(" ");
 		sql.append(" from produtos ");
 		sql.append(" inner join produtos_distribuidora ");
@@ -1321,7 +1318,18 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 			retorno.put("DESC_NOME_ABREV", rs.getString("DESC_NOME_ABREV"));/// abreviado da distribuidora
 			retorno.put("val_minentrega", rs.getString("VAL_ENTREGA_MIN"));///
 			retorno.put("valcar", df2.format(retornaValCarrinho(cod_usuario, conn) - (rs.getInt("QTD") * rs.getDouble("VAL_PROD"))));
-			retorno.put("img", rs.getString("ID_PROD") + ".jpg");
+			
+			
+			
+			JSONArray imagens = new JSONArray();
+			int qtd_images  = rs.getInt("QTD_IMAGES");
+			for (int i = 1; i <= qtd_images; i++) {
+				imagens.add(rs.getString("ID_PROD") + "_"+i+".jpg");
+				
+			}
+			retorno.put("imgs",imagens);
+			//retorno.put("img", rs.getString("ID_PROD") + ".jpg");///
+			
 		}
 
 		retorno.put("msg", "ok");
@@ -1426,7 +1434,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 			sql.append(" produtos_distribuidora.ID_PROD_DIST, ");
 			sql.append(" DESC_NOME_ABREV , ");
 			sql.append(" carrinho_item.QTD, ");
-			sql.append(" distribuidora.VAL_ENTREGA_MIN,distribuidora.flag_entre_ret ");
+			sql.append(" distribuidora.VAL_ENTREGA_MIN,distribuidora.flag_entre_ret,QTD_IMAGES ");
 			sql.append(" ");
 			sql.append(" from produtos ");
 			sql.append(" inner join produtos_distribuidora ");
@@ -1461,7 +1469,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 			sql.append(" produtos_distribuidora.ID_PROD_DIST, ");
 			sql.append(" DESC_NOME_ABREV , ");
 			sql.append(" carrinho_item.QTD, ");
-			sql.append(" distribuidora.VAL_ENTREGA_MIN,distribuidora.flag_entre_ret ");
+			sql.append(" distribuidora.VAL_ENTREGA_MIN,distribuidora.flag_entre_ret,QTD_IMAGES ");
 			sql.append("  ");
 			sql.append(" ");
 			sql.append(" from produtos ");
@@ -1573,7 +1581,6 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 
 			}
 
-		
 		} else {
 			st.setInt(contparam, Integer.parseInt(idproddistr));
 			contparam++;
@@ -1646,7 +1653,15 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 				retorno.put("DESC_NOME_ABREV", rs.getString("DESC_NOME_ABREV"));/// abreviado da distribuidora
 				retorno.put("val_minentrega", rs.getString("VAL_ENTREGA_MIN"));///
 				retorno.put("valcar", df2.format(retornaValCarrinho(cod_usuario, conn) - (rs.getInt("QTD") * rs.getDouble("VAL_PROD"))));
-				retorno.put("img", rs.getString("ID_PROD") + ".jpg");///
+				
+				JSONArray imagens = new JSONArray();
+				int qtd_images  = rs.getInt("QTD_IMAGES");
+				for (int i = 1; i <= qtd_images; i++) {
+					imagens.add(rs.getString("ID_PROD") + "_"+i+".jpg");
+					
+				}
+				retorno.put("imgs",imagens);
+				//retorno.put("img", rs.getString("ID_PROD") + ".jpg");///
 			}
 
 		}
@@ -1870,6 +1885,25 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 		ret.put("maxvalue", Math.ceil(maxvalue));
 
 		out.print(ret.toJSONString());
+
+	}
+
+	private static void enviarMsgContato(HttpServletRequest request, HttpServletResponse response, Connection conn, long cod_usuario, Sys_parametros sys) throws Exception {
+
+		PrintWriter out = response.getWriter();
+
+		JSONObject objRetorno = new JSONObject();
+
+		String title = request.getParameter("title") == null ? "" : request.getParameter("title");
+		String msg = request.getParameter("msg") == null ? "" : request.getParameter("msg");
+		
+		msg = msg + " <br> ";
+		msg = msg + "Cod. Usuário: " + cod_usuario;
+		
+		Utilitario.sendEmail(sys.getSys_email(), msg, "Contato: "+title, conn);
+
+		objRetorno.put("msg", "ok");
+		out.print(objRetorno.toJSONString());
 
 	}
 
@@ -2324,7 +2358,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 
 		String descender = request.getParameter("descender") == null ? "" : request.getParameter("descender"); // precisa receber
 
-		StringBuffer  sql = new StringBuffer();
+		StringBuffer sql = new StringBuffer();
 		sql.append("select DESC_ENDERECO_ENTREGA,DESC_ENDERECO_NUM_ENTREGA,DESC_ENDERECO_COMPLEMENTO_ENTREGA,pedido.cod_bairro,  desc_bairro  from pedido ");
 		sql.append("  ");
 		sql.append(" inner join bairros ");
@@ -2348,8 +2382,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 		st.setString(2, "%" + descender + "%");
 		st.setLong(3, (cod_usuario));
 		st.setString(4, "%" + descender + "%");
-		
-		
+
 		ResultSet rs = st.executeQuery();
 		JSONArray enderecos = new JSONArray();
 		while (rs.next()) {
@@ -3272,7 +3305,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 					varname11.append("inner join distribuidora_horario_dia_entre ");
 					varname11.append("on distribuidora_horario_dia_entre.ID_DISTR_BAIRRO = distribuidora_bairro_entrega.ID_DISTR_BAIRRO ");
 					varname11.append(" ");
-					varname11.append("where cod_bairro = ? and distribuidora_bairro_entrega.id_distribuidora = ? and cod_dia = ? and ? between  HORARIO_INI and HORARIO_FIM order by HORARIO_INI ");
+					varname11.append("where cod_bairro = ? and distribuidora_bairro_entrega.id_distribuidora = ? and cod_dia = ? and HORARIO_INI <= ? and HORARIO_FIM >= ? order by HORARIO_INI ");
 					varname11.append(" ");
 
 					Calendar c = Calendar.getInstance();
@@ -3289,6 +3322,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 					st3.setLong(2, rs.getInt("id_distribuidora"));
 					st3.setLong(3, dayOfWeek);
 					st3.setString(4, dataagendamentohora.substring(0, 1) + dataagendamentohora.substring(1, 2) + ":" + dataagendamentohora.substring(2, 3) + dataagendamentohora.substring(3, 4));
+					st3.setString(5, dataagendamentohora.substring(0, 1) + dataagendamentohora.substring(1, 2) + ":" + dataagendamentohora.substring(2, 3) + dataagendamentohora.substring(3, 4));
 					ResultSet rs3 = st3.executeQuery();
 					if (!rs3.next()) {
 						throw new Exception("A loja não atende neste horário.");
@@ -3469,11 +3503,11 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 		}
 		retorno.put("msg", "ok");
 		retorno.put("id_pedido", idped);
-		
+
 		if (outprint)
 			out.print(retorno.toJSONString());
 		else {
-		
+
 		}
 
 		return retorno;

@@ -1,58 +1,18 @@
-
-
-
-
-
-
-
-
-
-
-------------
-
-
-
-
-
-
-Onde entreguemos sua bebida?
-
-
-
-
-
-
-Retirar no local
-
-
-			Obseravção
-
-
-
-Entregar
-
-			Endereço
-			numero
-			complemetno
-			bairro
-
-			combo com tipo de entrega
-
-					tele -> tempo maximo
-					Agendamento -> data + hora.
-					Texto com os horarios 	
-
-
-Combo com metodos
-
-dinheiro -> troco para
-
-
-
-val_total
-
-
-
-
-
+----bugs
+fazer testes de comportametno qdo servidor estiver offline.
+Ve como funciona atualização no googleplay
+termos do facebook, conseguir autorização.
+Conseguir um iphone emprestado. E testes em iphone.
+REvisar os texto email.
+Criar roda pé de email.
+Definir os bairro
+Manual 
+Faq
+Servidor
+Email
+Imagem da tela inicial
+Ve tudo que precisa de assuntos pra advogados
+Roteiro venda, Cenario de venda.
+Roteiro de teste/revisão
+Patentiar o TragoAqui
 

@@ -1,6 +1,6 @@
 /*==============================================================*/
 /* DBMS name:      MySQL 5.0                                    */
-/* Created on:     16/12/2016 11:18:29 AM                       */
+/* Created on:     22/12/2016 9:34:53 AM                        */
 /*==============================================================*/
 
 
@@ -287,6 +287,7 @@ create table PRODUTOS
    DESC_PROD            TEXT not null,
    DESC_ABREVIADO       VARCHAR(100) not null,
    FLAG_ATIVO           CHAR(1) not null,
+   QTD_IMAGES           int4 default 1,
    primary key (ID_PROD)
 )
 auto_increment = 1;
