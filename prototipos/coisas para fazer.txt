@@ -1,7 +1,7 @@
 ----bugs
 fazer testes de comportametno qdo servidor estiver offline.
 Ve como funciona atualização no googleplay
-termos do facebook, conseguir autorização.
+termos do facebook, conseguir autorização.   -forum
 Conseguir um iphone emprestado. E testes em iphone.
 REvisar os texto email.
 Criar roda pé de email.
@@ -16,3 +16,43 @@ Roteiro venda, Cenario de venda.
 Roteiro de teste/revisão
 Patentiar o TragoAqui
 
+
+
+
+------------------------
+Login
+Cadastro
+recuperar senha
+Maior de 18?
+Localização atual
+Pesquisa
+Pesquisa(Filtro)
+Detalhes do produto
+Carrinho
+Carrinho (continuar)
+Carrino, modal Data
+Carrino, modal Endereço
+Historico Pedidos lista
+Historico Pedidos Filtro
+Pedidos Detalhe produtos
+Pedidos Detalhe informações
+Pedidos cancelamento
+Pedidos responder
+Minhas informações
+Mudal-email
+Mudar-senha
+Contato
+
+
+
+
+
+
+
+
+
+
+
+
+
+Acessando carrinho pela pesquisa, voltar para localização ou pesquisa?

@@ -182,7 +182,7 @@ public class Parametros_ajax {
 		JSONObject obj = new JSONObject();
 
 		String id_produto = request.getParameter("id_produto") == null ? "" : request.getParameter("id_produto"); //
-		String sql = "select DESC_ABREVIADO,Coalesce(val_prod,0) as val_prod,DESC_PROD,Coalesce( produtos_distribuidora.flag_ativo,'N') as flag_ativo,produtos.id_prod from produtos  left join produtos_distribuidora on produtos.id_prod = produtos_distribuidora.id_prod	 and ID_DISTRIBUIDORA = ? where (produtos.flag_ativo = 'S') and produtos.id_prod = ?  ";
+		String sql = "select QTD_IMAGES, DESC_ABREVIADO,Coalesce(val_prod,0) as val_prod,DESC_PROD,Coalesce( produtos_distribuidora.flag_ativo,'N') as flag_ativo,produtos.id_prod from produtos  left join produtos_distribuidora on produtos.id_prod = produtos_distribuidora.id_prod	 and ID_DISTRIBUIDORA = ? where (produtos.flag_ativo = 'S') and produtos.id_prod = ?  ";
 
 		PreparedStatement st = conn.prepareStatement(sql);
 		st.setInt(1, coddistr);
@@ -196,7 +196,15 @@ public class Parametros_ajax {
 			obj.put("valor_unit", rs.getString("val_prod"));
 			obj.put("nome_completo", rs.getString("DESC_PROD"));
 			obj.put("flag_ativo", rs.getString("flag_ativo"));
-			obj.put("nome_img", "images/produtos/1.jpg");
+			
+			JSONArray imagens = new JSONArray();
+			int qtd_images  = rs.getInt("QTD_IMAGES");
+			for (int i = 1; i <= qtd_images; i++) {
+				imagens.add("images/produtos/"+rs.getString("ID_PROD") + "_"+i+".jpg");
+				
+			}
+			obj.put("imgs",imagens);
+			
 
 		}
 

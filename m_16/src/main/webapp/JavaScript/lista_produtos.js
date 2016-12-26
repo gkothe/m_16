@@ -121,6 +121,24 @@ function testComboProd() {
 	}
 
 }
+var slideIndex = 1;
+
+
+
+function plusDivs(n) {
+  showDivs(slideIndex += n);
+}
+
+function showDivs(n) {
+  var i;
+  var x = document.getElementsByClassName("mySlides");
+  if (n > x.length) {slideIndex = 1}    
+  if (n < 1) {slideIndex = x.length}
+  for (i = 0; i < x.length; i++) {
+     x[i].style.display = "none";  
+  }
+  x[slideIndex-1].style.display = "block";  
+}
 
 function editarProduto(id_produto) {
 
@@ -150,7 +168,35 @@ function editarProduto(id_produto) {
 			$("#p_flag_status").val(data.flag_ativo);
 			$("#p_id_produto").val(data.p_id_produto);
 
-			$("#p_img_prod").attr("src", data.nome_img);
+			
+			$("#prod_slide").html("");
+			
+			var html = "";
+			
+			slideIndex = 1;
+			html = html  +"";
+			
+			
+			//$("#p_img_prod").attr("src", data.nome_img);
+			
+			
+			for (t = 0; t < data.imgs.length; t++) {
+				
+				html = html  +" <img class='mySlides' style=\"height: 250px\" src='"+data.imgs[t]+"' >";
+			}
+			
+			
+			html = html  +'  <a class="w3-btn-floating w3-display-left" onclick="plusDivs(-1)">&#10094;</a> ';
+			html = html  +' <a class="w3-btn-floating w3-display-right" onclick="plusDivs(1)">&#10095;</a> ';
+			
+	
+			
+			
+			$("#prod_slide").html(html);
+			  
+			showDivs(slideIndex);
+
+			
 
 			testComboProd();
 

@@ -43,74 +43,8 @@
 <!-- Custom Theme Style -->
 <link href="gentelella-master/production/css/custom.css"
 	rel="stylesheet">
-<style type="text/css">
-.filtros {
-	padding-top: 6px;
-	padding-right: 0px;
-	padding-left: 0px;
-}
-
-.rowpad {
-	padding-top: 5px;
-}
-
-p {
-	max-width: 600px;
-}
-
-.btn_tabela {
-	margin-bottom: 0px;
-	height: 20px;
-	padding: 2px 6px 20px;
-	width: 35px
-}
-
-input:focus {
-	outline: none !important;
-	border-color: #9ecaed !important;
-	box-shadow: 0 0 10px #9ecaed !important;
-}
-
-.table_header {
-	display: table-cell !important;
-	width: 70% !important;
-}
-
-.field_dash {
-	text-align: right;
-	background-color: white !important;
-}
-
-.modal-admin {
-	width: 85%;
-	height: 85%;
-}
-
-.help_icon {
-	color: blue !important;
-	padding-top: 7px;
-	padding-left: 3px;
-}
-
-.line {
-	width: 100%;
-	height: 5px;
-	border-bottom: 1px solid black;
-}
-
-.first_btn_confirm {
-	margin-bottom: 0px !important;
-	margin-right: 80% !important;
-}
-
-.ped_atrasado {
-	min-width: 100% !important;
-	min-height: 100% !important;
-	width: 100% !important;
-	height: 100% !important;
-	background-color: yellow;
-}
-</style>
+<link rel="stylesheet" type="text/css"
+	href="css/tragoaqui.css" />
 
 
 </head>
@@ -245,15 +179,15 @@ input:focus {
 								</ul></li>
 
 
-							<li role="presentation" data-toggle="tooltip"
-								
-								class="dropdown"><a href="javascript:;"
-								class="dropdown-toggle info-number" data-toggle="dropdown"
-								aria-expanded="false"> <i class="fa fa-clock-o"></i> <span
-									class="badge bg-red" id="h_qtd_pedz_agend"></span>
+							<li role="presentation" data-toggle="tooltip" class="dropdown"><a
+								href="javascript:;" class="dropdown-toggle info-number"
+								data-toggle="dropdown" aria-expanded="false"> <i
+									class="fa fa-clock-o"></i> <span class="badge bg-red"
+									id="h_qtd_pedz_agend"></span>
 							</a>
 								<ul id="menu_notification_agend"
-										style="overflow: auto; max-height: 300px"  class="dropdown-menu list-unstyled msg_list" role="menu">
+									style="overflow: auto; max-height: 300px"
+									class="dropdown-menu list-unstyled msg_list" role="menu">
 
 
 								</ul></li>
