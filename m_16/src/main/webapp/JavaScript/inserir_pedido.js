@@ -19,15 +19,23 @@ $(document).ready(function() {
 	$("#p_salvar").click(function() {
 		salvarpedido();
 	});
-	
-	$('#descricaoprod').keyup(function(e){
-	    if(e.keyCode == 13)
-	    {
-	    	loadProdutos();
-	    }
+
+	$("#btn_addprod_filt").click(function() {
+		if ($("#id_produto").val() != "" && $("#desc_produto").val() != "") {
+			addprod($("#id_produto").val(), $("#desc_produto").val())
+
+			$("#id_produto").val("");
+			$("#desc_produto").val("");
+		}
 	});
-	
-	
+
+	$('#descricaoprod').keyup(function(e) {
+		if (e.keyCode == 13) {
+			loadProdutos();
+		}
+	});
+
+	setAutocomplete("id_produto", "desc_produto");
 
 	$('.keep-open', $('.fixed-table-toolbar')).prependTo($('#colunas'));
 	$('.fixed-table-toolbar').remove();
@@ -83,12 +91,12 @@ function addprod(id, desc) {
 
 		$("#add_items").append(html);
 
-		$("#div_scroll").animate({ scrollTop: $('#div_scroll').prop("scrollHeight")}, 100);
+		$("#div_scroll").animate({
+			scrollTop : $('#div_scroll').prop("scrollHeight")
+		}, 100);
 		$("#lbl_nenhumprod").hide();
 	}
 
-	
-	
 }
 
 function salvarpedido() {
@@ -145,7 +153,7 @@ function salvarpedido() {
 						if (data.msg == 'ok') {
 
 							sysMsg("Pedido Inserido!", 'M')
-							
+
 						} else if (data.erro != undefined) {
 							sysMsg(data.erro, 'E')
 						}
@@ -179,7 +187,7 @@ function loadProdutos() {
 		async : true,
 		data : {
 			cmd : 'carregaProdutos',
-			descricaoprod:descricaoprod,
+			descricaoprod : descricaoprod,
 			flag_situacao : "S"
 
 		},

@@ -54,6 +54,8 @@ import net.sf.jasperreports.engine.export.JRPdfExporterParameter;
 
 public class Utilitario {
 
+
+	
 	public static JSONArray payments_ids() {
 		JSONArray payids = new JSONArray();
 		JSONObject obj = new JSONObject();
@@ -107,8 +109,12 @@ public class Utilitario {
 	}
 
 	public static void sendEmail(String para, String html, String subject, Connection conn) throws Exception {
-
 		Sys_parametros sys = new Sys_parametros(conn);
+		String rodape = "<br><br> Equipe TragoAqui <br>";
+		rodape = rodape + ""+ sys.getSys_fromemail() + " <br>";
+		rodape = rodape + " {Facebook} <br>";
+		rodape = rodape + " {Número} <br>";
+		
 
 		HtmlEmail mailService = new HtmlEmail();
 
@@ -118,7 +124,7 @@ public class Utilitario {
 		mailService.setFrom(sys.getSys_fromemail(), sys.getSys_fromdesc());
 		mailService.setStartTLSEnabled(sys.getSys_tls());
 		mailService.setSubject(subject);
-		mailService.setHtmlMsg(html);
+		mailService.setHtmlMsg(html+rodape);
 		mailService.addTo(para);
 		mailService.send();
 

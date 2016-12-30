@@ -83,11 +83,14 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 	public void processaRequisicoes(HttpServletRequest request, HttpServletResponse response) {
 
 		try {
-			/*
-			 * System.out.println("----------entro mob");
-			 * 
-			 * Map map = request.getParameterMap(); for (Iterator iterator = map.keySet().iterator(); iterator.hasNext();) { String type = (String) iterator.next(); System.out.println(type + " : " + request.getParameter(type)); }
-			 */
+
+			System.out.println("----------entro mob");
+
+			Map map = request.getParameterMap();
+			for (Iterator iterator = map.keySet().iterator(); iterator.hasNext();) {
+				String type = (String) iterator.next();
+				System.out.println(type + " : " + request.getParameter(type));
+			}
 
 			String strTipo = request.getParameter("ac"); // acho que aqui soh vai ter ajax, mas vo dexa assim por enqto.
 			if (strTipo == null) {
@@ -518,8 +521,8 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 		ResultSet rs = st.executeQuery();
 
 		if (rs.next()) {
-			String texto = " Olá, seguem abaixo suas informações de acesso: <br> Usuário: " + rs.getString("DESC_User") + " <br> Senha: " + rs.getString("DESC_SENHA");
-			Utilitario.sendEmail(desc_email, texto, "Recuperação de informações de acesso do TragoAqui!", conn);
+			String texto = " Olá,<br> Conforme solicitado, seguem abaixo seus dados de usuário:<br> Usuário: " + rs.getString("DESC_User") + " <br> Senha: " + rs.getString("DESC_SENHA");
+			Utilitario.sendEmail(desc_email, texto, "TragoAqui - Recuperação de usuario e senha", conn);
 			objRetorno.put("msg", "ok");
 
 		} else {
@@ -603,9 +606,9 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 
 		st.executeUpdate();
 
-		String texto = " Bem vindo ao TragoAqui, para validar seu e-mail clique  <a href='" + sys.getUrl_system() + "mobile?ac=validar&token=" + validacao + "'> aqui. </a>";
+		String texto = "Olá, <br>  Bem vindo ao TragoAqui, para validar sua conta clique <a href='" + sys.getUrl_system() + "mobile?ac=validar&token=" + validacao + "'> AQUI </a> e você estará pronto para utilizar nossos serviços. <br> Suas informações de login são: <br> Usuário: " + desc_usuario + " <br> Senha: " + desc_senha;
 
-		Utilitario.sendEmail(desc_email, texto, "Ativação da sua conta no TragoAqui!", conn);
+		Utilitario.sendEmail(desc_email, texto, "TragoAqui - Criação de conta!", conn);
 
 		objRetorno.put("msg", "ok");
 
@@ -689,9 +692,10 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 
 				st.executeUpdate();
 
-				String texto = " Para validar seu novo e-mail clique   <a href='" + sys.getUrl_system() + "mobile?ac=validarEmail&token=" + validacao + "' > aqui. </a>  ";
+				String texto = " Olá, <br> Foi solicitada uma alteração de email na sua conta TragoAqui, clique <a href='" + sys.getUrl_system() + "mobile?ac=validarEmail&token=" + validacao + "' > AQUI </a> para confirmar. ";
+				texto = texto + " Caso você não tenha solicitou este e-mail, sugerimos que troque sua senha ou contate-nos. ";
 
-				Utilitario.sendEmail(te_email, texto, "Confirmação de novo e-mail - TragoAqui", conn);
+				Utilitario.sendEmail(te_email, texto, "TragoAqui - Alteração de Email", conn);
 				objRetorno.put("msg", "ok");
 			}
 
@@ -1318,18 +1322,16 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 			retorno.put("DESC_NOME_ABREV", rs.getString("DESC_NOME_ABREV"));/// abreviado da distribuidora
 			retorno.put("val_minentrega", rs.getString("VAL_ENTREGA_MIN"));///
 			retorno.put("valcar", df2.format(retornaValCarrinho(cod_usuario, conn) - (rs.getInt("QTD") * rs.getDouble("VAL_PROD"))));
-			
-			
-			
+
 			JSONArray imagens = new JSONArray();
-			int qtd_images  = rs.getInt("QTD_IMAGES");
+			int qtd_images = rs.getInt("QTD_IMAGES");
 			for (int i = 1; i <= qtd_images; i++) {
-				imagens.add(rs.getString("ID_PROD") + "_"+i+".jpg");
-				
+				imagens.add(rs.getString("ID_PROD") + "_" + i + ".jpg");
+
 			}
-			retorno.put("imgs",imagens);
-			//retorno.put("img", rs.getString("ID_PROD") + ".jpg");///
-			
+			retorno.put("imgs", imagens);
+			// retorno.put("img", rs.getString("ID_PROD") + ".jpg");///
+
 		}
 
 		retorno.put("msg", "ok");
@@ -1653,15 +1655,15 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 				retorno.put("DESC_NOME_ABREV", rs.getString("DESC_NOME_ABREV"));/// abreviado da distribuidora
 				retorno.put("val_minentrega", rs.getString("VAL_ENTREGA_MIN"));///
 				retorno.put("valcar", df2.format(retornaValCarrinho(cod_usuario, conn) - (rs.getInt("QTD") * rs.getDouble("VAL_PROD"))));
-				
+
 				JSONArray imagens = new JSONArray();
-				int qtd_images  = rs.getInt("QTD_IMAGES");
+				int qtd_images = rs.getInt("QTD_IMAGES");
 				for (int i = 1; i <= qtd_images; i++) {
-					imagens.add(rs.getString("ID_PROD") + "_"+i+".jpg");
-					
+					imagens.add(rs.getString("ID_PROD") + "_" + i + ".jpg");
+
 				}
-				retorno.put("imgs",imagens);
-				//retorno.put("img", rs.getString("ID_PROD") + ".jpg");///
+				retorno.put("imgs", imagens);
+				// retorno.put("img", rs.getString("ID_PROD") + ".jpg");///
 			}
 
 		}
@@ -1896,11 +1898,11 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 
 		String title = request.getParameter("title") == null ? "" : request.getParameter("title");
 		String msg = request.getParameter("msg") == null ? "" : request.getParameter("msg");
-		
+
 		msg = msg + " <br> ";
 		msg = msg + "Cod. Usuário: " + cod_usuario;
-		
-		Utilitario.sendEmail(sys.getSys_email(), msg, "Contato: "+title, conn);
+
+		Utilitario.sendEmail(sys.getSys_email(), msg, "Contato: " + title, conn);
 
 		objRetorno.put("msg", "ok");
 		out.print(objRetorno.toJSONString());
@@ -3107,6 +3109,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 		String dataagendamento = request.getParameter("dataagendamento") == null ? "" : request.getParameter("dataagendamento");
 		String dataagendamentohora = request.getParameter("dataagendamentohora") == null ? "" : request.getParameter("dataagendamentohora");
 		String bairro = request.getParameter("bairro") == null ? "" : request.getParameter("bairro");
+		String obsinfo = request.getParameter("obsinfo") == null ? "" : request.getParameter("obsinfo");
 
 		JSONObject param = new JSONObject();
 
@@ -3121,6 +3124,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 		param.put("dataagendamento", dataagendamento);
 		param.put("dataagendamentohora", dataagendamentohora);
 		param.put("bairro", bairro);
+		param.put("obsinfo", obsinfo);
 
 		criarPedido(request, response, conn, cod_usuario, param, true);
 
@@ -3141,6 +3145,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 		String dataagendamento = param.get("dataagendamento").toString();
 		String dataagendamentohora = param.get("dataagendamentohora").toString();
 		String bairro = param.get("bairro").toString();
+		String obsinfo = param.get("obsinfo") == null ? "" : param.get("obsinfo").toString();
 
 		if (!choiceserv.equals("T") && !choiceserv.equals("L")) {
 			throw new Exception("Tipo de serviço inválido.");
@@ -3233,9 +3238,9 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 
 				sql = new StringBuffer();
 				sql.append("INSERT INTO pedido ");
-				sql.append("  (`ID_PEDIDO`, `ID_DISTRIBUIDORA`, `ID_USUARIO`, `DATA_PEDIDO`, `FLAG_STATUS`, `VAL_TOTALPROD`, `VAL_ENTREGA`,  `NUM_PED`, `COD_BAIRRO`, `NUM_TELEFONECONTATO_CLIENTE`,  `DESC_ENDERECO_ENTREGA`, `DESC_ENDERECO_NUM_ENTREGA`, `DESC_ENDERECO_COMPLEMENTO_ENTREGA`, flag_vizualizado,FLAG_MODOPAGAMENTO,NOME_PESSOA,FLAG_PEDIDO_RET_ENTRE,TEMPO_ESTIMADO_DESEJADO,flag_modoentrega,DATA_AGENDA_ENTREGA) ");
+				sql.append("  (`ID_PEDIDO`, `ID_DISTRIBUIDORA`, `ID_USUARIO`, `DATA_PEDIDO`, `FLAG_STATUS`, `VAL_TOTALPROD`, `VAL_ENTREGA`,  `NUM_PED`, `COD_BAIRRO`, `NUM_TELEFONECONTATO_CLIENTE`,  `DESC_ENDERECO_ENTREGA`, `DESC_ENDERECO_NUM_ENTREGA`, `DESC_ENDERECO_COMPLEMENTO_ENTREGA`, flag_vizualizado,FLAG_MODOPAGAMENTO,NOME_PESSOA,FLAG_PEDIDO_RET_ENTRE,TEMPO_ESTIMADO_DESEJADO,flag_modoentrega,DATA_AGENDA_ENTREGA,DESC_OBSERVACAO) ");
 				sql.append("VALUES ");
-				sql.append("  (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?,?,?,?,?,?);");
+				sql.append("  (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?,?,?,?,?,?,?);");
 
 				st = conn.prepareStatement(sql.toString());
 
@@ -3333,6 +3338,8 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 				} else {
 					st.setNull(20, java.sql.Types.TIMESTAMP);
 				}
+
+				st.setString(21, obsinfo);
 
 				email = rs.getString("DESC_EMAIL");
 

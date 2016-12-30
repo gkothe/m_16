@@ -330,7 +330,10 @@ public class Pedidos_ajax {
 			objRetorno.put("data_formatada", new SimpleDateFormat("dd/MM/yyyy HH:mm").format(rs.getTimestamp("DATA_PEDIDO")));
 			objRetorno.put("NUM_PED", rs.getString("NUM_PED"));
 			objRetorno.put("FLAG_STATUS", rs.getString("FLAG_STATUS"));
-
+			
+			
+			
+			
 			if (rs.getTimestamp("DATA_AGENDA_ENTREGA") != null) {
 				objRetorno.put("data_agenda_entrega", new SimpleDateFormat("dd/MM/yyyy HH:mm").format(rs.getTimestamp("DATA_AGENDA_ENTREGA")));
 			} else {
@@ -819,7 +822,7 @@ public class Pedidos_ajax {
 			objRetorno.put("num_ped", rs.getString("num_ped"));
 			objRetorno.put("ID_PEDIDO", rs.getString("ID_PEDIDO"));
 			objRetorno.put("FLAG_MODOPAGAMENTO", Utilitario.returnModoPagamento(rs.getString("FLAG_MODOPAGAMENTO")));
-
+			objRetorno.put("m_observ", rs.getString("DESC_OBSERVACAO"));
 			if (rs.getTimestamp("DATA_AGENDA_ENTREGA") != null) {
 				objRetorno.put("data_agenda_entrega", new SimpleDateFormat("dd/MM/yyyy HH:mm").format(rs.getTimestamp("DATA_AGENDA_ENTREGA")));
 			} else {
@@ -856,16 +859,15 @@ public class Pedidos_ajax {
 			objRetorno.put("prods", prods);
 			objRetorno.put("darok", false);
 			Sys_parametros sys = new Sys_parametros(conn);
+
+			objRetorno.put("DESC_NOME", rs.getString("NOME_PESSOA"));
+			objRetorno.put("DESC_TELEFONE", rs.getString("NUM_TELEFONECONTATO_CLIENTE"));
+			String end = rs.getString("desc_endereco_entrega") == null ? "" : rs.getString("desc_endereco_entrega");
+			String num = rs.getString("desc_endereco_num_entrega") == null ? "" : rs.getString("desc_endereco_num_entrega");
+			String compl = rs.getString("desc_endereco_complemento_entrega") == null ? "" : rs.getString("desc_endereco_complemento_entrega");
+
+			objRetorno.put("DESC_ENDERECO", end + " " + num + " " + compl);
 			if (status.equalsIgnoreCase("E") || status.equalsIgnoreCase("C")) {
-
-				objRetorno.put("DESC_NOME", rs.getString("NOME_PESSOA"));
-				objRetorno.put("DESC_TELEFONE", rs.getString("NUM_TELEFONECONTATO_CLIENTE"));
-				String end = rs.getString("desc_endereco_entrega") == null ? "" : rs.getString("desc_endereco_entrega");
-				String num = rs.getString("desc_endereco_num_entrega") == null ? "" : rs.getString("desc_endereco_num_entrega");
-				String compl = rs.getString("desc_endereco_complemento_entrega") == null ? "" : rs.getString("desc_endereco_complemento_entrega");
-
-				objRetorno.put("DESC_ENDERECO", end + " " + num + " " + compl);
-
 				if (rs.getDouble("NUM_TROCOPARA") != 0.0) {
 					objRetorno.put("num_trocopara", "R$ " + df2.format(rs.getDouble("NUM_TROCOPARA")));
 				}

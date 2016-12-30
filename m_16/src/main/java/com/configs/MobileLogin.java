@@ -89,6 +89,8 @@ public class MobileLogin {
 
 		// validacao1
 		String url = "https://graph.facebook.com/v2.3/oauth/access_token?client_id=" + sys.getFACE_APP_ID() + "&redirect_uri=" + sys.getFACE_REDIRECT_URI() + "&client_secret=" + sys.getFACE_APP_SECRETKEY() + "&code=" + code;
+		
+		System.out.println(url);
 		URL obj = new URL(url);
 		HttpURLConnection con = (HttpURLConnection) obj.openConnection();
 
@@ -489,7 +491,7 @@ public class MobileLogin {
 				st.setString(3, token);
 				st.executeUpdate();
 
-				msg = "Seu e-mail foi verificado e sua conta foi ativada. Você já pode logar no TragoAqui e chamar trago! :-)";
+				msg = "Seu e-mail foi verificado e sua conta foi ativada. Você já pode logar no TragoAqui! :-)";
 				erro = false;
 			} else {
 				if (!token.equalsIgnoreCase("")) {

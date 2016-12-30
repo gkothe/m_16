@@ -43,8 +43,7 @@
 <!-- Custom Theme Style -->
 <link href="gentelella-master/production/css/custom.css"
 	rel="stylesheet">
-<link rel="stylesheet" type="text/css"
-	href="css/tragoaqui.css" />
+<link rel="stylesheet" type="text/css" href="css/tragoaqui.css" />
 
 
 </head>
@@ -89,24 +88,24 @@
 										class="fa fa-chevron-down clickmenu"></span></a>
 									<ul class="nav child_menu">
 										<li><a linkmenu="inserirpedido"
-											onclick="trocaPag(this,'N',event);" class="clickmenu">Inserir
+											onMouseup="trocaPag(this,'N',event);" class="clickmenu">Inserir
 												pedido</a></li>
 										<li><a linkmenu="listaped"
-											onclick="trocaPag(this,'N',event);" class="clickmenu">Abertos</a></li>
+											onMouseup="trocaPag(this,'N',event);" class="clickmenu">Abertos</a></li>
 										<li><a linkmenu="listapedfechado"
-											onclick="trocaPag(this,'N',event);" class="clickmenu">Histórico</a></li>
+											onMouseup="trocaPag(this,'N',event);" class="clickmenu">Histórico</a></li>
 									</ul></li>
 								<li><a class="clickmenu2"><i
 										class="fa fa-gear clickmenu2"></i> Parâmetros <span
 										class="fa fa-chevron-down clickmenu"></span></a>
 									<ul class="nav child_menu">
 										<li class=''><a linkmenu="listaprod"
-											onclick="trocaPag(this,'N',event);" class="clickmenu">Produtos</a></li>
+											onMouseup="trocaPag(this,'N',event);" class="clickmenu">Produtos</a></li>
 										<li><a linkmenu="wizardhorarios"
-											onclick="trocaPag(this,'N',event);" class="clickmenu">Configurações
+											onMouseup="trocaPag(this,'N',event);" class="clickmenu">Configurações
 												de horários</a></li>
 										<li><a linkmenu="listaconfigemp"
-											onclick="trocaPag(this,'N',event);" class="clickmenu">Configurações
+											onMouseup="trocaPag(this,'N',event);" class="clickmenu">Configurações
 												da empresa</a></li>
 
 									</ul></li>
@@ -115,11 +114,11 @@
 										class="fa fa-chevron-down clickmenu"></span></a>
 									<ul class="nav child_menu">
 										<li><a linkmenu="rel_pedidos"
-											onclick="trocaPag(this,'N',event);" class="clickmenu">Pedidos</a></li>
+											onMouseup="trocaPag(this,'N',event);" class="clickmenu">Pedidos</a></li>
 										<li><a linkmenu="rel_produtos"
-											onclick="trocaPag(this,'N',event);" class="clickmenu">Produtos</a></li>
+											onMouseup="trocaPag(this,'N',event);" class="clickmenu">Produtos</a></li>
 										<li><a linkmenu="dashpedidos"
-											onclick="trocaPag(this,'N',event);" class="clickmenu">Dashboard
+											onMouseup="trocaPag(this,'N',event);" class="clickmenu">Dashboard
 												Pedidos</a></li>
 									</ul></li>
 
@@ -460,6 +459,21 @@
 
 								</div>
 
+								<div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+
+
+									<table id="table_enderaberto">
+										<tr>
+											<td style="padding-right: 5px;"><label for="">Endereço:
+											</label></td>
+											<td><label id=""> </label><label id="desc_enderaberto"></label></td>
+
+										</tr>
+									</table>
+
+
+								</div>
+
 							</div>
 
 
@@ -621,14 +635,15 @@
 
 							</div>
 
-							<div class="row cancelamento">
+							<div class="row obsped cancelamento">
 
 								<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 " align="">
-									<table>
+									<table style="width: 90% ">
 										<tr>
-											<td style="padding-right: 5px;"><label for="">Observação:
+											<td style="width: 85px" style="padding-right: 5px;"><label for="">Observação:
 											</label></td>
-											<td><label id=""> </label><label id="m_observ"></label></td>
+																						<td><label id=""> </label><label id="m_observ"></label></td>
+<!-- 											<td  > <textarea rows="2" id="m_observ" readonly="readonly" style="width: 100%;  resize: none;" ></textarea></td> -->
 										</tr>
 
 									</table>

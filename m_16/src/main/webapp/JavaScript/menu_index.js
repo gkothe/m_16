@@ -83,6 +83,8 @@ function sysMsg(text, tipo) {
 
 function trocaPag(pag, jsp, e, extraparam) {
 
+	 
+	
 	var link = $(pag).attr('linkmenu');
 	var men = "";
 	if ($BODY.hasClass('nav-md')) {
@@ -95,6 +97,7 @@ function trocaPag(pag, jsp, e, extraparam) {
 		extraparam = "";
 	}
 
+	console.log(e);
 	if (e && (e.which == 2 || e.button == 4)) {
 		window.open("home?link=" + link + "&jsp=" + jsp + "&m=" + men + "&extra=" + extraparam, '_blank');
 	} else {
@@ -269,9 +272,17 @@ $(document).ready(function() {
 var preventclean = false;
 var sommute = false;
 var audio = new Audio('audiopedido.mp3');
+var audioCanc = new Audio('audiopedido.mp3');
+
+
+
 function mutarsom() {
 	audio.pause();
 	audio.currentTime = 0;
+	
+	audioCanc.pause();
+	audioCanc.currentTime = 0;
+	
 	sommute = true;
 	setTimeout(function() {
 		sommute = false;
@@ -282,6 +293,14 @@ function playAudioPedido() {
 	if (!sommute)
 		audio.play();
 }
+
+function playAudioPedidoCanc() {
+	if (!sommute)
+		audioCanc.play();
+}
+
+
+
 
 function limpaModal() {
 
@@ -412,7 +431,7 @@ function checarPedidos() {
 
 
 			
-			console.log("aaa");
+			
 			
 			
 			
@@ -459,6 +478,7 @@ function checarPedidos() {
 
 			if (data.canc_vizu == true) {
 				$("#msg_cancholder").show();
+				playAudioPedidoCanc();
 			} else {
 				$("#msg_cancholder").hide();
 			}
@@ -789,14 +809,29 @@ function visualizarPedido(id) {
 		async : false,
 		dataType : 'json',
 		success : function(data) {
+			$("#table_enderaberto").hide();
 			$(".cancelamento").hide();
+			
 			$("#m_finalizar").html("Finalizar");
 			$("#m_tempo_max_lbl").html("Tempo máximo desejado para a entrega");
 			audio.pause();
 			audio.currentTime = 0;
+			
+			audioCanc.pause();
+			audioCanc.currentTime = 0;
+			if(data.m_observ!=""){
+				$("#m_observ").html(data.m_observ)
+				$(".obsped").show();
+			}
+			
+			
+			
 			if (data.tipo_servico == "T") {
 				$("#m_lbl_bairro").html("Bairro:");
-
+				$("#table_enderaberto").show();
+				$("#desc_enderaberto").html(data.DESC_ENDERECO);
+				
+				
 				if (data.flag_modoentrega == 'A') {
 					$("#m_tempomax_div").hide();
 					$("#m_agendamento").html(data.data_agenda_entrega);

@@ -25,6 +25,36 @@
 
 			<div class="col-xs-1 col-sm-1 col-md-1 col-lg-1 filtros"
 				align="right">
+				<label for=""> Produto</label>
+			</div>
+			<div class="col-xs-3 col-sm-3 col-md-4 col-lg-4">
+
+				<div class="input-group" style="width: 100%">
+
+					<input id="id_produto" style="width: 20%"
+						class="form-control" type="text" maxlength="100" value=""
+						name="id_produto"> <input id="desc_produto"
+						style="width: 80%" class="form-control" type="text" maxlength=""
+						value="" name="desc_produto">
+				</div>
+			</div>
+
+		
+			<div class="col-xs-6 col-sm-6 col-md-6 col-lg-6 " align="left">
+				<button class="btn btn-primary " type="button"
+					 id="btn_addprod_filt">Adicionar Produto</button>
+
+
+			</div>
+
+		</div>
+		
+			<div class="row rowpad">
+
+	
+
+			<div class="col-xs-1 col-sm-1 col-md-1 col-lg-1 filtros"
+				align="right">
 				<label for=""> Descrição Produto</label>
 			</div>
 			<div class="col-xs-4 col-sm-4 col-md-4	 col-lg-4">
@@ -32,8 +62,8 @@
 					type="text" maxlength="" value="" name="descricaoprod">
 			</div>
 			<div class="col-xs-6 col-sm-6 col-md-6 col-lg-6 " align="left">
-				<button class="btn btn-primary " type="button" id="btn_filtrarprodped"
-					id="btn_filtrarprodped">Filtrar</button>
+				<button class="btn btn-primary " type="button"
+					 id="btn_filtrarprodped">Filtrar na Tabela</button>
 
 
 			</div>
@@ -94,13 +124,15 @@
 
 
 		</div>
-		<div> <label style="font-weight: 900">Produtos</label> </div>
+		<div>
+			<label style="font-weight: 900">Produtos</label>
+		</div>
 		<div style="height: 200px; overflow-y: scroll;" id="div_scroll">
 			<div style="width: 95% !important;" class="row">
 
 				<div class="col-xs-12 col-md-12 col-lg-12 ">
 					<table id="add_items">
-						
+
 						<tr id="lbl_nenhumprod">
 							<th>Nenhum produto adicionado.</th>
 						</tr>

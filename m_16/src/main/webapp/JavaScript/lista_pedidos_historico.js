@@ -186,7 +186,7 @@ function visualizarPedidoHistorico(id) {
 		dataType : 'json',
 		success : function(data) {
 			$(".cancelamento").hide();
-
+			$("#table_enderaberto").hide();
 			if (data.tipo_servico == "T") {
 				$("#m_lbl_bairro").html("Bairro:");
 

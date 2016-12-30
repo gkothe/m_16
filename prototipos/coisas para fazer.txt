@@ -1,20 +1,20 @@
 ----bugs
-fazer testes de comportametno qdo servidor estiver offline.
-Ve como funciona atualização no googleplay
-termos do facebook, conseguir autorização.   -forum
-Conseguir um iphone emprestado. E testes em iphone.
-REvisar os texto email.
-Criar roda pé de email.
-Definir os bairro
-Manual 
-Faq
-Servidor
-Email
-Imagem da tela inicial
-Ve tudo que precisa de assuntos pra advogados
-Roteiro venda, Cenario de venda.
-Roteiro de teste/revisão
-Patentiar o TragoAqui
+
+Ve como funciona googleplay - Eu.
+Conseguir um iphone emprestado. E testes em iphone. - socorro. Eu.
+Manual  - Walter/goltz
+Faq - Walter/goltz
+Servidor - Eu
+Ve tudo que precisa de assuntos pra advogados - Conjunto.
+Roteiro venda, Cenario de venda. - walter/goltz
+Roteiro de teste/revisão - conjunto
+Patentiar o TragoAqui - walter/goltz
+
+Futuro
+Nao esta muito claro a diferença entre agendamento e tele-entrega -FAQ conversar
+Implementar  credito, debito ou dinheiro. EU.
+
+
 
 
 
