@@ -881,7 +881,7 @@ public class Pedidos_ajax {
 				}
 
 				// objRetorno.put("desc_bairro", Utilitario.getNomeBairro(conn, rs.getInt("cod_bairro"), 0));
-
+				
 				objRetorno.put("m_tempo_entrega", new SimpleDateFormat("HH:mm").format(rs.getTimestamp("TEMPO_ESTIMADO_ENTREGA")));
 				objRetorno.put("m_data_resposta", new SimpleDateFormat("dd/MM/yyyy HH:mm").format(rs.getTimestamp("DATA_PEDIDO_RESPOSTA")));
 
@@ -906,7 +906,7 @@ public class Pedidos_ajax {
 			}
 
 			if (status.equalsIgnoreCase("C")) {
-
+				objRetorno.put("m_tempo_max", new SimpleDateFormat("HH:mm").format(rs.getTimestamp("tempo_estimado_desejado")));
 				sql = " update  pedido_motivo_cancelamento  set FLAG_VIZUALIZADO_CANC = 'S' where id_pedido = ?  ";
 				st = conn.prepareStatement(sql);
 				st.setInt(1, Integer.parseInt(id_pedido));
