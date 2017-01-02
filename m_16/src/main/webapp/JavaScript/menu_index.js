@@ -97,7 +97,7 @@ function trocaPag(pag, jsp, e, extraparam) {
 		extraparam = "";
 	}
 
-	console.log(e);
+	
 	if (e && (e.which == 2 || e.button == 4)) {
 		window.open("home?link=" + link + "&jsp=" + jsp + "&m=" + men + "&extra=" + extraparam, '_blank');
 	} else {
