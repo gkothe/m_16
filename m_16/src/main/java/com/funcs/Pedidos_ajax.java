@@ -310,7 +310,7 @@ public class Pedidos_ajax {
 		String sql2;
 		while (rs.next()) {
 			JSONObject objRetorno = new JSONObject();
-			sql2 = " SELECT cONCAT('',QTD_PROD ,' x ', DESC_ABREVIADO) AS DESCPROD FROM PEDIDO_ITEM INNER JOIN produtos ON produtos.ID_PROD  =  PEDIDO_ITEM.ID_PROD AND ID_PEDIDO = ?  ";
+			sql2 = " select concat('',qtd_prod ,' x ', desc_abreviado) as descprod from pedido_item inner join produtos on produtos.id_prod  =  pedido_item.id_prod and id_pedido = ?  ";
 			st2 = conn.prepareStatement(sql2);
 			st2.setInt(1, rs.getInt("id_pedido"));
 			rs2 = st2.executeQuery();

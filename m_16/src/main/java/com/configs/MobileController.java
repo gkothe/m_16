@@ -382,7 +382,11 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 		PreparedStatement st = conn.prepareStatement(varname1.toString());
 		st.setLong(1, cod_usuario);
 		ResultSet rs = st.executeQuery();
+		
+		
 
+
+		
 		if (rs.next()) {
 
 			StringBuffer varname11 = new StringBuffer();
