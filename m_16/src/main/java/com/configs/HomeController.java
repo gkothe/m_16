@@ -273,7 +273,7 @@ public class HomeController extends javax.servlet.http.HttpServlet {
 
 	private void atualizaLastAjax(int coddistr, Connection conn) throws Exception {
 
-		String sql = " Update distribuidora set DATE_LASTAJAX = now() where ID_DISTRIBUIDORA = ? ";
+		String sql = " update distribuidora set date_lastajax = now() where id_distribuidora = ? ";
 		PreparedStatement st = conn.prepareStatement(sql.toString());
 		st.setLong(1, (coddistr));
 		st.executeUpdate();

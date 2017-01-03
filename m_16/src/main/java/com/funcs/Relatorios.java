@@ -155,7 +155,7 @@ public class Relatorios {
 		String flag_servico = request.getParameter("flag_servico") == null ? "" : request.getParameter("flag_servico");
 		String dias_semana = request.getParameter("dias_semana") == null ? "" : request.getParameter("dias_semana");
 
-		String sql = "select count(id_pedido) as qtdped, sum(VAL_TOTALPROD) as val_total, sum(VAL_TOTALPROD)  / count(id_pedido)    as media from pedido   where id_distribuidora = ? and flag_status = 'O' ";
+		String sql = "select count(id_pedido) as qtdped, sum(val_totalprod) as val_total, sum(val_totalprod)  / count(id_pedido)    as media from pedido   where id_distribuidora = ? and flag_status = 'O' ";
 
 		sql = parametrosDash(sql, hora_inicial, hora_final, dias_semana, cod_bairro, data_pedido_ini, data_pedido_fim, flag_servico);
 
@@ -176,7 +176,7 @@ public class Relatorios {
 			retorno.put("media", "R$ " + df2.format(0));
 		}
 
-		sql = "select TIME_FORMAT(SEC_TO_TIME(AVG(TIME_TO_SEC(TEMPO_ESTIMADO_DESEJADO))),'%H:%i:%s' ) as TEMPO_ESTIMADO_DESEJADO_MEDIO  , TIME_FORMAT(SEC_TO_TIME(AVG(TIME_TO_SEC(TEMPO_ESTIMADO_ENTREGA))),'%H:%i:%s' ) as TEMPO_ESTIMADO_ENTREGA_MEDIO   from pedido  where FLAG_PEDIDO_RET_ENTRE = 'T'  and id_distribuidora = ? and flag_status = 'O' and flag_modoentrega = 'T' ";
+		sql = "select time_format(sec_to_time(avg(time_to_sec(tempo_estimado_desejado))),'%h:%i:%s' ) as tempo_estimado_desejado_medio  , time_format(sec_to_time(avg(time_to_sec(tempo_estimado_entrega))),'%h:%i:%s' ) as tempo_estimado_entrega_mediO   from pedido  where flag_pedido_ret_entre = 'T'  and id_distribuidora = ? and flag_status = 'O' and flag_modoentrega = 'T' ";
 
 		sql = parametrosDash(sql, hora_inicial, hora_final, dias_semana, cod_bairro, data_pedido_ini, data_pedido_fim, flag_servico);
 
@@ -202,7 +202,7 @@ public class Relatorios {
 			retorno.put("tempo_estimado_entrega_medio", "");
 		}
 
-		sql = " Select TIMESTAMPDIFF(SECOND,DATA_PEDIDO,DATA_PEDIDO_RESPOSTA)  as secs from PEDIDO   where    id_distribuidora = ? and flag_status = 'O' ";
+		sql = " select timestampdiff(second,data_pedido,data_pedido_resposta)  as secs from pedido   where    id_distribuidora = ? and flag_status = 'O' ";
 
 		sql = parametrosDash(sql, hora_inicial, hora_final, dias_semana, cod_bairro, data_pedido_ini, data_pedido_fim, flag_servico);
 
@@ -245,11 +245,11 @@ public class Relatorios {
 		String flag_servico = request.getParameter("flag_servico") == null ? "" : request.getParameter("flag_servico");
 		String dias_semana = request.getParameter("dias_semana") == null ? "" : request.getParameter("dias_semana");
 
-		String sql = "select distinct FLAG_MODOPAGAMENTO, count(FLAG_MODOPAGAMENTO) as qtd,sum(val_totalprod) as val_totalprod from pedido  where id_distribuidora = ?  and flag_status = 'O' ";
+		String sql = "select distinct flag_modopagamento, count(flag_modopagamento) as qtd,sum(val_totalprod) as val_totalprod from pedido  where id_distribuidora = ?  and flag_status = 'O' ";
 
 		sql = parametrosDash(sql, hora_inicial, hora_final, dias_semana, cod_bairro, data_pedido_ini, data_pedido_fim, flag_servico);
 
-		sql = sql + " group by FLAG_MODOPAGAMENTO ;";
+		sql = sql + " group by flag_modopagamento ;";
 
 		PreparedStatement st = conn.prepareStatement(sql);
 		st.setInt(1, coddistr);
@@ -260,7 +260,7 @@ public class Relatorios {
 		ResultSet rs = st.executeQuery();
 		while (rs.next()) {
 			JSONObject obj = new JSONObject();
-			obj.put("desc", rs.getString("FLAG_MODOPAGAMENTO").equalsIgnoreCase("C") ? "Cartão Créd." : "Dinheiro");
+			obj.put("desc", rs.getString("flag_modopagamento").equalsIgnoreCase("C") ? "Cartão Créd." : "Dinheiro");
 			obj.put("qtd", rs.getInt("qtd"));
 			obj.put("qtddf", df.format(rs.getInt("qtd")));
 			obj.put("val_totalprod", "R$ " + df2.format(rs.getDouble("val_totalprod")));
@@ -295,11 +295,11 @@ public class Relatorios {
 		String flag_servico = request.getParameter("flag_servico") == null ? "" : request.getParameter("flag_servico");
 		String dias_semana = request.getParameter("dias_semana") == null ? "" : request.getParameter("dias_semana");
 
-		String sql = "select distinct FLAG_PEDIDO_RET_ENTRE, count(FLAG_PEDIDO_RET_ENTRE) as qtd,sum(val_totalprod) as val_totalprod from pedido  where id_distribuidora = ? and flag_status = 'O' ";
+		String sql = "select distinct flag_pedido_ret_entre, count(flag_pedido_ret_entre) as qtd,sum(val_totalprod) as val_totalprod from pedido  where id_distribuidora = ? and flag_status = 'O' ";
 
 		sql = parametrosDash(sql, hora_inicial, hora_final, dias_semana, cod_bairro, data_pedido_ini, data_pedido_fim, "");
 
-		sql = sql + " group by FLAG_PEDIDO_RET_ENTRE ;";
+		sql = sql + " group by flag_pedido_ret_entre ;";
 
 		PreparedStatement st = conn.prepareStatement(sql);
 		st.setInt(1, coddistr);
@@ -310,7 +310,7 @@ public class Relatorios {
 		ResultSet rs = st.executeQuery();
 		while (rs.next()) {
 			JSONObject obj = new JSONObject();
-			obj.put("desc", rs.getString("FLAG_PEDIDO_RET_ENTRE").equalsIgnoreCase("T") ? "Entrega" : "Retirada");
+			obj.put("desc", rs.getString("flag_pedido_ret_entre").equalsIgnoreCase("T") ? "Entrega" : "Retirada");
 			obj.put("qtd", rs.getInt("qtd"));
 			obj.put("qtddf", df.format(rs.getInt("qtd")));
 			obj.put("val_totalprod", df2.format(rs.getDouble("val_totalprod")));
@@ -356,11 +356,11 @@ public class Relatorios {
 		rs2 = st.executeQuery();
 		while (rs2.next()) {
 
-			sql = "SELECT  HOUR(DATA_PEDIDO) as hora , TIME_FORMAT(DATA_PEDIDO,'%H:00' ) as horaformated ,TIME_FORMAT(DATE_ADD(DATA_PEDIDO,interval 1 HOUR ),'%H:00' )  as HORA2, COUNT(*) as qtd, sum(VAL_TOTALPROD) as VAL_TOTALPROD FROM pedido where id_distribuidora = ?  and flag_status = 'O' and HOUR(DATA_PEDIDO) = " + rs2.getInt("n");
+			sql = "select  hour(data_pedido) as hora , time_format(data_pedido,'%h:00' ) as horaformated ,time_format(date_add(data_pedido,interval 1 hour ),'%h:00' )  as hora2, count(*) as qtd, sum(val_totalprod) as val_totalprod from pedido where id_distribuidora = ?  and flag_status = 'O' and hour(data_pedido) = " + rs2.getInt("n");
 
 			sql = parametrosDash(sql, "", "", dias_semana, cod_bairro, data_pedido_ini, data_pedido_fim, flag_servico);
 
-			sql = sql + " group by  HOUR(DATA_PEDIDO) ";
+			sql = sql + " group by  hour(data_pedido) ";
 
 			st = conn.prepareStatement(sql);
 			st.setInt(1, coddistr);
@@ -374,7 +374,7 @@ public class Relatorios {
 				obj.put("hora", rs.getString("hora"));
 				obj.put("horaformated", rs.getString("horaformated") + "-" + rs.getString("HORA2"));
 				obj.put("qtd", rs.getInt("qtd"));
-				obj.put("val_totalprod", rs.getDouble("VAL_TOTALPROD"));
+				obj.put("val_totalprod", rs.getDouble("val_totalprod"));
 				retorno.add(obj);
 			} else {
 				JSONObject obj = new JSONObject();
@@ -425,11 +425,11 @@ public class Relatorios {
 		rs2 = st.executeQuery();
 		while (rs2.next()) {
 
-			sql = "SELECT DAYOFWEEK(DATA_PEDIDO) as dia, COUNT(*) as qtd,  sum(VAL_TOTALPROD) as VAL_TOTALPROD FROM pedido  where id_distribuidora = ?  and flag_status = 'O' and DAYOFWEEK(DATA_PEDIDO) =  " + rs2.getInt("cod_dia");
+			sql = "select dayofweek(data_pedido) as dia, count(*) as qtd,  sum(val_totalprod) as val_totalprod from pedido  where id_distribuidora = ?  and flag_status = 'O' and dayofweek(data_pedido) =  " + rs2.getInt("cod_dia");
 
 			sql = parametrosDash(sql, hora_inicial, hora_final, "", cod_bairro, data_pedido_ini, data_pedido_fim, flag_servico);
 
-			sql = sql + "  GROUP BY DAYOFWEEK(DATA_PEDIDO) ";
+			sql = sql + "  group by dayofweek(data_pedido) ";
 
 			st = conn.prepareStatement(sql);
 			st.setInt(1, coddistr);
@@ -547,15 +547,15 @@ public class Relatorios {
 
 		StringBuffer sql = new StringBuffer();
 
-		sql.append("SELECT  sum(QTD_PROD) as qtd, ");
-		sql.append("       COALESCE(pedido.cod_bairro, 0)           AS cod_bairro, ");
-		sql.append("       COALESCE(desc_bairro, '* Distribuidora') AS desc_bairro, ");
-		sql.append("       sum(QTD_PROD * Val_unit ) as valtotal ");
-		sql.append("FROM   pedido ");
-		sql.append("       INNER JOIN pedido_item ");
-		sql.append("               ON pedido_item .id_pedido = pedido.id_pedido ");
-		sql.append("       LEFT JOIN bairros ");
-		sql.append("              ON bairros.cod_bairro = pedido.cod_bairro");
+		sql.append("select  sum(qtd_prod) as qtd, ");
+		sql.append("       coalesce(pedido.cod_bairro, 0)           as cod_bairro, ");
+		sql.append("       coalesce(desc_bairro, '* distribuidora') as desc_bairro, ");
+		sql.append("       sum(qtd_prod * val_unit ) as valtotal ");
+		sql.append("from   pedido ");
+		sql.append("       inner join pedido_item ");
+		sql.append("               on pedido_item .id_pedido = pedido.id_pedido ");
+		sql.append("       left join bairros ");
+		sql.append("              on bairros.cod_bairro = pedido.cod_bairro");
 		sql.append("            where id_distribuidora = ?  and flag_status = 'O'  and id_prod = ? and bairros.cod_bairro is null");
 
 		sql = new StringBuffer(parametrosDash(sql.toString(), hora_inicial, hora_final, dias_semana, "", data_pedido_ini, data_pedido_fim, flag_servico));
@@ -596,15 +596,15 @@ public class Relatorios {
 		while (rs.next()) {
 			sql = new StringBuffer();
 
-			sql.append("SELECT  sum(QTD_PROD) as qtd, ");
-			sql.append("       COALESCE(pedido.cod_bairro, 0)           AS cod_bairro, ");
-			sql.append("       COALESCE(desc_bairro, '* Distribuidora') AS desc_bairro, ");
-			sql.append("       sum(QTD_PROD * Val_unit ) as valtotal ");
-			sql.append("FROM   pedido ");
-			sql.append("       INNER JOIN pedido_item ");
-			sql.append("               ON pedido_item .id_pedido = pedido.id_pedido ");
-			sql.append("       LEFT JOIN bairros ");
-			sql.append("              ON bairros.cod_bairro = pedido.cod_bairro");
+			sql.append("select  sum(qtd_prod) as qtd, ");
+			sql.append("       coalesce(pedido.cod_bairro, 0)           as cod_bairro, ");
+			sql.append("       coalesce(desc_bairro, '* distribuidora') as desc_bairro, ");
+			sql.append("       sum(qtd_prod * val_unit ) as valtotal ");
+			sql.append("from   pedido ");
+			sql.append("       inner join pedido_item ");
+			sql.append("               on pedido_item .id_pedido = pedido.id_pedido ");
+			sql.append("       left join bairros ");
+			sql.append("              on bairros.cod_bairro = pedido.cod_bairro");
 			sql.append("            where id_distribuidora = ?  and flag_status = 'O'  and id_prod = ? and bairros.cod_bairro = " + rs.getInt("cod_bairro"));
 
 			sql = new StringBuffer(parametrosDash(sql.toString(), hora_inicial, hora_final, dias_semana, "", data_pedido_ini, data_pedido_fim, flag_servico));
@@ -655,10 +655,10 @@ public class Relatorios {
 		String id_prod = request.getParameter("id_prod") == null ? "" : request.getParameter("id_prod");
 
 		StringBuffer sql = new StringBuffer();
-		sql.append(" select    sum(QTD_PROD) as qtd,sum(QTD_PROD)/7 as media, sum(QTD_PROD * Val_unit ) as totalfat,Val_unit  ");
-		sql.append(" FROM   pedido ");
-		sql.append("       INNER JOIN pedido_item ");
-		sql.append("               ON pedido_item .id_pedido = pedido.id_pedido ");
+		sql.append(" select    sum(qtd_prod) as qtd,sum(qtd_prod)/7 as media, sum(qtd_prod * val_unit ) as totalfat,val_unit  ");
+		sql.append(" from   pedido ");
+		sql.append("       inner join pedido_item ");
+		sql.append("               on pedido_item .id_pedido = pedido.id_pedido ");
 		sql.append("            where id_distribuidora = ?  and flag_status = 'O'  and id_prod = ? ");
 
 		sql = new StringBuffer(parametrosDash(sql.toString(), hora_inicial, hora_final, dias_semana, cod_bairro, data_pedido_ini, data_pedido_fim, flag_servico));
@@ -726,18 +726,18 @@ public class Relatorios {
 		while (rs2.next()) {
 
 			sql = new StringBuffer();
-			sql.append(" select  DAYOFWEEK(DATA_PEDIDO) as dia,  sum(QTD_PROD) as qtd, sum(val_unit * qtd_prod) as VAL_TOTALPROD  from pedido");
+			sql.append(" select  dayofweek(data_pedido) as dia,  sum(qtd_prod) as qtd, sum(val_unit * qtd_prod) as val_totalprod  from pedido");
 			sql.append(" ");
 			sql.append(" inner join pedido_item ");
 			sql.append(" on pedido_item .id_pedido = pedido.id_pedido ");
 			sql.append(" ");
 			sql.append(" ");
-			sql.append(" where id_distribuidora = ? and id_prod = ?  and flag_status = 'O'  and DAYOFWEEK(DATA_PEDIDO) =  " + rs2.getInt("cod_dia"));
+			sql.append(" where id_distribuidora = ? and id_prod = ?  and flag_status = 'O'  and dayofweek(data_pedido) =  " + rs2.getInt("cod_dia"));
 			sql.append(" ");
 
 			sql = new StringBuffer(parametrosDash(sql.toString(), hora_inicial, hora_final, "", cod_bairro, data_pedido_ini, data_pedido_fim, flag_servico));
 
-			sql.append(" group by   DAYOFWEEK(DATA_PEDIDO)   order by  DAYOFWEEK(DATA_PEDIDO) ");
+			sql.append(" group by   dayofweek(data_pedido)   order by  dayofweek(data_pedido) ");
 
 			st = conn.prepareStatement(sql.toString());
 			st.setInt(1, coddistr);
@@ -793,18 +793,17 @@ public class Relatorios {
 
 			sql = new StringBuffer();
 
-			sql.append("select sum(val_unit * qtd_prod) as VAL_TOTALPROD , HOUR(DATA_PEDIDO) as hora , TIME_FORMAT(DATA_PEDIDO,'%H:00' ) as horaformated , TIME_FORMAT(DATE_ADD(DATA_PEDIDO,interval 1 HOUR ),'%H:00' )  as HORA2, sum(QTD_PROD) as qtd  from pedido ");
+			sql.append("select sum(val_unit * qtd_prod) as val_totalprod , hour(data_pedido) as hora , time_format(data_pedido,'%h:00' ) as horaformated , time_format(date_add(data_pedido,interval 1 hour ),'%h:00' )  as hora2, sum(qtd_prod) as qtd  from pedido ");
 			sql.append(" ");
 			sql.append("inner join pedido_item ");
 			sql.append("on pedido_item .id_pedido = pedido.id_pedido ");
 			sql.append(" ");
-			sql.append(" ");
-			sql.append("where id_distribuidora = ? and id_prod = ?  and flag_status = 'O' and HOUR(DATA_PEDIDO) = " + rs2.getInt("n") + "  ");
+			sql.append("where id_distribuidora = ? and id_prod = ?  and flag_status = 'O' and hour(data_pedido) = " + rs2.getInt("n") + "  ");
 			sql.append(" ");
 
 			sql = new StringBuffer(parametrosDash(sql.toString(), "", "", dias_semana, cod_bairro, data_pedido_ini, data_pedido_fim, flag_servico));
 
-			sql.append("group by HOUR(DATA_PEDIDO) order by HOUR(DATA_PEDIDO)");
+			sql.append("group by hour(data_pedido) order by hour(data_pedido)");
 
 			st = conn.prepareStatement(sql.toString());
 			st.setInt(1, coddistr);
@@ -861,22 +860,22 @@ public class Relatorios {
 		String consulta = request.getParameter("consulta") == null ? "" : request.getParameter("consulta");
 		StringBuffer sql = new StringBuffer();
 
-		sql.append("SELECT pedido_item.id_prod, ");
-		sql.append("       Sum(qtd_prod) as qtd, ");
-		sql.append("       DESC_ABREVIADO as desc_prod ");
-		sql.append("FROM   pedido_item ");
-		sql.append("       INNER JOIN pedido ");
-		sql.append("               ON pedido.id_pedido = pedido_item.id_pedido ");
-		sql.append("       INNER JOIN produtos ");
-		sql.append("               ON produtos.id_prod = pedido_item.id_prod ");
+		sql.append("select pedido_item.id_prod, ");
+		sql.append("       sum(qtd_prod) as qtd, ");
+		sql.append("       desc_abreviado as desc_prod ");
+		sql.append("from   pedido_item ");
+		sql.append("       inner join pedido ");
+		sql.append("               on pedido.id_pedido = pedido_item.id_pedido ");
+		sql.append("       inner join produtos ");
+		sql.append("               on produtos.id_prod = pedido_item.id_prod ");
 		sql.append("         where id_distribuidora = ?  and flag_status = 'O'  ");
 
 		sql = new StringBuffer(parametrosDash(sql.toString(), hora_inicial, hora_final, dias_semana, cod_bairro, data_pedido_ini, data_pedido_fim, flag_servico));
 
 		if (consulta.equalsIgnoreCase("-")) {
-			sql.append(" group by pedido_item.id_prod ,desc_prod order by sum(QTD_PROD) asc limit 20 ;");
+			sql.append(" group by pedido_item.id_prod ,desc_prod order by sum(qtd_prod) asc limit 20 ;");
 		} else {
-			sql.append(" group by pedido_item.id_prod ,desc_prod order by sum(QTD_PROD) desc limit 20 ;");
+			sql.append(" group by pedido_item.id_prod ,desc_prod order by sum(qtd_prod) desc limit 20 ;");
 		}
 
 		PreparedStatement st = conn.prepareStatement(sql.toString());
@@ -919,14 +918,14 @@ public class Relatorios {
 		String dias_semana = request.getParameter("dias_semana") == null ? "" : request.getParameter("dias_semana");
 		String consulta = request.getParameter("consulta") == null ? "" : request.getParameter("consulta");
 		StringBuffer sql = new StringBuffer();
-		sql.append("SELECT pedido_item.id_prod, ");
-		sql.append("       Sum(val_unit * qtd_prod ) as valsold,  ");
-		sql.append("       DESC_ABREVIADO as desc_prod ");
-		sql.append("FROM   pedido_item ");
-		sql.append("       INNER JOIN pedido ");
-		sql.append("               ON pedido.id_pedido = pedido_item.id_pedido ");
-		sql.append("       INNER JOIN produtos ");
-		sql.append("               ON produtos.id_prod = pedido_item.id_prod ");
+		sql.append("select pedido_item.id_prod, ");
+		sql.append("       sum(val_unit * qtd_prod ) as valsold,  ");
+		sql.append("       desc_abreviado as desc_prod ");
+		sql.append("from   pedido_item ");
+		sql.append("       inner join pedido ");
+		sql.append("               on pedido.id_pedido = pedido_item.id_pedido ");
+		sql.append("       inner join produtos ");
+		sql.append("               on produtos.id_prod = pedido_item.id_prod ");
 		sql.append("         where id_distribuidora = ?  and flag_status = 'O'  ");
 
 		sql = new StringBuffer(parametrosDash(sql.toString(), hora_inicial, hora_final, dias_semana, cod_bairro, data_pedido_ini, data_pedido_fim, flag_servico));
@@ -1499,7 +1498,7 @@ public class Relatorios {
 	private static HashMap<String, Object> getMotivosRecusaRelPedido(String id_pedido, Connection conn, PreparedStatement st2, ResultSet rs2, HashMap<String, Object> hmFat, Sys_parametros sys) throws Exception {
 
 		StringBuffer sql2 = new StringBuffer();
-		sql2.append("select RECUSADO_DISPONIVEL,FLAG_RECUSADO,  DESC_PROD, VAL_UNIT, QTD_PROD, QTD_PROD * VAL_UNIT   as total, DESC_ABREVIADO, produtos.id_prod from pedido_item ");
+		sql2.append("select recusado_disponivel,flag_recusado,  desc_prod, val_unit, qtd_prod, qtd_prod * val_unit   as total, desc_abreviado, produtos.id_prod from pedido_item ");
 		sql2.append("inner join produtos ");
 		sql2.append("on produtos.ID_PROD  = pedido_item.ID_PROD ");
 		sql2.append("where id_pedido = ? order by desc_prod");
@@ -1724,7 +1723,7 @@ public class Relatorios {
 			StringBuffer sql = new StringBuffer();
 
 			sql = new StringBuffer();
-			sql.append("  select produtos.id_prod,DESC_PROD,DESC_ABREVIADO, produtos_distribuidora.FLAG_ATIVO, sum(pedido_item.QTD_PROD) as qtd, sum(pedido_item.QTD_PROD * VAL_UNIT) as total  from produtos ");
+			sql.append("  select produtos.id_prod,desc_prod,desc_abreviado, produtos_distribuidora.flag_ativo, sum(pedido_item.qtd_prod) as qtd, sum(pedido_item.qtd_prod * val_unit) as total  from produtos ");
 			sql.append(" ");
 			sql.append("			inner join produtos_distribuidora ");
 			sql.append("			on produtos_distribuidora.id_prod = produtos.id_prod ");
@@ -1741,12 +1740,12 @@ public class Relatorios {
 			}
 			sql = new StringBuffer(parametrosDash(sql.toString(), "", "", "", "", dataini, datafim, ""));
 
-			sql.append("			group by produtos.id_prod,DESC_PROD, produtos_distribuidora.FLAG_ATIVO,DESC_ABREVIADO ");
+			sql.append("			group by produtos.id_prod,desc_prod, produtos_distribuidora.flag_ativo,desc_abreviado ");
 
 			if (flagabrev.equalsIgnoreCase("1")) {
-				sql.append(" order by DESC_PROD ");
+				sql.append(" order by desc_prod ");
 			} else {
-				sql.append(" order by DESC_ABREVIADO ");
+				sql.append(" order by desc_abreviado ");
 			}
 
 			PreparedStatement st = conn.prepareStatement(sql.toString());
@@ -1765,12 +1764,12 @@ public class Relatorios {
 			while (rs.next()) {
 				double vendabairro_total = 0;
 				hmFat = new HashMap<String, Object>();
-				hmFat.put("flag_ativo", rs.getString("FLAG_ATIVO").equalsIgnoreCase("S") ? "Ativado" : "Desativado");
+				hmFat.put("flag_ativo", rs.getString("flag_ativo").equalsIgnoreCase("S") ? "Ativado" : "Desativado");
 
 				if (flagabrev.equalsIgnoreCase("1")) {
-					hmFat.put("desc_prod", rs.getString("DESC_PROD"));
+					hmFat.put("desc_prod", rs.getString("desc_prod"));
 				} else {
-					hmFat.put("desc_prod", rs.getString("DESC_ABREVIADO"));
+					hmFat.put("desc_prod", rs.getString("desc_abreviado"));
 				}
 
 				hmFat.put("id_prod", rs.getLong("id_prod"));
@@ -1804,7 +1803,7 @@ public class Relatorios {
 				}
 
 				varname1 = new StringBuffer();
-				varname1.append("select cod_bairro,sum(pedido_item.QTD_PROD) as qtd from pedido ");
+				varname1.append("select cod_bairro,sum(pedido_item.qtd_prod) as qtd from pedido ");
 				varname1.append(" ");
 				varname1.append("left join pedido_item ");
 				varname1.append("on pedido.id_pedido = pedido_item.id_pedido ");
@@ -1828,7 +1827,7 @@ public class Relatorios {
 				}
 
 				varname1 = new StringBuffer();
-				varname1.append("select dayofweek(data_pedido)  as dia,sum(pedido_item.QTD_PROD) as qtd from pedido ");
+				varname1.append("select dayofweek(data_pedido)  as dia,sum(pedido_item.qtd_prod) as qtd from pedido ");
 				varname1.append(" ");
 				varname1.append("left join pedido_item ");
 				varname1.append("on pedido.id_pedido = pedido_item.id_pedido ");
@@ -1850,7 +1849,7 @@ public class Relatorios {
 				}
 
 				varname1 = new StringBuffer();
-				varname1.append("select TIME_FORMAT(DATA_PEDIDO,'%H:00' ) as horaformated , TIME_FORMAT(DATE_ADD(DATA_PEDIDO,interval 1 HOUR ),'%H:00' ) as hora2, sum(pedido_item.QTD_PROD) as qtd from pedido ");
+				varname1.append("select time_format(data_pedido,'%h:00' ) as horaformated , time_format(date_add(data_pedido,interval 1 hour ),'%h:00' ) as hora2, sum(pedido_item.qtd_prod) as qtd from pedido ");
 				varname1.append(" ");
 				varname1.append("left join pedido_item ");
 				varname1.append("on pedido.id_pedido = pedido_item.id_pedido ");

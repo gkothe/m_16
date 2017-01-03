@@ -47,7 +47,7 @@ public class Parametros_ajax {
 		String flag_situacao = request.getParameter("flag_situacao") == null ? "" : request.getParameter("flag_situacao");
 		String descricaoprod = request.getParameter("descricaoprod") == null ? "" : request.getParameter("descricaoprod");
 
-		String sql = "select produtos.id_prod, desc_prod, DESC_ABREVIADO, Coalesce(val_prod,0) as val_prod, Coalesce(produtos_distribuidora.flag_ativo,'N') as flag_ativo from produtos  left join produtos_distribuidora on produtos.id_prod = produtos_distribuidora.id_prod	 and ID_DISTRIBUIDORA = ? where (produtos.flag_ativo = 'S') ";
+		String sql = "select produtos.id_prod, desc_prod, desc_abreviado, Coalesce(val_prod,0) as val_prod, Coalesce(produtos_distribuidora.flag_ativo,'N') as flag_ativo from produtos  left join produtos_distribuidora on produtos.id_prod = produtos_distribuidora.id_prod	 and id_distribuidora = ? where (produtos.flag_ativo = 'S') ";
 
 		if (!flag_situacao.equalsIgnoreCase("")) {
 			sql = sql + " and  Coalesce(produtos_distribuidora.flag_ativo,'N')  = ? ";
@@ -58,11 +58,11 @@ public class Parametros_ajax {
 		}
 
 		if (!val_ini.equalsIgnoreCase("")) {
-			sql = sql + " and  Coalesce(VAL_PROD,0) >= ? ";
+			sql = sql + " and  Coalesce(val_prod,0) >= ? ";
 		}
 
 		if (!val_fim.equalsIgnoreCase("")) {
-			sql = sql + " and   Coalesce(VAL_PROD,0) <= ? ";
+			sql = sql + " and   Coalesce(val_prod,0) <= ? ";
 		}
 
 		String[] keys = null;
@@ -134,14 +134,14 @@ public class Parametros_ajax {
 		String val_prod = request.getParameter("val_prod") == null ? "" : request.getParameter("val_prod");
 		String flag_situacao = request.getParameter("flag_situacao") == null ? "" : request.getParameter("flag_situacao");
 
-		String sql = "select * from produtos  left join produtos_distribuidora on produtos.id_prod = produtos_distribuidora.id_prod	 and ID_DISTRIBUIDORA = ? where (produtos.flag_ativo = 'S') and produtos.id_prod = ? ";
+		String sql = "select * from produtos  left join produtos_distribuidora on produtos.id_prod = produtos_distribuidora.id_prod	 and id_distribuidora = ? where (produtos.flag_ativo = 's') and produtos.id_prod = ? ";
 
 		PreparedStatement st = conn.prepareStatement(sql);
 		st.setInt(1, coddistr);
 		st.setInt(2, Integer.parseInt(id_produto));
 		ResultSet rs = st.executeQuery();
 		if (rs.next()) {
-			sql = "select * from produtos_distribuidora where ID_DISTRIBUIDORA = ?  and id_prod = ?  ";
+			sql = "select * from produtos_distribuidora where id_distribuidora = ?  and id_prod = ?  ";
 
 			PreparedStatement st2 = conn.prepareStatement(sql);
 			st2.setInt(1, coddistr);
@@ -182,7 +182,7 @@ public class Parametros_ajax {
 		JSONObject obj = new JSONObject();
 
 		String id_produto = request.getParameter("id_produto") == null ? "" : request.getParameter("id_produto"); //
-		String sql = "select QTD_IMAGES, DESC_ABREVIADO,Coalesce(val_prod,0) as val_prod,DESC_PROD,Coalesce( produtos_distribuidora.flag_ativo,'N') as flag_ativo,produtos.id_prod from produtos  left join produtos_distribuidora on produtos.id_prod = produtos_distribuidora.id_prod	 and ID_DISTRIBUIDORA = ? where (produtos.flag_ativo = 'S') and produtos.id_prod = ?  ";
+		String sql = "select qtd_images, desc_abreviado,coalesce(val_prod,0) as val_prod,desc_prod,coalesce( produtos_distribuidora.flag_ativo,'N') as flag_ativo,produtos.id_prod from produtos  left join produtos_distribuidora on produtos.id_prod = produtos_distribuidora.id_prod	 and id_distribuidora = ? where (produtos.flag_ativo = 'S') and produtos.id_prod = ?  ";
 
 		PreparedStatement st = conn.prepareStatement(sql);
 		st.setInt(1, coddistr);
@@ -191,14 +191,14 @@ public class Parametros_ajax {
 		ResultSet rs = st.executeQuery();
 		if (rs.next()) {
 
-			obj.put("nome_abreviado", rs.getString("DESC_ABREVIADO"));
+			obj.put("nome_abreviado", rs.getString("desc_abreviado"));
 			obj.put("p_id_produto", id_produto);
 			obj.put("valor_unit", rs.getString("val_prod"));
-			obj.put("nome_completo", rs.getString("DESC_PROD"));
+			obj.put("nome_completo", rs.getString("desc_prod"));
 			obj.put("flag_ativo", rs.getString("flag_ativo"));
 			
 			JSONArray imagens = new JSONArray();
-			int qtd_images  = rs.getInt("QTD_IMAGES");
+			int qtd_images  = rs.getInt("qtd_images");
 			for (int i = 1; i <= qtd_images; i++) {
 				imagens.add("images/produtos/"+rs.getString("ID_PROD") + "_"+i+".jpg");
 				
@@ -223,8 +223,8 @@ public class Parametros_ajax {
 		while (rs.next()) {
 			JSONObject obj = new JSONObject();
 
-			obj.put("COD_CIDADE", rs.getString("COD_CIDADE"));
-			obj.put("DESC_CIDADE", rs.getString("DESC_CIDADE"));
+			obj.put("COD_CIDADE", rs.getString("cod_cidade"));
+			obj.put("DESC_CIDADE", rs.getString("desc_cidade"));
 
 			prods.add(obj);
 
@@ -242,7 +242,7 @@ public class Parametros_ajax {
 		PreparedStatement st2;
 		ResultSet rs2;
 		JSONObject obj;
-		String sql = "select distribuidora_bairro_entrega.cod_bairro, bairros.desc_bairro, coalesce(val_tele_entrega, 0) as val_tele , coalesce(FLAG_TELEBAIRRO, 'N') as flag_telebairro,id_distr_bairro from distribuidora_bairro_entrega  inner join bairros on bairros.cod_bairro = distribuidora_bairro_entrega.cod_bairro where ID_DISTRIBUIDORA = ? and bairros.cod_cidade  = " + request.getSession(false).getAttribute("cod_cidade").toString() + " order by desc_bairro  ";
+		String sql = "select distribuidora_bairro_entrega.cod_bairro, bairros.desc_bairro, coalesce(val_tele_entrega, 0) as val_tele , coalesce(flag_telebairro, 'N') as flag_telebairro,id_distr_bairro from distribuidora_bairro_entrega  inner join bairros on bairros.cod_bairro = distribuidora_bairro_entrega.cod_bairro where id_distribuidora = ? and bairros.cod_cidade  = " + request.getSession(false).getAttribute("cod_cidade").toString() + " order by desc_bairro  ";
 
 		PreparedStatement st = conn.prepareStatement(sql);
 		st.setInt(1, coddistr);
@@ -256,19 +256,19 @@ public class Parametros_ajax {
 			rs2 = st2.executeQuery();
 			while (rs2.next()) {
 				JSONArray horarios = new JSONArray();
-				sql = " select ID_HORARIO as id_horario, DATE_FORMAT(HORARIO_INI, '%H:%i')  as HORARIO_INI ,DATE_FORMAT(HORARIO_FIM, '%H:%i') as HORARIO_FIM from distribuidora_horario_dia_entre where ID_DISTRIBUIDORA = ? and ID_DISTR_BAIRRO = ?  and cod_dia =  ? order by  horario_ini asc ";
+				sql = " select id_horario as id_horario, date_format(horario_ini, '%h:%i')  as horario_ini ,date_format(horario_fim, '%h:%i') as horario_fim from distribuidora_horario_dia_entre where id_distribuidora = ? and id_distr_bairro = ?  and cod_dia =  ? order by  horario_ini asc ";
 
 				st3 = conn.prepareStatement(sql);
 				st3.setInt(1, coddistr);
 				st3.setInt(2, rs.getInt("id_distr_bairro"));
-				st3.setInt(3, rs2.getInt("COD_DIA"));
+				st3.setInt(3, rs2.getInt("cod_dia"));
 				rs3 = st3.executeQuery();
 				while (rs3.next()) {
 					obj = new JSONObject();
 
 					obj.put("id_horario", rs3.getLong("id_horario"));
-					obj.put("HORARIO_INI", rs3.getString("HORARIO_INI"));
-					obj.put("HORARIO_FIM", rs3.getString("HORARIO_FIM"));
+					obj.put("HORARIO_INI", rs3.getString("horario_ini"));
+					obj.put("HORARIO_FIM", rs3.getString("horario_fim"));
 
 					horarios.add(obj);
 				}
@@ -317,7 +317,7 @@ public class Parametros_ajax {
 		PrintWriter out = response.getWriter();
 		JSONArray ret = new JSONArray();
 
-		String sql = " SELECT cod_bairro, TXT_OBS_HORA, `ID_DISTRIBUIDORA`, " + "    `COD_CIDADE`," + "    `DESC_RAZAO_SOCIAL`," + "   `DESC_NOME_ABREV`," + "  `VAL_ENTREGA_MIN`," + " `DESC_TELEFONE`," + " `DESC_ENDERECO`," + " `NUM_ENDEREC`," + " `DESC_COMPLEMENTO`," + " `VAL_TELE_ENTREGA`," + " flag_custom," + " desc_mail, " + " coalesce(flag_ativo,'N') as flag_ativo,FLAG_MODOPAGAMENTO, flag_entre_ret from distribuidora  where	 ID_DISTRIBUIDORA = ? ";
+		String sql = " select cod_bairro, txt_obs_hora, id_distribuidora, cod_cidade,desc_razao_social,desc_nome_abrev,val_entrega_min,desc_telefone,desc_endereco,num_enderec,desc_complemento,val_tele_entrega,flag_custom, desc_mail, coalesce(flag_ativo,'N') as flag_ativo,flag_modopagamento, flag_entre_ret from distribuidora  where	 id_distribuidora = ? ";
 
 		PreparedStatement st = conn.prepareStatement(sql);
 		st.setInt(1, coddistr);
@@ -335,21 +335,21 @@ public class Parametros_ajax {
 
 			obj.put("nome_img", "images/logos/logo_" + coddistr + ".jpg");
 			obj.put("id_horariomax", id_horariomax);
-			obj.put("ID_DISTRIBUIDORA", rs.getString("ID_DISTRIBUIDORA"));
-			obj.put("COD_CIDADE", rs.getString("COD_CIDADE"));
-			obj.put("DESC_RAZAO_SOCIAL", rs.getString("DESC_RAZAO_SOCIAL"));
-			obj.put("DESC_NOME_ABREV", rs.getString("DESC_NOME_ABREV"));
-			obj.put("VAL_ENTREGA_MIN", rs.getString("VAL_ENTREGA_MIN"));
-			obj.put("DESC_TELEFONE", rs.getString("DESC_TELEFONE"));
-			obj.put("DESC_ENDERECO", rs.getString("DESC_ENDERECO"));
-			obj.put("NUM_ENDEREC", rs.getString("NUM_ENDEREC"));
-			obj.put("DESC_COMPLEMENTO", rs.getString("DESC_COMPLEMENTO"));
-			obj.put("VAL_TELE_ENTREGA", rs.getString("VAL_TELE_ENTREGA"));
+			obj.put("ID_DISTRIBUIDORA", rs.getString("id_distribuidora"));
+			obj.put("COD_CIDADE", rs.getString("cod_cidade"));
+			obj.put("DESC_RAZAO_SOCIAL", rs.getString("desc_razao_social"));
+			obj.put("DESC_NOME_ABREV", rs.getString("desc_nome_abrev"));
+			obj.put("VAL_ENTREGA_MIN", rs.getString("val_entrega_min"));
+			obj.put("DESC_TELEFONE", rs.getString("desc_telefone"));
+			obj.put("DESC_ENDERECO", rs.getString("desc_endereco"));
+			obj.put("NUM_ENDEREC", rs.getString("num_enderec"));
+			obj.put("DESC_COMPLEMENTO", rs.getString("desc_complemento"));
+			obj.put("VAL_TELE_ENTREGA", rs.getString("val_tele_entrega"));
 			obj.put("flag_custom", rs.getString("flag_custom"));
 			obj.put("cod_bairro", rs.getString("cod_bairro"));
 			obj.put("desc_mail", rs.getString("desc_mail"));
 			obj.put("flag_ativo", rs.getString("flag_ativo").equalsIgnoreCase("F") ? "S" : rs.getString("flag_ativo"));
-			obj.put("flag_modopag", rs.getString("FLAG_MODOPAGAMENTO"));
+			obj.put("flag_modopag", rs.getString("flag_modopagamento"));
 			obj.put("flag_entre_ret", rs.getString("flag_entre_ret"));
 			obj.put("txt_obs_hora", rs.getString("txt_obs_hora"));
 
@@ -449,7 +449,7 @@ public class Parametros_ajax {
 				throw new Exception("Dados inválidos, entre em contato com o suporte.");
 			}
 
-			sql = "select * from distribuidora_bairro_entrega where ID_DISTRIBUIDORA = ? and COD_BAIRRO = ?";
+			sql = "select * from distribuidora_bairro_entrega where id_distribuidora = ? and cod_bairro = ?";
 
 			st = conn.prepareStatement(sql);
 			st.setInt(1, coddistr);
@@ -660,7 +660,7 @@ public class Parametros_ajax {
 			}
 
 			if (inserirbairro) {
-				iddistrbair = Utilitario.retornaIdinsert("distribuidora_bairro_entrega", "ID_DISTR_BAIRRO", conn);
+				iddistrbair = Utilitario.retornaIdinsert("distribuidora_bairro_entrega", "id_distr_bairro", conn);
 				st2 = conn.prepareStatement("INSERT INTO distribuidora_bairro_entrega (`ID_DISTR_BAIRRO`, `COD_BAIRRO`, `ID_DISTRIBUIDORA`, `VAL_TELE_ENTREGA`, `FLAG_TELEBAIRRO`) VALUES (?, ?, ?, ?, ?);");
 				st2.setInt(1, iddistrbair);
 				st2.setInt(2, rs.getInt("cod_bairro"));
@@ -697,15 +697,15 @@ public class Parametros_ajax {
 					// teste de conflito de horario
 
 					StringBuffer varname1 = new StringBuffer();
-					varname1.append("SELECT * ");
-					varname1.append("FROM   distribuidora_horario_dia_entre ");
-					varname1.append("WHERE  id_distribuidora = " + coddistr + " ");
-					varname1.append("       AND cod_dia = " + coddia + " ");
-					varname1.append("       AND id_distr_bairro =  " + iddistrbair + " ");
-					varname1.append("       AND ( ( horario_ini BETWEEN ? AND ? ");
-					varname1.append("                OR horario_fim BETWEEN ? AND ? ) ");
-					varname1.append("              OR ( ? BETWEEN horario_ini AND horario_fim ");
-					varname1.append("                    OR ? BETWEEN horario_ini AND horario_fim ) );");
+					varname1.append("select * ");
+					varname1.append("from   distribuidora_horario_dia_entre ");
+					varname1.append("where  id_distribuidora = " + coddistr + " ");
+					varname1.append("       and cod_dia = " + coddia + " ");
+					varname1.append("       and id_distr_bairro =  " + iddistrbair + " ");
+					varname1.append("       and ( ( horario_ini between ? and ? ");
+					varname1.append("                or horario_fim between ? and ? ) ");
+					varname1.append("              or ( ? between horario_ini and horario_fim ");
+					varname1.append("                    or ? between horario_ini and horario_fim ) );");
 
 					st2 = conn.prepareStatement(varname1.toString());
 					st2.setString(1, horario.get("HORARIO_INI").toString() + ":00");

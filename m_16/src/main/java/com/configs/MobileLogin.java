@@ -44,7 +44,7 @@ public class MobileLogin {
 
 		JSONObject objRetorno = new JSONObject();
 
-		String sql = "select  *, Coalesce(FLAG_MAIORIDADE,'N') as maior18 from usuario where Binary DESC_USER = ?  and Binary DESC_SENHA = ? and (FLAG_ATIVADO = 'S' or FLAG_ATIVADO = 'V')";
+		String sql = "select  *, Coalesce(flag_maioridade,'N') as maior18 from usuario where Binary desc_user = ?  and Binary desc_senha = ? and (flag_ativado = 'S' or flag_ativado = 'V')";
 
 		PreparedStatement st = conn.prepareStatement(sql);
 		st.setString(1, user);
@@ -90,7 +90,6 @@ public class MobileLogin {
 		// validacao1
 		String url = "https://graph.facebook.com/v2.3/oauth/access_token?client_id=" + sys.getFACE_APP_ID() + "&redirect_uri=" + sys.getFACE_REDIRECT_URI() + "&client_secret=" + sys.getFACE_APP_SECRETKEY() + "&code=" + code;
 		
-		System.out.println(url);
 		URL obj = new URL(url);
 		HttpURLConnection con = (HttpURLConnection) obj.openConnection();
 
@@ -148,7 +147,7 @@ public class MobileLogin {
 			throw new Exception("Erro nas credenciais");
 		}
 
-		String sql = "select  *, Coalesce(FLAG_MAIORIDADE,'N') as maior18 from usuario where ID_USER_FACE = ?  and FLAG_FACEUSER = 'S'  ";
+		String sql = "select  *, Coalesce(flag_maioridade,'N') as maior18 from usuario where id_user_face = ?  and flag_faceuser = 'S'  ";
 
 		PreparedStatement st = conn.prepareStatement(sql);
 		st.setLong(1, userid);
@@ -157,11 +156,11 @@ public class MobileLogin {
 
 		if (rs.next()) {
 			atualizaFaceUser(request, response, tokentest, conn, sys, userid);
-			objRetorno.put("token", mob.criaToken(rs.getString("DESC_USER"), rs.getString("DESC_SENHA"), tempotoken, conn));//
-			objRetorno.put("name", rs.getString("DESC_NOME").split(" ")[0]);
+			objRetorno.put("token", mob.criaToken(rs.getString("desc_user"), rs.getString("desc_senha"), tempotoken, conn));//
+			objRetorno.put("name", rs.getString("desc_nome").split(" ")[0]);
 			objRetorno.put("usrtype","user" );//
 			objRetorno.put("maioridade", rs.getString("maior18").equalsIgnoreCase("")?"N":rs.getString("maior18"));//
-			objRetorno.put("email", rs.getString("DESC_EMAIL"));//
+			objRetorno.put("email", rs.getString("desc_email"));//
 		} else {
 
 			JSONObject info = cadastrausuario(request, response, tokentest, conn, sys);
@@ -207,7 +206,7 @@ public class MobileLogin {
 		String email = json.get("email").toString();
 
 		
-		String sql = "update usuario set DESC_EMAIL = ? ,  DESC_NOME= ?, DESC_USER = ?  where  ID_USER_FACE = ?  ";
+		String sql = "update usuario set desc_email = ? ,  desc_nome= ?, desc_user = ?  where  id_user_face = ?  ";
 
 		PreparedStatement 	st = conn.prepareStatement(sql.toString());
 		st.setString(1, email);
@@ -249,7 +248,7 @@ public class MobileLogin {
 		String id = json.get("id").toString();
 		String email = json.get("email").toString();
 
-		PreparedStatement st = conn.prepareStatement(" select * from usuario where DESC_EMAIL = ?  and FLAG_ATIVADO = 'S' ");
+		PreparedStatement st = conn.prepareStatement(" select * from usuario where desc_email = ?  and flag_ativado = 'S' ");
 		st.setString(1, email);
 		ResultSet rs = st.executeQuery();
 
@@ -349,7 +348,7 @@ public class MobileLogin {
 			String user = claims.getId();
 			String pass = claims.getSubject();
 
-			String sql = "select * from usuario where Binary DESC_USER = ?  and Binary DESC_SENHA = ? ";
+			String sql = "select * from usuario where Binary desc_user = ?  and Binary desc_senha = ? ";
 
 			PreparedStatement st = conn.prepareStatement(sql);
 			st.setString(1, user);
@@ -396,19 +395,19 @@ public class MobileLogin {
 
 			}
 
-			String sql = "select * from usuario where Binary CHAVE_ATIVACAO_NOVOEMAIL = ?   ";
+			String sql = "select * from usuario where binary chave_ativacao_novoemail = ?   ";
 
 			PreparedStatement st = conn.prepareStatement(sql);
 			st.setString(1, token);
 			ResultSet rs = st.executeQuery();
 			if (rs.next()) {
 
-				sql = "update usuario  set  CHAVE_ATIVACAO_NOVOEMAIL = ? ,  DESC_NOVOEMAILVALIDACAO = ? , DESC_EMAIL = ? where  id_usuario = ?  ";
+				sql = "update usuario  set  chave_ativacao_novoemail = ? ,  desc_novoemailvalidacao = ? , desc_email = ? where  id_usuario = ?  ";
 
 				st = conn.prepareStatement(sql);
 				st.setString(1, "");
 				st.setString(2, "");
-				st.setString(3, rs.getString("DESC_NOVOEMAILVALIDACAO"));
+				st.setString(3, rs.getString("desc_novoemailvalidacao"));
 				st.setLong(4, rs.getLong("id_usuario"));
 				st.executeUpdate();
 
@@ -476,7 +475,7 @@ public class MobileLogin {
 
 			}
 
-			String sql = "select * from usuario where Binary CHAVE_ATIVACAO = ?   ";
+			String sql = "select * from usuario where Binary chave_ativacao = ?   ";
 
 			PreparedStatement st = conn.prepareStatement(sql);
 			st.setString(1, token);

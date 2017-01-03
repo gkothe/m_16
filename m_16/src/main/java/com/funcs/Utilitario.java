@@ -408,7 +408,7 @@ public class Utilitario {
 		// FRIDAY, 6
 		// SATURDAY. 7
 
-		String varname1 = " select FLAG_CUSTOM from distribuidora where id_distribuidora = ? ";
+		String varname1 = " select flag_custom from distribuidora where id_distribuidora = ? ";
 		int dia = 0;
 		PreparedStatement st = conn.prepareStatement(varname1);
 		st.setInt(1, distribuidora);
@@ -561,7 +561,7 @@ public class Utilitario {
 		PrintWriter out = response.getWriter();
 
 		String desc_produto = request.getParameter("param") == null ? "" : request.getParameter("param");
-		String varname1 = " select * from produtos where DESC_ABREVIADO = ? ";
+		String varname1 = " select * from produtos where desc_abreviado = ? ";
 		PreparedStatement st = conn.prepareStatement(varname1);
 		st.setString(1, desc_produto);
 		ResultSet rs2 = st.executeQuery();
@@ -575,7 +575,7 @@ public class Utilitario {
 	public static String getNomeProdIdProdDistr(Connection conn, long ID_PROD_DIST, boolean abreviado) throws Exception {
 
 		String desc_produto = "";
-		String varname1 = " select DESC_ABREVIADO,DESC_PROD from produtos inner join produtos_distribuidora on produtos_distribuidora.id_prod = produtos.id_prod where ID_PROD_DIST =  ? ";
+		String varname1 = " select desc_abreviado,desc_prod from produtos inner join produtos_distribuidora on produtos_distribuidora.id_prod = produtos.id_prod where id_prod_dist =  ? ";
 		PreparedStatement st = conn.prepareStatement(varname1);
 		st.setLong(1, ID_PROD_DIST);
 		ResultSet rs2 = st.executeQuery();

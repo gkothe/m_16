@@ -67,14 +67,14 @@ public class Thread_NotPedidoFim extends Thread {
 	private void sendNotificacao(Connection conn, Sys_parametros sys) {
 
 		varname1 = new StringBuffer();
-		varname1.append("SELECT id_pedido,DESC_ENDERECO_ENTREGA,DESC_ENDERECO_NUM_ENTREGA,DESC_ENDERECO_COMPLEMENTO_ENTREGA,pedido.cod_bairro, ");
+		varname1.append("select id_pedido,desc_endereco_entrega,desc_endereco_num_entrega,desc_endereco_complemento_entrega,pedido.cod_bairro, ");
 		varname1.append("       num_ped, ");
-		varname1.append("       usuario.desc_email       AS mail, ");
-		varname1.append("       Addtime(COALESCE(data_agenda_entrega, data_pedido), ");
-		varname1.append("       tempo_estimado_desejado) AS tempoteste ");
-		varname1.append(" FROM   pedido ");
-		varname1.append("       INNER JOIN usuario ");
-		varname1.append("               ON usuario.id_usuario = pedido.id_usuario ");
+		varname1.append("       usuario.desc_email       as mail, ");
+		varname1.append("       addtime(coalesce(data_agenda_entrega, data_pedido), ");
+		varname1.append("       tempo_estimado_desejado) as tempoteste ");
+		varname1.append(" from   pedido ");
+		varname1.append("       inner join usuario ");
+		varname1.append("               on usuario.id_usuario = pedido.id_usuario ");
 		varname1.append(" WHERE  flag_status = 'E' and FLAG_PEDIDO_RET_ENTRE = 'T' ");// flag_resposta_usuario?
 		varname1.append("       AND flag_not_final = 'N'");
 

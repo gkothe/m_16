@@ -44,7 +44,7 @@ public class Home_ajax {
 
 		}
 
-		sql = "select * from pedido join pedido_motivo_cancelamento on pedido_motivo_cancelamento.id_pedido = pedido.id_pedido  where ID_DISTRIBUIDORA = ? and (flag_status = 'C' and FLAG_POPUPINICIAL = 'N')  ";
+		sql = "select * from pedido join pedido_motivo_cancelamento on pedido_motivo_cancelamento.id_pedido = pedido.id_pedido  where ID_DISTRIBUIDORA = ? and (flag_status = 'C' and flag_popupinicial = 'N')  ";
 		st = conn.prepareStatement(sql);
 		st.setInt(1, coddistr);
 		rs = st.executeQuery();
@@ -55,13 +55,13 @@ public class Home_ajax {
 			objRetorno.put("id_pedpop", rs.getString("id_pedido"));
 			objRetorno.put("num_pedpop", rs.getString("num_ped"));
 
-			sql = " UPDATE pedido_motivo_cancelamento  SET FLAG_POPUPINICIAL = 'S'  where   id_pedido = " + rs.getString("id_pedido");
+			sql = " update pedido_motivo_cancelamento  set flag_popupinicial = 'S'  where   id_pedido = " + rs.getString("id_pedido");
 
 			st = conn.prepareStatement(sql.toString());
 			st.executeUpdate();
 		}
 
-		sql = "select * from pedido join pedido_motivo_cancelamento on pedido_motivo_cancelamento.id_pedido = pedido.id_pedido  where ID_DISTRIBUIDORA = ? and (flag_status = 'C' and FLAG_VIZUALIZADO_CANC = 'N')  ";
+		sql = "select * from pedido join pedido_motivo_cancelamento on pedido_motivo_cancelamento.id_pedido = pedido.id_pedido  where id_distribuidora = ? and (flag_status = 'C' and flag_vizualizado_canc = 'N')  ";
 		st = conn.prepareStatement(sql);
 		st.setInt(1, coddistr);
 		rs = st.executeQuery();
@@ -73,7 +73,7 @@ public class Home_ajax {
 		objRetorno.put("flag_vizualizado", "S");
 		if (objRetorno.get("tem").toString().equalsIgnoreCase("true")) {
 
-			sql = "" + "SELECT " + "           COALESCE(flag_vizualizado,'N') AS flag_vizualizado " + "FROM       pedido " + " inner join distribuidora on pedido.id_distribuidora = distribuidora.id_distribuidora left JOIN bairros " + "ON         bairros.cod_bairro = pedido.cod_bairro " + "WHERE     distribuidora.id_distribuidora = ? " + "AND        flag_status = 'A' " + "AND        Coalesce(bairros.cod_cidade,distribuidora.cod_cidade) = "
+			sql = "" + "select " + "           coalesce(flag_vizualizado,'N') AS flag_vizualizado " + "from       pedido " + " inner join distribuidora on pedido.id_distribuidora = distribuidora.id_distribuidora left JOIN bairros " + "ON         bairros.cod_bairro = pedido.cod_bairro " + "WHERE     distribuidora.id_distribuidora = ? " + "AND        flag_status = 'A' " + "AND        Coalesce(bairros.cod_cidade,distribuidora.cod_cidade) = "
 					+ request.getSession(false).getAttribute("cod_cidade").toString() + " and  COALESCE(flag_vizualizado,'N') = 'N' group by COALESCE(flag_vizualizado,'N');";
 
 			st = conn.prepareStatement(sql);
@@ -86,7 +86,7 @@ public class Home_ajax {
 				}
 			}
 
-			sql = "select id_pedido,DESC_BAIRRO,NUM_PED,VAL_TOTALPROD,DATA_PEDIDO, NOW() as agora, Coalesce(flag_vizualizado,'N') as flag_vizualizado  from pedido inner join distribuidora on pedido.id_distribuidora = distribuidora.id_distribuidora left join bairros on bairros.cod_bairro = pedido.cod_bairro where distribuidora.ID_DISTRIBUIDORA = ? and flag_status = \'A\' and Coalesce(bairros.cod_cidade,distribuidora.cod_cidade) = " + request.getSession(false).getAttribute("cod_cidade").toString()
+			sql = "select id_pedido,desc_bairro,num_ped,val_totalprod,data_pedido, now() as agora, coalesce(flag_vizualizado,'N') as flag_vizualizado  from pedido inner join distribuidora on pedido.id_distribuidora = distribuidora.id_distribuidora left join bairros on bairros.cod_bairro = pedido.cod_bairro where distribuidora.ID_DISTRIBUIDORA = ? and flag_status = \'A\' and Coalesce(bairros.cod_cidade,distribuidora.cod_cidade) = " + request.getSession(false).getAttribute("cod_cidade").toString()
 					+ "  order by data_pedido asc limit 5";
 
 			st = conn.prepareStatement(sql);
@@ -97,9 +97,9 @@ public class Home_ajax {
 
 				JSONObject pedidos = new JSONObject();
 
-				pedidos.put("num_ped", rs.getString("NUM_PED"));
-				pedidos.put("desc_bairro", rs.getString("DESC_BAIRRO") == null ? "Retirada no local" : rs.getString("DESC_BAIRRO"));
-				pedidos.put("valor", rs.getString("VAL_TOTALPROD"));
+				pedidos.put("num_ped", rs.getString("num_ped"));
+				pedidos.put("desc_bairro", rs.getString("desc_bairro") == null ? "Retirada no local" : rs.getString("desc_bairro"));
+				pedidos.put("valor", rs.getString("val_totalprod"));
 				pedidos.put("id_pedido", rs.getString("id_pedido"));
 				flagvizu = "";
 				if (rs.getString("flag_vizualizado") != null) {
@@ -107,7 +107,7 @@ public class Home_ajax {
 				}
 				pedidos.put("flag_vizualizado", flagvizu == "" ? "N" : flagvizu);
 
-				Date date_pedido = rs.getTimestamp("DATA_PEDIDO");
+				Date date_pedido = rs.getTimestamp("data_pedido");
 				Date agora = rs.getTimestamp("agora");
 				String texto_minutos = "";
 				// double time =
@@ -145,7 +145,7 @@ public class Home_ajax {
 
 		objRetorno.put("pedidos", pedidos_todos);
 
-		sql = "select * from pedido  where ID_DISTRIBUIDORA = ? and flag_not_final_avisa_loja = 'S' and flag_resposta_usuario = 'N'  ";
+		sql = "select * from pedido  where id_distribuidora = ? and flag_not_final_avisa_loja = 'S' and flag_resposta_usuario = 'N'  ";
 		st = conn.prepareStatement(sql);
 		st.setInt(1, coddistr);
 		rs = st.executeQuery();
@@ -156,7 +156,7 @@ public class Home_ajax {
 			objRetorno.put("id_pedpop", rs.getString("id_pedido"));
 			objRetorno.put("num_pedpop", rs.getString("num_ped"));
 
-			sql = " UPDATE pedido  SET flag_not_final_avisa_loja = 'N'  where   id_pedido = " + rs.getString("id_pedido");
+			sql = " update pedido  SET flag_not_final_avisa_loja = 'N'  where   id_pedido = " + rs.getString("id_pedido");
 
 			st = conn.prepareStatement(sql.toString());
 			st.executeUpdate();
@@ -168,7 +168,7 @@ public class Home_ajax {
 			calendar.setTime(new Date());
 			calendar.add(Calendar.HOUR, 1);
 
-			sql = "select count(id_pedido) as qtd from pedido  where ID_DISTRIBUIDORA = ? and flag_status = 'E' and DATA_AGENDA_ENTREGA is not null and DATA_AGENDA_ENTREGA >= ? and DATA_AGENDA_ENTREGA <= ? ";
+			sql = "select count(id_pedido) as qtd from pedido  where id_distribuidora = ? and flag_status = 'E' and data_agenda_entrega is not null and data_agenda_entrega >= ? and data_agenda_entrega <= ? ";
 
 			st = conn.prepareStatement(sql);
 			st.setInt(1, coddistr);
@@ -188,7 +188,7 @@ public class Home_ajax {
 
 			}
 
-			sql = "select * from pedido left join bairros on bairros.cod_bairro = pedido.cod_bairro  where ID_DISTRIBUIDORA = ? and flag_status = 'E' and DATA_AGENDA_ENTREGA is not null and DATA_AGENDA_ENTREGA >= ? and DATA_AGENDA_ENTREGA <= ? ";
+			sql = "select * from pedido left join bairros on bairros.cod_bairro = pedido.cod_bairro  where id_distribuidora = ? and flag_status = 'E' and data_agenda_entrega is not null and data_agenda_entrega >= ? and data_agenda_entrega <= ? ";
 
 			st = conn.prepareStatement(sql);
 			st.setInt(1, coddistr);
@@ -201,11 +201,11 @@ public class Home_ajax {
 			while (rs.next()) {
 				JSONObject pedidos = new JSONObject();
 
-				pedidos.put("horario", new SimpleDateFormat("HH:mm").format(rs.getTimestamp("DATA_AGENDA_ENTREGA")));
+				pedidos.put("horario", new SimpleDateFormat("HH:mm").format(rs.getTimestamp("data_agenda_entrega")));
 				
-				pedidos.put("num_ped", rs.getString("NUM_PED"));
-				pedidos.put("desc_bairro", rs.getString("DESC_BAIRRO") == null ? "Retirada no local" : rs.getString("DESC_BAIRRO"));
-				pedidos.put("valor", rs.getString("VAL_TOTALPROD"));
+				pedidos.put("num_ped", rs.getString("num_ped"));
+				pedidos.put("desc_bairro", rs.getString("desc_bairro") == null ? "Retirada no local" : rs.getString("desc_bairro"));
+				pedidos.put("valor", rs.getString("val_totalprod"));
 				pedidos.put("id_pedido", rs.getString("id_pedido"));
 				pedido1_agend.add(pedidos);
 			}
@@ -224,14 +224,14 @@ public class Home_ajax {
 
 		JSONObject objRetorno = new JSONObject();
 
-		String sql = "select * from distribuidora  where	 ID_DISTRIBUIDORA = ?";
+		String sql = "select * from distribuidora  where	 id_distribuidora = ?";
 
 		PreparedStatement st = conn.prepareStatement(sql);
 		st.setInt(1, coddistr);
 		ResultSet rs = st.executeQuery();
 
 		if (rs.next()) {
-			objRetorno.put("desc_nome", rs.getString("DESC_NOME_ABREV"));
+			objRetorno.put("desc_nome", rs.getString("desc_nome_abrev"));
 		}
 
 		objRetorno.put("nome_img", "images/logos/logo_" + coddistr + ".jpg");
@@ -247,7 +247,7 @@ public class Home_ajax {
 
 		JSONArray motivos = new JSONArray();
 
-		String sql = "select * from  motivos_recusa order by DESC_MOTIVO";
+		String sql = "select * from  motivos_recusa order by desc_motivo";
 
 		PreparedStatement st = conn.prepareStatement(sql);
 		ResultSet rs = st.executeQuery();
@@ -255,8 +255,8 @@ public class Home_ajax {
 		while (rs.next()) {
 
 			JSONObject obj = new JSONObject();
-			obj.put("COD_MOTIVO", rs.getString("COD_MOTIVO"));
-			obj.put("DESC_MOTIVO", rs.getString("DESC_MOTIVO"));
+			obj.put("COD_MOTIVO", rs.getString("cod_motivo"));
+			obj.put("DESC_MOTIVO", rs.getString("desc_motivo"));
 
 			motivos.add(obj);
 		}
@@ -284,7 +284,7 @@ public class Home_ajax {
 
 			if (campo.equals("id_produto")) {
 
-				String sql = "select produtos.id_prod, produtos.desc_abreviado as descr from produtos_distribuidora inner join produtos on produtos_distribuidora.id_prod =  produtos.id_prod where id_distribuidora = ? and produtos_distribuidora.flag_ativo = 'S' and produtos.FLAG_ATIVO = 'S' and produtos_distribuidora.id_prod = ?  limit 10 ";
+				String sql = "select produtos.id_prod, produtos.desc_abreviado as descr from produtos_distribuidora inner join produtos on produtos_distribuidora.id_prod =  produtos.id_prod where id_distribuidora = ? and produtos_distribuidora.flag_ativo = 'S' and produtos.flag_ativo = 'S' and produtos_distribuidora.id_prod = ?  limit 10 ";
 
 				PreparedStatement st = conn.prepareStatement(sql);
 				st.setInt(1, coddistr);
@@ -297,7 +297,7 @@ public class Home_ajax {
 				out.print(objValor.toJSONString());
 			} else if (campo.equals("desc_produto")) {
 
-				String sql = "select produtos.id_prod as id, produtos.desc_abreviado as descr from produtos_distribuidora inner join produtos on produtos_distribuidora.id_prod =  produtos.id_prod where id_distribuidora = ? and produtos_distribuidora.flag_ativo = 'S' and produtos.FLAG_ATIVO = 'S' and (produtos.desc_prod like  ?  or produtos.desc_abreviado like ?) order by desc_abreviado limit 10 ";
+				String sql = "select produtos.id_prod as id, produtos.desc_abreviado as descr from produtos_distribuidora inner join produtos on produtos_distribuidora.id_prod =  produtos.id_prod where id_distribuidora = ? and produtos_distribuidora.flag_ativo = 'S' and produtos.flag_ativo = 'S' and (produtos.desc_prod like  ?  or produtos.desc_abreviado like ?) order by desc_abreviado limit 10 ";
 
 				PreparedStatement st = conn.prepareStatement(sql);
 				st.setInt(1, coddistr);
@@ -316,7 +316,7 @@ public class Home_ajax {
 				// em relação ao autocomplete do 'id_produto' e do 'desc_produto' muda o join, a distribuidora vai na ligação.
 				// considerando os ativos do distribuidora e do sistema, caso precisar separar os flags, tem q mandar algum parametro extra.
 
-				String sql = "select produtos.id_prod, desc_abreviado as descr  from produtos  left join produtos_distribuidora on produtos.id_prod = produtos_distribuidora.id_prod	 and ID_DISTRIBUIDORA = ? where (produtos.flag_ativo = 'S') and  produtos_distribuidora.id_prod = ? order by desc_abreviado asc limit 10";
+				String sql = "select produtos.id_prod, desc_abreviado as descr  from produtos  left join produtos_distribuidora on produtos.id_prod = produtos_distribuidora.id_prod	 and id_distribuidora = ? where (produtos.flag_ativo = 'S') and  produtos_distribuidora.id_prod = ? order by desc_abreviado asc limit 10";
 
 				PreparedStatement st = conn.prepareStatement(sql);
 				st.setInt(1, coddistr);
@@ -332,7 +332,7 @@ public class Home_ajax {
 				// em relação ao autocomplete do 'id_produto' e do 'desc_produto' muda o join, a distribuidora vai na ligação.
 				// considerando os ativos do distribuidora e do sistema, caso precisar separar os flags, tem q mandar algum parametro extra.
 
-				String sql = "select produtos.id_prod as id, desc_abreviado as descr from produtos  left join produtos_distribuidora on produtos.id_prod = produtos_distribuidora.id_prod	 and ID_DISTRIBUIDORA = ? where (produtos.flag_ativo = 'S') and  (produtos.desc_prod like  ?  or produtos.desc_abreviado like ?) order by desc_abreviado asc  limit 10";
+				String sql = "select produtos.id_prod as id, desc_abreviado as descr from produtos  left join produtos_distribuidora on produtos.id_prod = produtos_distribuidora.id_prod	 and id_distribuidora = ? where (produtos.flag_ativo = 'S') and  (produtos.desc_prod like  ?  or produtos.desc_abreviado like ?) order by desc_abreviado asc  limit 10";
 
 				PreparedStatement st = conn.prepareStatement(sql);
 				st.setInt(1, coddistr);
