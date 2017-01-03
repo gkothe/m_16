@@ -296,7 +296,7 @@ public class Parametros_ajax {
 		PrintWriter out = response.getWriter();
 		JSONArray prods = new JSONArray();
 
-		String sql = "SELECT * FROM DIAS_semana ";
+		String sql = "select * from dias_semana ";
 
 		PreparedStatement st = conn.prepareStatement(sql);
 		ResultSet rs = st.executeQuery();

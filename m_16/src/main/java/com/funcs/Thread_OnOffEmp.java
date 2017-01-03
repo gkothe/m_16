@@ -1,5 +1,6 @@
 package com.funcs;
 
+import java.io.File;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -29,10 +30,12 @@ public class Thread_OnOffEmp extends Thread {
 				rodateste = 10000; //testa de 10 em 10 segs
 			else
 				rodateste = secs_param*1000;  //se o tempo de teste for menor q 10, fazeoms a thread rodar no mesmo tempo
-			
+			conn.close();
 			
 			while (true) {
+				conn = Conexao.getConexao();
 				testeDistribuidorasonline(conn);
+				conn.close();
 				this.sleep(rodateste);
 			}
 
@@ -72,7 +75,10 @@ public class Thread_OnOffEmp extends Thread {
 					agora = new Date();
 					seconds = (agora.getTime() - date.getTime()) / 1000;
 
-//					System.out.println(rs.getInt("ID_DISTRIBUIDORA") +" "+ agora + " " + date + " " + seconds);
+
+
+				
+				//	System.out.println(rs.getInt("ID_DISTRIBUIDORA") +" "+ agora + " " + date + " " + seconds);
 					
 					if (seconds > secs_param && rs.getString("FLAG_ATIVO").equalsIgnoreCase("S")) { // empresa esta offine
 

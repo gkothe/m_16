@@ -1,3 +1,6 @@
+alter table sys_parametros add desc_webappfolder text ->botar power
+
+
 ----bugs
 
 Ve como funciona googleplay - Eu.

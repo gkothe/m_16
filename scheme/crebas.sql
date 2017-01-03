@@ -1,6 +1,6 @@
 /*==============================================================*/
 /* DBMS name:      MySQL 5.0                                    */
-/* Created on:     22/12/2016 9:34:53 AM                        */
+/* Created on:     3/1/2017 3:54:10 PM                          */
 /*==============================================================*/
 
 
@@ -232,6 +232,7 @@ create table PEDIDO
    FLAG_NOT_FINAL       char(1) default 'N',
    FLAG_NOT_FINAL_AVISA_LOJA char(1) default 'N',
    FLAG_RESPOSTA_USUARIO char(1),
+   DESC_OBSERVACAO      text,
    primary key (ID_PEDIDO)
 )
 auto_increment = 1;
@@ -339,7 +340,8 @@ create table SYS_PARAMETROS
    ONESIGNAL_APPID      text,
    ONESIGNAL_URL        text,
    NUM_SEGS_NOT_FINAL_EXEC int,
-   COD_CANCELAMENTOSYS  int
+   COD_CANCELAMENTOSYS  int,
+   DESC_WEBAPPFOLDER    text
 );
 
 /*==============================================================*/

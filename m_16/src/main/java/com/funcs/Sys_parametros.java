@@ -32,7 +32,17 @@ public class Sys_parametros {
 	int num_minutos_not_final = 0;
 	int num_segs_not_final_exec = 0;
 	int cod_cancelamentosys = 0; 
+	String path ="";
+	String desc_webappfolder ="";
 	
+
+	public String getDesc_webappfolder() {
+		return desc_webappfolder;
+	}
+
+	public void setDesc_webappfolder(String desc_webappfolder) {
+		this.desc_webappfolder = desc_webappfolder;
+	}
 
 	public int getCod_cancelamentosys() {
 		return cod_cancelamentosys;
@@ -276,7 +286,9 @@ public class Sys_parametros {
 				this.setNum_minutos_not_final(rs.getInt("num_minutos_not_final"));
 				this.setNum_segs_not_final_exec(rs.getInt("num_segs_not_final_exec"));
 				this.setCod_cancelamentosys(rs.getInt("cod_cancelamentosys"));
+				this.setDesc_webappfolder(rs.getString("desc_webappfolder"));
 				
+				this.setPath(System.getProperty( "catalina.base" )+"/webapps/"+this.getDesc_webappfolder());
 				
 			}
 
@@ -284,6 +296,14 @@ public class Sys_parametros {
 			// TODO: handle exception
 		}
 
+	}
+
+	public String getPath() {
+		return path;
+	}
+
+	public void setPath(String path) {
+		this.path = path;
 	}
 
 	public int getPED_HORASOKEY() {
