@@ -102,7 +102,6 @@ input:focus {
 	-ms-transform: translate(-0%, -50%);
 }
 
-
 .w3-btn-floating, .w3-btn-floating-large {
 	display: inline-block;
 	text-align: center;
@@ -156,4 +155,15 @@ input:focus {
 	-moz-user-select: none;
 	-ms-user-select: none;
 	user-select: none;
+}
+
+.modal-body {
+	
+	overflow-y: auto !important;
+}
+
+.modal {
+	
+	
+	overflow-y: auto !important;
 }
