@@ -11,7 +11,7 @@ Servidor - Eu
 Ve tudo que precisa de assuntos pra advogados - Conjunto.
 Roteiro venda, Cenario de venda. - walter/goltz
 Roteiro de teste/revisão - conjunto
-Patentiar o TragoAqui - walter/goltz
+Patentiar o TragoAqui - walter/goltz .
 
 Futuro
 Nao esta muito claro a diferença entre agendamento e tele-entrega -FAQ conversar

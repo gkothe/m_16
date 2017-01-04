@@ -390,7 +390,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 		if (rs.next()) {
 
 			StringBuffer varname11 = new StringBuffer();
-			varname11.append("select date_format(horario_ini, '%h:%i') as horario_ini,date_format(horario_fim, '%h:%i') as horario_fim from distribuidora_bairro_entrega ");
+			varname11.append("select date_format(horario_ini, '%H:%i') as horario_ini,date_format(horario_fim, '%H:%i') as horario_fim from distribuidora_bairro_entrega ");
 			varname11.append("  ");
 			varname11.append("inner join distribuidora_horario_dia_entre ");
 			varname11.append("on distribuidora_horario_dia_entre.id_distr_bairro = distribuidora_bairro_entrega.id_distr_bairro ");
@@ -3309,7 +3309,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 					}
 
 					StringBuffer varname11 = new StringBuffer();
-					varname11.append("select date_format(horario_ini, '%h:%i') as horario_ini,date_format(horario_fim, '%h:%i') as horario_fim from distribuidora_bairro_entrega ");
+					varname11.append("select date_format(horario_ini, '%H:%i') as horario_ini,date_format(horario_fim, '%H:%i') as horario_fim from distribuidora_bairro_entrega ");
 					varname11.append("  ");
 					varname11.append("inner join distribuidora_horario_dia_entre ");
 					varname11.append("on distribuidora_horario_dia_entre.id_distr_bairro = distribuidora_bairro_entrega.id_distr_bairro ");
