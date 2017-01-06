@@ -1,0 +1,293 @@
+<html>
+
+<script type="text/javascript"
+	src="JavaScript/lista_pedidos_historico.js"></script>
+
+<div class="x_title">
+
+	<div class="row">
+		<div class="col-xs-12 col-md-12 col-lg-12">
+			<div class="form-group">
+				<label style="font-size: 30px" for="">Histórico de Pedidos</label>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="x_content">
+
+
+
+
+	<div style="width: 95%; height: 100%"
+		class="container bs-docs-container">
+
+
+		<!-- 				PEDIDOS FECHADOS ---------------------------------------------------------- -->
+
+		<br>
+		<div class="row">
+
+
+			<div class="row">
+
+				<div class="col-xs-1 col-sm-1 col-md-1 col-lg-1 filtros"
+					align="right">
+					<label for=""> Número</label>
+				</div>
+				<div class="col-xs-3 col-sm-3 col-md-4 col-lg-4" align="left">
+
+					<input id="num_pedido_historico" style="width: 100%"
+						class="form-control" type="text" maxlength="100" value=""
+						name="num_pedido_historico">
+				</div>
+
+				<div class="col-xs-1 col-sm-1 col-md-1 col-lg-1 filtros"
+					align="right">
+					<label for="">Pedido </label>
+				</div>
+
+
+				<div class="col-xs-2 col-sm-2 col-md-3 col-lg-3" align="left">
+
+					<div class="input-group">
+						<input type="text" class="form-control data"
+							id="data_pedido_ini_historico" placeholder="Data inicial" /> <span
+							class="input-group-addon glyphicon glyphicon-calendar"> </span>
+					</div>
+
+				</div>
+
+
+				<div class="col-xs-2 col-sm-2 col-md-3 col-lg-3" align="left">
+
+					<div class="input-group">
+						<input type="text" class="form-control data"
+							id="data_pedido_fim_historico" placeholder="Data final" /> <span
+							class="input-group-addon glyphicon glyphicon-calendar"> </span>
+					</div>
+
+				</div>
+
+
+			</div>
+
+
+			<div class="row rowpad">
+
+				<div class="col-xs-1 col-sm-1 col-md-1 col-lg-1 filtros"
+					align="right">
+					<label for=""> Produto</label>
+				</div>
+				<div class="col-xs-3 col-sm-3 col-md-4 col-lg-4">
+
+					<div class="input-group" style="width: 100%">
+
+						<input id="id_produto" placeholder="Cod." style="width: 25%"
+							class="form-control" type="text" maxlength="100" value=""
+							name="id_produto"> <input id="desc_produto"
+							style="width: 75%" class="form-control" placeholder="Descrição"
+							type="text" maxlength="" value="" name="desc_produto">
+					</div>
+				</div>
+
+
+				<div class="col-xs-1 col-sm-1 col-md-1 col-lg-1 filtros"
+					align="right">
+					<label for="">Resposta </label>
+				</div>
+
+
+				<div class="col-xs-2 col-sm-2 col-md-3 col-lg-3" align="left">
+
+					<div class="input-group">
+						<input type="text" class="form-control data"
+							id="data_pedido_ini_historico_resposta"
+							placeholder="Data inicial" /> <span
+							class="input-group-addon glyphicon glyphicon-calendar"> </span>
+					</div>
+
+				</div>
+
+
+				<div class="col-xs-2 col-sm-2 col-md-3 col-lg-3" align="left">
+
+					<div class="input-group">
+						<input type="text" class="form-control data"
+							id="data_pedido_fim_historico_resposta" placeholder="Data final" />
+						<span class="input-group-addon glyphicon glyphicon-calendar">
+						</span>
+					</div>
+
+				</div>
+
+			</div>
+
+
+			<div class="row rowpad">
+
+
+				<div class="col-xs-1 col-sm-1 col-md-1 col-lg-1 filtros"
+					align="right">
+					<label for=""> Bairro</label>
+				</div>
+				<div class="col-xs-3 col-sm-3 col-md-4	 col-lg-4">
+					<select id="cod_bairro_historico" class="form-control"
+						style="width: 100%" name="cod_bairro_historico">
+
+					</select>
+
+				</div>
+
+
+
+
+
+				<div class="col-xs-1 col-sm-1 col-md-1 col-lg-1 filtros"
+					align="right">
+					<label for="">Valor - De</label>
+				</div>
+
+				<div class="col-xs-2 col-sm-2 col-md-2 col-lg-2" align="left">
+
+					<div class="input-group">
+						<input type="text" class="form-control " id="val_ini_historico" />
+
+					</div>
+
+				</div>
+				<div class="col-xs-1 col-sm-1 col-md-1 col-lg-1 filtros"
+					align="right">
+
+					<label for="">Até</label>
+				</div>
+
+				<div class="col-xs-2 col-sm-2 col-md-2 col-lg-2" align="left">
+
+					<div class="input-group">
+						<input type="text" class="form-control " id="val_fim_historico" />
+					</div>
+				</div>
+
+
+			</div>
+
+			<div class="row rowpad">
+
+				<div class="col-xs-1 col-sm-1 col-md-1 col-lg-1 filtros"
+					align="right">
+					<label for=""> Situação</label>
+				</div>
+				<div class="col-xs-4 col-sm-4 col-md-4	 col-lg-4">
+					<select id="flag_situacao" class="form-control" style="width: 100%"
+						name="flag_situacao">
+						<option value="">Todas</option>
+						<option value="O">Finalizado</option>
+						<option value="C">Cancelado</option>
+						<option value="R">Recusado</option>
+
+					</select>
+
+				</div>
+
+				<div class="col-xs-1 col-sm-1 col-md-1 col-lg-1 filtros"
+					align="right">
+					<label for=""> Serviço</label>
+				</div>
+				<div class="col-xs-3 col-sm-3 col-md-3	 col-lg-3">
+					<select id="flag_pedido_ret_entre" class="form-control"
+						style="width: 100%" name="flag_pedido_ret_entre">
+						<option value="">Todos</option>
+						<option value="L">Retirar no local</option>
+						<option value="T">Entrega</option>
+					</select>
+				</div>
+
+			</div>
+
+
+			<br>
+			<div class="row">
+
+
+				<div class="col-xs-12 col-md-12 col-lg-12" align="center">
+
+					<button class="btn btn-primary " type="button"
+						id="btn_filtros_limpar">Limpar Filtros</button>
+					<button class="btn btn-primary " type="button"
+						id="btn_filtrar_historico">Filtrar</button>
+
+				</div>
+
+
+			</div>
+
+
+			<br>
+			<div class="row">
+				<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+					<label for="">Histórico de pedidos</label>
+
+				</div>
+			</div>
+
+			<br>
+
+			<div class="row">
+				<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+					<table id="table_pedidos_historico" data-toggle="table"
+						style="cursor: pointer;" data-height="300" data-locale="pt-BR"
+						class="table_boots" data-minimum-count-columns="1"
+						data-reorderable-columns="true" data-show-footer="true"
+						data-pagination="true" data-page-list="[5,10,25,50,100]"
+						data-page-size="10" data-pagination-first-text="Primeiro"
+						data-side-pagination="server"
+						data-pagination-pre-text="Anterior"
+						data-pagination-next-text="Próximo"
+						data-pagination-last-text="Último">
+						<thead class="header">
+							<tr>
+
+								<th data-visible="false" data-field="ID_PEDIDO"></th>
+								<th data-field="NUM_PED" data-width="7%" data-sortable="true"
+									data-align="center">Número</th>
+								<th data-field="data_formatada" data-width="20%"
+									data-sortable="true" data-align="center">Data Ped.</th>
+								<th data-field="data_formatada_resposta" data-width="20%"
+									data-sortable="true" data-align="center">Resposta</th>
+								<th data-field="DESC_BAIRRO" data-width="15%"
+									data-sortable="true" data-align="center">Bairro</th>
+								<th data-field="VAL_TOTALPROD" data-width="15%"
+									data-align="right" data-formatter="valorFormater"
+									data-sortable="true">Valor</th>
+								<th data-field="FLAG_STATUS" data-formatter="statusFormater"
+									data-width="10%" data-sortable="false" data-align="center">Situação</th>
+								<th data-sortable="false" data-width="10%" data-align="center"
+									data-formatter="btnFormater">Opções</th>
+
+
+							</tr>
+						</thead>
+						<tbody>
+						</tbody>
+					</table>
+				</div>
+
+			</div>
+
+		</div>
+
+	</div>
+
+</div>
+<br>
+<input id="sys_formatador" type="hidden">
+<input id="sys_order" type="hidden">
+<input id="sys_name"  type="hidden">
+
+
+</html>
+
+
+
+
+

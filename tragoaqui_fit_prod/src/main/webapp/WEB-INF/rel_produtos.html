@@ -1,0 +1,114 @@
+<html>
+<script type="text/javascript" src="JavaScript/rel_produto.js"></script>
+<div class="x_title">
+
+	<div class="row">
+		<div class="col-xs-12 col-md-12 col-lg-12">
+			<div class="form-group">
+				<label style="font-size: 30px" for="">Relatório de Produtos Vendidos</label>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="x_content">
+
+
+	<div style="width: 95%; height: 100%"
+		class="container bs-docs-container">
+
+
+		<br>
+
+		<div class="row ">
+
+			<div class="col-xs-4 col-md-4 col-lg-4 ">
+				<label for="">Período - De </label>
+				<div class="input-group">
+					<input type="text" class="form-control data" id="rel_data_ini"
+						placeholder="Data inicial" /> <span
+						class="input-group-addon glyphicon glyphicon-calendar"> </span>
+				</div>
+			</div>
+
+			<div class="col-xs-1 col-sm-1 col-md-1 col-lg-1 " align="right"></div>
+
+			<div class="col-xs-4 col-md-4 col-lg-4 ">
+				<label for="">Período - Até </label>
+
+				<div class="input-group">
+					<input type="text" class="form-control data" id="rel_data_fim"
+						placeholder="Data final" /> <span
+						class="input-group-addon glyphicon glyphicon-calendar"> </span>
+				</div>
+			</div>
+
+
+		</div>
+
+
+		<div class="row ">
+
+
+			<div class="col-xs-4 col-md-4 col-lg-4 ">
+				<label for="">Situação</label>
+				<div class="form-group">
+					<select id="flag_situacao" class="form-control"
+						style="width: 100%; min-width: 100%" name="flag_situacao">
+						<option value="">Ambos</option>
+						<option value="S">Ativado</option>
+						<option value="N">Desativado</option>
+
+					</select>
+				</div>
+			</div>
+
+			<div class="col-xs-1 col-sm-1 col-md-1 col-lg-1 " align="right"></div>
+
+			<div class="col-xs-4 col-md-4 col-lg-4 ">
+				<label for="">Descrição do produto</label>
+				<div class="form-group">
+					<select id="flagabrev" class="form-control"
+						style="width: 100%; min-width: 100%" name="flagabrev">
+						<option value="1">Completo</option>
+						<option value="2">Abreviado</option>
+
+					</select>
+				</div>
+			</div>
+
+		</div>
+
+
+
+		<br>
+		<div class="row">
+
+			<div class="col-xs-12 col-md-12 col-lg-12" align="center">
+
+				<button class="btn btn-primary " type="button"
+					id="btn_filtros_limpar">Limpar Filtros</button>
+				<button class="btn btn-primary " type="button"
+					id="btn_rel">Gerar relátorio</button>
+
+			</div>
+
+
+		</div>
+
+
+	</div>
+
+
+</div>
+
+
+<br>
+<input id="sys_formatador" type="hidden">
+
+
+</html>
+
+
+
+
+

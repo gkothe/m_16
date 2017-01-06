@@ -1,0 +1,304 @@
+
+<html>
+
+<script type="text/javascript" src="JavaScript/lista_produtos.js"></script>
+<!-- <link rel="stylesheet" href="http://www.w3schools.com/lib/w3.css"> -->
+<div class="x_title">
+	<div class="row">
+		<div class="col-xs-12 col-md-12 col-lg-12">
+			<div class="form-group">
+				<label style="font-size: 30px" for="">Produtos e preços</label>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="x_content">
+
+
+	<div style="width: 95%; height: 100%"
+		class="container bs-docs-container">
+
+
+
+
+
+		<!-- PEDIDOS EM ABERTO --------------------------------------------------------------------------------------------------------------------------------------->
+
+
+		<br>
+
+
+		<div class="row rowpad">
+
+			<div class="col-xs-1 col-sm-1 col-md-1 col-lg-1 filtros"
+				align="right">
+				<label for=""> Produto</label>
+			</div>
+			<div class="col-xs-3 col-sm-3 col-md-4 col-lg-4">
+
+				<div class="input-group" style="width: 100%">
+
+					<input id="id_produto_listagem" style="width: 20%"
+						class="form-control" type="text" maxlength="100" value=""
+						name="id_produto"> <input id="desc_produto_listagem"
+						style="width: 80%" class="form-control" type="text" maxlength=""
+						value="" name="desc_produto">
+				</div>
+			</div>
+
+
+
+
+
+			<div class="col-xs-1 col-sm-1 col-md-2 col-lg-2 filtros"
+				align="right">
+				<label for="">Valor R$- De</label>
+			</div>
+
+			<div class="col-xs-2 col-sm-2 col-md-2 col-lg-2 " align="left">
+
+
+				<input type="text" class="form-control "
+					style="text-align: right; width: 100%" id="val_ini" />
+
+
+
+			</div>
+			<div class="col-xs-1 col-sm-1 col-md-1 col-lg-1 filtros "
+				align="right">
+
+				<label for="">Até</label>
+			</div>
+
+			<div class="col-xs-2 col-sm-2 col-md-2 col-lg-2 " align="left">
+
+				<div class="input-group" style="width: 100%">
+					<input type="text" class="form-control " style="text-align: right;"
+						id="val_fim" />
+				</div>
+			</div>
+
+
+		</div>
+
+		<div class="row rowpad">
+
+
+			<div class="col-xs-1 col-sm-1 col-md-1 col-lg-1 filtros"
+				align="right">
+				<label for=""> Situação</label>
+			</div>
+			<div class="col-xs-4 col-sm-4 col-md-4	 col-lg-4">
+				<select id="flag_situacao" class="form-control" style="width: 100%"
+					name="flag_situacao">
+					<option value="">Todos</option>
+					<option value="S">Ativados</option>
+					<option value="N">Desativados</option>
+				</select>
+			</div>
+			<div class="col-xs-1 col-sm-1 col-md-1 col-lg-1 filtros "
+				align="right"></div>
+			<div class="col-xs-1 col-sm-1 col-md-1 col-lg-1 filtros"
+				align="right">
+				<label for=""> Descrição</label>
+			</div>
+			<div class="col-xs-5 col-sm-5 col-md-5 col-lg-5">
+
+				<div class="input-group" style="width: 100%">
+
+					<input id="descricaoprod" style="width: 100%" class="form-control"
+						type="text" maxlength="" value="" name="descricaoprod">
+				</div>
+			</div>
+
+
+
+		</div>
+
+
+
+		<div class="row rowpad"></div>
+
+
+		<br>
+		<div class="row">
+
+
+			<div class="col-xs-12 col-md-12 col-lg-12" align="center">
+				<button type="button" class="btn btn-primary "
+					id="btn_filtros_limpar">Limpar Filtros</button>
+				<button type="button" class="btn btn-primary " id="btn_filtrar">Filtrar</button>
+
+			</div>
+
+
+
+		</div>
+
+
+		<br>
+
+		<div class="row" id="row_da_tabelaprod">
+			<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+				<table id="table_produtos" data-toggle="table" data-height="375"
+					data-locale="pt-BR" class="table_boots" style="cursor: pointer;"
+					data-minimum-count-columns="1" data-reorderable-columns="false"
+					data-pagination="true" data-page-list="[6,12,24,50]"
+					data-page-size="6" data-pagination-first-text="Primeiro"
+					data-pagination-pre-text="Anterior"
+					data-pagination-next-text="Próximo" data-search="true"
+					data-pagination-last-text="Último" data-sort-name="desc_prod"
+					data-sort-order="asc">
+					<thead class="header">
+						<tr>
+							<th data-field="id_prod" data-width="7%" data-sortable="true"
+								data-align="center">Cód.</th>
+							<th data-sortable="true" data-field="desc_abreviado"
+								data-width="30%" data-align="left">Produto</th>
+							<th data-field="val_prod" data-width="15%" data-align="right"
+								data-formatter=valorFormater data-sortable="true">Valor</th>
+							<th data-field="flag_ativo" data-formatter="statusFormater"
+								data-width="10%" data-sortable="true" data-align="center">Situação</th>
+							<th data-sortable="false" data-width="10%" data-align="center"
+								data-formatter="btnFormater">Opções</th>
+						</tr>
+					</thead>
+					<tbody>
+					</tbody>
+				</table>
+			</div>
+
+		</div>
+		<!--fim PEDIDOS EM ABERTO --------------------------------------------------------------------------------------------------------------------------------------->
+
+
+
+
+		<div class="modal fade bs-example-modal-lg" tabindex="-5"
+			role="dialog" id="modal_produto" aria-hidden="true">
+			<div class="modal-dialog modal-lg">
+				<div class="modal-content">
+
+					<div class="modal-header" align="center">
+						<button type="button" class="close" data-dismiss="modal">
+							<span aria-hidden="true">×</span>
+						</button>
+						<h4 class="modal-title" id="">
+							<label style="font-size: 35px;" id="m_lbl_produto_nome"></label>
+
+						</h4>
+					</div>
+					<div class="modal-body" style="max-height: 800px">
+
+
+
+						<div class="row">
+							<input type="hidden" id="p_id_produto"></input>
+							<div class="col-xs-7 col-sm-7 col-md-7 col-lg-7" align="left">
+
+								<table style="font-size: 120%; width: 100%">
+
+									<tr>
+										<td style="padding-right: 5px; width: 150px" align="right"><label
+											for="">Nome: </label></td>
+										<td><label id="p_nome_reduzido"> </label></td>
+
+									</tr>
+
+
+									<tr>
+										<td style="padding-right: 5px;" align="right"><label
+											for="">Descrição: </label></td>
+										<td style="width: 300px" " colspan="100%"><textarea
+												readonly="readonly" rows="10"
+												style="height: 300px; width: 300px; padding-bottom: 5px"
+												id="p_nome_completo"> 
+										
+										</textarea>
+									</tr>
+
+
+									<tr>
+										<td style="padding-right: 5px; padding-top: 7px !important;"
+											align="right"><label for="">Valor R$: </label></td>
+										<td style="padding-top: 7px !important;"><input
+											style="text-align: right; width: 300px" type="text"
+											class="form-control " id="m_val_prod" /></td>
+
+									</tr>
+
+
+									<tr>
+										<td style="padding-right: 5px; padding-top: 5px" align="right"><label
+											for="">Situação: </label></td>
+										<td style="padding-right: 5px; padding-top: 5px"><select
+											id="p_flag_status" class="form-control" style="width: 300px">
+												<option style="background-color: white !important" value='N'>Desativado</option>
+												<option style="background-color: white !important" value='S'>Ativado</option>
+
+										</select></td>
+
+									</tr>
+
+								</table>
+							</div>
+
+							<div class="col-xs-4 col-sm-4 col-md-4 col-lg-4 " align="center">
+
+								<div 	id="prod_slide" class="w3-content w3-display-container"></div>
+
+							</div>
+
+
+						</div>
+
+
+
+					</div>
+
+					<div class="modal-footer">
+
+						<div class="row"">
+							<div class="col-xs-2 col-sm-2 col-md-2 col-lg-2 " align="left">
+								<button type="button" class="btn btn-primary"
+									data-dismiss="modal">Fechar</button>
+							</div>
+
+							<div class="col-xs-1 col-sm-1 col-md-1 col-lg-1 "></div>
+							<div class="col-xs-1 col-sm-1 col-md-1 col-lg-1 "></div>
+							<div class="col-xs-1 col-sm-1 col-md-1 col-lg-1 "></div>
+							<div class="col-xs-1 col-sm-1 col-md-1 col-lg-1 "></div>
+							<div class="col-xs-1 col-sm-1 col-md-1 col-lg-1 "></div>
+							<div class="col-xs-1 col-sm-1 col-md-1 col-lg-1 "></div>
+							<div class="col-xs-1 col-sm-1 col-md-1 col-lg-1 "></div>
+							<div class="col-xs-1 col-sm-1 col-md-1 col-lg-1 "></div>
+
+
+							<div class="col-xs-2 col-sm-2 col-md-2 col-lg-2 " align="right">
+
+								<button type="button" id="p_salvar" class="btn btn-primary">Salvar
+								</button>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+
+
+
+
+
+
+
+		<br> <input id="sys_formatador" type="hidden">
+
+	</div>
+</div>
+</html>
+
+
+
+
+

@@ -1,0 +1,864 @@
+<html>
+<!-- <script type="text/javascript" -->
+<!-- 	src="JavaScript/echarts-master/dist/echarts.js"></script> -->
+<script type="text/javascript"
+	src="JavaScript/echarts-master/dist/echarts-all.js"></script>
+
+<!-- <script src="gentelella-master/vendors/echarts/dist/echarts.js"></script> -->
+<!-- <script type="text/javascript" -->
+<!-- 	src="JavaScript/echarts-master/asset/codemirror.js"></script> -->
+<!-- <script type="text/javascript" -->
+<!-- 	src="JavaScript/echarts-master/asset/javascript.js"></script> -->
+<!-- <script type="text/javascript" -->
+<!-- 	src="JavaScript/echarts-master/asset/echartsHome.js"></script> -->
+<!-- <script src="JavaScript/asset/echartsExample.js"></script> -->
+<!-- <script type="text/javascript" -->
+<!-- 	src="JavaScript/echarts-master/require.js"></script> -->
+
+<script src="gentelella-master/vendors/Chart.js/dist/Chart.min.js"></script>
+<script src="gentelella-master/vendors/raphael/raphael.min.js"></script>
+<script src="gentelella-master/vendors/morris.js/morris.min.js"></script>
+<script type="text/javascript" src="JavaScript/dash1_pedidos.js"></script>
+
+
+
+
+
+
+
+<div class="x_title">
+	<div class="row">
+		<div class="col-xs-12 col-md-12 col-lg-12">
+			<div class="form-group">
+				<label style="font-size: 30px" for="">Dashpedidos</label>
+			</div>
+		</div>
+	</div>
+</div>
+
+
+<div class="x_content">
+
+
+
+	<div style="width: 95%; height: 100%"
+		class="container bs-docs-container">
+
+		<div class="row rowpad">
+			<div class="col-md-12 col-sm-12 col-xs-12">
+				<div class="x_panel ">
+					<div class="x_title">
+						<h2>Filtros</h2>
+						<ul class="nav navbar-right panel_toolbox">
+							<li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a></li>
+						</ul>
+						<div class="clearfix"></div>
+					</div>
+					<div class="x_content">
+
+						<div class="row">
+
+							<div class="col-xs-4 col-md-4 col-lg-4 ">
+								<label for="">Período - De </label>
+								<div class="input-group">
+									<input type="text" class="form-control data"
+										id="data_pedido_ini" placeholder="Data inicial" /> <span
+										class="input-group-addon glyphicon glyphicon-calendar">
+									</span>
+								</div>
+							</div>
+
+							<div class="col-xs-1 col-sm-1 col-md-1 col-lg-1 " align="right">
+
+							</div>
+
+							<div class="col-xs-4 col-md-4 col-lg-4 ">
+								<label for="">Período - Até </label>
+
+								<div class="input-group">
+									<input type="text" class="form-control data"
+										id="data_pedido_fim" placeholder="Data final" /> <span
+										class="input-group-addon glyphicon glyphicon-calendar">
+									</span>
+								</div>
+							</div>
+
+						</div>
+
+
+
+						<div class="row">
+							<div class="col-xs-4 col-sm-4 col-md-4 col-lg-4">
+								<label for=""> Dias da semana</label>
+								<div class="form-group">
+									<select id="dias_semana" multiple="multiple">
+										<option value="2">Segunda-feira</option>
+										<option value="3">Terça-feira</option>
+										<option value="4">Quarta-feira</option>
+										<option value="5">Quinta-feira</option>
+										<option value="6">Sexta-feira</option>
+										<option value="7">Sábado</option>
+										<option value="1">Domingo</option>
+									</select>
+								</div>
+							</div>
+							<div class="col-xs-1 col-sm-1 col-md-1 col-lg-1 " align="right"></div>
+
+							<div class="col-xs-2 col-sm-2 col-md-2	 col-lg-2">
+								<label for=""> Hora inicial</label>
+								<div class="form-group">
+									<input type="text" maxlength="22" class="form-control hora"
+										id="hora_inicial" />
+								</div>
+							</div>
+
+
+							<div class="col-xs-2 col-sm-2 col-md-2	 col-lg-2">
+								<label for=""> Hora final</label>
+								<div class="form-group">
+									<input type="text" maxlength="22" class="form-control hora"
+										id="hora_final" />
+								</div>
+							</div>
+
+						</div>
+
+						<div class="row ">
+
+							<div class="col-xs-4 col-md-4 col-lg-4 ">
+								<label for="">Bairro</label>
+								<div class="form-group">
+									<select id="cod_bairro" class="form-control"
+										style="width: 100%" name="cod_bairro">
+
+									</select>
+
+								</div>
+							</div>
+
+							<div class="col-xs-1 col-sm-1 col-md-1 col-lg-1 " align="right"></div>
+
+							<div class="col-xs-4 col-md-4 col-lg-4 ">
+								<label for="">Serviço </label>
+								<div class="form-group">
+									<select id="flag_servico" class="form-control"
+										style="width: 100%" name="flag_servico">
+										<option value="">Todos</option>
+										<option value="L">Retirar no local</option>
+										<option value="T">Entrega</option>
+									</select>
+								</div>
+							</div>
+
+						</div>
+						<br>
+						<div class="row ">
+							<div class="col-xs-8 col-md-8 col-lg-8 " align="center">
+								<button class="btn btn-primary " type="button"
+									id="btn_filtros_limpar">Limpar Filtros</button>
+								&nbsp;&nbsp;&nbsp;
+
+								<button class="btn btn-primary " type="button" id="btn_filtrar">Continuar</button>
+							</div>
+
+						</div>
+
+
+					</div>
+				</div>
+			</div>
+		</div>
+
+
+		<ul class="nav nav-pills nav-justified" " id="tabs_dash">
+			<li class="active"><a data-toggle="pill" href="#filtros">Inf.
+					Geral</a></li>
+			<li><a data-toggle="pill" href="#dashboard1">Resumo </a></li>
+			<li><a data-toggle="pill" href="#dashboard3">Pedidos</a></li>
+			<li><a data-toggle="pill" href="#dashboard2">Produto </a></li>
+		</ul>
+		<!-- data-toggle="tab" -->
+		<div class="tab-content">
+
+			<div class="tab-pane active" id="filtros">
+				<br>
+
+				<div class="row rowpad">
+					<div class="col-md-12 col-sm-12 col-xs-12">
+						<div class="x_panel ">
+							<div class="x_title">
+								<h2>Informações Gerais - Pedidos</h2>
+								<ul class="nav navbar-right panel_toolbox">
+									<li><a class="collapse-link"><i
+											class="fa fa-chevron-up"></i></a></li>
+								</ul>
+								<div class="clearfix"></div>
+							</div>
+							<div class="x_content">
+								<div class="row ">
+									<div class="col-md-4 col-sm-4 col-xs-4">
+										<div data-toggle="tooltip" style="display: inline"
+											title="Aqui você encontra a quantidade total de pedidos relacionados aos filtros aplicados.">
+											<label for="">Quantidade de pedidos</label> <span
+												class="glyphicon glyphicon-question-sign help_icon"></span>
+										</div>
+
+										<div class="form-group">
+											<input type="text" readonly="readonly"
+												class="form-control field_dash" id="lbldash_qtdped" />
+
+
+										</div>
+
+									</div>
+									<div class="col-md-4 col-sm-4 col-xs-4">
+										<div data-toggle="tooltip" style="display: inline"
+											title="Aqui você encontra o valor total dos pedidos relacionados aos filtros aplicados.">
+											<label for="">Valor total dos pedidos</label> <span
+												class="glyphicon glyphicon-question-sign help_icon"></span>
+										</div>
+										<div class="form-group">
+											<input type="text" readonly="readonly"
+												class="form-control field_dash" id="lbldash_valtotal" />
+
+										</div>
+									</div>
+									<div class="col-md-4 col-sm-4 col-xs-4">
+										<div data-toggle="tooltip" style="display: inline"
+											title="Aqui você encontra o valor médio por pedido relacionado aos filtros aplicados.">
+											<label for="">Valor médio por pedido</label><span
+												class="glyphicon glyphicon-question-sign help_icon"></span>
+										</div>
+										<div class="form-group">
+											<input type="text" readonly="readonly"
+												class="form-control field_dash" id="lbldash_media" />
+
+										</div>
+									</div>
+								</div>
+								<div class="row ">
+									<div class="col-md-4 col-sm-4 col-xs-4">
+
+										<div data-toggle="tooltip" style="display: inline"
+											title="Aqui você encontra a média de tempo máximo que os usuários desejam que a tele entrega seja realizada dentro dos filtros aplicados. OBS: Não leva em consideração pedidos de agendamento.">
+											<label for="">Média tempo máximo desejado de entrega</label><span
+												class="glyphicon glyphicon-question-sign help_icon"></span>
+										</div>
+										<div class="form-group">
+											<input type="text" readonly="readonly"
+												class="form-control field_dash" id="lbldash_temp1" />
+										</div>
+
+									</div>
+									<div class="col-md-4 col-sm-4 col-xs-4">
+										<div data-toggle="tooltip" style="display: inline"
+											title="Aqui você encontra a média de tempo de entrega máximo previsto pela distribuidora dentro dos filtros aplicados. OBS: Não leva em consideração pedidos de agendamento.">
+											<label for="">Média tempo máximo previsto de entrega</label><span
+												class="glyphicon glyphicon-question-sign help_icon"></span>
+										</div>
+
+										<div class="form-group">
+											<input type="text" readonly="readonly"
+												class="form-control field_dash" id="lbldash_temp2" />
+										</div>
+									</div>
+
+
+									<div class="col-md-4 col-sm-4 col-xs-4">
+										<div data-toggle="tooltip" style="display: inline"
+											title="Aqui você encontra a média de tempo de resposta da distribuidora para os pedidos dos clientes dentro dos filtros aplicados.">
+											<label for="">Média tempo de resposta de pedido</label><span
+												class="glyphicon glyphicon-question-sign help_icon"></span>
+										</div>
+										<div class="form-group">
+											<input type="text" readonly="readonly"
+												class="form-control field_dash" id="lbldash_temp3" />
+
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+
+
+
+			</div>
+			<div class="tab-pane " id="dashboard1">
+				<br>
+				<div class="row">
+					<div class="col-md-12 col-sm-12 col-xs-12">
+						<div class="x_panel">
+							<div class="x_title">
+								<div data-toggle="tooltip" style="display: inline"
+									title="Neste gráfico você consegue obter informações relacionadas ao volume de vendas, tanto da quantidade de pedidos em determinado período, quanto o faturamento no mesmo(Você pode alterar o gráfico ao clicar na chave no topo direito), no canto superior direito da sessão você pode alterar o modo de apresentação do gráfico. Para maiores detalhes em um mês específico é possível clicar em sua respectiva coluna ou período (Ex:Jan/2016) no gráfico, acessando assim à uma visão dividida por dias. Os dados em ambos são exibidos de acordo com os filtros aplicados.">
+									<h2>Volume de vendas</h2>
+									<span class="glyphicon glyphicon-question-sign help_icon"></span>
+								</div>
+								<ul class="nav navbar-right panel_toolbox">
+									<li><a class="collapse-link"><i
+											class="fa fa-chevron-up"></i></a></li>
+									<li class="dropdown"><a href="#" class="dropdown-toggle"
+										data-toggle="dropdown" role="button" aria-expanded="false"><i
+											class="fa fa-wrench"></i></a>
+										<ul class="dropdown-menu" role="menu">
+											<li><a onClick="dashMeses('qtd')" href="#">Quantidade</a></li>
+											<li><a onClick="dashMeses('val')" href="#">Faturamento</a></li>
+										</ul></li>
+
+								</ul>
+								<div class="clearfix"></div>
+							</div>
+							<div class="x_content">
+								<div align="center">
+									<table>
+										<tr>
+											<td style="padding-right: 15px"><div
+													style='height: 10px; width: 10px; background-color: #9B59B6; color: #9B59B6; display: inline; border-radius: 5px'>&nbsp;()</div>
+												Pedidos</td>
+											<td style="padding-right: 15px"><div
+													style='height: 10px; width: 10px; background-color: #26B99A; color: #26B99A; display: inline; border-radius: 5px'>&nbsp;()</div>
+												Entregas</td>
+											<td style="padding-right: 15px"><div
+													style='height: 10px; width: 10px; background-color: #3498DB; color: #3498DB; display: inline; border-radius: 5px'>&nbsp;()</div>
+												Retiradas</td>
+										</tr>
+									</table>
+								</div>
+								<div id="dash_meses" style="min-height: 500px;"></div>
+
+								<br> <label style="color: red">*Este gráfico não é
+									afetado pelos seguintes filtros: Período Inicial e Final,
+									Serviço.</label>
+							</div>
+
+
+						</div>
+					</div>
+				</div>
+				<div class="row rowpad">
+					<div class="col-md-12 col-sm-12 col-xs-12 col-lg-6">
+						<div class="x_panel ">
+							<div class="x_title">
+								<div data-toggle="tooltip" style="display: inline"
+									title="Este gráfico apresenta informações referentes ao tipo de serviços de entrega de pedidos (Retirada no local ou Tele entrega) no período especificado nos filtros, tanto quantidade vendida como valor faturado. Os dados são exibidos de acordo com os filtros aplicados.">
+									<h2>Serviços realizados</h2>
+									<span class="glyphicon glyphicon-question-sign help_icon"></span>
+								</div>
+								<ul class="nav navbar-right panel_toolbox">
+									<li><a class="collapse-link"><i
+											class="fa fa-chevron-up"></i></a></li>
+								</ul>
+								<div class="clearfix"></div>
+							</div>
+							<div class="x_content">
+								<table class="" id="dash_servtable"
+									style="max-width: 600px !important; min-width: 600px !important;">
+									<tr>
+										<th style="width: 40%; text-align: center">
+											<p>Serviços</p>
+										</th>
+										<th style="text-align: center">Descrição</th>
+										<th style="text-align: center">Quantidade</th>
+										<th style="text-align: center">Faturado</th>
+										<th style="text-align: center">Percentual</th>
+									</tr>
+									<tr>
+										<td align="left" rowspan="10">
+											<canvas id="pie_servico" height="140" width="140"
+												style="margin: 15px 10px 10px 0"></canvas>
+										</td>
+									</tr>
+
+								</table>
+								<br> <label style="color: red">*Este gráfico não é
+									afetado pelo seguinte filtro: Serviço.</label>
+							</div>
+						</div>
+					</div>
+
+					<div class="col-md-12 col-sm-12 col-xs-12 col-lg-6">
+						<div class="x_panel">
+							<div class="x_title">
+								<div data-toggle="tooltip" style="display: inline"
+									title="Este gráfico apresenta informações referentes ao método de pagamento usado nos pedidos (Cartão ou Dinheiro) como quantidade, percentual e valor faturado em cada método. Os dados são exibidos de acordo com os filtros aplicados.">
+									<h2>Modo de pagamento usados</h2>
+									<span class="glyphicon glyphicon-question-sign help_icon"></span>
+								</div>
+
+								<ul class="nav navbar-right panel_toolbox">
+									<li><a class="collapse-link"><i
+											class="fa fa-chevron-up"></i></a></li>
+								</ul>
+								<div class="clearfix"></div>
+							</div>
+							<div class="x_content">
+								<table class="" id="dash_pagtable"
+									style="max-width: 600px !important; min-width: 600px !important;">
+									<tr>
+										<th style="width: 40%; text-align: center">
+											<p>Modo</p>
+										</th>
+										<th style="text-align: center">Descrição</th>
+										<th style="text-align: center">Quantidade</th>
+										<th style="text-align: center">Faturado</th>
+										<th style="text-align: center">Percentual</th>
+									</tr>
+									<tr>
+										<td align="left" rowspan="10">
+											<canvas id="pie_pagamento" height="140" width="140"
+												style="margin: 15px 10px 10px 0"></canvas>
+										</td>
+									</tr>
+								</table>
+							</div>
+						</div>
+					</div>
+
+				</div>
+
+
+
+			</div>
+			<div class="tab-pane " id="dashboard3">
+
+				<br>
+
+				<div class="row">
+					<div class="col-md-12 col-sm-12 col-xs-12 col-lg-6">
+						<div class="x_panel">
+							<div class="x_title">
+								<div data-toggle="tooltip" style="display: inline"
+									title="Neste gráfico você consegue ver informações relacionadas à quantidade ou faturamento de pedidos por horário(você pode alterar o gráfico ao clicar na chave no topo direito), no canto superior direito da sessão você pode alterar o modo de apresentação do gráfico. Os dados são exibidos de acordo com os filtros aplicados.">
+									<h2>Pedidos por horário</h2>
+									<span class="glyphicon glyphicon-question-sign help_icon"></span>
+								</div>
+
+								<ul class="nav navbar-right panel_toolbox">
+									<li><a class="collapse-link"><i
+											class="fa fa-chevron-up"></i></a></li>
+									<li class="dropdown"><a href="#" class="dropdown-toggle"
+										data-toggle="dropdown" role="button" aria-expanded="false"><i
+											class="fa fa-wrench"></i></a>
+										<ul class="dropdown-menu" role="menu">
+											<li><a onClick="dashPedidoHora('qtd')" href="#">Quantidade</a></li>
+											<li><a onClick="dashPedidoHora('val')" href="#">Faturamento</a></li>
+										</ul></li>
+
+								</ul>
+								<div class="clearfix"></div>
+							</div>
+							<div class="x_content" id="dash_pedhora_holder"></div>
+								<br> <label style="color: red">*Este gráfico não é
+									afetado pelo seguinte filtro: Hora Inicial e Final
+									</label>
+						</div>
+					</div>
+					<div class="col-md-12 col-sm-12 col-xs-12 col-lg-6">
+						<div class="x_panel">
+							<div class="x_title">
+								<div data-toggle="tooltip" style="display: inline"
+									title="Neste gráfico você consegue ver informações relacionadas à quantidade ou faturamento de pedidos por dia da semana(Você pode alterar o gráfico ao clicar na chave no topo direito), no canto superior direito da sessão você pode alterar o modo de apresentação do gráfico. Os dados são exibidos de acordo com os filtros aplicados.">
+									<h2>Pedidos por dia</h2>
+									<span class="glyphicon glyphicon-question-sign help_icon"></span>
+								</div>
+								<h2></h2>
+								<ul class="nav navbar-right panel_toolbox">
+									<li><a class="collapse-link"><i
+											class="fa fa-chevron-up"></i></a></li>
+									<li class="dropdown"><a href="#" class="dropdown-toggle"
+										data-toggle="dropdown" role="button" aria-expanded="false"><i
+											class="fa fa-wrench"></i></a>
+										<ul class="dropdown-menu" role="menu">
+											<li><a onClick="dashPedidoDia('qtd')" href="#">Quantidade</a></li>
+											<li><a onClick="dashPedidoDia('valor')" href="#">Faturamento</a></li>
+										</ul></li>
+
+								</ul>
+								<div class="clearfix"></div>
+							
+							</div>
+							<div class="x_content" id="dash_peddia_holder"></div>
+							<br> <label style="color: red">*Este gráfico não é
+									afetado pelos seguinte filtro: Dias da semana
+									</label>
+						</div>
+					</div>
+				</div>
+
+				<div class="row">
+					<div class="col-md-12 col-sm-12 col-xs-12">
+						<div class="x_panel">
+							<div class="x_title">
+								<div data-toggle="tooltip" style="display: inline"
+									title="Neste gráfico você consegue ver informações relacionadas à quantidade e faturamento de pedidos por bairro(você pode alterar o gráfico ao clicar na chave no topo direito), no canto superior direito da sessão você pode alterar o modo de apresentação do gráfico. Os dados são exibidos de acordo com os filtros aplicados.">
+									<h2>Pedidos por bairro</h2>
+									<span class="glyphicon glyphicon-question-sign help_icon"></span>
+								</div>
+								<ul class="nav navbar-right panel_toolbox">
+									<li><a class="collapse-link"><i
+											class="fa fa-chevron-up"></i></a></li>
+									<li class="dropdown"><a href="#" class="dropdown-toggle"
+										data-toggle="dropdown" role="button" aria-expanded="false"><i
+											class="fa fa-wrench"></i></a>
+										<ul class="dropdown-menu" role="menu">
+											<li><a onClick="dashBairrosLista('qtd')" href="#">Quantidade</a></li>
+											<li><a onClick="dashBairrosLista('valor')" href="#">Faturamento</a></li>
+										</ul></li>
+
+								</ul>
+								<div class="clearfix"></div>
+							</div>
+							<div class="x_content">
+								<div id="dash_vendasbairro" style="min-height: 800px;"></div>
+								<br> <label style="color: red">*Este gráfico não é
+									afetado pelos seguintes filtros: Bairro.</label>
+							</div>
+						</div>
+					</div>
+				</div>
+
+
+			</div>
+			<div class="tab-pane " id="dashboard2">
+
+
+				<br>
+
+
+				<div class="row rowpad">
+
+					<div class="col-xs-1 col-sm-1 col-md-1 col-lg-1 filtros"
+						align="right">
+						<label for=""> Produto</label>
+					</div>
+					<div class="col-xs-5 col-sm-5 col-md-5 col-lg-5">
+
+						<div class="input-group" style="width: 100%">
+
+							<input id="id_produto_listagem" style="width: 20%"
+								class="form-control" type="text" maxlength="100" value=""
+								name="id_produto"> <input id="desc_produto_listagem"
+								style="width: 80%" class="form-control" type="text" maxlength=""
+								value="" name="desc_produto">
+						</div>
+					</div>
+					<div class="col-xs-5 col-sm-5 col-md-5 col-lg-5" align="left">
+						<button class="btn btn-primary " type="button" id="btn_filtrar2">Filtrar</button>
+						&nbsp; &nbsp;
+						<button class="btn btn-primary " type="button" id="btn_showlist">Voltar</button>
+					</div>
+
+
+				</div>
+
+
+				<br>
+
+				<div id="div_prodlista">
+					<div class="row ">
+						<div class="col-md-12 col-sm-12 col-xs-12">
+							<div class="x_panel">
+								<div class="x_title">
+									<div data-toggle="tooltip" style="display: inline"
+										title="Neste gráfico você consegue ver informações relacionadas aos pedidos mais e menos vendidos(você pode alterar o gráfico ao clicar na chave no topo direito), no canto superior direito da sessão você pode alterar o modo de apresentação do gráfico. Os dados são exibidos de acordo com os filtros aplicados.Para maiores detalhes em um produto especifico é possivel clicar em sua respectiva coluna ou período (Ex:Cerveja Keineken 350ml lata) no gráfico para ter acesso à uma visão mais detalhada por produto.">
+										<h2 id="dashVendaProdsQtd_title">Produtos mais vendidos</h2>
+										<span class="glyphicon glyphicon-question-sign help_icon"></span>
+									</div>
+
+									<ul class="nav navbar-right panel_toolbox">
+										<li><a class="collapse-link"><i
+												class="fa fa-chevron-up"></i></a></li>
+										<li class="dropdown"><a href="#" class="dropdown-toggle"
+											data-toggle="dropdown" role="button" aria-expanded="false"><i
+												class="fa fa-wrench"></i></a>
+											<ul class="dropdown-menu" role="menu">
+												<li><a href="#" onClick="dashVendaProdsQtd('+')">
+														Mais vendidos</a></li>
+												<li><a href="#" onClick="dashVendaProdsQtd('-')">Menos
+														vendidos</a></li>
+											</ul></li>
+
+									</ul>
+									<div class="clearfix"></div>
+								</div>
+								<div class="x_content">
+									<div id="dash_vendasprod" style="height: 500px;"></div>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="row ">
+						<div class="col-md-12 col-sm-12 col-xs-12">
+							<div class="x_panel">
+								<div class="x_title">
+									<div data-toggle="tooltip" style="display: inline"
+										title="Neste gráfico você consegue ver informações relacionadas aos pedidos com maior e menor faturamento(você pode alterar o gráfico ao clicar na chave no topo direito), no canto superior direito da sessão você pode alterar o modo de apresentação do gráfico. Os dados são exibidos de acordo com os filtros aplicados.Para maiores detalhes em um produto especifico é possivel clicar em sua respectiva coluna ou período (Ex:Cerveja Keineken 350ml lata) no gráfico para ter acesso à uma visão mais detalhada por produto.">
+										<h2 id="dashVendaProdsQtd_title">Produtos com mais
+											faturamento</h2>
+										<span class="glyphicon glyphicon-question-sign help_icon"></span>
+									</div>
+									<ul class="nav navbar-right panel_toolbox">
+										<li><a class="collapse-link"><i
+												class="fa fa-chevron-up"></i></a></li>
+										<li class="dropdown"><a href="#" class="dropdown-toggle"
+											data-toggle="dropdown" role="button" aria-expanded="false"><i
+												class="fa fa-wrench"></i></a>
+											<ul class="dropdown-menu" role="menu">
+												<li><a onClick="dashVendaProdsVal('+')" href="#">Maior
+														faturamento</a></li>
+												<li><a onClick="dashVendaProdsVal('-')" href="#">Menor
+														faturamento</a></li>
+											</ul></li>
+
+									</ul>
+									<div class="clearfix"></div>
+								</div>
+								<div class="x_content">
+									<div id="dash_vendasprodval" style="height: 500px;"></div>
+								</div>
+							</div>
+						</div>
+					</div>
+
+				</div>
+				<div id="div_produnico">
+					<div class="row ">
+						<div class="col-md-12 col-sm-12 col-xs-12">
+
+							<div class="x_panel ">
+								<div class="x_title">
+
+									<div data-toggle="tooltip" style="display: inline" title="Nesta seção você encontra informações gerais relacionadas ao produto escolhido e aos filtros aplicados.">
+										<h2>Informações Gerais - Produto</h2>
+										<span class="glyphicon glyphicon-question-sign help_icon"></span>
+									</div>
+
+									<ul class="nav navbar-right panel_toolbox">
+										<li><a class="collapse-link"><i
+												class="fa fa-chevron-up"></i></a></li>
+									</ul>
+									<div class="clearfix"></div>
+								</div>
+								<div class="x_content">
+									<div class="row ">
+										<div class="col-md-4 col-sm-4 col-xs-4">
+											<label for="">Quantidade vendida</label>
+											<div class="form-group">
+												<input type="text" readonly="readonly"
+													class="form-control field_dash" id="lbldash_qtdprod" />
+											</div>
+										</div>
+										<div class="col-md-4 col-sm-4 col-xs-4">
+											<label for="">Valor total faturado</label>
+											<div class="form-group">
+												<input type="text" readonly="readonly"
+													class="form-control field_dash" id="lbldash_valtotalprod" />
+
+											</div>
+										</div>
+										<div class="col-md-4 col-sm-4 col-xs-4">
+											<label for="">Média por dia (Unidades)</label>
+											<div class="form-group">
+												<input type="text" readonly="readonly"
+													class="form-control field_dash" id="lbldash_mediaprod" />
+
+											</div>
+										</div>
+									</div>
+									<div class="row ">
+										<div class="col-md-4 col-sm-4 col-xs-4">
+											<label for="">Valor unitário atual</label>
+											<div class="form-group">
+												<input type="text" readonly="readonly"
+													class="form-control field_dash" id="lbldash_valatual" />
+											</div>
+										</div>
+										<div class="col-md-4 col-sm-4 col-xs-4">
+											<label for="">Situação</label>
+											<div class="form-group">
+												<input type="text" readonly="readonly"
+													class="form-control field_dash" id="lbldash_prodsit" />
+
+											</div>
+										</div>
+									</div>
+
+								</div>
+							</div>
+						</div>
+					</div>
+
+					<div class="row">
+						<div class="col-md-12 col-sm-12 col-xs-12 col-lg-6">
+							<div class="x_panel">
+								<div class="x_title">
+									<div data-toggle="tooltip" style="display: inline"
+										title="Neste gráfico você consegue ver informações relacionadas à quantidade e faturamento de venda do produto por horário(você pode alterar o gráfico ao clicar na chave no topo direito), no canto superior direito da sessão você pode alterar o modo de apresentação do gráfico. Os dados são exibidos de acordo com os filtros aplicados e o produto selecionado.">
+										<h2>Quantidade por horário</h2>
+										<span class="glyphicon glyphicon-question-sign help_icon"></span>
+									</div>
+
+									<ul class="nav navbar-right panel_toolbox">
+										<li><a class="collapse-link"><i
+												class="fa fa-chevron-up"></i></a></li>
+										<li class="dropdown"><a href="#" class="dropdown-toggle"
+											data-toggle="dropdown" role="button" aria-expanded="false"><i
+												class="fa fa-wrench"></i></a>
+											<ul class="dropdown-menu" role="menu">
+												<li><a onClick="dashProdHora_single('qtd')" href="#">Quantidade</a></li>
+												<li><a onClick="dashProdHora_single('valor')" href="#">Faturamento</a></li>
+											</ul></li>
+
+									</ul>
+									<div class="clearfix"></div>
+								</div>
+								<div class="x_content" id="dash_prodhora_holder"></div>
+									<br> <label style="color: red">*Este gráfico não é
+									afetado pelo seguinte filtro: Hora Inicial e Final
+									</label>
+							</div>
+						</div>
+						<div class="col-md-12 col-sm-12 col-xs-12 col-lg-6">
+							<div class="x_panel">
+								<div class="x_title">
+									<div data-toggle="tooltip" style="display: inline"
+										title="Neste gráfico você consegue ver informações relacionadas à quantidade e faturamento de venda do produto por dia da semana(você pode alterar o gráfico ao clicar na chave no topo direito), no canto superior direito da sessão você pode alterar o modo de apresentação do gráfico. Os dados são exibidos de acordo com os filtros aplicados e o produto selecionado.">
+										<h2>Quantidade por dia</h2>
+										<span class="glyphicon glyphicon-question-sign help_icon"></span>
+									</div>
+
+									<ul class="nav navbar-right panel_toolbox">
+										<li><a class="collapse-link"><i
+												class="fa fa-chevron-up"></i></a></li>
+										<li class="dropdown"><a href="#" class="dropdown-toggle"
+											data-toggle="dropdown" role="button" aria-expanded="false"><i
+												class="fa fa-wrench"></i></a>
+											<ul class="dropdown-menu" role="menu">
+												<li><a onClick="dashProdDiaSingle('qtd')" href="#">Quantidade</a></li>
+												<li><a onClick="dashProdDiaSingle('val')" href="#">Faturamento</a></li>
+											</ul></li>
+
+									</ul>
+									<div class="clearfix"></div>
+								</div>
+								<div class="x_content" id="dash_proddia_holder"></div>
+									<br> <label style="color: red">*Este gráfico não é
+									afetado pelo seguinte filtro: Dia da semana
+									</label>
+							</div>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col-md-12 col-sm-12 col-xs-12">
+							<div class="x_panel">
+								<div class="x_title">
+								<div data-toggle="tooltip" style="display: inline"
+										title="Neste gráfico você consegue ver informações relacionadas à quantidade e faturamento de venda do produto por local(você pode alterar o gráfico ao clicar na chave no topo direito), no canto superior direito da sessão você pode alterar o modo de apresentação do gráfico. Os dados são exibidos de acordo com os filtros aplicados e o produto selecionado.">
+											<h2>Quantidade por local</h2>
+										<span class="glyphicon glyphicon-question-sign help_icon"></span>
+									</div>
+									<ul class="nav navbar-right panel_toolbox">
+										<li><a class="collapse-link"><i
+												class="fa fa-chevron-up"></i></a></li>
+										<li class="dropdown"><a href="#" class="dropdown-toggle"
+											data-toggle="dropdown" role="button" aria-expanded="false"><i
+												class="fa fa-wrench"></i></a>
+											<ul class="dropdown-menu" role="menu">
+												<li><a onClick="dashProdBairroSingle('qtd')" href="#">Quantidade</a></li>
+												<li><a onClick="dashProdBairroSingle('val')" href="#">Faturamento</a></li>
+											</ul></li>
+
+									</ul>
+									<div class="clearfix"></div>
+								</div>
+								<div class="x_content">
+									<div id="dash_prodbairro" style="min-height: 800px;"></div>
+									<br> <label style="color: red">*Este gráfico não é
+										afetado pelos seguintes filtros: Bairro.</label>
+								</div>
+							</div>
+						</div>
+					</div>
+
+				</div>
+
+			</div>
+		</div>
+
+	</div>
+
+	<div id="modal_dashdias" class="modal fade" tabindex="-1" role="dialog">
+		<div class="modal-dialog modal-admin " role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal"
+						aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+					<h4 id="dash_diastitle" class="modal-title"></h4>
+				</div>
+				<div class="modal-body">
+					<div class="row">
+						<div class="col-md-12 col-sm-12 col-xs-12">
+							<div class="x_panel">
+								<div class="x_title">
+									<ul class="nav navbar-right panel_toolbox">
+										<li><a class="collapse-link"><i
+												class="fa fa-chevron-up"></i></a></li>
+										<li class="dropdown"><a href="#" class="dropdown-toggle"
+											data-toggle="dropdown" role="button" aria-expanded="false"><i
+												class="fa fa-wrench"></i></a>
+											<ul class="dropdown-menu" role="menu">
+												<li><a onClick="dashDia('qtd')" href="#">Quantidade</a></li>
+												<li><a onClick="dashDia('val')" href="#">Faturamento</a></li>
+											</ul></li>
+
+									</ul>
+									<div class="clearfix"></div>
+								</div>
+								<div class="x_content">
+									<div align="center">
+										<table>
+											<tr>
+												<td style="padding-right: 15px"><div
+														style='height: 10px; width: 10px; background-color: #9B59B6; color: #9B59B6; display: inline; border-radius: 5px'>&nbsp;()</div>
+													Pedidos</td>
+												<td style="padding-right: 15px"><div
+														style='height: 10px; width: 10px; background-color: #26B99A; color: #26B99A; display: inline; border-radius: 5px'>&nbsp;()</div>
+													Entregas</td>
+												<td style="padding-right: 15px"><div
+														style='height: 10px; width: 10px; background-color: #3498DB; color: #3498DB; display: inline; border-radius: 5px'>&nbsp;()</div>
+													Retiradas</td>
+											</tr>
+										</table>
+									</div>
+									<div id="dash_dias" style="min-height: 500px;"></div>
+									<br> <label style="color: red">*Este gráfico não é
+										afetado pelos seguintes filtros: Período Inicial e Final,
+										Serviço.</label>
+
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-primary" data-dismiss="modal">Fechar</button>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<input id="sys_formatador" type="hidden">
+<input id="sys_formatador2" type="hidden">
+<input id="descdataday" type="hidden">
+
+</html>
+
+
+
+
+

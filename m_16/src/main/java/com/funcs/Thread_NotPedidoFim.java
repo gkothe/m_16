@@ -95,12 +95,12 @@ public class Thread_NotPedidoFim extends Thread {
 					data.put("id_ped_fim", rs.getString("ID_PEDIDO"));
 					data.put("num_ped_fim", rs.getString("NUM_PED"));
 
-					String endereço = rs.getString("DESC_ENDERECO_ENTREGA") == null ? "" : rs.getString("DESC_ENDERECO_ENTREGA");
+					String endereco = rs.getString("DESC_ENDERECO_ENTREGA") == null ? "" : rs.getString("DESC_ENDERECO_ENTREGA");
 					String num = rs.getString("DESC_ENDERECO_NUM_ENTREGA") == null ? "" : rs.getString("DESC_ENDERECO_NUM_ENTREGA");
 					String compl = rs.getString("DESC_ENDERECO_COMPLEMENTO_ENTREGA") == null ? "" : rs.getString("DESC_ENDERECO_COMPLEMENTO_ENTREGA");
 					String bairro = Utilitario.getNomeBairro(conn, rs.getInt("cod_bairro"), 0);
 
-					String endfinal = endereço + ", " + num + " " + compl + ", " + bairro + "";
+					String endfinal = endereco + ", " + num + " " + compl + ", " + bairro + "";
 
 					Utilitario.oneSginal(sys, rs.getString("mail"), "Você recebeu o pedido no endereço " + endfinal + "? Por favor nos informe!", data);
 
@@ -113,7 +113,7 @@ public class Thread_NotPedidoFim extends Thread {
 
 		} catch (Exception e) {
 			e.printStackTrace();
-			// TODO: handle exception
+			// TODO: handle exception  
 		}
 
 	}
