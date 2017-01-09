@@ -67,7 +67,7 @@
 							<img id="lbl_logomenu" src="" style="width: 65px" alt="...">
 						</div>
 						<div class="profile_info">
-							<span>Distribuidora,</span>
+							<span>Loja,</span>
 							<h2>
 								<label id="lbl_descfanta"></label>
 							</h2>

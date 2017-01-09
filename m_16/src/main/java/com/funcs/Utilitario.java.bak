@@ -837,7 +837,7 @@ public class Utilitario {
 			conn = Conexao.getConexao();
 			Sys_parametros sys = new Sys_parametros(conn);
 			
-		//	renamefiles();
+			renamefiles();
 			
 			// oneSginal(sys, "g.kothe@hotmail.com", "aaaa", new JSONObject());
 			// oneSginal(sys, "morratu@hotmail.com", "aaaa", new JSONObject());

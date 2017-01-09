@@ -781,7 +781,7 @@ public class Utilitario {
 		outputStream.write(sendBytes);
 
 		int httpResponse = con.getResponseCode();
-		// System.out.println("httpResponse: " + httpResponse);
+		 System.out.println("httpResponse: " + httpResponse);
 
 		if (httpResponse >= HttpURLConnection.HTTP_OK && httpResponse < HttpURLConnection.HTTP_BAD_REQUEST) {
 			Scanner scanner = new Scanner(con.getInputStream(), "UTF-8");
@@ -792,7 +792,7 @@ public class Utilitario {
 			jsonResponse = scanner.useDelimiter("\\A").hasNext() ? scanner.next() : "";
 			scanner.close();
 		}
-		// System.out.println("jsonResponse:\n" + jsonResponse);
+		 System.out.println("jsonResponse:\n" + jsonResponse);
 
 	}
 
