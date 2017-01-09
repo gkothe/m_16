@@ -1298,9 +1298,9 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 		sql.append(" on produtos_distribuidora.id_prod = produtos.id_prod ");
 		sql.append(" inner join distribuidora ");
 		sql.append(" on produtos_distribuidora.id_distribuidora = distribuidora.id_distribuidora ");
-		sql.append(" inner join distribuidora_bairro_entrega ");
+		sql.append(" left join distribuidora_bairro_entrega ");
 		sql.append(" on distribuidora_bairro_entrega.id_distribuidora = distribuidora.id_distribuidora ");
-		sql.append(" inner join distribuidora_horario_dia_entre ");
+		sql.append(" left join distribuidora_horario_dia_entre ");
 		sql.append(" on distribuidora_horario_dia_entre.id_distr_bairro   = distribuidora_bairro_entrega.id_distr_bairro ");
 		sql.append("  ");
 		sql.append(" left join carrinho ");

@@ -390,7 +390,7 @@ public class Parametros_ajax {
 			throw new Exception("Dados inválidos, entre em contato com o suporte.");
 		}
 
-		if (desc_endereco.equalsIgnoreCase("") || desc_complemento.equalsIgnoreCase("") || cod_bairro_distr.equalsIgnoreCase("")) {
+		if (desc_endereco.equalsIgnoreCase("") || desc_num.equalsIgnoreCase("") || cod_bairro_distr.equalsIgnoreCase("")) {
 			throw new Exception("Dados de endereço, entre em contato com o suporte.");
 		}
 
