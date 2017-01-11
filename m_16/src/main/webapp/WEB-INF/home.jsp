@@ -87,13 +87,14 @@
 										class="fa fa-home clickmenu2"></i> Pedidos <span
 										class="fa fa-chevron-down clickmenu"></span></a>
 									<ul class="nav child_menu">
-										<li><a linkmenu="inserirpedido"
-											onMouseup="trocaPag(this,'N',event);" class="clickmenu">Inserir
-												pedido</a></li>
+										
 										<li><a linkmenu="listaped"
 											onMouseup="trocaPag(this,'N',event);" class="clickmenu">Abertos</a></li>
 										<li><a linkmenu="listapedfechado"
 											onMouseup="trocaPag(this,'N',event);" class="clickmenu">Histórico</a></li>
+										<li><a linkmenu="inserirpedido"
+											onMouseup="trocaPag(this,'N',event);" class="clickmenu">Inserir
+												pedido</a></li>
 									</ul></li>
 								<li><a class="clickmenu2"><i
 										class="fa fa-gear clickmenu2"></i> Parâmetros <span
@@ -811,10 +812,10 @@
 
 								<div class="col-xs-3 col-sm-3 col-md-3 col-lg-3 " align="right">
 									<div id="div_responder">
-										<button type="button" id="m_responder" class="btn btn-primary">Responder</button>
+										<button type="button" id="m_responder" class="btn btn-success">Responder</button>
 									</div>
 									<div id="div_finalizar">
-										<button type="button" id="m_finalizar" class="btn btn-primary">Finalizar</button>
+										<button type="button" id="m_finalizar" class="btn btn-danger">Mover para histórico</button>
 									</div>
 
 								</div>

@@ -328,7 +328,7 @@ function limpaModal() {
 	$("#desc_motivos2").html("");
 	$("#m_flag_pedido_ret_entre").val("");
 	$("#m_data_cancelamento").html("");
-	$("#m_finalizar").html("Finalizar");
+	$("#m_finalizar").html("Mover para histórico");
 	testaAceitaRecusa();
 
 }
@@ -812,7 +812,7 @@ function visualizarPedido(id) {
 			$("#table_enderaberto").hide();
 			$(".cancelamento").hide();
 			
-			$("#m_finalizar").html("Finalizar");
+			$("#m_finalizar").html("Mover para histórico");
 			$("#m_tempo_max_lbl").html("Tempo máximo desejado para a entrega");
 			audio.pause();
 			audio.currentTime = 0;

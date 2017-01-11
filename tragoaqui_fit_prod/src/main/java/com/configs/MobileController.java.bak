@@ -37,7 +37,6 @@ import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.taglibs.standard.lang.jstl.ELException;
-import org.jfree.base.modules.SubSystem;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
@@ -511,8 +510,6 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 
 		JSONObject objRetorno = new JSONObject();
 
-		Sys_parametros sys = new Sys_parametros(conn);
-		
 		String desc_email = request.getParameter("c_email") == null ? "" : request.getParameter("c_email");
 
 		if (desc_email.equalsIgnoreCase("")) {
@@ -525,7 +522,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 
 		if (rs.next()) {
 			String texto = " Olá,<br> Conforme solicitado, seguem abaixo seus dados de usuário:<br> Usuário: " + rs.getString("desc_user") + " <br> Senha: " + rs.getString("desc_senha");
-			Utilitario.sendEmail(desc_email, texto, sys.getSys_fromdesc()+ " - Recuperação de usuario e senha", conn);
+			Utilitario.sendEmail(desc_email, texto, "TragoAqui - Recuperação de usuario e senha", conn);
 			objRetorno.put("msg", "ok");
 
 		} else {
@@ -609,12 +606,9 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 
 		st.executeUpdate();
 
+		String texto = "Olá, <br>  Bem vindo ao TragoAqui, para validar sua conta clique <a href='" + sys.getUrl_system() + "mobile?ac=validar&token=" + validacao + "'> AQUI </a> e você estará pronto para utilizar nossos serviços. <br> Suas informações de login são: <br> Usuário: " + desc_usuario + " <br> Senha: " + desc_senha;
 
-		
-		
-		String texto = "Olá, <br>  Bem vindo ao "+sys.getSys_fromdesc()+", para validar sua conta clique <a href='" + sys.getUrl_system() + "mobile?ac=validar&token=" + validacao + "'> AQUI </a> e você estará pronto para utilizar nossos serviços. <br> Suas informações de login são: <br> Usuário: " + desc_usuario + " <br> Senha: " + desc_senha;
-
-		Utilitario.sendEmail(desc_email, texto, sys.getSys_fromdesc() + " - Criação de conta!", conn);
+		Utilitario.sendEmail(desc_email, texto, "TragoAqui - Criação de conta!", conn);
 
 		objRetorno.put("msg", "ok");
 
@@ -685,7 +679,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 				st2.setString(1, te_email);
 				ResultSet rs2 = st2.executeQuery();
 				if (rs2.next()) {
-					throw new Exception("Este E-mail já esta sendo usado no "+sys.getSys_fromdesc()+"");
+					throw new Exception("Este E-mail já esta sendo usado no TragoAqui");
 				}
 
 				String validacao = Utilitario.StringGen(1000, 32).substring(0, 99);
@@ -698,10 +692,10 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 
 				st.executeUpdate();
 
-				String texto = " Olá, <br> Foi solicitada uma alteração de email na sua conta "+sys.getSys_fromdesc()+", clique <a href='" + sys.getUrl_system() + "mobile?ac=validarEmail&token=" + validacao + "' > AQUI </a> para confirmar. ";
+				String texto = " Olá, <br> Foi solicitada uma alteração de email na sua conta TragoAqui, clique <a href='" + sys.getUrl_system() + "mobile?ac=validarEmail&token=" + validacao + "' > AQUI </a> para confirmar. ";
 				texto = texto + " Caso você não tenha solicitou este e-mail, sugerimos que troque sua senha ou contate-nos. ";
 
-				Utilitario.sendEmail(te_email, texto, sys.getSys_fromdesc()+" - Alteração de Email", conn);
+				Utilitario.sendEmail(te_email, texto, "TragoAqui - Alteração de Email", conn);
 				objRetorno.put("msg", "ok");
 			}
 

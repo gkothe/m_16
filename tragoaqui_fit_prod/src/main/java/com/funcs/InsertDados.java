@@ -238,6 +238,7 @@ public class InsertDados {
 			}
 
 			conn.commit();
+			conn.close();
 		} catch (Exception e) {
 			e.printStackTrace();
 			try {
@@ -422,6 +423,7 @@ public class InsertDados {
 			 */
 
 			conn.commit();
+			conn.close();
 		} catch (Exception e) {
 			e.printStackTrace();
 			try {
@@ -606,6 +608,7 @@ public class InsertDados {
 			 */
 
 			conn.commit();
+			conn.close();
 		} catch (Exception e) {
 			e.printStackTrace();
 			try {
@@ -625,10 +628,10 @@ public class InsertDados {
 		// randomValuesProds(1);
 		// randomValuesProds(2);
 		// insertRandomPeds(1, 17, "2016-01-01 00:00:00", "2016-10-31 23:59:59", 500);
-		 insertRandomPeds(1, 28, "2015-01-01 00:00:00", "2016-10-31 23:59:59", 500);
-		 insertRandomPeds(1, 28, "2015-01-01 00:00:00", "2016-10-31 23:59:59", 500);
-		 insertRandomPeds(1, 28, "2015-01-01 00:00:00", "2016-10-31 23:59:59", 500);
-		 insertRandomPeds(1, 28, "2016-01-01 00:00:00", "2016-10-31 23:59:59", 500);
+		 insertRandomPeds(1, 27, "2015-01-01 00:00:00", "2016-10-31 23:59:59", 500);
+		 insertRandomPeds(1, 27, "2015-01-01 00:00:00", "2016-10-31 23:59:59", 500);
+		 insertRandomPeds(1, 27, "2015-01-01 00:00:00", "2016-10-31 23:59:59", 500);
+		 insertRandomPeds(1, 27, "2016-01-01 00:00:00", "2016-10-31 23:59:59", 500);
 		// insertRandomPeds(1, 17, "2016-01-01 00:00:00", "2016-10-31 23:59:59", 500);
 		// insertRandomPeds(1, 17, "2016-01-01 00:00:00", "2016-10-31 23:59:59", 500);
 //		   insertRandomPedsAberto(1, 17, "2016-12-6 8:45:00", "2016-12-6 8:58:00", 10); 

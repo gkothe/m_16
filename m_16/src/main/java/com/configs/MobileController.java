@@ -37,6 +37,7 @@ import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.taglibs.standard.lang.jstl.ELException;
+import org.jfree.base.modules.SubSystem;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
@@ -84,13 +85,13 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 
 		try {
 
-//			System.out.println("----------entro mob");
-//
-//			Map map = request.getParameterMap();
-//			for (Iterator iterator = map.keySet().iterator(); iterator.hasNext();) {
-//				String type = (String) iterator.next();
-//				System.out.println(type + " : " + request.getParameter(type));
-//			}
+			// System.out.println("----------entro mob");
+			//
+			// Map map = request.getParameterMap();
+			// for (Iterator iterator = map.keySet().iterator(); iterator.hasNext();) {
+			// String type = (String) iterator.next();
+			// System.out.println(type + " : " + request.getParameter(type));
+			// }
 
 			String strTipo = request.getParameter("ac"); // acho que aqui soh vai ter ajax, mas vo dexa assim por enqto.
 			if (strTipo == null) {
@@ -382,11 +383,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 		PreparedStatement st = conn.prepareStatement(varname1.toString());
 		st.setLong(1, cod_usuario);
 		ResultSet rs = st.executeQuery();
-		
-		
 
-
-		
 		if (rs.next()) {
 
 			StringBuffer varname11 = new StringBuffer();
@@ -514,6 +511,8 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 
 		JSONObject objRetorno = new JSONObject();
 
+		Sys_parametros sys = new Sys_parametros(conn);
+		
 		String desc_email = request.getParameter("c_email") == null ? "" : request.getParameter("c_email");
 
 		if (desc_email.equalsIgnoreCase("")) {
@@ -526,7 +525,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 
 		if (rs.next()) {
 			String texto = " Olá,<br> Conforme solicitado, seguem abaixo seus dados de usuário:<br> Usuário: " + rs.getString("desc_user") + " <br> Senha: " + rs.getString("desc_senha");
-			Utilitario.sendEmail(desc_email, texto, "TragoAqui - Recuperação de usuario e senha", conn);
+			Utilitario.sendEmail(desc_email, texto, sys.getSys_fromdesc()+ " - Recuperação de usuario e senha", conn);
 			objRetorno.put("msg", "ok");
 
 		} else {
@@ -610,9 +609,12 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 
 		st.executeUpdate();
 
-		String texto = "Olá, <br>  Bem vindo ao TragoAqui, para validar sua conta clique <a href='" + sys.getUrl_system() + "mobile?ac=validar&token=" + validacao + "'> AQUI </a> e você estará pronto para utilizar nossos serviços. <br> Suas informações de login são: <br> Usuário: " + desc_usuario + " <br> Senha: " + desc_senha;
+		
+		
+		
+		String texto = "Olá, <br>  Bem vindo ao "+sys.getSys_fromdesc()+", para validar sua conta clique <a href='" + sys.getUrl_system() + "mobile?ac=validar&token=" + validacao + "'> AQUI </a> e você estará pronto para utilizar nossos serviços. <br> Suas informações de login são: <br> Usuário: " + desc_usuario + " <br> Senha: " + desc_senha;
 
-		Utilitario.sendEmail(desc_email, texto, "TragoAqui - Criação de conta!", conn);
+		Utilitario.sendEmail(desc_email, texto, sys.getSys_fromdesc() + " - Criação de conta!", conn);
 
 		objRetorno.put("msg", "ok");
 
@@ -683,7 +685,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 				st2.setString(1, te_email);
 				ResultSet rs2 = st2.executeQuery();
 				if (rs2.next()) {
-					throw new Exception("Este E-mail já esta sendo usado no TragoAqui");
+					throw new Exception("Este E-mail já esta sendo usado no "+sys.getSys_fromdesc()+"");
 				}
 
 				String validacao = Utilitario.StringGen(1000, 32).substring(0, 99);
@@ -696,10 +698,10 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 
 				st.executeUpdate();
 
-				String texto = " Olá, <br> Foi solicitada uma alteração de email na sua conta TragoAqui, clique <a href='" + sys.getUrl_system() + "mobile?ac=validarEmail&token=" + validacao + "' > AQUI </a> para confirmar. ";
+				String texto = " Olá, <br> Foi solicitada uma alteração de email na sua conta "+sys.getSys_fromdesc()+", clique <a href='" + sys.getUrl_system() + "mobile?ac=validarEmail&token=" + validacao + "' > AQUI </a> para confirmar. ";
 				texto = texto + " Caso você não tenha solicitou este e-mail, sugerimos que troque sua senha ou contate-nos. ";
 
-				Utilitario.sendEmail(te_email, texto, "TragoAqui - Alteração de Email", conn);
+				Utilitario.sendEmail(te_email, texto, sys.getSys_fromdesc()+" - Alteração de Email", conn);
 				objRetorno.put("msg", "ok");
 			}
 
@@ -2490,6 +2492,10 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 		if (id_proddistr.equalsIgnoreCase("0")) {
 			throw new Exception("Produto inválido!");
 		}
+		
+		if(Integer.parseInt(qtd)>10000){
+			throw new Exception("Você não pode adicionar mais de 10.000 unidades de um produto no seu carrinho!");
+		}
 
 		StringBuffer sql = new StringBuffer();
 		sql.append("SELECT id_carrinho from carrinho where id_usuario = ? ");
@@ -3172,12 +3178,25 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 
 		}
 
+		StringBuffer sql = new StringBuffer();
+		sql.append("select * from pedido where now() between (select  max(data_pedido) from pedido where id_usuario = ?) and DATE_ADD(data_pedido, INTERVAL 30 second)");
+
+		PreparedStatement st = conn.prepareStatement(sql.toString());
+
+		st.setLong(1, (cod_usuario));
+		ResultSet rs = st.executeQuery();
+		if(rs.next()){
+			throw new Exception("Você deve esperar 30 segs após a realização de um pedido para fazer outro pedido!");
+		}
+		
+		
+
 		if (choiceserv.equalsIgnoreCase("T"))
 			testesMudaBairroCarrinho(request, response, conn, cod_usuario, bairro, choiceserv, false);
 
 		long idcarrinho = 0;
 
-		StringBuffer sql = new StringBuffer();
+		sql = new StringBuffer();
 		sql.append("select usuario.desc_email, usuario. desc_nome, carrinho_item.id_carrinho,distribuidora.id_distribuidora,carrinho.cod_bairro,usuario.desc_telefone,usuario.desc_endereco,desc_endereco_num,desc_endereco_complemento,sum(produtos_distribuidora.val_prod * carrinho_item.qtd ) as val_prod, ");
 		sql.append("  ");
 		sql.append("case when flag_telebairro = 'S' then distribuidora_bairro_entrega.val_tele_entrega else distribuidora.val_tele_entrega end as val_tele_entrega ");
@@ -3209,11 +3228,11 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 		sql.append(" ");
 		sql.append("group by usuario.desc_email, usuario. desc_nome, carrinho_item.id_carrinho,distribuidora_bairro_entrega.id_distribuidora,carrinho.cod_bairro,usuario.desc_telefone,usuario.desc_endereco,desc_endereco_num,desc_endereco_complemento, val_tele_entrega");
 
-		PreparedStatement st = conn.prepareStatement(sql.toString());
+		st = conn.prepareStatement(sql.toString());
 		PreparedStatement st2 = null;
 
 		st.setLong(1, (cod_usuario));
-		ResultSet rs = st.executeQuery();
+		rs = st.executeQuery();
 		ResultSet rs2 = null;
 		long idped = 0;
 		String email = "";

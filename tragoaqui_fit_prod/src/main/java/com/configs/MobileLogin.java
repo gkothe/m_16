@@ -38,7 +38,7 @@ public class MobileLogin {
 
 	private static long tempotoken = 604800000; // 1 semana ou 1 mes, nao lembro
 
-	public static void loginMobile(HttpServletRequest request, HttpServletResponse response, Connection conn, String user, String pass,Sys_parametros sys) throws Exception {
+	public static void loginMobile(HttpServletRequest request, HttpServletResponse response, Connection conn, String user, String pass, Sys_parametros sys) throws Exception {
 
 		PrintWriter out = response.getWriter();
 
@@ -55,18 +55,25 @@ public class MobileLogin {
 			objRetorno.put("msg", "ok");
 			MobileLogin mob = new MobileLogin();
 			objRetorno.put("token", mob.criaToken(user, pass, tempotoken, conn));//
-			objRetorno.put("maioridade", rs.getString("maior18").equalsIgnoreCase("")?"N":rs.getString("maior18"));//
+			if (sys.getIgnorar_regramaior18().equalsIgnoreCase("S")) {
+				objRetorno.put("maioridade", "S");//
+			} else {
+				objRetorno.put("maioridade", rs.getString("maior18").equalsIgnoreCase("") ? "N" : rs.getString("maior18"));//
+			}
+
 			objRetorno.put("email", rs.getString("DESC_EMAIL"));//
-			if(rs.getLong("id_usuario")==sys.getId_usuario_admin()){
-				objRetorno.put("usrtype","admin" );//
-			}else if(rs.getLong("id_usuario")==sys.getSys_id_visistante()){
-				objRetorno.put("usrtype","visitante" );//
-				objRetorno.put("maioridade", "N");//
-			}else{
-				objRetorno.put("usrtype","user" );//
-			} 
-			
-			
+			if (rs.getLong("id_usuario") == sys.getId_usuario_admin()) {
+				objRetorno.put("usrtype", "admin");//
+			} else if (rs.getLong("id_usuario") == sys.getSys_id_visistante()) {
+				objRetorno.put("usrtype", "visitante");
+				if (sys.getIgnorar_regramaior18().equalsIgnoreCase("S")) {
+					objRetorno.put("maioridade", "S");//
+				} else {//
+					objRetorno.put("maioridade", "N");//
+				}
+			} else {
+				objRetorno.put("usrtype", "user");//
+			}
 
 		} else {
 			objRetorno.put("erro", "Login inválido!");
@@ -89,7 +96,7 @@ public class MobileLogin {
 
 		// validacao1
 		String url = "https://graph.facebook.com/v2.3/oauth/access_token?client_id=" + sys.getFACE_APP_ID() + "&redirect_uri=" + sys.getFACE_REDIRECT_URI() + "&client_secret=" + sys.getFACE_APP_SECRETKEY() + "&code=" + code;
-		
+
 		URL obj = new URL(url);
 		HttpURLConnection con = (HttpURLConnection) obj.openConnection();
 
@@ -158,16 +165,24 @@ public class MobileLogin {
 			atualizaFaceUser(request, response, tokentest, conn, sys, userid);
 			objRetorno.put("token", mob.criaToken(rs.getString("desc_user"), rs.getString("desc_senha"), tempotoken, conn));//
 			objRetorno.put("name", rs.getString("desc_nome").split(" ")[0]);
-			objRetorno.put("usrtype","user" );//
-			objRetorno.put("maioridade", rs.getString("maior18").equalsIgnoreCase("")?"N":rs.getString("maior18"));//
+			objRetorno.put("usrtype", "user");//
+			if (sys.getIgnorar_regramaior18().equalsIgnoreCase("S")) {
+				objRetorno.put("maioridade", "S");//
+			} else {
+				objRetorno.put("maioridade", rs.getString("maior18").equalsIgnoreCase("") ? "N" : rs.getString("maior18"));//
+			}
 			objRetorno.put("email", rs.getString("desc_email"));//
 		} else {
 
 			JSONObject info = cadastrausuario(request, response, tokentest, conn, sys);
 			objRetorno.put("token", mob.criaToken(info.get("user").toString(), info.get("pass").toString(), tempotoken, conn));//
 			objRetorno.put("name", info.get("name").toString());
-			objRetorno.put("usrtype","user" );//
-			objRetorno.put("maioridade", "N");//
+			objRetorno.put("usrtype", "user");//
+			if (sys.getIgnorar_regramaior18().equalsIgnoreCase("S")) {
+				objRetorno.put("maioridade", "S");//
+			} else {
+				objRetorno.put("maioridade", "N");//
+			}
 			objRetorno.put("email", info.get("email"));//
 
 		}
@@ -176,8 +191,8 @@ public class MobileLogin {
 
 	}
 
-	private static void atualizaFaceUser(HttpServletRequest request, HttpServletResponse response, String tokentest, Connection conn, Sys_parametros sys,long useridface) throws Exception {
-		
+	private static void atualizaFaceUser(HttpServletRequest request, HttpServletResponse response, String tokentest, Connection conn, Sys_parametros sys, long useridface) throws Exception {
+
 		String url = "https://graph.facebook.com/me?fields=name,id,email&access_token=" + tokentest;
 		URL obj = new URL(url);
 		HttpURLConnection con = (HttpURLConnection) obj.openConnection();
@@ -205,19 +220,18 @@ public class MobileLogin {
 		String id = json.get("id").toString();
 		String email = json.get("email").toString();
 
-		
 		String sql = "update usuario set desc_email = ? ,  desc_nome= ?, desc_user = ?  where  id_user_face = ?  ";
 
-		PreparedStatement 	st = conn.prepareStatement(sql.toString());
+		PreparedStatement st = conn.prepareStatement(sql.toString());
 		st.setString(1, email);
 		st.setString(2, name);
 		st.setString(3, email);
 		st.setLong(4, Long.parseLong(id));
-				
+
 		st.executeUpdate();
-		
+
 	}
-	
+
 	private static JSONObject cadastrausuario(HttpServletRequest request, HttpServletResponse response, String tokentest, Connection conn, Sys_parametros sys) throws Exception {
 		JSONObject objjson = new JSONObject();
 
@@ -264,7 +278,7 @@ public class MobileLogin {
 			st.setString(4, "S");
 			st.setString(5, "");
 			st.setString(6, email);
-			
+
 			st.executeUpdate();
 
 			objjson.put("name", name.split(" ")[0]);
@@ -341,7 +355,7 @@ public class MobileLogin {
 		return builder.compact();
 	}
 
-	public static long parseJWT(HttpServletRequest request, HttpServletResponse response, Connection conn, String jwt,Sys_parametros sys) throws Exception {
+	public static long parseJWT(HttpServletRequest request, HttpServletResponse response, Connection conn, String jwt, Sys_parametros sys) throws Exception {
 
 		try {
 			Claims claims = Jwts.parser().setSigningKey(DatatypeConverter.parseBase64Binary(sys.getDesc_key())).parseClaimsJws(jwt).getBody();
@@ -356,7 +370,13 @@ public class MobileLogin {
 			ResultSet rs = st.executeQuery();
 			if (rs.next()) {
 				long codusuer = rs.getLong("id_usuario");
-				if(rs.getString("FLAG_ATIVADO").equalsIgnoreCase("v")){
+
+				sql = " update usuario set date_lastajax = now() where id_usuario = ? ";
+				st = conn.prepareStatement(sql.toString());
+				st.setLong(1, (codusuer));
+				st.executeUpdate();
+
+				if (rs.getString("FLAG_ATIVADO").equalsIgnoreCase("v")) {
 					return sys.getSys_id_visistante();
 				}
 				if (rs.wasNull()) {// acho que nao tem como isso acontecer, mas por via das duvida...
@@ -375,8 +395,7 @@ public class MobileLogin {
 		}
 
 	}
-	
-	
+
 	public static void validarEmailNovo(HttpServletRequest request, HttpServletResponse response) {
 		Connection conn = null;
 		boolean erro = false;
@@ -386,9 +405,7 @@ public class MobileLogin {
 			conn.setAutoCommit(false);
 
 			String token = request.getParameter("token") == null ? "" : request.getParameter("token");
-		
 
-		
 			if (!token.equalsIgnoreCase("")) {
 				msg = "Token inválido.";
 				erro = true;
@@ -419,8 +436,6 @@ public class MobileLogin {
 					erro = true;
 				}
 			}
-			
-		
 
 			conn.commit();
 		} catch (Exception e) {
@@ -436,27 +451,22 @@ public class MobileLogin {
 			}
 			erro = true;
 			msg = e.getMessage();
-			
+
 		}
-		
+
 		try {
-			
-			
+
 			if (erro)
 				request.setAttribute("erro", erro);
 			else
 				request.setAttribute("erro", erro);
-			
 
-			request.setAttribute("msg",msg);
+			request.setAttribute("msg", msg);
 			request.getRequestDispatcher("/WEB-INF/msg.jsp").forward(request, response);
 		} catch (Exception e2) {
 		}
-		
 
 	}
-
-	
 
 	public static void validarConta(HttpServletRequest request, HttpServletResponse response) {
 
@@ -490,7 +500,9 @@ public class MobileLogin {
 				st.setString(3, token);
 				st.executeUpdate();
 
-				msg = "Seu e-mail foi verificado e sua conta foi ativada. Você já pode logar no TragoAqui! :-)";
+				Sys_parametros sys = new Sys_parametros(conn);
+				
+				msg = "Seu e-mail foi verificado e sua conta foi ativada. Você já pode logar no "+sys.getSys_fromdesc()+"! :-)";
 				erro = false;
 			} else {
 				if (!token.equalsIgnoreCase("")) {
@@ -498,7 +510,7 @@ public class MobileLogin {
 					erro = true;
 				}
 			}
-			
+
 			if (erro)
 				request.setAttribute("erro", erro);
 			else

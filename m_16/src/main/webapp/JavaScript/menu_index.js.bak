@@ -812,7 +812,7 @@ function visualizarPedido(id) {
 			$("#table_enderaberto").hide();
 			$(".cancelamento").hide();
 			
-			$("#m_finalizar").html("Mover para histórico");
+			$("#m_finalizar").html("Finalizar");
 			$("#m_tempo_max_lbl").html("Tempo máximo desejado para a entrega");
 			audio.pause();
 			audio.currentTime = 0;

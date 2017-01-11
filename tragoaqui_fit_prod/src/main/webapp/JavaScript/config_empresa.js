@@ -558,6 +558,8 @@ function loadDados() {
 		},
 		success : function(data) {
 
+			
+			$("#cod_empresa").html(data[0].ID_DISTRIBUIDORA);
 			$("#cod_cidade").val(data[0].COD_CIDADE);
 			$("#desc_razaosocial").val(data[0].DESC_RAZAO_SOCIAL);
 			$("#desc_fantasia").val(data[0].DESC_NOME_ABREV);

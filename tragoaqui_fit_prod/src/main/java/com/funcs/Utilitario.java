@@ -110,7 +110,7 @@ public class Utilitario {
 
 	public static void sendEmail(String para, String html, String subject, Connection conn) throws Exception {
 		Sys_parametros sys = new Sys_parametros(conn);
-		String rodape = "<br><br> Equipe TragoAqui <br>";
+		String rodape = "<br><br> Equipe "+ sys.getSys_fromdesc()+" <br>";
 		rodape = rodape + ""+ sys.getSys_fromemail() + " <br>";
 		rodape = rodape + " {Facebook} <br>";
 		rodape = rodape + " {Número} <br>";

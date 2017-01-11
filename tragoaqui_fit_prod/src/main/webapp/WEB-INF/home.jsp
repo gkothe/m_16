@@ -87,13 +87,14 @@
 										class="fa fa-home clickmenu2"></i> Pedidos <span
 										class="fa fa-chevron-down clickmenu"></span></a>
 									<ul class="nav child_menu">
-										<li><a linkmenu="inserirpedido"
-											onMouseup="trocaPag(this,'N',event);" class="clickmenu">Inserir
-												pedido</a></li>
+										
 										<li><a linkmenu="listaped"
 											onMouseup="trocaPag(this,'N',event);" class="clickmenu">Abertos</a></li>
 										<li><a linkmenu="listapedfechado"
 											onMouseup="trocaPag(this,'N',event);" class="clickmenu">Histórico</a></li>
+										<li><a linkmenu="inserirpedido"
+											onMouseup="trocaPag(this,'N',event);" class="clickmenu">Inserir
+												pedido</a></li>
 									</ul></li>
 								<li><a class="clickmenu2"><i
 										class="fa fa-gear clickmenu2"></i> Parâmetros <span

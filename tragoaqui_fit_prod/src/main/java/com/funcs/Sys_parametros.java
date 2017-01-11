@@ -34,7 +34,16 @@ public class Sys_parametros {
 	int cod_cancelamentosys = 0; 
 	String path ="";
 	String desc_webappfolder ="";
+	String ignorar_regramaior18 ="";
 	
+
+	public String getIgnorar_regramaior18() {
+		return ignorar_regramaior18;
+	}
+
+	public void setIgnorar_regramaior18(String ignorar_regramaior18) {
+		this.ignorar_regramaior18 = ignorar_regramaior18;
+	}
 
 	public String getDesc_webappfolder() {
 		return desc_webappfolder;
@@ -287,7 +296,7 @@ public class Sys_parametros {
 				this.setNum_segs_not_final_exec(rs.getInt("num_segs_not_final_exec"));
 				this.setCod_cancelamentosys(rs.getInt("cod_cancelamentosys"));
 				this.setDesc_webappfolder(rs.getString("desc_webappfolder"));
-				
+				this.setIgnorar_regramaior18(rs.getString("ignorar_regramaior18"));
 				this.setPath(System.getProperty( "catalina.base" )+"/webapps/"+this.getDesc_webappfolder());
 				
 			}

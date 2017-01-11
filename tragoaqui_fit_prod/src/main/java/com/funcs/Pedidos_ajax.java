@@ -890,11 +890,7 @@ public class Pedidos_ajax {
 				if (rs.getString("flag_pedido_ret_entre").equalsIgnoreCase("L")) {
 					objRetorno.put("darok", true);
 				} else {
-					if (rs.getTimestamp("data_agenda_entrega") != null) {
-						data6.setTime(rs.getTimestamp("data_agenda_entrega"));
-					} else {
-						data6.setTime(rs.getTimestamp("data_pedido_resposta"));
-					}
+					data6.setTime(rs.getTimestamp("tempoteste"));// addtime(coalesce(data_agenda_entrega, data_pedido), tempo_estimado_desejado)
 					data6.add(Calendar.HOUR_OF_DAY, sys.getPED_HORASOKEY());
 
 					if (data6.getTime().before(new Date())) {
@@ -943,7 +939,7 @@ public class Pedidos_ajax {
 		PrintWriter out = response.getWriter();
 		JSONObject objRetorno = new JSONObject();
 
-		String sql = " select * from  pedido  left join pedido_motivo_cancelamento on pedido_motivo_cancelamento.id_pedido = pedido.id_pedido  where pedido.id_pedido = ? and id_distribuidora = ? and (flag_status = 'E'  or (flag_status = 'C' and flag_confirmado_distribuidora = 'N' ) ) ";
+		String sql = " select  *, addtime(coalesce(data_agenda_entrega, data_pedido), tempo_estimado_desejado) as tempoteste  from  pedido  left join pedido_motivo_cancelamento on pedido_motivo_cancelamento.id_pedido = pedido.id_pedido  where pedido.id_pedido = ? and id_distribuidora = ? and (flag_status = 'E'  or (flag_status = 'C' and flag_confirmado_distribuidora = 'N' ) ) ";
 
 		PreparedStatement st = conn.prepareStatement(sql);
 		st.setInt(1, Integer.parseInt(id_pedido));
@@ -954,12 +950,8 @@ public class Pedidos_ajax {
 		} else {
 
 			Calendar data6 = Calendar.getInstance();
-			if (rs.getTimestamp("DATA_AGENDA_ENTREGA") != null) {
-				data6.setTime(rs.getTimestamp("data_agenda_entrega"));
-			} else {
-				data6.setTime(rs.getTimestamp("data_pedido_resposta"));
-			}
 
+			data6.setTime(rs.getTimestamp("tempoteste"));// addtime(coalesce(data_agenda_entrega, data_pedido), tempo_estimado_desejado)
 			data6.add(Calendar.HOUR_OF_DAY, sys.getPED_HORASOKEY());
 
 			if (rs.getString("flag_status").equalsIgnoreCase("C")) {
