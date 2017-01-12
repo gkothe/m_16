@@ -163,8 +163,7 @@ public class Pedidos_ajax {
 
 		StringBuffer sql = new StringBuffer();
 		sql.append("select *, ");
-		sql.append("       addtime(coalesce(data_agenda_entrega, data_pedido), tempo_estimado_desejado)                                                  as tempoteste, ");
-		sql.append("       timestampdiff(second, now(), addtime (coalesce(data_agenda_entrega, data_pedido), tempo_estimado_desejado))                   as secs ");
+		sql.append("       addtime(coalesce(data_agenda_entrega, data_pedido), Coalesce(tempo_estimado_entrega,tempo_estimado_desejado))   as tempoteste ");
 		sql.append("from   pedido ");
 		sql.append("       left join bairros ");
 		sql.append("              on bairros.cod_bairro = pedido.cod_bairro ");
@@ -764,7 +763,7 @@ public class Pedidos_ajax {
 
 		StringBuffer varname1 = new StringBuffer();
 		varname1.append("select *, ");
-		varname1.append("       addtime(coalesce(data_agenda_entrega, data_pedido), tempo_estimado_desejado)                                                  as tempoteste, ");
+		varname1.append("       addtime(coalesce(data_agenda_entrega, data_pedido), tempo_estimado_desejado)                                                  as tempoteste, addtime(coalesce(data_agenda_entrega, data_pedido), tempo_estimado_entrega)                                                  as tempoteste2, ");
 		varname1.append("       timestampdiff(second, now(), addtime (coalesce(data_agenda_entrega, data_pedido), tempo_estimado_desejado))                   as secs, ");
 		varname1.append("       case when flag_modoentrega = 'T' then sec_to_time( abs(timestampdiff(second,now(),addtime (coalesce(data_agenda_entrega,data_pedido),tempo_estimado_desejado)))) else '00:00:00' end as timedif, "); // tempo para entrega antes de responder
 		varname1.append(" timestampdiff(second,addtime(data_pedido_resposta,tempo_estimado_entrega),now() ) as sec2, ");// diferença em segs para campo abaixo
@@ -890,7 +889,7 @@ public class Pedidos_ajax {
 				if (rs.getString("flag_pedido_ret_entre").equalsIgnoreCase("L")) {
 					objRetorno.put("darok", true);
 				} else {
-					data6.setTime(rs.getTimestamp("tempoteste"));// addtime(coalesce(data_agenda_entrega, data_pedido), tempo_estimado_desejado)
+					data6.setTime(rs.getTimestamp("tempoteste2"));// addtime(coalesce(data_agenda_entrega, data_pedido), tempo_estimado_desejado)
 					data6.add(Calendar.HOUR_OF_DAY, sys.getPED_HORASOKEY());
 
 					if (data6.getTime().before(new Date())) {
@@ -939,7 +938,7 @@ public class Pedidos_ajax {
 		PrintWriter out = response.getWriter();
 		JSONObject objRetorno = new JSONObject();
 
-		String sql = " select  *, addtime(coalesce(data_agenda_entrega, data_pedido), tempo_estimado_desejado) as tempoteste  from  pedido  left join pedido_motivo_cancelamento on pedido_motivo_cancelamento.id_pedido = pedido.id_pedido  where pedido.id_pedido = ? and id_distribuidora = ? and (flag_status = 'E'  or (flag_status = 'C' and flag_confirmado_distribuidora = 'N' ) ) ";
+		String sql = " select  *, addtime(coalesce(data_agenda_entrega, data_pedido), tempo_estimado_entrega) as tempoteste2  from  pedido  left join pedido_motivo_cancelamento on pedido_motivo_cancelamento.id_pedido = pedido.id_pedido  where pedido.id_pedido = ? and id_distribuidora = ? and (flag_status = 'E'  or (flag_status = 'C' and flag_confirmado_distribuidora = 'N' ) ) ";
 
 		PreparedStatement st = conn.prepareStatement(sql);
 		st.setInt(1, Integer.parseInt(id_pedido));
@@ -950,8 +949,8 @@ public class Pedidos_ajax {
 		} else {
 
 			Calendar data6 = Calendar.getInstance();
-			
-			data6.setTime(rs.getTimestamp("tempoteste"));// addtime(coalesce(data_agenda_entrega, data_pedido), tempo_estimado_desejado)
+
+			data6.setTime(rs.getTimestamp("tempoteste2"));// addtime(coalesce(data_agenda_entrega, data_pedido), tempo_estimado_desejado)
 			data6.add(Calendar.HOUR_OF_DAY, sys.getPED_HORASOKEY());
 
 			if (rs.getString("flag_status").equalsIgnoreCase("C")) {
@@ -966,7 +965,7 @@ public class Pedidos_ajax {
 				if (rs.getString("flag_pedido_ret_entre").equalsIgnoreCase("T")) {
 					if (!avoidteste)
 						if (data6.getTime().after(new Date())) {
-							throw new Exception("A hora atual deve exceder em " + sys.getPED_HORASOKEY() + "h a data de resposta para o pedido ser finalizado manualmente.");
+							throw new Exception("A hora atual deve exceder em " + sys.getPED_HORASOKEY() + "h o tempo estimado de entrega para que seja possível finalizar o pedido manualmente.");
 						}
 				}
 

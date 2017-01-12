@@ -85,13 +85,13 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 
 		try {
 
-//			System.out.println("----------entro mob");
-//
-//			Map map = request.getParameterMap();
-//			for (Iterator iterator = map.keySet().iterator(); iterator.hasNext();) {
-//				String type = (String) iterator.next();
-//				System.out.println(type + " : " + request.getParameter(type));
-//			}
+			// System.out.println("----------entro mob");
+			//
+			// Map map = request.getParameterMap();
+			// for (Iterator iterator = map.keySet().iterator(); iterator.hasNext();) {
+			// String type = (String) iterator.next();
+			// System.out.println(type + " : " + request.getParameter(type));
+			// }
 
 			String strTipo = request.getParameter("ac"); // acho que aqui soh vai ter ajax, mas vo dexa assim por enqto.
 			if (strTipo == null) {
@@ -383,7 +383,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 		PreparedStatement st = conn.prepareStatement(varname1.toString());
 		st.setLong(1, cod_usuario);
 		ResultSet rs = st.executeQuery();
-		
+
 		if (rs.next()) {
 
 			StringBuffer varname11 = new StringBuffer();
@@ -512,7 +512,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 		JSONObject objRetorno = new JSONObject();
 
 		Sys_parametros sys = new Sys_parametros(conn);
-		
+
 		String desc_email = request.getParameter("c_email") == null ? "" : request.getParameter("c_email");
 
 		if (desc_email.equalsIgnoreCase("")) {
@@ -525,7 +525,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 
 		if (rs.next()) {
 			String texto = " Olá,<br> Conforme solicitado, seguem abaixo seus dados de usuário:<br> Usuário: " + rs.getString("desc_user") + " <br> Senha: " + rs.getString("desc_senha");
-			Utilitario.sendEmail(desc_email, texto, sys.getSys_fromdesc()+ " - Recuperação de usuario e senha", conn);
+			Utilitario.sendEmail(desc_email, texto, sys.getSys_fromdesc() + " - Recuperação de usuario e senha", conn);
 			objRetorno.put("msg", "ok");
 
 		} else {
@@ -609,10 +609,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 
 		st.executeUpdate();
 
-
-		
-		
-		String texto = "Olá, <br>  Bem vindo ao "+sys.getSys_fromdesc()+", para validar sua conta clique <a href='" + sys.getUrl_system() + "mobile?ac=validar&token=" + validacao + "'> AQUI </a> e você estará pronto para utilizar nossos serviços. <br> Suas informações de login são: <br> Usuário: " + desc_usuario + " <br> Senha: " + desc_senha;
+		String texto = "Olá, <br>  Bem vindo ao " + sys.getSys_fromdesc() + ", para validar sua conta clique <a href='" + sys.getUrl_system() + "mobile?ac=validar&token=" + validacao + "'> AQUI </a> e você estará pronto para utilizar nossos serviços. <br> Suas informações de login são: <br> Usuário: " + desc_usuario + " <br> Senha: " + desc_senha;
 
 		Utilitario.sendEmail(desc_email, texto, sys.getSys_fromdesc() + " - Criação de conta!", conn);
 
@@ -685,7 +682,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 				st2.setString(1, te_email);
 				ResultSet rs2 = st2.executeQuery();
 				if (rs2.next()) {
-					throw new Exception("Este E-mail já esta sendo usado no "+sys.getSys_fromdesc()+"");
+					throw new Exception("Este E-mail já esta sendo usado no " + sys.getSys_fromdesc() + "");
 				}
 
 				String validacao = Utilitario.StringGen(1000, 32).substring(0, 99);
@@ -698,10 +695,10 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 
 				st.executeUpdate();
 
-				String texto = " Olá, <br> Foi solicitada uma alteração de email na sua conta "+sys.getSys_fromdesc()+", clique <a href='" + sys.getUrl_system() + "mobile?ac=validarEmail&token=" + validacao + "' > AQUI </a> para confirmar. ";
+				String texto = " Olá, <br> Foi solicitada uma alteração de email na sua conta " + sys.getSys_fromdesc() + ", clique <a href='" + sys.getUrl_system() + "mobile?ac=validarEmail&token=" + validacao + "' > AQUI </a> para confirmar. ";
 				texto = texto + " Caso você não tenha solicitou este e-mail, sugerimos que troque sua senha ou contate-nos. ";
 
-				Utilitario.sendEmail(te_email, texto, sys.getSys_fromdesc()+" - Alteração de Email", conn);
+				Utilitario.sendEmail(te_email, texto, sys.getSys_fromdesc() + " - Alteração de Email", conn);
 				objRetorno.put("msg", "ok");
 			}
 
@@ -824,9 +821,9 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 			String pay_id = request.getParameter("c_pay_id") == null ? "" : request.getParameter("c_pay_id");
 			String desc_cpf = request.getParameter("c_desc_cpf") == null ? "" : request.getParameter("c_desc_cpf");
 
-			if (cod_bairro.equalsIgnoreCase("")) {
-				throw new Exception("Você deve preencher o campo de bairro.");
-			}
+			// if (cod_bairro.equalsIgnoreCase("")) {
+			// throw new Exception("Você deve preencher o campo de bairro.");
+			// }
 
 			long codcidade = 0;
 			PreparedStatement st = null;
@@ -840,15 +837,16 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 				codcidade = rs.getLong("cod_cidade");
 			}
 
-			st = conn.prepareStatement("select * from bairros where cod_cidade  = ? and cod_bairro = ? ");
-			st.setLong(1, codcidade);
-			st.setLong(2, Long.parseLong(cod_bairro));
-			rs = st.executeQuery();
+			if (!cod_bairro.equalsIgnoreCase("")) {
+				st = conn.prepareStatement("select * from bairros where cod_cidade  = ? and cod_bairro = ? ");
+				st.setLong(1, codcidade);
+				st.setLong(2, Long.parseLong(cod_bairro));
+				rs = st.executeQuery();
 
-			if (!rs.next()) {
-				throw new Exception("Bairro não encontrado. Você deve escolher um bairro válido.");
+				if (!rs.next()) {
+					 throw new Exception("Bairro não encontrado. Você deve escolher um bairro válido.");
+				}
 			}
-
 			/*
 			 * PreparedStatement st = conn.prepareStatement("SELECT 1 from  usuario where  Binary desc_email = ? and id_usuario != ?  "); st.setString(1, desc_email); st.setLong(2, cod_usuario); ResultSet rs = st.executeQuery(); if (rs.next()) { throw new Exception("Email já cadastrado!."); }
 			 */
@@ -880,7 +878,12 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 			st.setString(3, desc_endereco);
 			st.setString(4, desc_endereco_num);
 			st.setString(5, desc_endereco_complemento);
-			st.setInt(6, Integer.parseInt(cod_bairro));
+			if (cod_bairro.equalsIgnoreCase("")) {
+				st.setNull(6, java.sql.Types.INTEGER);
+			} else {
+				st.setInt(6, Integer.parseInt(cod_bairro));
+			}
+
 			st.setString(7, desc_cartao);
 			st.setString(8, desc_cardholdername);
 			if (data_exp_mes.equalsIgnoreCase(""))
@@ -2493,8 +2496,12 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 			throw new Exception("Produto inválido!");
 		}
 
-		if(Integer.parseInt(qtd)>10000){
+		if (Integer.parseInt(qtd) > 10000) {
 			throw new Exception("Você não pode adicionar mais de 10.000 unidades de um produto no seu carrinho!");
+		}
+
+		if (Integer.parseInt(qtd) < 0) {
+			throw new Exception("Você não pode adicionar uma quantidade negativa do produto!");
 		}
 
 		StringBuffer sql = new StringBuffer();
@@ -3120,6 +3127,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 		String dataagendamentohora = request.getParameter("dataagendamentohora") == null ? "" : request.getParameter("dataagendamentohora");
 		String bairro = request.getParameter("bairro") == null ? "" : request.getParameter("bairro");
 		String obsinfo = request.getParameter("obsinfo") == null ? "" : request.getParameter("obsinfo");
+		String telefone = request.getParameter("c_telefone") == null ? "" : request.getParameter("c_telefone");
 
 		JSONObject param = new JSONObject();
 
@@ -3135,6 +3143,9 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 		param.put("dataagendamentohora", dataagendamentohora);
 		param.put("bairro", bairro);
 		param.put("obsinfo", obsinfo);
+		param.put("c_telefone", telefone);
+		
+		
 
 		criarPedido(request, response, conn, cod_usuario, param, true);
 
@@ -3156,6 +3167,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 		String dataagendamentohora = param.get("dataagendamentohora").toString();
 		String bairro = param.get("bairro").toString();
 		String obsinfo = param.get("obsinfo") == null ? "" : param.get("obsinfo").toString();
+		String c_telefone = param.get("c_telefone") == null ? "" : param.get("c_telefone").toString();
 
 		if (!choiceserv.equals("T") && !choiceserv.equals("L")) {
 			throw new Exception("Tipo de serviço inválido.");
@@ -3185,11 +3197,9 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 
 		st.setLong(1, (cod_usuario));
 		ResultSet rs = st.executeQuery();
-		if(rs.next()){
+		if (rs.next()) {
 			throw new Exception("Você deve esperar 30 segs após a realização de um pedido para fazer outro pedido!");
 		}
-		
-		
 
 		if (choiceserv.equalsIgnoreCase("T"))
 			testesMudaBairroCarrinho(request, response, conn, cod_usuario, bairro, choiceserv, false);
@@ -3298,7 +3308,9 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 				st.setString(15, tipo_pagamento);
 				st.setString(16, rs.getString("DESC_NOME"));
 				st.setString(17, choiceserv);
-				if (choiceserv.equalsIgnoreCase("T")) {
+				if (choiceserv.equalsIgnoreCase("T") && modoentrega.equalsIgnoreCase("A")){
+					st.setString(18, "00:30");
+				} else if (choiceserv.equalsIgnoreCase("T") && modoentrega.equalsIgnoreCase("T")) {
 
 					st.setString(18, tempomax.substring(0, 2) + ":" + tempomax.substring(2, 4));
 				} else {
@@ -3511,6 +3523,23 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 						}
 					}
 
+					
+					if(!c_telefone.equalsIgnoreCase("")){
+						
+						sql = new StringBuffer();
+						sql.append("UPDATE usuario ");
+						sql.append("   SET  ");
+						sql.append("       `DESC_TELEFONE` = ? ");
+						sql.append("WHERE  `ID_USUARIO` = ? ");
+
+						st = conn.prepareStatement(sql.toString());
+						st.setString(1, c_telefone);
+						st.setLong(2, cod_usuario);
+
+						st.executeUpdate();
+						
+					}
+					
 					// payment(request, response, conn, cod_usuario,email);
 
 					{

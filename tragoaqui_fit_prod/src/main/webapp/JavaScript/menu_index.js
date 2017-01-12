@@ -811,6 +811,12 @@ function visualizarPedido(id) {
 		success : function(data) {
 			$("#table_enderaberto").hide();
 			$(".cancelamento").hide();
+			$("#m_finalizar").show();
+			
+			$("#m_finalizar").removeClass("btn-grey");
+			$("#m_finalizar").addClass("btn-danger");
+			
+			
 			
 			$("#m_finalizar").html("Mover para histórico");
 			$("#m_tempo_max_lbl").html("Tempo máximo desejado para a entrega");
@@ -920,7 +926,9 @@ function visualizarPedido(id) {
 				if (data.darok == true) {
 					$("#m_finalizar").show();
 				} else {
-					$("#m_finalizar").hide();
+					$("#m_finalizar").removeClass("btn-danger");
+					$("#m_finalizar").addClass("btn-grey");
+					//$("#m_finalizar").hide();
 				}
 
 				$(".m_enviado").show();
@@ -959,7 +967,11 @@ function visualizarPedido(id) {
 				if (data.darok == true) {
 					$("#m_finalizar").show();
 				} else {
-					$("#m_finalizar").hide();
+					
+					$("#m_finalizar").removeClass("btn-danger");
+					$("#m_finalizar").addClass("btn-grey");
+					
+					//$("#m_finalizar").hide();
 				}
 
 				$(".m_enviado").show();

@@ -86,7 +86,7 @@ function addprod(id, desc) {
 		html = html + ("<tr id='linhaprod_" + id + "'> <td style=\"padding-right: 10px;\"> ");
 		html = html + ("<div class=\"\" style=\"margin-top: 0px; margin-bottom: 0px;\">");
 		html = html + ("<label style='padding-top: 15px'> " + desc + "   -   </label> </div> 	</td>");
-		html = html + ("<td class='prodrec_qtds' > <div style='margin-bottom: 0px;' class=\"form-group\">Qtd :<input data-toggle='tooltip' title='' type=\"number\" value='0' idprod='" + id + "'  class=\"form-control qtdinsertitem \" id=\"qtd_" + id + "\" /></div></td></tr>");
+		html = html + ("<td class='prodrec_qtds' > <div style='margin-bottom: 0px;' class=\"form-group\">Qtd :<input data-toggle='tooltip' title='' min='0' type=\"number\" value='0' idprod='" + id + "'  class=\"form-control qtdinsertitem \" id=\"qtd_" + id + "\" /></div></td></tr>");
 		html = html + ("</tr>");
 
 		$("#add_items").append(html);

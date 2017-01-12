@@ -292,6 +292,8 @@ public class Home_ajax {
 				ResultSet rs = st.executeQuery();
 				if (rs.next()) {
 					objValor.put("descr", rs.getString("descr"));
+				}else{
+					objValor.put("descr", "Produto não encontrado.");
 				}
 
 				out.print(objValor.toJSONString());
@@ -324,6 +326,8 @@ public class Home_ajax {
 				ResultSet rs = st.executeQuery();
 				if (rs.next()) {
 					objValor.put("descr", rs.getString("descr"));
+				}else{
+					objValor.put("descr", "Produto não encontrado.");
 				}
 
 				out.print(objValor.toJSONString());

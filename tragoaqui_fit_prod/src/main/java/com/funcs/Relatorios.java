@@ -1583,18 +1583,16 @@ public class Relatorios {
 			List listaReport = new LinkedList();
 
 			JasperReport objRelJasper_ordemprod = null;
-			// objRelJasper_ordemprod = JasperCompileManager.compileReport("D:/phonegap_projects/m_16/m_16/src/main/webapp/rels/" + nome + ".jrxml");
+//			objRelJasper_ordemprod = JasperCompileManager.compileReport("D:/phonegap_projects/m_16/m_16/src/main/webapp/rels/" + nome + ".jrxml");
+//			String arq = "" + new File("D:/phonegap_projects/m_16/m_16/src/main/webapp/rels/" + nome + ".pdf");
 
+			String arq = "" + new File(sys.getPath() + "/rels/" + nome + ".pdf");
 			objRelJasper_ordemprod = JasperCompileManager.compileReport(sys.getPath() + "/rels/" + nome + ".jrxml");
 			hmParams.put(JRParameter.REPORT_LOCALE, new Locale("pt", "BR"));
 			listaReport.add(JasperFillManager.fillReport(objRelJasper_ordemprod, hmParams, datasource));
 
 			JRPdfExporter exporter = new JRPdfExporter();
 
-		//	objRelJasper_ordemprod = JasperCompileManager.compileReport(sys.getPath() + "/rels/" + nome + ".jrxml");
-			
-			String arq = "" + new File(sys.getPath() + "/rels/" + nome + ".pdf");
-			
 			
 			exporter.setParameter(JRPdfExporterParameter.JASPER_PRINT_LIST, listaReport);
 			exporter.setParameter(JRPdfExporterParameter.OUTPUT_FILE_NAME, arq);
@@ -1638,7 +1636,7 @@ public class Relatorios {
 			Sys_parametros func = new Sys_parametros(conn);
 			Map hmParams = new HashMap();
 			hmParams.put("nome_distribuidora", Utilitario.getNomeDistr(conn, coddistr, false));
-			rodaRel("rel_gradehorario", relGradeHorariosDataSource(coddistr, conn), hmParams, request, response,func);
+			rodaRel("rel_gradehorario", relGradeHorariosDataSource(coddistr, conn), hmParams, request, response, func);
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -1661,6 +1659,23 @@ public class Relatorios {
 			conn = Conexao.getConexao();
 			Map hmParams = new HashMap();
 
+			StringBuffer sql = new StringBuffer();
+			sql.append("  select * from distribuidora where id_distribuidora =  " + coddistr);
+			PreparedStatement st = conn.prepareStatement(sql.toString());
+			ResultSet rs = st.executeQuery();
+			HashMap<String, Object> hmFat = new HashMap<String, Object>();
+
+			hmParams.put("show_perc", false);
+
+			if (rs.next()) {
+				if (rs.getString("FLAG_TIPOCONTRATO").equalsIgnoreCase("P")) {
+					hmParams.put("show_perc", true);
+				} else {
+					hmParams.put("show_perc", false);
+				}
+
+			}
+
 			if (flag_opc.equalsIgnoreCase("A")) {
 				hmParams.put("show_prods", true);
 				hmParams.put("show_info", true);
@@ -1673,7 +1688,7 @@ public class Relatorios {
 
 			hmParams.put("nome_distribuidora", Utilitario.getNomeDistr(conn, coddistr, false));
 			Sys_parametros func = new Sys_parametros(conn);
-			rodaRel("rel_pedidos", relPedidosDataSource(coddistr, conn, hmParams, request, response), hmParams, request, response,func);
+			rodaRel("rel_pedidos", relPedidosDataSource(coddistr, conn, hmParams, request, response), hmParams, request, response, func);
 
 		} catch (Exception e) {
 
@@ -1900,8 +1915,8 @@ public class Relatorios {
 			Map hmParams = new HashMap();
 
 			hmParams.put("nome_distribuidora", Utilitario.getNomeDistr(conn, coddistr, false));
-			Sys_parametros sys =  new Sys_parametros(conn);
-			rodaRel("rel_produtos", relProdutosDataSource(coddistr, conn, hmParams, request, response), hmParams, request, response,sys);
+			Sys_parametros sys = new Sys_parametros(conn);
+			rodaRel("rel_produtos", relProdutosDataSource(coddistr, conn, hmParams, request, response), hmParams, request, response, sys);
 
 		} catch (Exception e) {
 

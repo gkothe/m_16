@@ -2,7 +2,7 @@
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="rel_gradehorario" pageWidth="842" pageHeight="595" orientation="Landscape" whenNoDataType="AllSectionsNoDetail" columnWidth="802" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="4e56c072-32bc-4521-b4c2-2f64501d11e8">
 	<property name="ireport.zoom" value="1.6105100000000134"/>
 	<property name="ireport.x" value="0"/>
-	<property name="ireport.y" value="192"/>
+	<property name="ireport.y" value="69"/>
 	<subDataset name="PRODUTOS" uuid="8915ee26-d983-4741-84f8-37606df93cd9">
 		<property name="id_pedido" value="$F{id_pedido}"/>
 		<queryString language="SQL">
@@ -21,6 +21,7 @@
 	<parameter name="bairro" class="java.lang.String"/>
 	<parameter name="rel_ped_ini" class="java.lang.String"/>
 	<parameter name="rel_ped_fim" class="java.lang.String"/>
+	<parameter name="show_perc" class="java.lang.Boolean"/>
 	<queryString>
 		<![CDATA[SELECT desc_prod,
        pedido_item.val_unit,
@@ -156,8 +157,16 @@ FROM   pedido
 			<band height="15" splitType="Prevent">
 				<printWhenExpression><![CDATA[$P{show_prods} == false]]></printWhenExpression>
 				<rectangle>
+					<reportElement stretchType="RelativeToTallestObject" mode="Opaque" x="0" y="0" width="737" height="15" backcolor="#F1F1F1" uuid="97587a18-7c2f-469a-af01-aebb9dfe4e69">
+						<printWhenExpression><![CDATA[(($V{variable1}.intValue() % 2) == 0) && $P{show_perc} == false]]></printWhenExpression>
+					</reportElement>
+					<graphicElement>
+						<pen lineWidth="0.0"/>
+					</graphicElement>
+				</rectangle>
+				<rectangle>
 					<reportElement stretchType="RelativeToTallestObject" mode="Opaque" x="0" y="0" width="802" height="15" backcolor="#F1F1F1" uuid="2b491fd5-465c-4fb6-a0d4-908e5547db61">
-						<printWhenExpression><![CDATA[($V{variable1}.intValue() % 2) == 0]]></printWhenExpression>
+						<printWhenExpression><![CDATA[(($V{variable1}.intValue() % 2) == 0) && $P{show_perc}  == true]]></printWhenExpression>
 					</reportElement>
 					<graphicElement>
 						<pen lineWidth="0.0"/>
@@ -200,7 +209,9 @@ FROM   pedido
 					<textFieldExpression><![CDATA[$F{desc_bairro}]]></textFieldExpression>
 				</textField>
 				<textField pattern="R$ #,##0.00" isBlankWhenNull="true">
-					<reportElement x="737" y="0" width="65" height="15" uuid="6fb1aed3-d3e1-474c-a1f7-179345a4c757"/>
+					<reportElement x="737" y="0" width="65" height="15" uuid="6fb1aed3-d3e1-474c-a1f7-179345a4c757">
+						<printWhenExpression><![CDATA[$P{show_perc} == true]]></printWhenExpression>
+					</reportElement>
 					<textElement textAlignment="Right">
 						<font size="8"/>
 					</textElement>
@@ -543,7 +554,9 @@ FROM   pedido
 					<textFieldExpression><![CDATA[$F{val_entrega}]]></textFieldExpression>
 				</textField>
 				<staticText>
-					<reportElement mode="Opaque" x="737" y="0" width="65" height="15" forecolor="#FFFFFF" backcolor="#CCCCCC" uuid="dde71de3-7ffe-4565-bed0-d341a9dfe679"/>
+					<reportElement mode="Opaque" x="737" y="0" width="65" height="15" forecolor="#FFFFFF" backcolor="#CCCCCC" uuid="dde71de3-7ffe-4565-bed0-d341a9dfe679">
+						<printWhenExpression><![CDATA[$P{show_perc} == true]]></printWhenExpression>
+					</reportElement>
 					<box topPadding="0" leftPadding="0">
 						<pen lineWidth="0.25"/>
 						<topPen lineWidth="0.25"/>
@@ -555,7 +568,9 @@ FROM   pedido
 					<text><![CDATA[% TragoAqui]]></text>
 				</staticText>
 				<textField pattern="R$ #,##0.00" isBlankWhenNull="true">
-					<reportElement x="737" y="15" width="65" height="15" uuid="d8578adb-0bd8-4dcd-8ed3-3c38cc375498"/>
+					<reportElement x="737" y="15" width="65" height="15" uuid="d8578adb-0bd8-4dcd-8ed3-3c38cc375498">
+						<printWhenExpression><![CDATA[$P{show_perc} == true]]></printWhenExpression>
+					</reportElement>
 					<textElement textAlignment="Right">
 						<font size="8"/>
 					</textElement>
@@ -885,7 +900,9 @@ FROM   pedido
 				<text><![CDATA[Frete]]></text>
 			</staticText>
 			<staticText>
-				<reportElement mode="Opaque" x="737" y="-1" width="65" height="15" forecolor="#FFFFFF" backcolor="#CCCCCC" uuid="034ca842-2ed2-4b14-a4fd-305468aa06bf"/>
+				<reportElement mode="Opaque" x="737" y="-1" width="65" height="15" forecolor="#FFFFFF" backcolor="#CCCCCC" uuid="034ca842-2ed2-4b14-a4fd-305468aa06bf">
+					<printWhenExpression><![CDATA[$P{show_perc} == true]]></printWhenExpression>
+				</reportElement>
 				<box topPadding="0" leftPadding="0">
 					<pen lineWidth="0.25"/>
 					<topPen lineWidth="0.25"/>
@@ -1013,7 +1030,9 @@ FROM   pedido
 				<textFieldExpression><![CDATA[$F{summary_total}]]></textFieldExpression>
 			</textField>
 			<textField pattern="R$ #,##0.00" isBlankWhenNull="true">
-				<reportElement x="737" y="34" width="62" height="15" uuid="354bbcbe-c4e6-4c78-9f5e-ba804e969b0b"/>
+				<reportElement x="737" y="34" width="62" height="15" uuid="354bbcbe-c4e6-4c78-9f5e-ba804e969b0b">
+					<printWhenExpression><![CDATA[$P{show_perc} == true]]></printWhenExpression>
+				</reportElement>
 				<box leftPadding="0" rightPadding="2"/>
 				<textElement textAlignment="Right">
 					<font size="8"/>
@@ -1029,7 +1048,9 @@ FROM   pedido
 				<textFieldExpression><![CDATA[$F{summary_prodtotal}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement mode="Opaque" x="737" y="20" width="62" height="15" forecolor="#FFFFFF" backcolor="#CCCCCC" uuid="d4f0d6ab-bc38-4ae5-97db-54b32f20bf5e"/>
+				<reportElement mode="Opaque" x="737" y="20" width="62" height="15" forecolor="#FFFFFF" backcolor="#CCCCCC" uuid="d4f0d6ab-bc38-4ae5-97db-54b32f20bf5e">
+					<printWhenExpression><![CDATA[$P{show_perc} == true]]></printWhenExpression>
+				</reportElement>
 				<box topPadding="0" leftPadding="0">
 					<pen lineWidth="0.25"/>
 					<topPen lineWidth="0.25"/>
