@@ -72,6 +72,26 @@ input:focus {
 	background-color: yellow;
 }
 
+.ped_atrasadotd {
+	background-color: yellow;
+}
+
+.ped_marcado {
+	min-width: 100% !important;
+	min-height: 100% !important;
+	width: 100% !important;
+	height: 100% !important;
+	background-color: #80FF93 !important;
+}
+
+.ped_marcadotd {
+	background-color: #80FF93 !important;
+}
+
+
+
+
+
 .w3-content {
 	max-width: 980px;
 	margin: auto

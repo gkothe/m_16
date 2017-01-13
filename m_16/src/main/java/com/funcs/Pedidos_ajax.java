@@ -156,6 +156,7 @@ public class Pedidos_ajax {
 		String flag_situacao = request.getParameter("flag_situacao") == null ? "" : request.getParameter("flag_situacao");
 		String flag_visu = request.getParameter("flag_visu") == null ? "" : request.getParameter("flag_visu");
 		String flag_pedido_ret_entre = request.getParameter("flag_pedido_ret_entre") == null ? "" : request.getParameter("flag_pedido_ret_entre");
+		String flag_marcado_filtro = request.getParameter("flag_marcado_filtro") == null ? "" : request.getParameter("flag_marcado_filtro");
 
 		String temfiltro = "N";
 
@@ -235,6 +236,14 @@ public class Pedidos_ajax {
 			temfiltro = "S";
 		}
 
+		
+		if (!flag_marcado_filtro.equalsIgnoreCase("")) {
+			sql.append(" and flag_marcado  = ? ");
+			temfiltro = "S";
+		}
+
+		
+		
 		sql.append("  order by flag_status asc , data_pedido asc ");
 
 		PreparedStatement st = conn.prepareStatement(sql.toString());
@@ -300,6 +309,12 @@ public class Pedidos_ajax {
 			st.setString(contparam, (flag_pedido_ret_entre));
 			contparam++;
 		}
+		
+		if (!flag_marcado_filtro.equalsIgnoreCase("")) {
+			st.setString(contparam, (flag_marcado_filtro));
+			contparam++;
+		}
+
 
 		ResultSet rs = st.executeQuery();
 		PreparedStatement st2;
@@ -1043,8 +1058,8 @@ public class Pedidos_ajax {
 		String flag_marcado = request.getParameter("flag_marcado") == null ? "" : request.getParameter("flag_marcado"); //
 
 		String sql = " select * from  pedido   where pedido.id_pedido = ? and id_distribuidora = ? ";
-
-		if (!flag_marcado.equalsIgnoreCase("S") || !flag_marcado.equalsIgnoreCase("N")) {
+		
+		if (!(flag_marcado.equalsIgnoreCase("S")) && !(flag_marcado.equalsIgnoreCase("N"))) {
 			throw new Exception("Valor inválido!");
 		}
 

@@ -83,13 +83,13 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 
 		try {
 
-			// System.out.println("----------entro mob");
-			//
-			// Map map = request.getParameterMap();
-			// for (Iterator iterator = map.keySet().iterator(); iterator.hasNext();) {
-			// String type = (String) iterator.next();
-			// System.out.println(type + " : " + request.getParameter(type));
-			// }
+			System.out.println("----------entro mob");
+
+			Map map = request.getParameterMap();
+			for (Iterator iterator = map.keySet().iterator(); iterator.hasNext();) {
+				String type = (String) iterator.next();
+				System.out.println(type + " : " + request.getParameter(type));
+			}
 
 			String strTipo = request.getParameter("ac"); // acho que aqui soh vai ter ajax, mas vo dexa assim por enqto.
 			if (strTipo == null) {
@@ -190,11 +190,23 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 					confirmaIdade(request, response, conn, cod_usuario, sys);
 				} else if (cmd.equalsIgnoreCase("carrega_flagentreret")) {
 					carregaFlagEntreRet(request, response, conn);
-				} else if (cod_usuario == sys.getSys_id_visistante()) {// operações daqui para cima, são validas para visitante.
-					objRetorno.put("guest", "true");
-					throw new Exception("Você está acessando como visitante. Para poder realizar esta operação você deve criar uma conta no S.O.S Trago.");
 				} else if (cmd.equalsIgnoreCase("carrega_situacaoes")) {
 					carregaSitucaoes(request, response, conn, cod_usuario);
+				} else if (cmd.equalsIgnoreCase("carregaCarrinho")) {
+					carregaCarrinho(request, response, conn, cod_usuario, false);
+				} else if (cmd.equalsIgnoreCase("carregaItemCarrinho")) {
+					carregaCarrinho(request, response, conn, cod_usuario, true);
+				} else if (cmd.equalsIgnoreCase("carregaValCarrinho")) {
+					carregaValCarrinho(request, response, conn, cod_usuario);
+				} else if (cmd.equalsIgnoreCase("testesMudaBairroCarrinho")) {
+					testesMudaBairroCarrinho(request, response, conn, cod_usuario);
+				} else if (cmd.equalsIgnoreCase("testesMudaServico")) {
+					testesMudaServico(request, response, conn, cod_usuario);
+				} else if (cmd.equalsIgnoreCase("servicoCarrinho")) {
+					servicoCarrinho(request, response, conn, cod_usuario);
+				} else if (cod_usuario == sys.getSys_id_visistante()) {// operações daqui para cima, são validas para visitante.
+					objRetorno.put("guest", "true");
+					throw new Exception("Você está acessando como visitante. Para poder realizar esta operação você deve logar com o Facebook ou criar uma conta no " + sys.getSys_fromdesc());
 				} else if (cmd.equalsIgnoreCase("trocarEmail")) {
 					trocarEmail(request, response, conn, cod_usuario, sys);
 				} else if (cmd.equalsIgnoreCase("trocarSenha")) {
@@ -209,22 +221,14 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 					carregaPedidos(request, response, conn, cod_usuario);
 				} else if (cmd.equalsIgnoreCase("carregaPedidoUnico")) {
 					carregaPedidoUnico(request, response, conn, cod_usuario, sys);
-				} else if (cmd.equalsIgnoreCase("carregaItemCarrinho")) {
-					carregaCarrinho(request, response, conn, cod_usuario, true);
-				} else if (cmd.equalsIgnoreCase("carregaCarrinho")) {
-					carregaCarrinho(request, response, conn, cod_usuario, false);
 				} else if (cmd.equalsIgnoreCase("addCarrinho")) {
 					addCarrinho(request, response, conn, cod_usuario);
 				} else if (cmd.equalsIgnoreCase("recalcularCarrinho")) {
 					recalcularCarrinho(request, response, conn, cod_usuario);
-				} else if (cmd.equalsIgnoreCase("carregaValCarrinho")) {
-					carregaValCarrinho(request, response, conn, cod_usuario);
 				} else if (cmd.equalsIgnoreCase("removerItemCarrinho")) {
 					removerItemCarrinho(request, response, conn, cod_usuario);
 				} else if (cmd.equalsIgnoreCase("criarPedido")) {
 					criarPedido(request, response, conn, cod_usuario);
-				} else if (cmd.equalsIgnoreCase("testesMudaBairroCarrinho")) {
-					testesMudaBairroCarrinho(request, response, conn, cod_usuario);
 				} else if (cmd.equalsIgnoreCase("limparCarrinho")) {
 					limparCarrinho(request, response, conn, cod_usuario);
 				} else if (cmd.equalsIgnoreCase("carregaEnderecos")) {
@@ -237,10 +241,6 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 					cancelaPedido(request, response, conn, cod_usuario, sys);
 				} else if (cmd.equalsIgnoreCase("infosCancel")) {
 					infosCancel(request, response, conn, cod_usuario, sys);
-				} else if (cmd.equalsIgnoreCase("testesMudaServico")) {
-					testesMudaServico(request, response, conn, cod_usuario);
-				} else if (cmd.equalsIgnoreCase("servicoCarrinho")) {
-					servicoCarrinho(request, response, conn, cod_usuario);
 				} else if (cmd.equalsIgnoreCase("txt_obs_hora")) {
 					txtObsHora(request, response, conn, cod_usuario, sys);
 				} else if (cmd.equalsIgnoreCase("txt_horaatendimento")) {
@@ -842,7 +842,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 				rs = st.executeQuery();
 
 				if (!rs.next()) {
-					 throw new Exception("Bairro não encontrado. Você deve escolher um bairro válido.");
+					throw new Exception("Bairro não encontrado. Você deve escolher um bairro válido.");
 				}
 			}
 			/*
@@ -3142,8 +3142,6 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 		param.put("bairro", bairro);
 		param.put("obsinfo", obsinfo);
 		param.put("c_telefone", telefone);
-		
-		
 
 		criarPedido(request, response, conn, cod_usuario, param, true);
 
@@ -3306,9 +3304,9 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 				st.setString(15, tipo_pagamento);
 				st.setString(16, rs.getString("DESC_NOME"));
 				st.setString(17, choiceserv);
-				if (choiceserv.equalsIgnoreCase("T") && modoentrega.equalsIgnoreCase("A")){
+				if (choiceserv.equalsIgnoreCase("T") && modoentrega.equalsIgnoreCase("A")) {
 					st.setString(18, "00:00");
-					//st.setString(18, "00:30");
+					// st.setString(18, "00:30");
 				} else if (choiceserv.equalsIgnoreCase("T") && modoentrega.equalsIgnoreCase("T")) {
 
 					st.setString(18, tempomax.substring(0, 2) + ":" + tempomax.substring(2, 4));
@@ -3522,9 +3520,8 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 						}
 					}
 
-					
-					if(!c_telefone.equalsIgnoreCase("")){
-						
+					if (!c_telefone.equalsIgnoreCase("")) {
+
 						sql = new StringBuffer();
 						sql.append("UPDATE usuario ");
 						sql.append("   SET  ");
@@ -3536,9 +3533,9 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 						st.setLong(2, cod_usuario);
 
 						st.executeUpdate();
-						
+
 					}
-					
+
 					// payment(request, response, conn, cod_usuario,email);
 
 					{

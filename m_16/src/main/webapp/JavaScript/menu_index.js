@@ -106,9 +106,73 @@ function trocaPag(pag, jsp, e, extraparam) {
 
 }
 
+function marcarPedido_home(id_pedido) {
+
+	var flag_marcado = "";
+
+	if ($("#flag_marcado_detail").is(":checked")) {
+		flag_marcado = "S"
+	} else {
+		flag_marcado = "N"
+	}
+
+	$.ajax({
+		type : "POST",
+		url : "home?ac=ajax",
+		dataType : "json",
+		async : true,
+		data : {
+			cmd : 'marcarPedido',
+			flag_marcado : flag_marcado,
+			id_pedido : id_pedido
+
+		},
+		success : function(data) {
+
+			try{
+				loadAbertos(false);  //se tiver na tela de abertos.
+			}catch(err){
+				
+			}
+			 
+		},
+		error : function(msg) {
+
+			if (msg.status == 0) {
+
+			} else {
+				sysMsg(msg.msg, 'E')
+			}
+
+		}
+	});
+
+}
+
+
 var active_menu;
 $(document).ready(function() {
 
+	$("#flag_marcado_detail").click(function(event) {
+		
+		event.stopPropagation();
+		marcarPedido_home( $("#m_id_pedido").val());
+	})
+	
+	
+	$("#flag_marcado_detail_div").click(function() {
+		
+		
+		
+		if ($("#flag_marcado_detail").is(":checked")) {
+			$("#flag_marcado_detail").prop('checked', false);
+		} else {
+			$("#flag_marcado_detail").prop('checked', true);
+		}
+		
+		marcarPedido_home( $("#m_id_pedido").val());
+	})
+	
 	$('#mainpage').load('home?ac=' + url);
 	$("#msg_cancholder").hide();
 	$("[linkmenu=" + url + "]").parent().addClass("current-page");
@@ -815,6 +879,13 @@ function visualizarPedido(id) {
 			
 			$("#m_finalizar").removeClass("btn-grey");
 			$("#m_finalizar").addClass("btn-danger");
+			
+			
+			if (data.flag_marcado == 'S') {
+				$("#flag_marcado_detail").prop('checked', true);
+			} else {
+				$("#flag_marcado_detail").prop('checked', false);
+			}
 			
 			
 			

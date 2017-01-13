@@ -86,7 +86,7 @@
 							<img id="lbl_logomenu" src="" style="width: 65px" alt="...">
 						</div>
 						<div class="profile_info">
-							<span>Distribuidora,</span>
+							<span>Loja,</span>
 							<h2>
 								<label id="lbl_descfanta"></label>
 							</h2>
@@ -809,6 +809,17 @@
 								</div>
 							</div>
 
+
+								<DIV >
+
+
+								<div class="row">
+
+									<div id="flag_marcado_detail_div" class="col-xs-4 col-sm-4 col-md-4 col-lg-4" align="">
+										<input type="checkbox"  id="flag_marcado_detail" style="color: black !important">
+										<strong>Marcar pedido <strong>
+									</div>
+								</div> 
 
 						</div>
 						<div class="modal-footer">

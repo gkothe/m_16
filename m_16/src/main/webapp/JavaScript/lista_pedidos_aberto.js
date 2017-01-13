@@ -16,9 +16,8 @@ $(document).ready(function() {
 		$("#modal_filtros_aberto").modal('hide');
 
 		loadAbertos(true);
-		
-		
-		$('#table_pedidos_abertos').bootstrapTable('selectPage',1);
+
+		$('#table_pedidos_abertos').bootstrapTable('selectPage', 1);
 	});
 
 	$('#msg_filtros').blink({
@@ -45,9 +44,10 @@ $(document).ready(function() {
 		$("#flag_situacao").val("");
 		$("#flag_visu").val("");
 		$("#flag_pedido_ret_entre").val("")
+		$("#flag_marcado_filtro").val("")
 
 		loadAbertos(true);
-		$('#table_pedidos_abertos').bootstrapTable('selectPage',1);
+		$('#table_pedidos_abertos').bootstrapTable('selectPage', 1);
 	});
 
 	$("#val_ini_aberto").autoNumeric('init', numerico);
@@ -87,34 +87,86 @@ $(document).ready(function() {
 		$('[data-toggle="tooltip"]').tooltip();
 	});
 
-	$(tabela).on('click-cell.bs.table', function(field, value, row, $element) {
-		visualizarPedido($element.ID_PEDIDO);
+	$(tabela).on('click-cell.bs.table', function(event, field, value, $element) {
+
+		if (field == 'flag_marcado') {
+
+			if (value == 'S') {
+				$("#flag_marcado_" + $element.ID_PEDIDO).prop('checked', false);
+			} else {
+				$("#flag_marcado_" + $element.ID_PEDIDO).prop('checked', true);
+			}
+
+			marcarPedido($element.ID_PEDIDO);
+		} else {
+
+			visualizarPedido($element.ID_PEDIDO);
+		}
 	});
 
 	$(tabela).on('page-change.bs.table', function() {
 		$(".openpedido").click(function() {
 			visualizarPedido($(this).attr("data-valor"));
 		});
+
 		$('[data-toggle="tooltip"]').tooltip();
+
+		rowstuffs();
+
 	});
 
 	carregaBairros();
 	loadAbertos(true);
 
 	window.setInterval(function() {
-		 loadAbertos(false);
+		loadAbertos(false);
 	}, 5000);
 
 	loadAbertos();
 
 });
 
+function rowstuffs() {
+
+	$(".ped_atrasado").each(function(index) {
+		var td = $(this).closest("td");
+		$(td).addClass(" ped_atrasadotd ");
+	})
+
+	$(".ped_marcado").each(function(index) {
+		var td = $(this).closest("td");
+		$(td).addClass(" ped_marcadotd ");
+	})
+
+}
+
+// function btnFormater(value, row, index) {
+// var html = "";
+// html = html + "<a data-toggle=\"tooltip\" tabindex=\"0\" role=\"button\"
+// title=\"Visualizar e responder\" data-trigger=\"focus\" class=\" btn
+// btn-default openpedido btn_tabela\" data-valor=\"" + row.ID_PEDIDO + "\"
+// data-container=\"body\" data-placement=\"left\" >";
+// html = html + "<i class=\"fa fa-pencil-square-o\"></i>";
+// html = html + "</a>";
+//	
+// return html;
+// }
+
 function btnFormater(value, row, index) {
+
 	var html = "";
-	html = html + "<a  data-toggle=\"tooltip\" tabindex=\"0\" role=\"button\" title=\"Visualizar e responder\" data-trigger=\"focus\"  class=\"  btn btn-default openpedido btn_tabela\" data-valor=\"" + row.ID_PEDIDO + "\"   data-container=\"body\" data-placement=\"left\" >";
-	html = html + "<i class=\"fa fa-pencil-square-o\"></i>";
-	html = html + "</a>";
-	
+	var html = atrasadoBuid(row, true);
+	html = html + " <div  class='checkbox ' data-toggle='tooltip' title='' style='margin-top: 0px; margin-bottom: 0px; text-align:center;padding-right: 10px'> ";
+	var checked = "";
+	if (value == 'S') {
+		checked = "checked='true'";
+	} else {
+		checked = "";
+	}
+
+	html = html + "	<label style='padding-left: 0px !important;  min-height: 8px !important' > <input type='checkbox' " + checked + " id='flag_marcado_" + row.ID_PEDIDO + "' style='color: black !important'    >	</label>  ";
+	html = html + " </div> ";
+	html = html + atrasadoBuid(row, false);
 	return html;
 }
 
@@ -128,7 +180,7 @@ function valorFormater_aberto(value, row, index) {
 	var html = atrasadoBuid(row, true);
 	html = html + $("#sys_formatador").val();
 	html = html + atrasadoBuid(row, false);
-	
+
 	return html;
 }
 
@@ -182,6 +234,7 @@ function atrasadoFormater(value, row, index) {
 }
 
 function atrasadoBuid(row, ini) {
+
 	if (row.atrasado == 'true' || row.atrasado == true) {
 		if (ini == true) {
 			return "<div data-toggle=\"tooltip\" title='O cliente informou que ainda não recebeu este pedido. O tempo de entrega passou da previsão' class='ped_atrasado'>";
@@ -189,6 +242,12 @@ function atrasadoBuid(row, ini) {
 			return "</div>";
 		}
 
+	} else if (row.flag_marcado == 'S') {
+		if (ini == true) {
+			return "<div class='ped_marcado'>";
+		} else {
+			return "</div>";
+		}
 	} else {
 		return "";
 	}
@@ -233,14 +292,51 @@ function carregaBairros() {
 
 }
 
+function marcarPedido(id_pedido) {
+
+	var flag_marcado = "";
+
+	if ($("#flag_marcado_" + id_pedido).is(":checked")) {
+		flag_marcado = "S"
+	} else {
+		flag_marcado = "N"
+	}
+
+	$.ajax({
+		type : "POST",
+		url : "home?ac=ajax",
+		dataType : "json",
+		async : true,
+		data : {
+			cmd : 'marcarPedido',
+			flag_marcado : flag_marcado,
+			id_pedido : id_pedido
+
+		},
+		success : function(data) {
+
+			loadAbertos(false);
+		},
+		error : function(msg) {
+
+			if (msg.status == 0) {
+
+			} else {
+				sysMsg(msg.msg, 'E')
+			}
+
+		}
+	});
+
+}
+
 function loadAbertos(blockui) {
 
-	if($("#extra_paramfield").val()=='canc'){
+	if ($("#extra_paramfield").val() == 'canc') {
 		$("#flag_situacao").val("C")
 		$("#extra_paramfield").val("");
-	}  
-	
-	
+	}
+
 	var num_pedido_aberto = $("#num_pedido_aberto").val();
 	var id_produto = $("#id_produto").val();
 	var cod_bairro_aberto = $("#cod_bairro_aberto").val();
@@ -253,6 +349,8 @@ function loadAbertos(blockui) {
 	var flag_situacao = $("#flag_situacao").val();
 	var flag_visu = $("#flag_visu").val();
 	var flag_pedido_ret_entre = $("#flag_pedido_ret_entre").val();
+	var flag_marcado_filtro = $("#flag_marcado_filtro").val();
+	
 
 	if (blockui) {
 		$.blockUI({
@@ -278,7 +376,8 @@ function loadAbertos(blockui) {
 			val_fim_aberto : val_fim_aberto,
 			flag_situacao : flag_situacao,
 			flag_visu : flag_visu,
-			flag_pedido_ret_entre : flag_pedido_ret_entre
+			flag_pedido_ret_entre : flag_pedido_ret_entre,
+			flag_marcado_filtro:flag_marcado_filtro
 
 		},
 		success : function(data) {
@@ -304,6 +403,8 @@ function loadAbertos(blockui) {
 			// visualizarPedido($(this).attr("data-valor"));
 			// });
 			$(".th-inner").css("text-align", "center");
+
+			rowstuffs();
 
 			if (blockui) {
 				$.unblockUI();
