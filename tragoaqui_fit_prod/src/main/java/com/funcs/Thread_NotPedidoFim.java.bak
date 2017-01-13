@@ -73,7 +73,7 @@ public class Thread_NotPedidoFim extends Thread {
 		varname1.append("       num_ped, ");
 		varname1.append("       usuario.desc_email       as mail, ");
 		varname1.append("       addtime(coalesce(data_agenda_entrega, data_pedido), ");
-		varname1.append("       tempo_estimado_entrega) as tempoteste ");
+		varname1.append("       tempo_estimado_desejado) as tempoteste ");
 		varname1.append(" from   pedido ");
 		varname1.append("       inner join usuario ");
 		varname1.append("               on usuario.id_usuario = pedido.id_usuario ");
@@ -113,7 +113,7 @@ public class Thread_NotPedidoFim extends Thread {
 
 		} catch (Exception e) {
 			e.printStackTrace();
-			// TODO: handle exception  
+			// TODO: handle exception
 		}
 
 	}

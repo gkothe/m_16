@@ -1,6 +1,6 @@
 /*==============================================================*/
 /* DBMS name:      MySQL 5.0                                    */
-/* Created on:     11/1/2017 2:33:11 PM                         */
+/* Created on:     12/1/2017 4:21:26 PM                         */
 /*==============================================================*/
 
 
@@ -233,6 +233,7 @@ create table PEDIDO
    FLAG_NOT_FINAL_AVISA_LOJA char(1) default 'N',
    FLAG_RESPOSTA_USUARIO char(1),
    DESC_OBSERVACAO      text,
+   FLAG_MARCADO         char(1) default 'N',
    primary key (ID_PEDIDO)
 )
 auto_increment = 1;

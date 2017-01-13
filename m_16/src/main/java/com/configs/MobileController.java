@@ -3309,7 +3309,8 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 				st.setString(16, rs.getString("DESC_NOME"));
 				st.setString(17, choiceserv);
 				if (choiceserv.equalsIgnoreCase("T") && modoentrega.equalsIgnoreCase("A")){
-					st.setString(18, "00:30");
+					st.setString(18, "00:00");
+					//st.setString(18, "00:30");
 				} else if (choiceserv.equalsIgnoreCase("T") && modoentrega.equalsIgnoreCase("T")) {
 
 					st.setString(18, tempomax.substring(0, 2) + ":" + tempomax.substring(2, 4));

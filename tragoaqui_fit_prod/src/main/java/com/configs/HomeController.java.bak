@@ -187,15 +187,13 @@ public class HomeController extends javax.servlet.http.HttpServlet {
 				Pedidos_ajax.carregaPedido_AbertoEnvio(request, response, conn, coddistr);
 			} else if (cmd.equalsIgnoreCase("carregaPedido_fechado")) {
 				Pedidos_ajax.carregaPedido_fechado(request, response, conn, coddistr);
-			} else if (cmd.equalsIgnoreCase("marcarPedido")) {
-				Pedidos_ajax.marcarPedido(request, response, conn, coddistr);
 			} else if (cmd.equalsIgnoreCase("finalizandoPedido")) {
 				Pedidos_ajax.finalizandoPedido(request, response, conn, coddistr);
 			} else if (cmd.equalsIgnoreCase("responderPedido")) {
 				Pedidos_ajax.responderPedido(request, response, conn, coddistr);
 			} else if (cmd.equalsIgnoreCase("insertpedidodistri")) {
 				Pedidos_ajax.InsertPedidoDistri(request, response, conn, coddistr);
-			} else if (cmd.equalsIgnoreCase("carregaProdutos")) {
+			}  else if (cmd.equalsIgnoreCase("carregaProdutos")) {
 				Parametros_ajax.carregaProdutos(request, response, conn, coddistr);
 			} else if (cmd.equalsIgnoreCase("cleanBairrosHorarios")) {
 				Parametros_ajax.limparBairros(request, response, conn, coddistr);

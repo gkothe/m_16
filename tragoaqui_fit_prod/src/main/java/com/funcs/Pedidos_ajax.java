@@ -350,6 +350,7 @@ public class Pedidos_ajax {
 			}
 
 			objRetorno.put("VAL_TOTALPROD", rs.getString("val_totalprod"));
+			objRetorno.put("flag_marcado", rs.getString("flag_marcado"));
 
 			objRetorno.put("ID_PEDIDO", rs.getString("id_pedido"));
 
@@ -763,7 +764,8 @@ public class Pedidos_ajax {
 
 		StringBuffer varname1 = new StringBuffer();
 		varname1.append("select *, ");
-		varname1.append("       addtime(coalesce(data_agenda_entrega, data_pedido), tempo_estimado_desejado)                                                  as tempoteste, addtime(coalesce(data_agenda_entrega, data_pedido), tempo_estimado_entrega)                                                  as tempoteste2, ");
+		varname1.append("       addtime(coalesce(data_agenda_entrega, data_pedido), tempo_estimado_desejado)    as tempoteste,  ");
+		varname1.append("       addtime(coalesce(data_agenda_entrega, data_pedido), tempo_estimado_entrega)          as tempoteste2, ");
 		varname1.append("       timestampdiff(second, now(), addtime (coalesce(data_agenda_entrega, data_pedido), tempo_estimado_desejado))                   as secs, ");
 		varname1.append("       case when flag_modoentrega = 'T' then sec_to_time( abs(timestampdiff(second,now(),addtime (coalesce(data_agenda_entrega,data_pedido),tempo_estimado_desejado)))) else '00:00:00' end as timedif, "); // tempo para entrega antes de responder
 		varname1.append(" timestampdiff(second,addtime(data_pedido_resposta,tempo_estimado_entrega),now() ) as sec2, ");// diferença em segs para campo abaixo
@@ -819,6 +821,7 @@ public class Pedidos_ajax {
 			objRetorno.put("VAL_TOTALPROD", rs.getString("val_totalprod"));
 			objRetorno.put("VAL_ENTREGA", rs.getString("val_entrega"));
 			objRetorno.put("num_ped", rs.getString("num_ped"));
+			objRetorno.put("flag_marcado", rs.getString("flag_marcado"));
 			objRetorno.put("ID_PEDIDO", rs.getString("id_pedido"));
 			objRetorno.put("FLAG_MODOPAGAMENTO", Utilitario.returnModoPagamento(rs.getString("flag_modopagamento")));
 			objRetorno.put("m_observ", rs.getString("desc_observacao"));
@@ -889,7 +892,7 @@ public class Pedidos_ajax {
 				if (rs.getString("flag_pedido_ret_entre").equalsIgnoreCase("L")) {
 					objRetorno.put("darok", true);
 				} else {
-					data6.setTime(rs.getTimestamp("tempoteste2"));// addtime(coalesce(data_agenda_entrega, data_pedido), tempo_estimado_desejado)
+					data6.setTime(rs.getTimestamp("tempoteste2"));// addtime(coalesce(data_agenda_entrega, data_pedido), tempo_estimado_entrega)
 					data6.add(Calendar.HOUR_OF_DAY, sys.getPED_HORASOKEY());
 
 					if (data6.getTime().before(new Date())) {
@@ -991,12 +994,31 @@ public class Pedidos_ajax {
 
 		String id_pedido = request.getParameter("id_pedido") == null ? "" : request.getParameter("id_pedido"); //
 
-		String sql = " select * from  pedido  left join pedido_motivo_cancelamento on pedido_motivo_cancelamento.id_pedido = pedido.id_pedido  where pedido.id_pedido = ? and ID_USUARIO = ? and (flag_status = 'E' or flag_status = 'S'  ) ";
+		String sql = " select * from  pedido  left join pedido_motivo_cancelamento on pedido_motivo_cancelamento.id_pedido = pedido.id_pedido  where pedido.id_pedido = ? and ID_USUARIO = ? ";
 
 		PreparedStatement st = conn.prepareStatement(sql);
 		st.setInt(1, Integer.parseInt(id_pedido));
 		st.setLong(2, idusario);
 		ResultSet rs = st.executeQuery();
+		if (rs.next()) {
+			if (rs.getString("flag_status").equalsIgnoreCase("O")) {
+				throw new Exception("Este pedido já foi finalizado pela loja.");
+			}
+			if (rs.getString("flag_status").equalsIgnoreCase("C")) {
+				throw new Exception("Este pedido foi cancelado.");
+			}
+			if (rs.getString("flag_status").equalsIgnoreCase("R")) {
+				throw new Exception("Este pedido foi recusado.");
+			}
+
+		}
+
+		sql = " select * from  pedido  left join pedido_motivo_cancelamento on pedido_motivo_cancelamento.id_pedido = pedido.id_pedido  where pedido.id_pedido = ? and ID_USUARIO = ? and (flag_status = 'E' or flag_status = 'S'  ) ";
+
+		st = conn.prepareStatement(sql);
+		st.setInt(1, Integer.parseInt(id_pedido));
+		st.setLong(2, idusario);
+		rs = st.executeQuery();
 		if (!rs.next()) {
 			throw new Exception("Pedido inválido! Entre em contato com o suporte");
 		} else {
@@ -1010,6 +1032,40 @@ public class Pedidos_ajax {
 			objRetorno.put("msg", "ok");
 
 		}
+
+		out.print(objRetorno.toJSONString());
+
+	}
+
+	public static void marcarPedido(HttpServletRequest request, HttpServletResponse response, Connection conn, long coddistr) throws Exception {
+		PrintWriter out = response.getWriter();
+		JSONObject objRetorno = new JSONObject();
+
+		String id_pedido = request.getParameter("id_pedido") == null ? "" : request.getParameter("id_pedido"); //
+		String flag_marcado = request.getParameter("flag_marcado") == null ? "" : request.getParameter("flag_marcado"); //
+
+		String sql = " select * from  pedido   where pedido.id_pedido = ? and id_distribuidora = ? ";
+
+		if (!flag_marcado.equalsIgnoreCase("S") || !flag_marcado.equalsIgnoreCase("N")) {
+			throw new Exception("Valor inválido!");
+		}
+
+		PreparedStatement st = conn.prepareStatement(sql);
+		st.setInt(1, Integer.parseInt(id_pedido));
+		st.setLong(2, coddistr);
+		ResultSet rs = st.executeQuery();
+		if (rs.next()) {
+
+			sql = " update  pedido  set flag_marcado = '" + flag_marcado + "'  where id_pedido = ? and id_distribuidora = ?  ";
+			st = conn.prepareStatement(sql);
+			st.setInt(1, Integer.parseInt(id_pedido));
+			st.setLong(2, coddistr);
+
+			st.executeUpdate();
+
+		}
+
+		objRetorno.put("msg", "ok");
 
 		out.print(objRetorno.toJSONString());
 
@@ -1107,6 +1163,8 @@ public class Pedidos_ajax {
 
 					m_tempo_entrega_inp = "00:00";
 
+				} else if (rs.getString("flag_pedido_ret_entre").equalsIgnoreCase("T") && rs.getString("flag_modoentrega")!=null && rs.getString("flag_modoentrega").equalsIgnoreCase("A")) {
+					m_tempo_entrega_inp = "00:00";
 				} else {
 					if (rs.getString("flag_pedido_ret_entre").equalsIgnoreCase("T") && rs.getString("flag_modoentrega").equalsIgnoreCase("T") && flag_usartempomax.equalsIgnoreCase("N")) {
 

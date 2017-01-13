@@ -187,6 +187,8 @@ public class HomeController extends javax.servlet.http.HttpServlet {
 				Pedidos_ajax.carregaPedido_AbertoEnvio(request, response, conn, coddistr);
 			} else if (cmd.equalsIgnoreCase("carregaPedido_fechado")) {
 				Pedidos_ajax.carregaPedido_fechado(request, response, conn, coddistr);
+			} else if (cmd.equalsIgnoreCase("marcarPedido")) {
+				Pedidos_ajax.marcarPedido(request, response, conn, coddistr);
 			} else if (cmd.equalsIgnoreCase("finalizandoPedido")) {
 				Pedidos_ajax.finalizandoPedido(request, response, conn, coddistr);
 			} else if (cmd.equalsIgnoreCase("responderPedido")) {
