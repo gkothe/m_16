@@ -10,7 +10,6 @@ import java.util.Date;
 import org.json.simple.JSONObject;
 
 import com.configs.Conexao;
-import com.configs.MobileController;
 
 public class Thread_NotPedidoFim extends Thread {
 

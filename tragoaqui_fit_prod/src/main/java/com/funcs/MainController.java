@@ -1,4 +1,4 @@
-package com.configs;
+package com.funcs;
 
 import java.io.PrintWriter;
 import java.sql.Connection;
@@ -14,10 +14,9 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.json.simple.JSONObject;
 
-import com.funcs.Home_ajax;
-import com.funcs.Parametros_ajax;
-import com.funcs.Pedidos_ajax;
-import com.funcs.Utilitario;
+import com.configs.AcessoController;
+import com.configs.Conexao;
+import com.configs.SysController;
 
 @SuppressWarnings("serial")
 @WebServlet(urlPatterns = { "" })

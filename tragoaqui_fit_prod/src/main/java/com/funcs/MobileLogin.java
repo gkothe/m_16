@@ -1,4 +1,4 @@
-package com.configs;
+package com.funcs;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -26,8 +26,7 @@ import javax.xml.bind.DatatypeConverter;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
-import com.funcs.Sys_parametros;
-import com.funcs.Utilitario;
+import com.configs.Conexao;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtBuilder;

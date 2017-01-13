@@ -1,4 +1,4 @@
-package com.configs;
+package com.funcs;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -33,11 +33,7 @@ import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
 import org.json.simple.parser.JSONParser;
 
-import com.funcs.Home_ajax;
-import com.funcs.Parametros_ajax;
-import com.funcs.Pedidos_ajax;
-import com.funcs.Relatorios;
-import com.funcs.Utilitario;
+import com.configs.Conexao;
 
 @SuppressWarnings("unchecked")
 @WebServlet(urlPatterns = { "/home/*" })
@@ -195,7 +191,7 @@ public class HomeController extends javax.servlet.http.HttpServlet {
 				Pedidos_ajax.responderPedido(request, response, conn, coddistr);
 			} else if (cmd.equalsIgnoreCase("insertpedidodistri")) {
 				Pedidos_ajax.InsertPedidoDistri(request, response, conn, coddistr);
-			} else if (cmd.equalsIgnoreCase("carregaProdutos")) {
+			}  else if (cmd.equalsIgnoreCase("carregaProdutos")) {
 				Parametros_ajax.carregaProdutos(request, response, conn, coddistr);
 			} else if (cmd.equalsIgnoreCase("cleanBairrosHorarios")) {
 				Parametros_ajax.limparBairros(request, response, conn, coddistr);

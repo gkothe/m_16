@@ -1,4 +1,4 @@
-package com.funcs;
+package com.configs;
 
 import java.io.FileInputStream;
 import java.sql.Connection;
@@ -21,7 +21,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
-import com.configs.Conexao;
+import com.funcs.Utilitario;
 
 public class InsertDados {
 	// classe de teste

@@ -1,4 +1,4 @@
-package com.configs;
+package com.funcs;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -43,9 +43,7 @@ import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
 import org.json.simple.parser.JSONParser;
 
-import com.funcs.Pedidos_ajax;
-import com.funcs.Sys_parametros;
-import com.funcs.Utilitario;
+import com.configs.Conexao;
 import com.mercadopago.MP;
 
 import javax.crypto.KeyGenerator;
