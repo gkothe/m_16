@@ -67,7 +67,12 @@ $(document).ready(function() {
 		$("#id_produto_listagem").val("");
 		$("#desc_produto_listagem").val("");
 	});
-
+	
+	$("#btn_mes_atual").click(function() {
+		trazData();
+	});
+	
+	
 	$('a[data-toggle="pill"]').on('shown.bs.tab', function(evt) {
 		$(window).trigger('resize');
 		var target = $(evt.target).attr("href") // activated tab
@@ -86,6 +91,18 @@ $(document).ready(function() {
 	dashInfosBasicas();
 	divManage(true);
 });
+
+
+function trazData() {
+
+	var date = new Date(), y = date.getFullYear(), m = date.getMonth();
+	var firstDay = new Date(y, m, 1);
+	var lastDay = new Date(y, m + 1, 0);
+
+	$("#data_pedido_ini").val(firstDay.getDate() + '/' + (firstDay.getMonth() + 1) + '/' + firstDay.getFullYear());
+	$("#data_pedido_fim").val(lastDay.getDate() + '/' + (lastDay.getMonth() + 1) + '/' + lastDay.getFullYear());
+
+}
 
 function divManage(lista) {
 
@@ -1286,7 +1303,12 @@ function dashServico() {
 					html = html + "			<i class=\"fa fa-square blue\"></i>&nbsp;&nbsp;" + data[t].desc;
 					backgroundColor[backgroundColor.length] = "#3498DB";
 					hoverBackgroundColor[hoverBackgroundColor.lenght] = "#49A9EA";
-				} else {
+				} else if (t == 1) {
+					html = html + "			<i class=\"fa fa-square purple\"></i>&nbsp;&nbsp;" + data[t].desc;
+					backgroundColor[backgroundColor.length] = "#9B59B6";
+					hoverBackgroundColor[hoverBackgroundColor.lenght] = "#36CAAB";
+
+				} else if (t == 2) {
 					html = html + "			<i class=\"fa fa-square green\"></i>&nbsp;&nbsp;" + data[t].desc;
 					backgroundColor[backgroundColor.length] = "#26B99A";
 					hoverBackgroundColor[hoverBackgroundColor.lenght] = "#36CAAB";

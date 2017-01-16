@@ -176,7 +176,7 @@ public class Relatorios {
 			retorno.put("media", "R$ " + df2.format(0));
 		}
 
-		sql = "select time_format(sec_to_time(avg(time_to_sec(tempo_estimado_desejado))),'%h:%i:%s' ) as tempo_estimado_desejado_medio  , time_format(sec_to_time(avg(time_to_sec(tempo_estimado_entrega))),'%h:%i:%s' ) as tempo_estimado_entrega_mediO   from pedido  where flag_pedido_ret_entre = 'T'  and id_distribuidora = ? and flag_status = 'O' and flag_modoentrega = 'T' ";
+		sql = "select time_format(sec_to_time(avg(time_to_sec(tempo_estimado_desejado))),'%H:%i:%s' ) as tempo_estimado_desejado_medio  , time_format(sec_to_time(avg(time_to_sec(tempo_estimado_entrega))),'%H:%i:%s' ) as tempo_estimado_entrega_mediO   from pedido  where flag_pedido_ret_entre = 'T'  and id_distribuidora = ? and flag_status = 'O' and flag_modoentrega = 'T' ";
 
 		sql = parametrosDash(sql, hora_inicial, hora_final, dias_semana, cod_bairro, data_pedido_ini, data_pedido_fim, flag_servico);
 
@@ -292,14 +292,13 @@ public class Relatorios {
 		String cod_bairro = request.getParameter("cod_bairro") == null ? "" : request.getParameter("cod_bairro");
 		String hora_final = request.getParameter("hora_final") == null ? "" : request.getParameter("hora_final");
 		String hora_inicial = request.getParameter("hora_inicial") == null ? "" : request.getParameter("hora_inicial");
-		String flag_servico = request.getParameter("flag_servico") == null ? "" : request.getParameter("flag_servico");
 		String dias_semana = request.getParameter("dias_semana") == null ? "" : request.getParameter("dias_semana");
 
-		String sql = "select distinct flag_pedido_ret_entre, count(flag_pedido_ret_entre) as qtd,sum(val_totalprod) as val_totalprod from pedido  where id_distribuidora = ? and flag_status = 'O' ";
+		String sql = "select distinct flag_pedido_ret_entre,coalesce(flag_modoentrega,'') as flag_modoentrega, count(flag_pedido_ret_entre) as qtd,sum(val_totalprod) as val_totalprod from pedido  where id_distribuidora = ? and flag_status = 'O' ";
 
 		sql = parametrosDash(sql, hora_inicial, hora_final, dias_semana, cod_bairro, data_pedido_ini, data_pedido_fim, "");
 
-		sql = sql + " group by flag_pedido_ret_entre ;";
+		sql = sql + " group by flag_pedido_ret_entre, coalesce(flag_modoentrega,'')  ";
 
 		PreparedStatement st = conn.prepareStatement(sql);
 		st.setInt(1, coddistr);
@@ -310,7 +309,14 @@ public class Relatorios {
 		ResultSet rs = st.executeQuery();
 		while (rs.next()) {
 			JSONObject obj = new JSONObject();
-			obj.put("desc", rs.getString("flag_pedido_ret_entre").equalsIgnoreCase("T") ? "Entrega" : "Retirada");
+			if (rs.getString("flag_pedido_ret_entre").equalsIgnoreCase("L")) {
+				obj.put("desc", "Retirada");
+			} else if (rs.getString("flag_modoentrega").equalsIgnoreCase("T")) {
+				obj.put("desc", "Tele-Entrega");
+			} else if (rs.getString("flag_modoentrega").equalsIgnoreCase("A")) {
+				obj.put("desc", "Agendamento");
+			}
+
 			obj.put("qtd", rs.getInt("qtd"));
 			obj.put("qtddf", df.format(rs.getInt("qtd")));
 			obj.put("val_totalprod", df2.format(rs.getDouble("val_totalprod")));
@@ -598,7 +604,7 @@ public class Relatorios {
 
 			sql.append("select  sum(qtd_prod) as qtd, ");
 			sql.append("       coalesce(pedido.cod_bairro, 0)           as cod_bairro, ");
-			sql.append("       coalesce(desc_bairro, '* distribuidora') as desc_bairro, ");
+			sql.append("       coalesce(desc_bairro, '* Loja') as desc_bairro, ");
 			sql.append("       sum(qtd_prod * val_unit ) as valtotal ");
 			sql.append("from   pedido ");
 			sql.append("       inner join pedido_item ");
@@ -1583,8 +1589,8 @@ public class Relatorios {
 			List listaReport = new LinkedList();
 
 			JasperReport objRelJasper_ordemprod = null;
-//			objRelJasper_ordemprod = JasperCompileManager.compileReport("D:/phonegap_projects/m_16/m_16/src/main/webapp/rels/" + nome + ".jrxml");
-//			String arq = "" + new File("D:/phonegap_projects/m_16/m_16/src/main/webapp/rels/" + nome + ".pdf");
+			// objRelJasper_ordemprod = JasperCompileManager.compileReport("D:/phonegap_projects/m_16/m_16/src/main/webapp/rels/" + nome + ".jrxml");
+			// String arq = "" + new File("D:/phonegap_projects/m_16/m_16/src/main/webapp/rels/" + nome + ".pdf");
 
 			String arq = "" + new File(sys.getPath() + "/rels/" + nome + ".pdf");
 			objRelJasper_ordemprod = JasperCompileManager.compileReport(sys.getPath() + "/rels/" + nome + ".jrxml");
@@ -1593,7 +1599,6 @@ public class Relatorios {
 
 			JRPdfExporter exporter = new JRPdfExporter();
 
-			
 			exporter.setParameter(JRPdfExporterParameter.JASPER_PRINT_LIST, listaReport);
 			exporter.setParameter(JRPdfExporterParameter.OUTPUT_FILE_NAME, arq);
 			exporter.exportReport();

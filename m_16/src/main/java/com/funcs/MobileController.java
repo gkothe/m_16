@@ -1421,9 +1421,9 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 			sql.append("                      on carrinho_item.id_prod_dist = ");
 			sql.append("                         produtos_distribuidora.id_prod_dist ");
 			sql.append("                         and carrinho_item.id_carrinho = carrinho.id_carrinho ");
-			sql.append("        where  produtos_distribuidora.flag_ativo = 's' ");
-			sql.append("               and distribuidora.flag_ativo_master = 's' ");
-			sql.append("               and distribuidora.flag_ativo = 's' ");
+			sql.append("        where  produtos_distribuidora.flag_ativo = 'S' ");
+			sql.append("               and distribuidora.flag_ativo_master = 'S' ");
+			sql.append("               and distribuidora.flag_ativo = 'S' ");
 			sql.append(" ");
 			sql.append(" ");
 			sql.append(") as tab");

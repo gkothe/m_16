@@ -45,10 +45,11 @@ $(document).ready(function() {
 
 	var tabela = $('#table_bairros');
 
-	$(tabela).bootstrapTable().on('dbl-click-cell.bs.table', function(field, value, row, element) {
-		var id = element.seq_movimento;
-		var form = document.getElementById('form');
+	$(tabela).bootstrapTable();
 
+	$(tabela).on('click-cell.bs.table', function(event, field, value, $element) {
+		if (field == "desc_bairro")
+			loadDadosBairro($element.cod_bairro);
 	});
 
 	$(tabela).on('sort.bs.table reset-view.bs.table post-body.bs.table', function() {
@@ -61,11 +62,7 @@ $(document).ready(function() {
 
 	var tabela = $('#table_horarios');
 
-	$(tabela).bootstrapTable().on('dbl-click-cell.bs.table', function(field, value, row, element) {
-		var id = element.seq_movimento;
-		var form = document.getElementById('form');
-
-	});
+	$(tabela).bootstrapTable();
 
 	$(tabela).on('sort.bs.table reset-view.bs.table post-body.bs.table', function() {
 		$('th', $('#table_bairros')).css('background-color', 'rgb(248, 248, 248)');
@@ -210,8 +207,6 @@ function removerBairro(bairro, desc) {
 			}
 		} ]
 	});
-
-	
 
 }
 
@@ -556,9 +551,8 @@ function loadDados() {
 		data : {
 			cmd : 'loadDadosEmp'
 		},
-		success : function(data) { 
+		success : function(data) {
 
-			
 			$("#cod_empresa").html(data[0].ID_DISTRIBUIDORA);
 			$("#cod_cidade").val(data[0].COD_CIDADE);
 			$("#desc_razaosocial").val(data[0].DESC_RAZAO_SOCIAL);
