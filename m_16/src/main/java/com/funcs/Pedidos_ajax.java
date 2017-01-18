@@ -139,9 +139,15 @@ public class Pedidos_ajax {
 
 	}
 
+	
 	public static void carregaPedidosAbertos(HttpServletRequest request, HttpServletResponse response, Connection conn, int coddistr) throws Exception {
-		JSONObject retorno = new JSONObject();
-		JSONArray pedidos = new JSONArray();
+		
+		carregaPedidosAbertos( request,  response,  conn,  coddistr, false, new JSONObject(), new JSONArray()); 
+	}
+	
+	public static void carregaPedidosAbertos(HttpServletRequest request, HttpServletResponse response, Connection conn, int coddistr, boolean segundaconsulta,JSONObject retorno,JSONArray pedidos) throws Exception {
+//		JSONObject retorno = new JSONObject();
+//		JSONArray pedidos = new JSONArray();
 		PrintWriter out = response.getWriter();
 
 		String num_pedido_aberto = request.getParameter("num_pedido_aberto") == null ? "" : request.getParameter("num_pedido_aberto"); //
@@ -161,19 +167,32 @@ public class Pedidos_ajax {
 		String temfiltro = "N";
 
 		StringBuffer sql = new StringBuffer();
-		sql.append("select *, ");
-		sql.append("       addtime(coalesce(data_agenda_entrega, data_pedido), Coalesce(tempo_estimado_entrega,tempo_estimado_desejado))   as tempoteste ");
-		sql.append("from   pedido ");
-		sql.append("       left join bairros ");
-		sql.append("              on bairros.cod_bairro = pedido.cod_bairro ");
-		sql.append("       left join pedido_motivo_cancelamento ");
-		sql.append("              on pedido_motivo_cancelamento.id_pedido = pedido.id_pedido ");
-		sql.append("WHERE  id_distribuidora = ? ");
-		sql.append("       AND ( flag_status = 'A' ");
-		sql.append("              OR flag_status = 'E' ");
-		sql.append("              OR ( flag_status = 'C' ");
-		sql.append("                   AND flag_confirmado_distribuidora = 'N' ) )");
 
+		if (segundaconsulta == false) {
+			sql.append("select *, ");
+			sql.append("       addtime(coalesce(data_agenda_entrega, data_pedido), Coalesce(tempo_estimado_entrega,tempo_estimado_desejado))   as tempoteste ");
+			sql.append("from   pedido ");
+			sql.append("       left join bairros ");
+			sql.append("              on bairros.cod_bairro = pedido.cod_bairro ");
+			sql.append("       left join pedido_motivo_cancelamento ");
+			sql.append("              on pedido_motivo_cancelamento.id_pedido = pedido.id_pedido ");
+			sql.append("WHERE  id_distribuidora = ? ");
+			sql.append("       AND ( flag_status = 'A' ");
+			sql.append("              OR (flag_status = 'E' &&  (flag_modoentrega is null or flag_modoentrega !='A')) ");
+			sql.append("              OR ( flag_status = 'C' ");
+			sql.append("                   AND flag_confirmado_distribuidora = 'N' ) )");
+		} else {
+			sql.append("select *, ");
+			sql.append("       addtime(coalesce(data_agenda_entrega, data_pedido), Coalesce(tempo_estimado_entrega,tempo_estimado_desejado))   as tempoteste ");
+			sql.append("from   pedido ");
+			sql.append("       left join bairros ");
+			sql.append("              on bairros.cod_bairro = pedido.cod_bairro ");
+			sql.append("       left join pedido_motivo_cancelamento ");
+			sql.append("              on pedido_motivo_cancelamento.id_pedido = pedido.id_pedido ");
+			sql.append("WHERE  id_distribuidora = ? ");
+			sql.append("       AND ( flag_status = 'E' &&  flag_modoentrega  ='A') ");
+			
+		}
 		if (!num_pedido_aberto.equalsIgnoreCase("")) {
 			sql.append(" and num_ped  = ? ");
 			temfiltro = "S";
@@ -236,14 +255,11 @@ public class Pedidos_ajax {
 			temfiltro = "S";
 		}
 
-		
 		if (!flag_marcado_filtro.equalsIgnoreCase("")) {
 			sql.append(" and flag_marcado  = ? ");
 			temfiltro = "S";
 		}
 
-		
-		
 		sql.append("  order by flag_status asc , Coalesce(data_agenda_entrega,data_pedido) asc ");
 
 		PreparedStatement st = conn.prepareStatement(sql.toString());
@@ -309,12 +325,11 @@ public class Pedidos_ajax {
 			st.setString(contparam, (flag_pedido_ret_entre));
 			contparam++;
 		}
-		
+
 		if (!flag_marcado_filtro.equalsIgnoreCase("")) {
 			st.setString(contparam, (flag_marcado_filtro));
 			contparam++;
 		}
-
 
 		ResultSet rs = st.executeQuery();
 		PreparedStatement st2;
@@ -345,7 +360,7 @@ public class Pedidos_ajax {
 
 			if (rs.getTimestamp("data_agenda_entrega") != null) {
 				objRetorno.put("data_agenda_entrega", new SimpleDateFormat("dd/MM/yyyy HH:mm").format(rs.getTimestamp("data_agenda_entrega")));
-				objRetorno.put("data_formatada", new SimpleDateFormat("dd/MM/yyyy HH:mm").format(rs.getTimestamp("data_agenda_entrega")));
+//				objRetorno.put("data_formatada", new SimpleDateFormat("dd/MM/yyyy HH:mm").format(rs.getTimestamp("data_agenda_entrega")));
 			} else {
 
 			}
@@ -391,7 +406,14 @@ public class Pedidos_ajax {
 		}
 		retorno.put("temfiltro", temfiltro);
 		retorno.put("pedidos", pedidos);
-		out.print(retorno.toJSONString());
+		
+		
+		if(segundaconsulta){
+			out.print(retorno.toJSONString());	
+		}else{
+			carregaPedidosAbertos(request, response, conn, coddistr, true, retorno, pedidos);; 	
+		}
+		
 
 	}
 
@@ -1059,7 +1081,7 @@ public class Pedidos_ajax {
 		String flag_marcado = request.getParameter("flag_marcado") == null ? "" : request.getParameter("flag_marcado"); //
 
 		String sql = " select * from  pedido   where pedido.id_pedido = ? and id_distribuidora = ? ";
-		
+
 		if (!(flag_marcado.equalsIgnoreCase("S")) && !(flag_marcado.equalsIgnoreCase("N"))) {
 			throw new Exception("Valor inválido!");
 		}
@@ -1177,7 +1199,7 @@ public class Pedidos_ajax {
 
 					m_tempo_entrega_inp = "00:00";
 
-				} else if (rs.getString("flag_pedido_ret_entre").equalsIgnoreCase("T") && rs.getString("flag_modoentrega")!=null && rs.getString("flag_modoentrega").equalsIgnoreCase("A")) {
+				} else if (rs.getString("flag_pedido_ret_entre").equalsIgnoreCase("T") && rs.getString("flag_modoentrega") != null && rs.getString("flag_modoentrega").equalsIgnoreCase("A")) {
 					m_tempo_entrega_inp = "00:00";
 				} else {
 					if (rs.getString("flag_pedido_ret_entre").equalsIgnoreCase("T") && rs.getString("flag_modoentrega").equalsIgnoreCase("T") && flag_usartempomax.equalsIgnoreCase("N")) {

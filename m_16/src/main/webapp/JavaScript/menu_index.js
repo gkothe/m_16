@@ -66,6 +66,11 @@ function showHelp() {
 	window.open("manual.pdf", '_blank');
 }
 
+function abrirMapa() {
+
+	window.open("http://www.santacruz.rs.gov.br/geo/", '_blank');
+}
+
 function sysMsg(text, tipo) {
 
 	if (tipo == 'E') {
@@ -324,7 +329,7 @@ $(document).ready(function() {
 	});
 
 	window.setInterval(function() {
-		checarPedidos();
+//		checarPedidos();
 	}, 5000);
 
 	/*
@@ -505,14 +510,20 @@ function checarPedidos() {
 
 				$("#h_qtd_pedz_agend").html(data.qtd_agend);
 				
-				html = ("<li> <div class=\"text-center\"> <a   > <strong> Pedidos agendados para serem entregues dentro da próxima hora.  </strong>  </a> </div> </li>");
+				html = ("<li> <div class=\"text-center\"> <a   > <strong> Pedidos agendados para serem entregues dentro das próximas 24 horas.  </strong>  </a> </div> </li>");
 
 				$("#menu_notification_agend").html($("#menu_notification_agend").html() + html);
 
 				
 				for (t = 0; t < data.pedidosagend.length; t++) {
 					var html = "";
-					html = html + (" <li> <a onClick=\"visualizarPedido(" + data.pedidosagend[t].id_pedido + ")\" >     ");
+					if(data.pedidosagend[t].passou==false){
+						html = html + (" <li> <a onClick=\"visualizarPedido(" + data.pedidosagend[t].id_pedido + ")\" >     ");	
+					}else{
+						html = html + (" <li> <a style='background-color: #E8F2FE !important' onClick=\"visualizarPedido(" + data.pedidosagend[t].id_pedido + ")\" >     ");
+					}
+					
+					
 					html = html + ("	<span class=\"message\">Número do pedido:  " + data.pedidosagend[t].num_ped + " <span class=\"time\">Hora: " + data.pedidosagend[t].horario + " </span> </span>    ");
 					html = html + ("	<span class=\"message\">Bairro: " + data.pedidosagend[t].desc_bairro + "  </span>    ");
 					html = html + ("	<span class=\"message\">Valor: R$ <label style='font-weight:normal !important;' id='lbl_notval1_" + t + "'>   </span>  	</a> </li> ");

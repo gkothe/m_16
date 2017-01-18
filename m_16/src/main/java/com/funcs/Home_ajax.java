@@ -166,15 +166,13 @@ public class Home_ajax {
 
 			GregorianCalendar calendar = new GregorianCalendar();
 			calendar.setTime(new Date());
-			calendar.add(Calendar.HOUR, 1);
+			calendar.add(Calendar.HOUR, 24);
 
-			sql = "select count(id_pedido) as qtd from pedido  where id_distribuidora = ? and flag_status = 'E' and data_agenda_entrega is not null and data_agenda_entrega >= ? and data_agenda_entrega <= ? ";
+			sql = "select count(id_pedido) as qtd from pedido  where id_distribuidora = ? and flag_status = 'E' and data_agenda_entrega is not null and  data_agenda_entrega <= ? ";
 
 			st = conn.prepareStatement(sql);
 			st.setInt(1, coddistr);
-
-			st.setString(2, new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
-			st.setString(3, new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(calendar.getTime()));
+			st.setString(2, new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(calendar.getTime()));
 
 			rs = st.executeQuery();
 
@@ -188,20 +186,27 @@ public class Home_ajax {
 
 			}
 
-			sql = "select * from pedido left join bairros on bairros.cod_bairro = pedido.cod_bairro  where id_distribuidora = ? and flag_status = 'E' and data_agenda_entrega is not null and data_agenda_entrega >= ? and data_agenda_entrega <= ? ";
+			sql = "select * from pedido left join bairros on bairros.cod_bairro = pedido.cod_bairro  where id_distribuidora = ? and flag_status = 'E' and data_agenda_entrega is not null and data_agenda_entrega <= ? order by data_agenda_entrega ";
 
 			st = conn.prepareStatement(sql);
 			st.setInt(1, coddistr);
 
-			st.setString(2, new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
-			st.setString(3, new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(calendar.getTime()));
+			st.setString(2, new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(calendar.getTime()));
 
 			rs = st.executeQuery();
 			JSONArray pedido1_agend = new JSONArray();
 			while (rs.next()) {
 				JSONObject pedidos = new JSONObject();
-
-				pedidos.put("horario", new SimpleDateFormat("HH:mm").format(rs.getTimestamp("data_agenda_entrega")));
+				
+				
+				if(rs.getTimestamp("data_agenda_entrega").before(new Date())){
+					pedidos.put("passou", true);
+					pedidos.put("horario", "EXPIRADO!");
+				}else{
+					pedidos.put("horario", new SimpleDateFormat("HH:mm").format(rs.getTimestamp("data_agenda_entrega")));
+					pedidos.put("passou", false);
+				}
+				
 				
 				pedidos.put("num_ped", rs.getString("num_ped"));
 				pedidos.put("desc_bairro", rs.getString("desc_bairro") == null ? "Retirada no local" : rs.getString("desc_bairro"));
