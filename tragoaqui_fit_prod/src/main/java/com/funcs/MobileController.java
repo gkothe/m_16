@@ -842,7 +842,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 				rs = st.executeQuery();
 
 				if (!rs.next()) {
-					 throw new Exception("Bairro não encontrado. Você deve escolher um bairro válido.");
+					throw new Exception("Bairro não encontrado. Você deve escolher um bairro válido.");
 				}
 			}
 			/*
@@ -1929,9 +1929,9 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 		}
 
 		StringBuffer sql = new StringBuffer();
-		sql.append("select  * , addtime(data_pedido, tempo_estimado_desejado) as tempocanc ");
-
-		sql.append(" FROM   pedido ");
+		sql.append("select  *,  ");//TODO
+		sql.append("       addtime(coalesce(data_agenda_entrega, data_pedido), tempo_estimado_entrega) as tempocanc ");
+//		sql.append(" FROM   pedido ");
 		sql.append(" WHERE  id_pedido = ? and flag_status = 'E' and flag_pedido_ret_entre = 'T' ");
 		sql.append("       AND id_usuario = ? ");
 
@@ -1947,7 +1947,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 			data6.setTime(rs.getTimestamp("tempocanc"));
 
 			if (data6.getTime().after(new Date())) {
-				throw new Exception("Você deve esperar o tempo maximo de entrega desejado para informar que não recebeu seu pedido.");
+				throw new Exception("Você deve esperar o tempo maximo de estimado desejado para informar que não recebeu seu pedido.");
 			}
 
 		}
@@ -3142,7 +3142,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 		param.put("bairro", bairro);
 		param.put("obsinfo", obsinfo);
 		param.put("c_telefone", telefone);
-		
+
 		criarPedido(request, response, conn, cod_usuario, param, true);
 
 	}
@@ -3304,9 +3304,9 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 				st.setString(15, tipo_pagamento);
 				st.setString(16, rs.getString("DESC_NOME"));
 				st.setString(17, choiceserv);
-				if (choiceserv.equalsIgnoreCase("T") && modoentrega.equalsIgnoreCase("A")){
+				if (choiceserv.equalsIgnoreCase("T") && modoentrega.equalsIgnoreCase("A")) {
 					st.setString(18, "00:00");
-					//st.setString(18, "00:30");
+					// st.setString(18, "00:30");
 				} else if (choiceserv.equalsIgnoreCase("T") && modoentrega.equalsIgnoreCase("T")) {
 
 					st.setString(18, tempomax.substring(0, 2) + ":" + tempomax.substring(2, 4));
@@ -3520,8 +3520,8 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 						}
 					}
 
-					if(!c_telefone.equalsIgnoreCase("")){
-						
+					if (!c_telefone.equalsIgnoreCase("")) {
+
 						sql = new StringBuffer();
 						sql.append("UPDATE usuario ");
 						sql.append("   SET  ");
@@ -3533,9 +3533,9 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 						st.setLong(2, cod_usuario);
 
 						st.executeUpdate();
-						
+
 					}
-					
+
 					// payment(request, response, conn, cod_usuario,email);
 
 					{

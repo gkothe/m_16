@@ -1929,9 +1929,9 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 		}
 
 		StringBuffer sql = new StringBuffer();
-		sql.append("select  * , addtime(data_pedido, tempo_estimado_desejado) as tempocanc ");
-
-		sql.append(" FROM   pedido ");
+		sql.append("select  *,  ");//TODO
+		sql.append("       addtime(coalesce(data_agenda_entrega, data_pedido), tempo_estimado_entrega) as tempocanc ");
+//		sql.append(" FROM   pedido ");
 		sql.append(" WHERE  id_pedido = ? and flag_status = 'E' and flag_pedido_ret_entre = 'T' ");
 		sql.append("       AND id_usuario = ? ");
 
@@ -1947,7 +1947,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 			data6.setTime(rs.getTimestamp("tempocanc"));
 
 			if (data6.getTime().after(new Date())) {
-				throw new Exception("Você deve esperar o tempo maximo de entrega desejado para informar que não recebeu seu pedido.");
+				throw new Exception("Você deve esperar o tempo maximo de estimado desejado para informar que não recebeu seu pedido.");
 			}
 
 		}

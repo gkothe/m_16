@@ -244,7 +244,7 @@ public class Pedidos_ajax {
 
 		
 		
-		sql.append("  order by flag_status asc , data_pedido asc ");
+		sql.append("  order by flag_status asc , Coalesce(data_agenda_entrega,data_pedido) asc ");
 
 		PreparedStatement st = conn.prepareStatement(sql.toString());
 		st.setInt(1, coddistr);
@@ -345,6 +345,7 @@ public class Pedidos_ajax {
 
 			if (rs.getTimestamp("data_agenda_entrega") != null) {
 				objRetorno.put("data_agenda_entrega", new SimpleDateFormat("dd/MM/yyyy HH:mm").format(rs.getTimestamp("data_agenda_entrega")));
+				objRetorno.put("data_formatada", new SimpleDateFormat("dd/MM/yyyy HH:mm").format(rs.getTimestamp("data_agenda_entrega")));
 			} else {
 
 			}

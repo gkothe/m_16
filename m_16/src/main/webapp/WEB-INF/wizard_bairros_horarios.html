@@ -27,7 +27,7 @@
 			aria-controls="profile" role="tab" data-toggle="tab">Dias e
 				horários</a></li>
 		<li role="presentation"><a href="#confir"
-			aria-controls="messages" role="tab" data-toggle="tab">Operação</a></li>
+			aria-controls="messages" role="tab" data-toggle="tab">Procedimento Final</a></li>
 	</ul>
 
 	<!-- Tab panes -->
@@ -216,7 +216,7 @@
 								<th data-sortable="true" data-width="100px"
 									data-field="HORARIO_7" data-align="left">Domingo</th>
 								<th data-sortable="true" data-width="100px"
-									data-field="HORARIO_8" data-align="left">Feriado/Especial/Customizavel</th>
+									data-field="HORARIO_8" data-align="left">Período personalizado</th>
 
 								<th data-sortable="false" data-width="100px" data-align="center"
 									data-formatter="btnFormater_horario">Opções</th>
@@ -311,7 +311,7 @@
 					style="margin-top: 30px; padding-left: 0px;">
 
 					<div class="checkbox" data-toggle="tooltip"
-						title="Ao marcar esta opção, você estará ADICIONANDO os bairros/horários que você acabou de marcar aos bairros/horários já existentes no sistema, usado no exmeplo:'passo 2' descrito na seção de informações. Em caso de conflito de horários o sistema irá retornar um aviso informando qual foi o conflito encontrado."
+						title="Ao marcar esta opção, serão ADICIONADOS os bairros/horários, que foram selecionados nas etapas anteriores, aos bairros/horários já existentes no sistema. Em caso de conflito de horários o sistema irá retornar um aviso informando qual foi o conflito encontrado."
 						style="margin-top: 0px; margin-bottom: 0px">
 						<label> <input type="radio" name='opc_tipoopc'
 							id="opc_tipoopc" style="color: black !important" name=''
@@ -330,12 +330,12 @@
 					style="margin-top: 30px; padding-left: 0px;">
 
 					<div class="checkbox" data-toggle="tooltip"
-						title="Ao marcar esta opção, você estará ADICIONANDO e SOBRESCREVENDO bairros/hórarios que já possuem configurações existentes. Ex: Se você selecionar o bairro Centro para adicionar uma faixa de horário e ele já possuir dias/horários informados, o sistema vai apagar TODAS informações relacionadas ao bairro Centro (incluindo TODOS os dias configurados) e vai adicionar as novas configurações que você acabou de informar."
+						title="Ao marcar esta opção, serão ADICIONADAS as novas configurações e qualquer configuração existente relacionada aos bairros selecionados anteriormente serão SUBSTITUÍDAS. Ex: Se você selecionar o bairro Centro para adicionar uma faixa de horário e ele já possuir dias/horários informados, o sistema vai apagar TODAS informações relacionadas ao bairro Centro (incluindo TODOS os dias configurados) e vai adicionar as novas configurações que você acabou de informar.""
 						style="margin-top: 0px; margin-bottom: 0px">
 						<label> <input type="radio" name='opc_tipoopc'
 							id="opc_tipoopc" style="color: black !important" name='' class=""
 							value="2">&nbsp;<strong>2 - Adicionar e
-								sobrescrever as configurações para os bairros/horários
+								substituir as configurações para os bairros/horários
 								selecionados. </strong>
 
 						</label>
@@ -351,7 +351,7 @@
 					style="margin-top: 30px; padding-left: 0px;">
 
 					<div class="checkbox" data-toggle="tooltip"
-						title="Ao marcar esta opção, você estará REMOVENDO TODAS CONFIGURAÇÕES relacioandas a bairros/horários já configuradas previamente no sistema e adicionando as configurações que você acabou de informar. Esta opção serve para começar uma configuração inteiramente nova."
+						title="Marcando esta opção, serão REMOVIDAS TODAS AS CONFIGURAÇÕES relacionadas à bairros/horários já configuradas previamente no sistema e adicionando as configurações que foram informadas. Esta opção serve para começar uma configuração inteiramente nova."
 						style="margin-top: 0px; margin-bottom: 0px">
 						<label> <input type="radio" name='opc_tipoopc'
 							id="opc_tipoopc" style="color: black !important" name=''
