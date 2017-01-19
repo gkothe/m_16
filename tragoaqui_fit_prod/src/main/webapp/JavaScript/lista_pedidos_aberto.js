@@ -84,6 +84,7 @@ $(document).ready(function() {
 
 	$(tabela).on('sort.bs.table reset-view.bs.table post-body.bs.table', function() {
 		$('th', $('#table_pedidos_abertos')).css('background-color', 'rgb(248, 248, 248)');
+		rowstuffs();
 		$('[data-toggle="tooltip"]').tooltip();
 	});
 

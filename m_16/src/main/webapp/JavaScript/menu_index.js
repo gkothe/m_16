@@ -329,7 +329,7 @@ $(document).ready(function() {
 	});
 
 	window.setInterval(function() {
-//		checarPedidos();
+		checarPedidos();
 	}, 5000);
 
 	/*

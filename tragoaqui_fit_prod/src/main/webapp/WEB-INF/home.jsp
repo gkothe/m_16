@@ -49,20 +49,20 @@
 <link rel="stylesheet" type="text/css" href="css/tragoaqui.css" />
 
 <%
-// 	Connection conn = null;
-// 	Sys_parametros sys = null;
-// 	try {
-//  		conn = Conexao.getConexao();
-//  		sys = new Sys_parametros(conn);
-//  		conn.close();
-// 	} catch (Exception e) {
+	// 	Connection conn = null;
+	// 	Sys_parametros sys = null;
+	// 	try {
+	//  		conn = Conexao.getConexao();
+	//  		sys = new Sys_parametros(conn);
+	//  		conn.close();
+	// 	} catch (Exception e) {
 
-// 		try {
-// 			conn.close();
-// 		} catch (Exception e2) {
-// 		}
+	// 		try {
+	// 			conn.close();
+	// 		} catch (Exception e2) {
+	// 		}
 
-// 	}
+	// 	}
 %>
 
 </head>
@@ -176,6 +176,8 @@
 									<li><a href="javascript:showHelp();"><i
 											class="fa fa-question pull-right"></i>Ajuda/Informações
 											gerais</a></li>
+									<li><a href="javascript:abrirMapa();"><i
+											class="fa fa-globe pull-right"></i>Mapa</a></li>
 									<li><a href="javascript:mutarsom();"><i
 											class="fa fa-pause-circle pull-right"></i> Desabilitar som
 											por 2 min. </a></li>
@@ -810,120 +812,120 @@
 							</div>
 
 
-								<DIV >
+							<DIV>
 
 
 								<div class="row">
 
-									<div id="flag_marcado_detail_div" class="col-xs-4 col-sm-4 col-md-4 col-lg-4" align="">
-										<input type="checkbox"  id="flag_marcado_detail" style="color: black !important">
-										<strong>Marcar pedido <strong>
+									<div id="flag_marcado_detail_div"
+										class="col-xs-4 col-sm-4 col-md-4 col-lg-4" align="">
+										<input type="checkbox" id="flag_marcado_detail"
+											style="color: black !important"> <strong>Marcar
+											pedido <strong>
 									</div>
-								</div> 
-
-						</div>
-						<div class="modal-footer">
-
-							<div class="row"">
-								<div class="col-xs-2 col-sm-2 col-md-2 col-lg-2 " align="left">
-									<button type="button" class="btn btn-primary"
-										data-dismiss="modal">Fechar</button>
 								</div>
 
-								<div class="col-xs-1 col-sm-1 col-md-1 col-lg-1 "></div>
-								<div class="col-xs-1 col-sm-1 col-md-1 col-lg-1 "></div>
-								<div class="col-xs-1 col-sm-1 col-md-1 col-lg-1 "></div>
-								<div class="col-xs-1 col-sm-1 col-md-1 col-lg-1 "></div>
-								<div class="col-xs-1 col-sm-1 col-md-1 col-lg-1 "></div>
-								<div class="col-xs-1 col-sm-1 col-md-1 col-lg-1 "></div>
-								<div class="col-xs-1 col-sm-1 col-md-1 col-lg-1 "></div>
+							</div>
+							<div class="modal-footer">
 
-
-
-								<div class="col-xs-3 col-sm-3 col-md-3 col-lg-3 " align="right">
-									<div id="div_responder">
-										<button type="button" id="m_responder" class="btn btn-success">Responder</button>
-									</div>
-									<div id="div_finalizar">
-										<button type="button" 
-											
-											id="m_finalizar" class="btn btn-danger">Mover para
-											histórico</button>
+								<div class="row"">
+									<div class="col-xs-2 col-sm-2 col-md-2 col-lg-2 " align="left">
+										<button type="button" class="btn btn-primary"
+											data-dismiss="modal">Fechar</button>
 									</div>
 
+									<div class="col-xs-1 col-sm-1 col-md-1 col-lg-1 "></div>
+									<div class="col-xs-1 col-sm-1 col-md-1 col-lg-1 "></div>
+									<div class="col-xs-1 col-sm-1 col-md-1 col-lg-1 "></div>
+									<div class="col-xs-1 col-sm-1 col-md-1 col-lg-1 "></div>
+									<div class="col-xs-1 col-sm-1 col-md-1 col-lg-1 "></div>
+									<div class="col-xs-1 col-sm-1 col-md-1 col-lg-1 "></div>
+									<div class="col-xs-1 col-sm-1 col-md-1 col-lg-1 "></div>
+
+
+
+									<div class="col-xs-3 col-sm-3 col-md-3 col-lg-3 " align="right">
+										<div id="div_responder">
+											<button type="button" id="m_responder"
+												class="btn btn-success">Responder</button>
+										</div>
+										<div id="div_finalizar">
+											<button type="button" id="m_finalizar" class="btn btn-danger">Mover
+												para histórico</button>
+										</div>
+
+									</div>
 								</div>
 							</div>
 						</div>
 					</div>
 				</div>
+
 			</div>
-
 		</div>
-	</div>
-	<input type="hidden" id="extra_paramfield">
-	<!-- jQuery jQuery v2.2.3  -->
-	<script src="gentelella-master/vendors/jquery/dist/jquery.min.js"></script>
-	<!-- Bootstrap -->
-	<script
-		src="gentelella-master/vendors/bootstrap/dist/js/bootstrap.min.js"></script>
+		<input type="hidden" id="extra_paramfield">
+		<!-- jQuery jQuery v2.2.3  -->
+		<script src="gentelella-master/vendors/jquery/dist/jquery.min.js"></script>
+		<!-- Bootstrap -->
+		<script
+			src="gentelella-master/vendors/bootstrap/dist/js/bootstrap.min.js"></script>
 
 
-	<!-- Chart.js -->
+		<!-- Chart.js -->
 
-	<!-- Custom Theme Scripts  tem que ter-->
-	<!-- 	<script src="gentelella-master/production/js/custom.js"></script> -->
-	<script src="gentelella-master/build/js/custom.js"></script>
+		<!-- Custom Theme Scripts  tem que ter-->
+		<!-- 	<script src="gentelella-master/production/js/custom.js"></script> -->
+		<script src="gentelella-master/build/js/custom.js"></script>
 
 
-	<script type="text/javascript"
-		src="JavaScript/jquery-ui-1.10.4.custom/js/jquery-ui-1.10.4.custom.min.js"></script>
-	<script type="text/javascript"
-		src="JavaScript/jquery-ui-1.10.4.custom/js/jquery.mask.min.js"></script>
-	<script type="text/javascript"
-		src="JavaScript/jquery-ui-1.10.4.custom/js/autoNumeric.1.9.22.js"
-		charset="utf-8"></script>
-	<script type="text/javascript"
-		src="JavaScript/jquery-ui-1.10.4.custom/js/jquery.blockUI.js"></script>
-	<script type="text/javascript"
-		src="JavaScript/bootstrap-3.3.6-dist/js/jquery.bootstrap-growl.js"></script>
-	<script type="text/javascript"
-		src="JavaScript/bootstrap-3.3.6-dist/js/bootstrap-timepicker.js"></script>
-	<script type="text/javascript"
-		src="JavaScript/bootstrap_date1.4.0/js/bootstrap-datepicker.js"></script>
-	<script type="text/javascript"
-		src="JavaScript/bootstrap_date1.4.0/locales/bootstrap-datepicker.pt-BR.min.js"></script>
-	<script type="text/javascript"
-		src="JavaScript/bootstrap-calendar-master/components/underscore/underscore-min.js"></script>
-	<script type="text/javascript"
-		src="JavaScript/bootstrap-calendar-master/js/calendar.js"></script>
-	<script type="text/javascript"
-		src="JavaScript/bootstrap-calendar-master/js/language/pt-BR.js"></script>
-	<script type="text/javascript"
-		src="JavaScript/bootstrap-table-master/dist/bootstrap-table.js"></script>
-	<script type="text/javascript"
-		src="JavaScript/bootstrap-table-master/dist/locale/bootstrap-table-pt-BR.js"></script>
-	<script type="text/javascript"
-		src="JavaScript/bootstrap-table-master/dist/extensions/cookie/bootstrap-table-cookie.js"></script>
-	<script type="text/javascript"
-		src="JavaScript/bootstrap-table-master/export/tableExport.js"></script>
-	<script type="text/javascript"
-		src="JavaScript/bootstrap-table-master/export/libs/FileSaver/FileSaver.min.js"></script>
-	<script type="text/javascript"
-		src="JavaScript/bootstrap-table-master/export/libs/html2canvas/html2canvas.min.js"></script>
-	<script type="text/javascript"
-		src="JavaScript/bootstrap-table-master/export/libs/jsPDF/jspdf.min.js"></script>
-	<script type="text/javascript"
-		src="JavaScript/bootstrap-table-master/export/libs/jsPDF-AutoTable/jspdf.plugin.autotable.js"></script>
-	<script type="text/javascript" src="JavaScript/inputmask/inputmask.js"></script>
-	<script type="text/javascript"
-		src="JavaScript/inputmask/inputmask.date.extensions.js"></script>
-	<script type="text/javascript"
-		src="JavaScript/inputmask/jquery.inputmask.js"></script>
-	<script type="text/javascript"
-		src="JavaScript/boostrap_multiselect/bootstrap-multiselect.js"></script>
-	<script type="text/javascript"
-		src="JavaScript/bootstrap3-dialog-master/dist/js/bootstrap-dialog.js"></script>
-
+		<script type="text/javascript"
+			src="JavaScript/jquery-ui-1.10.4.custom/js/jquery-ui-1.10.4.custom.min.js"></script>
+		<script type="text/javascript"
+			src="JavaScript/jquery-ui-1.10.4.custom/js/jquery.mask.min.js"></script>
+		<script type="text/javascript"
+			src="JavaScript/jquery-ui-1.10.4.custom/js/autoNumeric.1.9.22.js"
+			charset="utf-8"></script>
+		<script type="text/javascript"
+			src="JavaScript/jquery-ui-1.10.4.custom/js/jquery.blockUI.js"></script>
+		<script type="text/javascript"
+			src="JavaScript/bootstrap-3.3.6-dist/js/jquery.bootstrap-growl.js"></script>
+		<script type="text/javascript"
+			src="JavaScript/bootstrap-3.3.6-dist/js/bootstrap-timepicker.js"></script>
+		<script type="text/javascript"
+			src="JavaScript/bootstrap_date1.4.0/js/bootstrap-datepicker.js"></script>
+		<script type="text/javascript"
+			src="JavaScript/bootstrap_date1.4.0/locales/bootstrap-datepicker.pt-BR.min.js"></script>
+		<script type="text/javascript"
+			src="JavaScript/bootstrap-calendar-master/components/underscore/underscore-min.js"></script>
+		<script type="text/javascript"
+			src="JavaScript/bootstrap-calendar-master/js/calendar.js"></script>
+		<script type="text/javascript"
+			src="JavaScript/bootstrap-calendar-master/js/language/pt-BR.js"></script>
+		<script type="text/javascript"
+			src="JavaScript/bootstrap-table-master/dist/bootstrap-table.js"></script>
+		<script type="text/javascript"
+			src="JavaScript/bootstrap-table-master/dist/locale/bootstrap-table-pt-BR.js"></script>
+		<script type="text/javascript"
+			src="JavaScript/bootstrap-table-master/dist/extensions/cookie/bootstrap-table-cookie.js"></script>
+		<script type="text/javascript"
+			src="JavaScript/bootstrap-table-master/export/tableExport.js"></script>
+		<script type="text/javascript"
+			src="JavaScript/bootstrap-table-master/export/libs/FileSaver/FileSaver.min.js"></script>
+		<script type="text/javascript"
+			src="JavaScript/bootstrap-table-master/export/libs/html2canvas/html2canvas.min.js"></script>
+		<script type="text/javascript"
+			src="JavaScript/bootstrap-table-master/export/libs/jsPDF/jspdf.min.js"></script>
+		<script type="text/javascript"
+			src="JavaScript/bootstrap-table-master/export/libs/jsPDF-AutoTable/jspdf.plugin.autotable.js"></script>
+		<script type="text/javascript" src="JavaScript/inputmask/inputmask.js"></script>
+		<script type="text/javascript"
+			src="JavaScript/inputmask/inputmask.date.extensions.js"></script>
+		<script type="text/javascript"
+			src="JavaScript/inputmask/jquery.inputmask.js"></script>
+		<script type="text/javascript"
+			src="JavaScript/boostrap_multiselect/bootstrap-multiselect.js"></script>
+		<script type="text/javascript"
+			src="JavaScript/bootstrap3-dialog-master/dist/js/bootstrap-dialog.js"></script>
 </body>
 
 <script>
