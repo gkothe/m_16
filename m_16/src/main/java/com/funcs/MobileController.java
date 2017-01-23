@@ -78,18 +78,26 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) {
 		processaRequisicoes(request, response);
 	}
+	
+	protected void doOptions(HttpServletRequest request, HttpServletResponse response) {
+	 	
+		response.setHeader("Access-Control-Allow-Methods", "GET, POST");
+		response.setHeader("Access-Control-Allow-Origin", "*");
+		response.setHeader("Access-Control-Allow-Headers", "AUTHORIZATION,X-Auth-Token");
+	}
+
 
 	public void processaRequisicoes(HttpServletRequest request, HttpServletResponse response) {
 
 		try {
-
+/*
 			System.out.println("----------entro mob");
 
 			Map map = request.getParameterMap();
 			for (Iterator iterator = map.keySet().iterator(); iterator.hasNext();) {
 				String type = (String) iterator.next();
 				System.out.println(type + " : " + request.getParameter(type));
-			}
+			}*/
 
 			String strTipo = request.getParameter("ac"); // acho que aqui soh vai ter ajax, mas vo dexa assim por enqto.
 			if (strTipo == null) {

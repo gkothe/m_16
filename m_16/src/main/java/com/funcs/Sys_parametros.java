@@ -14,6 +14,7 @@ public class Sys_parametros {
 	String FACE_APP_SECRETKEY = "";
 	String FACE_APP_TOKEN = "";
 	String FACE_REDIRECT_URI = "";
+	String face_redirect_uri_webapp = "";
 	String url_system = "";
 	long sys_id_visistante = 0;
 	int sys_smtp_port = 0;
@@ -36,6 +37,15 @@ public class Sys_parametros {
 	String desc_webappfolder ="";
 	String ignorar_regramaior18 ="";
 	
+	
+
+	public String getFace_redirect_uri_webapp() {
+		return face_redirect_uri_webapp;
+	}
+
+	public void setFace_redirect_uri_webapp(String face_redirect_uri_webapp) {
+		this.face_redirect_uri_webapp = face_redirect_uri_webapp;
+	}
 
 	public String getIgnorar_regramaior18() {
 		return ignorar_regramaior18;
@@ -298,6 +308,7 @@ public class Sys_parametros {
 				this.setDesc_webappfolder(rs.getString("desc_webappfolder"));
 				this.setIgnorar_regramaior18(rs.getString("ignorar_regramaior18"));
 				this.setPath(System.getProperty( "catalina.base" )+"/webapps/"+this.getDesc_webappfolder());
+				this.setFace_redirect_uri_webapp(rs.getString("face_redirect_uri_webapp"));
 				
 			}
 

@@ -88,19 +88,26 @@ public class MobileLogin {
 		JSONObject objRetorno = new JSONObject();
 
 		String code = request.getParameter("zcode");
+		boolean  cordova = request.getParameter("cordova") == null ? true : Boolean.parseBoolean(request.getParameter("cordova"));
 
+		
+		
 		/*
 		 * GET graph.facebook.com/debug_token? input_token={token-to-inspect} &access_token={app-token-or-admin-token}
 		 */
-
+		String url = "";
 		// validacao1
-		String url = "https://graph.facebook.com/v2.3/oauth/access_token?client_id=" + sys.getFACE_APP_ID() + "&redirect_uri=" + sys.getFACE_REDIRECT_URI() + "&client_secret=" + sys.getFACE_APP_SECRETKEY() + "&code=" + code;
+		if(cordova){
+			url = "https://graph.facebook.com/v2.3/oauth/access_token?client_id=" + sys.getFACE_APP_ID() + "&redirect_uri=" + sys.getFACE_REDIRECT_URI() + "&client_secret=" + sys.getFACE_APP_SECRETKEY() + "&code=" + code;
+		}else{
+			url = "https://graph.facebook.com/v2.3/oauth/access_token?client_id=" + sys.getFACE_APP_ID() + "&redirect_uri=" + sys.getFace_redirect_uri_webapp() + "&client_secret=" + sys.getFACE_APP_SECRETKEY() + "&code=" + code;
+		}
+		
 
 		URL obj = new URL(url);
 		HttpURLConnection con = (HttpURLConnection) obj.openConnection();
 
 		con.setRequestMethod("GET");
-
 		int responseCode = con.getResponseCode();
 
 		if (responseCode == 400) {
