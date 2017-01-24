@@ -1,7 +1,16 @@
 //@ sourceURL=wizard_bairros_horarios.js
 
 var horarios = [];
+var rstimer = false;
+$(window).resize(function() {
+	if (rstimer) {
+		clearTimeout(rstimer);
+	}
 
+	rstimer = setTimeout(function() {
+		$('#table_horarios').bootstrapTable('resetView');
+	}, 500);
+});
 $(document).ready(function() {
 
 	loadBairrosWizard();

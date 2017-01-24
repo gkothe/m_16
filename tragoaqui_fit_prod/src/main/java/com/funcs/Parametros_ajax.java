@@ -25,7 +25,6 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
-
 import net.sf.jasperreports.engine.JasperCompileManager;
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperReport;
@@ -255,7 +254,7 @@ public class Parametros_ajax {
 			rs2 = st2.executeQuery();
 			while (rs2.next()) {
 				JSONArray horarios = new JSONArray();
-				sql = " select id_horario as id_horario, date_format(horario_ini, '%h:%i')  as horario_ini ,date_format(horario_fim, '%h:%i') as horario_fim from distribuidora_horario_dia_entre where id_distribuidora = ? and id_distr_bairro = ?  and cod_dia =  ? order by  horario_ini asc ";
+				sql = " select id_horario as id_horario, date_format(horario_ini, '%H:%i')  as horario_ini ,date_format(horario_fim, '%H:%i') as horario_fim from distribuidora_horario_dia_entre where id_distribuidora = ? and id_distr_bairro = ?  and cod_dia =  ? order by  horario_ini asc ";
 
 				st3 = conn.prepareStatement(sql);
 				st3.setInt(1, coddistr);

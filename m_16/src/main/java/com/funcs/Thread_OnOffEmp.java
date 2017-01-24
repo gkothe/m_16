@@ -78,7 +78,7 @@ public class Thread_OnOffEmp extends Thread {
 
 
 				
-				//	System.out.println(rs.getInt("ID_DISTRIBUIDORA") +" "+ agora + " " + date + " " + seconds);
+				//	System.out.println(rs.getInt("ID_DISTRIBUIDORA") +" "+ agora + " " + date + " " + seconds + " " + secs_param + " " + rs.getString("FLAG_ATIVO"));
 					
 					if (seconds > secs_param && rs.getString("FLAG_ATIVO").equalsIgnoreCase("S")) { // empresa esta offine
 
