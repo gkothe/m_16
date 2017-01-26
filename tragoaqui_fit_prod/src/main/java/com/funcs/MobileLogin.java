@@ -43,7 +43,7 @@ public class MobileLogin {
 
 		JSONObject objRetorno = new JSONObject();
 
-		String sql = "select  *, Coalesce(flag_maioridade,'N') as maior18 from usuario where Binary desc_user = ?  and Binary desc_senha = ? and (flag_ativado = 'S' or flag_ativado = 'V')";
+		String sql = "select  *, Coalesce(flag_maioridade,'N')  as maior18, Coalesce(flag_leutermos,'N') as termos from usuario where Binary desc_user = ?  and Binary desc_senha = ? and (flag_ativado = 'S' or flag_ativado = 'V')";
 
 		PreparedStatement st = conn.prepareStatement(sql);
 		st.setString(1, user);
@@ -59,17 +59,19 @@ public class MobileLogin {
 			} else {
 				objRetorno.put("maioridade", rs.getString("maior18").equalsIgnoreCase("") ? "N" : rs.getString("maior18"));//
 			}
+			
+			objRetorno.put("termos", rs.getString("termos").equalsIgnoreCase("") ? "N" : rs.getString("termos"));
+			
 
 			objRetorno.put("email", rs.getString("DESC_EMAIL"));//
 			if (rs.getLong("id_usuario") == sys.getId_usuario_admin()) {
 				objRetorno.put("usrtype", "admin");//
 			} else if (rs.getLong("id_usuario") == sys.getSys_id_visistante()) {
+				
 				objRetorno.put("usrtype", "visitante");
-				if (sys.getIgnorar_regramaior18().equalsIgnoreCase("S")) {
-					objRetorno.put("maioridade", "S");//
-				} else {//
-					objRetorno.put("maioridade", "N");//
-				}
+				objRetorno.put("termos", "S");
+				objRetorno.put("maioridade", "S");//
+
 			} else {
 				objRetorno.put("usrtype", "user");//
 			}
@@ -88,21 +90,18 @@ public class MobileLogin {
 		JSONObject objRetorno = new JSONObject();
 
 		String code = request.getParameter("zcode");
-		boolean  cordova = request.getParameter("cordova") == null ? true : Boolean.parseBoolean(request.getParameter("cordova"));
+		boolean cordova = request.getParameter("cordova") == null ? true : Boolean.parseBoolean(request.getParameter("cordova"));
 
-		
-		
 		/*
 		 * GET graph.facebook.com/debug_token? input_token={token-to-inspect} &access_token={app-token-or-admin-token}
 		 */
 		String url = "";
 		// validacao1
-		if(cordova){
+		if (cordova) {
 			url = "https://graph.facebook.com/v2.3/oauth/access_token?client_id=" + sys.getFACE_APP_ID() + "&redirect_uri=" + sys.getFACE_REDIRECT_URI() + "&client_secret=" + sys.getFACE_APP_SECRETKEY() + "&code=" + code;
-		}else{
+		} else {
 			url = "https://graph.facebook.com/v2.3/oauth/access_token?client_id=" + sys.getFACE_APP_ID() + "&redirect_uri=" + sys.getFace_redirect_uri_webapp() + "&client_secret=" + sys.getFACE_APP_SECRETKEY() + "&code=" + code;
 		}
-		
 
 		URL obj = new URL(url);
 		HttpURLConnection con = (HttpURLConnection) obj.openConnection();
@@ -160,7 +159,7 @@ public class MobileLogin {
 			throw new Exception("Erro nas credenciais");
 		}
 
-		String sql = "select  *, Coalesce(flag_maioridade,'N') as maior18 from usuario where id_user_face = ?  and flag_faceuser = 'S'  ";
+		String sql = "select  *, Coalesce(flag_maioridade,'N') as maior18,Coalesce(flag_leutermos,'N') as termos from usuario where id_user_face = ?  and flag_faceuser = 'S'  ";
 
 		PreparedStatement st = conn.prepareStatement(sql);
 		st.setLong(1, userid);
@@ -177,6 +176,11 @@ public class MobileLogin {
 			} else {
 				objRetorno.put("maioridade", rs.getString("maior18").equalsIgnoreCase("") ? "N" : rs.getString("maior18"));//
 			}
+			
+			
+			objRetorno.put("termos", rs.getString("termos").equalsIgnoreCase("") ? "N" : rs.getString("termos"));
+			
+			
 			objRetorno.put("email", rs.getString("desc_email"));//
 		} else {
 
@@ -189,6 +193,7 @@ public class MobileLogin {
 			} else {
 				objRetorno.put("maioridade", "N");//
 			}
+			objRetorno.put("termos", "N");
 			objRetorno.put("email", info.get("email"));//
 
 		}
@@ -354,7 +359,7 @@ public class MobileLogin {
 		if (ttlMillis >= 0) {
 			long expMillis = nowMillis + ttlMillis;
 			Date exp = new Date(expMillis);
-			builder.setExpiration(exp);
+			//builder.setExpiration(exp);
 		}
 
 		// Builds the JWT and serializes it to a compact, URL-safe string
@@ -392,12 +397,12 @@ public class MobileLogin {
 				}
 
 			} else {
-				throw new Exception("Dados de acesso inválidos");
+				throw new Exception("Dados de acesso inválidos. Realize o login novamente.");
 			}
 
 		} catch (Exception e) {
 			e.printStackTrace();
-			throw new Exception("Dados de acesso inválidos");
+			throw new Exception("Dados de acesso inválidos.  Realize o login novamente.");
 		}
 
 	}
@@ -507,8 +512,8 @@ public class MobileLogin {
 				st.executeUpdate();
 
 				Sys_parametros sys = new Sys_parametros(conn);
-				
-				msg = "Seu e-mail foi verificado e sua conta foi ativada. Você já pode logar no "+sys.getSys_fromdesc()+"! :-)";
+
+				msg = "Seu e-mail foi verificado e sua conta foi ativada. Você já pode logar no " + sys.getSys_fromdesc() + "! :-)";
 				erro = false;
 			} else {
 				if (!token.equalsIgnoreCase("")) {

@@ -36,11 +36,28 @@ public class Sys_parametros {
 	String path ="";
 	String desc_webappfolder ="";
 	String ignorar_regramaior18 ="";
-	
+	String tragoaqui_num_telefone ="";
+	String tragoaqui_pag_facebook ="";
 	
 
 	public String getFace_redirect_uri_webapp() {
 		return face_redirect_uri_webapp;
+	}
+
+	public String getTragoaqui_num_telefone() {
+		return tragoaqui_num_telefone;
+	}
+
+	public void setTragoaqui_num_telefone(String tragoaqui_num_telefone) {
+		this.tragoaqui_num_telefone = tragoaqui_num_telefone;
+	}
+
+	public String getTragoaqui_pag_facebook() {
+		return tragoaqui_pag_facebook;
+	}
+
+	public void setTragoaqui_pag_facebook(String tragoaqui_pag_facebook) {
+		this.tragoaqui_pag_facebook = tragoaqui_pag_facebook;
 	}
 
 	public void setFace_redirect_uri_webapp(String face_redirect_uri_webapp) {
@@ -274,7 +291,7 @@ public class Sys_parametros {
 	public Sys_parametros(Connection conn) {
 		// se for o caso futuramente, passar o cod_cidade
 		try {
-			PreparedStatement st = conn.prepareStatement("select * from sys_parametros ");
+			PreparedStatement st = conn.prepareStatement(" select * from sys_parametros ");
 			ResultSet rs = st.executeQuery();
 			if (rs.next()) {
 
@@ -309,6 +326,8 @@ public class Sys_parametros {
 				this.setIgnorar_regramaior18(rs.getString("ignorar_regramaior18"));
 				this.setPath(System.getProperty( "catalina.base" )+"/webapps/"+this.getDesc_webappfolder());
 				this.setFace_redirect_uri_webapp(rs.getString("face_redirect_uri_webapp"));
+				this.setTragoaqui_num_telefone(rs.getString("tragoaqui_num_telefone"));
+				this.setTragoaqui_pag_facebook(rs.getString("tragoaqui_pag_facebook"));
 				
 			}
 

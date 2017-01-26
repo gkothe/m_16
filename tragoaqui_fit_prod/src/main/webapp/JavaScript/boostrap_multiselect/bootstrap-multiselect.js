@@ -415,7 +415,7 @@
             filterBehavior: 'text',
             includeFilterClearBtn: true,
             preventInputChangeEvent: false,
-            nonSelectedText: 'Nenhuma opção selecioada',
+            nonSelectedText: 'Nenhuma opção selecionada',
             nSelectedText: 'Selecionado',
             allSelectedText: 'Todas opções selecioandas',
             numberDisplayed: 7,

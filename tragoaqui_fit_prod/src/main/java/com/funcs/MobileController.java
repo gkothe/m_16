@@ -78,26 +78,22 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) {
 		processaRequisicoes(request, response);
 	}
-	
+
 	protected void doOptions(HttpServletRequest request, HttpServletResponse response) {
-	 	
+
 		response.setHeader("Access-Control-Allow-Methods", "GET, POST");
 		response.setHeader("Access-Control-Allow-Origin", "*");
 		response.setHeader("Access-Control-Allow-Headers", "AUTHORIZATION,X-Auth-Token");
 	}
 
-
 	public void processaRequisicoes(HttpServletRequest request, HttpServletResponse response) {
 
 		try {
-/*
-			System.out.println("----------entro mob");
-
-			Map map = request.getParameterMap();
-			for (Iterator iterator = map.keySet().iterator(); iterator.hasNext();) {
-				String type = (String) iterator.next();
-				System.out.println(type + " : " + request.getParameter(type));
-			}*/
+			/*
+			 * System.out.println("----------entro mob");
+			 * 
+			 * Map map = request.getParameterMap(); for (Iterator iterator = map.keySet().iterator(); iterator.hasNext();) { String type = (String) iterator.next(); System.out.println(type + " : " + request.getParameter(type)); }
+			 */
 
 			String strTipo = request.getParameter("ac"); // acho que aqui soh vai ter ajax, mas vo dexa assim por enqto.
 			if (strTipo == null) {
@@ -194,8 +190,8 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 					carregaProdutoUnico(request, response, conn, cod_usuario);
 				} else if (cmd.equalsIgnoreCase("saveLocationUser")) {
 					saveLocationUser(request, response, conn, cod_usuario);
-				} else if (cmd.equalsIgnoreCase("confirmaIdade")) {
-					confirmaIdade(request, response, conn, cod_usuario, sys);
+				} else if (cmd.equalsIgnoreCase("confirmaIdadeTermos")) {
+					confirmaIdadeTermos(request, response, conn, cod_usuario, sys);
 				} else if (cmd.equalsIgnoreCase("carrega_flagentreret")) {
 					carregaFlagEntreRet(request, response, conn);
 				} else if (cmd.equalsIgnoreCase("carrega_situacaoes")) {
@@ -263,6 +259,8 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 					loadFreteBairro(request, response, conn, cod_usuario);
 				} else if (cmd.equalsIgnoreCase("enviarMsgContato")) {
 					enviarMsgContato(request, response, conn, cod_usuario, sys);
+				} else if (cmd.equalsIgnoreCase("recusouTermos")) {
+					recusouTermos(request, response, conn, cod_usuario, sys);
 				}
 
 				else {
@@ -334,16 +332,67 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 		out.print(objRetorno.toJSONString());
 	}
 
-	private static void confirmaIdade(HttpServletRequest request, HttpServletResponse response, Connection conn, long cod_usuario, Sys_parametros sys) throws Exception {
+	private static void recusouTermos(HttpServletRequest request, HttpServletResponse response, Connection conn, long cod_usuario, Sys_parametros sys) throws Exception {
+		JSONObject objRetorno = new JSONObject();
+		PrintWriter out = response.getWriter();
+		try {
+
+			StringBuffer sql = new StringBuffer();
+			sql.append(" delete from usuario ");
+			sql.append(" WHERE   id_usuario = ? ");
+			PreparedStatement st = conn.prepareStatement(sql.toString());
+			st.setLong(1, cod_usuario);
+			st.executeUpdate();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+
+		}
+
+		objRetorno.put("msg", "ok");
+
+		out.println(objRetorno.toString());
+
+	}
+
+	private static void confirmaIdadeTermos(HttpServletRequest request, HttpServletResponse response, Connection conn, long cod_usuario, Sys_parametros sys) throws Exception {
 
 		PrintWriter out = response.getWriter();
 
 		JSONObject objRetorno = new JSONObject();
 
+		String termos = request.getParameter("termos") == null ? "" : request.getParameter("termos");
+		String idade = request.getParameter("idade") == null ? "" : request.getParameter("idade");
+
+		if (!termos.equalsIgnoreCase("true")) {
+			throw new Exception(" Você deve aceitar os termos e condições para usar o " + sys.getSys_fromdesc());
+		}
+
+		if (sys.getIgnorar_regramaior18().equalsIgnoreCase("N")) {
+
+			if (!idade.equalsIgnoreCase("true")) {
+				throw new Exception(" Você deve ter mais de 18 anos para usar o " + sys.getSys_fromdesc());
+			}
+		}
+
 		if (sys.getSys_id_visistante() != cod_usuario) {
+
+			if (sys.getIgnorar_regramaior18().equalsIgnoreCase("N")) {
+				StringBuffer sql = new StringBuffer();
+				sql.append(" update usuario ");
+				sql.append("   set flag_maioridade = ? ");
+
+				sql.append(" WHERE   id_usuario = ? ");
+
+				PreparedStatement st = conn.prepareStatement(sql.toString());
+				st.setString(1, "S");
+				st.setLong(2, cod_usuario);
+				st.executeUpdate();
+			}
+
 			StringBuffer sql = new StringBuffer();
 			sql.append(" update usuario ");
-			sql.append("   set flag_maioridade = ? ");
+			sql.append("   set flag_leutermos = ? ");
 
 			sql.append(" WHERE   id_usuario = ? ");
 
@@ -351,6 +400,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 			st.setString(1, "S");
 			st.setLong(2, cod_usuario);
 			st.executeUpdate();
+
 		}
 		objRetorno.put("msg", "ok");
 		out.print(objRetorno.toJSONString());
@@ -569,24 +619,29 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 			throw new Exception("Erro. As senhas são diferentes.");
 		}
 
-		PreparedStatement st = conn.prepareStatement("SELECT 1 from  usuario where  Binary desc_user = ? ");
-		st.setString(1, desc_usuario);
+		PreparedStatement st = conn.prepareStatement("select * from  usuario where  Binary desc_email =  ? ");
+		st.setString(1, desc_email);
 		ResultSet rs = st.executeQuery();
 
 		if (rs.next()) {
-			throw new Exception("Nome de usuário ja existente!");
-		}
 
-		st = conn.prepareStatement("select * from  usuario where  Binary desc_email =  ? ");
-		st.setString(1, desc_email);
-		rs = st.executeQuery();
-
-		if (rs.next()) {
-			if (rs.getString("flag_faceuser").equalsIgnoreCase("S")) {
+			if (rs.getString("chave_ativacao") != null && !(rs.getString("chave_ativacao").equalsIgnoreCase(""))) {
+				String texto = "Olá, <br>  Bem vindo ao " + sys.getSys_fromdesc() + ", para validar sua conta clique <a href='" + sys.getUrl_system() + "mobile?ac=validar&token=" + rs.getString("chave_ativacao") + "'> AQUI </a> e você estará pronto para utilizar nossos serviços. <br> Suas informações de login são: <br> Usuário: " + desc_usuario + " <br> Senha: " + desc_senha;
+				Utilitario.sendEmail(desc_email, texto, sys.getSys_fromdesc() + " - Criação de conta!", conn);
+				throw new Exception("E-mail já cadastrado! Um novo e-mail de validação foi enviado para o e-mail cadastrado. ");
+			} else if (rs.getString("flag_faceuser").equalsIgnoreCase("S")) {
 				throw new Exception("Este e-mail já está relacionado a uma conta do Facebook. Se você não possui mais uma conta de Facebook, você pode voltar a tela de login e clicar que recuperar senha.");
 			} else {
 				throw new Exception("E-mail já cadastrado! Se você se esqueceu de sua senha, volte a tela de login e clique em recuperar senha.");
 			}
+		}
+
+		st = conn.prepareStatement("SELECT 1 from  usuario where  Binary desc_user = ? ");
+		st.setString(1, desc_usuario);
+		rs = st.executeQuery();
+
+		if (rs.next()) {
+			throw new Exception("Nome de usuário ja existente!");
 		}
 
 		String validacao = Utilitario.StringGen(1000, 32).substring(0, 99);
@@ -1937,7 +1992,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 		}
 
 		StringBuffer sql = new StringBuffer();
-		sql.append("select  *,  ");//TODO
+		sql.append("select  *,  ");// TODO
 		sql.append("       addtime(coalesce(data_agenda_entrega, data_pedido), tempo_estimado_entrega) as tempocanc ");
 		sql.append(" FROM   pedido ");
 		sql.append(" WHERE  id_pedido = ? and flag_pedido_ret_entre = 'T' ");
@@ -1961,13 +2016,10 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 			if (rs.getString("flag_status").equalsIgnoreCase("R")) {
 				throw new Exception("Este pedido foi recusado.");
 			}
-			
+
 			Calendar data6 = Calendar.getInstance();
 			data6.setTime(rs.getTimestamp("tempocanc"));
 
-			
-			
-			
 			if (data6.getTime().after(new Date())) {
 				throw new Exception("Você deve esperar o tempo maximo de estimado desejado para informar que não recebeu seu pedido.");
 			}
@@ -3173,6 +3225,8 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 		PrintWriter out = response.getWriter();
 		JSONObject retorno = new JSONObject();
 
+		Sys_parametros sys = new Sys_parametros(conn);
+
 		String tipo_pagamento = param.get("tipo_pagamento").toString();
 		String desc_endereco = param.get("desc_endereco").toString();
 		String desc_endereco_num = param.get("desc_endereco_num").toString();
@@ -3225,7 +3279,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 		long idcarrinho = 0;
 
 		sql = new StringBuffer();
-		sql.append("select usuario.desc_email, usuario. desc_nome, carrinho_item.id_carrinho,distribuidora.id_distribuidora,carrinho.cod_bairro,usuario.desc_telefone,usuario.desc_endereco,desc_endereco_num,desc_endereco_complemento,sum(produtos_distribuidora.val_prod * carrinho_item.qtd ) as val_prod, ");
+		sql.append("select usuario.flag_maioridade,usuario.flag_leutermos,usuario.desc_email, usuario. desc_nome, carrinho_item.id_carrinho,distribuidora.id_distribuidora,carrinho.cod_bairro,usuario.desc_telefone,usuario.desc_endereco,desc_endereco_num,desc_endereco_complemento,sum(produtos_distribuidora.val_prod * carrinho_item.qtd ) as val_prod, ");
 		sql.append("  ");
 		sql.append("case when flag_telebairro = 'S' then distribuidora_bairro_entrega.val_tele_entrega else distribuidora.val_tele_entrega end as val_tele_entrega ");
 		sql.append("  ");
@@ -3254,7 +3308,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 		sql.append("  ");
 		sql.append("where usuario.id_usuario = ? ");
 		sql.append(" ");
-		sql.append("group by usuario.desc_email, usuario. desc_nome, carrinho_item.id_carrinho,distribuidora_bairro_entrega.id_distribuidora,carrinho.cod_bairro,usuario.desc_telefone,usuario.desc_endereco,desc_endereco_num,desc_endereco_complemento, val_tele_entrega");
+		sql.append("group by usuario.flag_maioridade,usuario.flag_leutermos , usuario.desc_email, usuario. desc_nome, carrinho_item.id_carrinho,distribuidora_bairro_entrega.id_distribuidora,carrinho.cod_bairro,usuario.desc_telefone,usuario.desc_endereco,desc_endereco_num,desc_endereco_complemento, val_tele_entrega");
 
 		st = conn.prepareStatement(sql.toString());
 		PreparedStatement st2 = null;
@@ -3276,6 +3330,17 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 				retorno.put("offline", true);
 
 			}
+
+			if (sys.getIgnorar_regramaior18().equalsIgnoreCase("N")) {
+				if (rs.getString("flag_maioridade") == null || rs.getString("flag_maioridade").equalsIgnoreCase("N")) {
+					throw new Exception("Você deve ser maior de 18 anos para realizar um pedido");
+				}
+			}
+
+			if (rs.getString("flag_leutermos") == null || rs.getString("flag_leutermos").equalsIgnoreCase("N")) {
+				throw new Exception("Você deve concordar com os termos e condições para realizar um pedido. Faça logout no sistema e login novamente.");
+			}
+
 			if (!offline) {
 
 				validacaoTipoServico(request, response, conn, rs.getInt("id_distribuidora"), choiceserv);

@@ -18,6 +18,16 @@
 	rel="stylesheet">
 
 </head>
+
+<style type="text/css">
+body {
+	background: url(images/back3.png) no-repeat center center fixed;
+	-webkit-background-size: cover;
+	-moz-background-size: cover;
+	-o-background-size: cover;
+	background-size: cover;
+}
+</style>
 <%
 	String msg = "";
 	if (request.getAttribute("msg") != null) {
@@ -33,28 +43,45 @@
 	<div align="center">
 		<br> <br> <br>
 
-		<div class="loginBox">
-			<div class="container">
-				<%
-					if (!erro) {
-				%>
 
-				<div class="alert alert-success  fade in" role="alert">
+		<div class="row">
+			<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12" align="center">
+				<div class="panel panel-default" style="width: 70%; left:5%; right:5%">
+ 
+					<div class="panel-heading">
+						<img src="images/logo.png"
+							style="max-width: 350px; padding-left: 10px;">
+					</div>
+					<div class="panel-body">
 
-					<%=msg%>
+								<%
+									if (!erro) {
+								%>
+
+								<div class="alert alert-success  fade in" role="alert">
+
+									<%=msg%>
+								</div>
+								<%
+									} else {
+								%>
+								<div class="alert alert-danger  fade in" role="alert">
+
+									<%=msg%>
+								</div>
+								<%
+									}
+								%>
+
+					</div>
 				</div>
-				<%
-					} else {
-				%>
-				<div class="alert alert-danger  fade in" role="alert">
-
-					<%=msg%>
-				</div>
-				<%
-					}
-				%>
 			</div>
 		</div>
+
+
+
+
+
 	</div>
 </body>
 </html>

@@ -111,13 +111,12 @@ public class Utilitario {
 	public static void sendEmail(String para, String html, String subject, Connection conn) throws Exception {
 		Sys_parametros sys = new Sys_parametros(conn);
 		String rodape = "<br><br> Equipe "+ sys.getSys_fromdesc()+" <br>";
-		rodape = rodape + ""+ sys.getSys_fromemail() + " <br>";
-		rodape = rodape + " {Facebook} <br>";
-		rodape = rodape + " {Número} <br>";
+		rodape = rodape + " "+ sys.getTragoaqui_num_telefone()+" <br>";
+		rodape = rodape + " "+ sys.getSys_fromemail() + " <br>";
+		rodape = rodape + " "+ sys.getTragoaqui_pag_facebook()+" <br>";
+		rodape = rodape + " www.tragoaqui.com.br <br>";
 		
-
 		HtmlEmail mailService = new HtmlEmail();
-
 		mailService.setHostName(sys.getSys_host_name_smtp());
 		mailService.setSmtpPort(sys.getSys_smtp_port());
 		mailService.setAuthenticator(new DefaultAuthenticator(sys.getSys_email(), sys.getSys_senha()));
