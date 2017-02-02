@@ -1,0 +1,16 @@
+<div class="cal-month-day <%= cls %>">
+	<% if ( cal.options['urlnew'] ) { %>
+		<span class="pull-right glyphicon glyphicon-plus" style="margin-top: 15px; margin-right: 15px;" style="cursor: pointer" data-toggle="tooltip" title="Adicionar nova tarefa na data" onclick="window.location.href='<%= cal.options['urlnew'] %>&data=<%= data_day %>';"></span>
+	<% } %>			
+	<span class="pull-left" data-cal-date="<%= data_day %>" style="margin-top: 5px; margin-left: 35px; font-size: 24px" data-cal-view="day" data-toggle="tooltip" title="<%= tooltip %>"><%= day %></span>
+	<% if (events.length > 0 ) { %>
+		<div class="events-list" data-cal-start="<%= start %>" data-cal-end="<%= end %>">
+			<% _.each(events, function(event) { %>
+				<a href="<%= event.url ? event.url : 'javascript:void(0)' %>" data-event-id="<%= event.id %>" data-event-class="<%= event['class'] %>"
+					class="pull-left event <%= event['class'] %>" data-toggle="tooltip"
+					title="<%= event.title %>">
+				</a>
+			<% }); %>
+		</div>
+	<% } %>
+</div>

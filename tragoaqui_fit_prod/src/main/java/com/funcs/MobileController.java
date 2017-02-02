@@ -3338,7 +3338,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 			}
 
 			if (rs.getString("flag_leutermos") == null || rs.getString("flag_leutermos").equalsIgnoreCase("N")) {
-				throw new Exception("Você deve concordar com os termos e condições para realizar um pedido. Faça logout no sistema e login novamente.");
+				throw new Exception("Você deve concordar com os termos e condições para realizar um pedido. Seu cadastrado será removido. Para utilizar do nossos serviços cadastre-se novamente e aceite os termos e condições.");
 			}
 
 			if (!offline) {
