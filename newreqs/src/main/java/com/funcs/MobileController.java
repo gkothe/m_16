@@ -3291,7 +3291,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 		long idcarrinho = 0;
 
 		sql = new StringBuffer();
-		sql.append("select usuario.flag_maioridade,usuario.flag_leutermos,usuario.desc_email, usuario. desc_nome, carrinho_item.id_carrinho,distribuidora.id_distribuidora,carrinho.cod_bairro,usuario.desc_telefone,usuario.desc_endereco,desc_endereco_num,desc_endereco_complemento,sum(produtos_distribuidora.val_prod * carrinho_item.qtd ) as val_prod, ");
+		sql.append("select usuario.flag_maioridade,usuario.flag_leutermos,usuario.desc_email, usuario. desc_nome, carrinho_item.id_carrinho,distribuidora.id_distribuidora,carrinho.cod_bairro,usuario.desc_telefone,usuario.desc_endereco,desc_endereco_num,desc_endereco_complemento,sum(produtos_distribuidora.val_prod * carrinho_item.qtd ) as val_prod, date_format(tempo_minimo_entrega, '%H:%i') as tempo_minimo_entrega , ");
 		sql.append("  ");
 		sql.append("case when flag_telebairro = 'S' then distribuidora_bairro_entrega.val_tele_entrega else distribuidora.val_tele_entrega end as val_tele_entrega ");
 		sql.append("  ");
@@ -3587,6 +3587,42 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 							st.setLong(7, cod_usuario);
 
 							st.executeUpdate();
+
+						}
+
+					}
+
+					if (choiceserv.equalsIgnoreCase("T")) {
+
+						if (modoentrega.equalsIgnoreCase("A")) {
+
+							GregorianCalendar datadesejada = new GregorianCalendar();
+							datadesejada.setTime(new SimpleDateFormat("dd/MM/yyyyHHmm").parse(dataagendamento + dataagendamentohora));
+
+							GregorianCalendar dataminimo = new GregorianCalendar();
+							dataminimo.setTime(new Date());
+							dataminimo.add(Calendar.HOUR, Integer.parseInt(rs.getString("tempo_minimo_entrega").substring(0, 2)));
+							dataminimo.add(Calendar.MINUTE, Integer.parseInt(rs.getString("tempo_minimo_entrega").substring(3, 5)));
+
+							if (datadesejada.getTime().before(dataminimo.getTime())) {
+								throw new Exception("O tempo mínimo para entrega nesta loja é " + rs.getString("tempo_minimo_entrega"));
+							}
+
+						} else if (modoentrega.equalsIgnoreCase("T")) {
+
+							GregorianCalendar datadesejada = new GregorianCalendar();
+							datadesejada.setTime(new Date());
+							datadesejada.add(Calendar.HOUR, Integer.parseInt(tempomax.substring(0, 2)));
+							datadesejada.add(Calendar.MINUTE, Integer.parseInt(tempomax.substring(2, 4)));
+
+							GregorianCalendar dataminimo = new GregorianCalendar();
+							dataminimo.setTime(new Date());
+							dataminimo.add(Calendar.HOUR, Integer.parseInt(rs.getString("tempo_minimo_entrega").substring(0, 2)));
+							dataminimo.add(Calendar.MINUTE, Integer.parseInt(rs.getString("tempo_minimo_entrega").substring(3, 5)));
+
+							if (datadesejada.getTime().before(dataminimo.getTime())) {
+								throw new Exception("O tempo mínimo para entrega nesta loja é " + rs.getString("tempo_minimo_entrega"));
+							}
 
 						}
 
@@ -3941,7 +3977,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 			sql2.append(" on distribuidora.id_distribuidora = distribuidora_horario_dia_entre.id_distribuidora ");
 			sql2.append(" ");
 			sql2.append(" where Coalesce(distribuidora_bairro_entrega.id_distribuidora,? ) = ? and distribuidora_bairro_entrega.cod_bairro = ? and cod_dia = " + rs2.getString("cod_dia") + " ORDER BY HORARIO_INI desc");
-			
+
 			st3 = conn.prepareStatement(sql2.toString());
 			st3.setInt(1, Integer.parseInt(id_loja));
 			st3.setInt(2, Integer.parseInt(id_loja));
@@ -3955,11 +3991,9 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 				horario = ", " + horaini + " - " + horafim + horario;
 
 				retorno.put("frete", rs3.getString("frete"));
-				
+
 			}
-			
-			
-			
+
 			if (horario.equalsIgnoreCase("")) {
 
 				if (rs2.getInt("cod_dia") == 6) {
@@ -4030,14 +4064,14 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 			tembairro = true;
 			bairros.add(obj);
 		}
-		
-		if(!tembairro){
-			 	bairros = new JSONArray();
-				obj = new JSONObject();
-				obj.put("cod_bairro", "");
-				obj.put("desc_bairro", "Nenhum bairro disponivel");
-				bairros.add(obj);
-			
+
+		if (!tembairro) {
+			bairros = new JSONArray();
+			obj = new JSONObject();
+			obj.put("cod_bairro", "");
+			obj.put("desc_bairro", "Nenhum bairro disponivel");
+			bairros.add(obj);
+
 		}
 
 		retorno.put("bairros", bairros);
@@ -4094,7 +4128,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 	private static void LojaProdTestOnline(HttpServletRequest request, HttpServletResponse response, Connection conn, long cod_usuario, Sys_parametros sys) throws Exception {
 
 		String id_loja = request.getParameter("idloja") == null ? "" : request.getParameter("idloja");
-		//TODO cidade?
+		// TODO cidade?
 		PrintWriter out = response.getWriter();
 		JSONObject retorno = new JSONObject();
 

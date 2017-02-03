@@ -848,9 +848,33 @@ public class Utilitario {
 		System.out.println(new Date());
 
 		try {
-			conn = Conexao.getConexao();
-			Sys_parametros sys = new Sys_parametros(conn);
+			//conn = Conexao.getConexao();
+		//	Sys_parametros sys = new Sys_parametros(conn);
 			
+			String desaada = "0050";
+			String minimo = "01:20";
+			
+			
+			
+			
+			GregorianCalendar datadesejada = new GregorianCalendar();
+			datadesejada.setTime(new Date());
+			datadesejada.add(Calendar.HOUR, Integer.parseInt(desaada.substring(0, 2)));
+			datadesejada.add(Calendar.MINUTE, Integer.parseInt(desaada.substring(2, 4)));		
+			
+			System.out.println(datadesejada.getTime());
+			
+			
+			GregorianCalendar dataminimo = new GregorianCalendar();
+			dataminimo.setTime(new Date());
+			dataminimo.add(Calendar.HOUR, Integer.parseInt(minimo.substring(0, 2)));
+			dataminimo.add(Calendar.MINUTE, Integer.parseInt(minimo.substring(3, 5)));		
+			
+			System.out.println(dataminimo.getTime());
+			
+			if(datadesejada.getTime().before(dataminimo.getTime())){
+				System.out.println("yo");
+			}
 		//	renamefiles();
 			
 			// oneSginal(sys, "g.kothe@hotmail.com", "aaaa", new JSONObject());
