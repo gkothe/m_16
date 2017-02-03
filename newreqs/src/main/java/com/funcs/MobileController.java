@@ -2337,6 +2337,8 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 		if (single) {
 			sql.append("and carrinho_item.id_prod_dist = ? ");
 		}
+		
+		sql.append("order by produtos.desc_abreviado  ");
 
 		PreparedStatement st = conn.prepareStatement(sql.toString());
 		st.setLong(1, (cod_usuario));
