@@ -250,7 +250,7 @@
 
 							</li>
 
-							<div class="nav toggle">
+							<div class="nav toggle clickmenu2">
 								<a id="menu_toggle"><i class="fa fa-bars"></i></a>
 							</div>
 

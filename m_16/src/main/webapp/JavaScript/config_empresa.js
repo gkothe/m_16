@@ -72,7 +72,7 @@ $(document).ready(function() {
 		$('#table_bairros').bootstrapTable('updateFooter');
 	});
 
-	$("#row_da_tabelabairro").find(".fixed-table-toolbar").append("<div data-toggle='tooltip' title='Ao marcar o \"Modo de período personalizado\", sua loja estará operando SOMENTE com os horarios configurados para o dia: Período personalizado' class=\"pull-left \" style=\"padding-top: 10px;\"> <input type=\"checkbox\" id='check_custommode'> <label >Modo Feriado/Especial/Customizável</label></div>");
+	$("#row_da_tabelabairro").find(".fixed-table-toolbar").append("<div data-toggle='tooltip' title='Ao marcar o \"Modo de período personalizado\", sua loja estará operando SOMENTE com os horarios configurados para o dia: Período personalizado' class=\"pull-left \" style=\"padding-top: 10px;\"> <input type=\"checkbox\" id='check_custommode'> <label >Modo de período personalizado</label></div>");
 
 	$("#check_custommode").change(function() {
 		ativaWarningSalvar();
@@ -296,6 +296,10 @@ function testComboOnline() {
 
 function salvarTela() {
 
+	$.blockUI({
+		message : 'Salvando...'
+	});
+	
 	var desc_razaosocial = $("#desc_razaosocial").val();
 	var desc_fantasia = $("#desc_fantasia").val();
 	var cod_cidade = $("#cod_cidade").val();
@@ -310,6 +314,10 @@ function salvarTela() {
 	var flag_entre_ret = $("#flag_entre_ret").val();
 	var txt_obs_hora = $("#txt_obs_hora").val();
 	var cod_bairro_distr = $("#cod_bairro_distr").val();
+	var desc_loja = $("#txt_desc_loja").val();
+	var tempo_minimo_entrega = $("#tempo_minimo_entrega").val();
+	
+	
 
 	var flag_custom = "";
 
@@ -345,7 +353,9 @@ function salvarTela() {
 			flag_modopag : flag_modopag,
 			flag_entre_ret : flag_entre_ret,
 			txt_obs_hora : txt_obs_hora,
-			cod_bairro_distr : cod_bairro_distr
+			cod_bairro_distr : cod_bairro_distr,
+			desc_loja:desc_loja,
+			tempo_minimo_entrega:tempo_minimo_entrega
 
 		},
 		success : function(data) {
@@ -355,10 +365,12 @@ function salvarTela() {
 				sysMsg("Dado salvos!", 'M')
 				$(".lbl_save").hide();
 				setTimeout(function() {
+					$.unblockUI();
 					location.reload(true);
 				}, 1500);
 
 			} else {
+				$.unblockUI();
 				sysMsg(data.erro, 'E')
 
 			}
@@ -471,7 +483,7 @@ function trocaDiaSemanaDados(dia) {
 function loadCidade() {
 
 	$.blockUI({
-		message : 'Salvando...'
+		message : 'Carregando...'
 	});
 
 	$.ajax({
@@ -569,7 +581,8 @@ function loadDados() {
 			$("#emp_logo").attr("src", data[0].nome_img);
 			$("#flag_entre_ret").val(data[0].flag_entre_ret);
 			$("#cod_bairro_distr").val(data[0].cod_bairro);
-
+			$("#txt_desc_loja").val(data[0].desc_loja);
+			$("#tempo_minimo_entrega").val(data[0].tempo_minimo_entrega);
 			$("#txt_obs_hora").val(data[0].txt_obs_hora);
 
 			if (data[0].flag_custom == 'S') {
@@ -581,6 +594,8 @@ function loadDados() {
 			id_horariomax = data[0].id_horariomax;
 			testComboOnline();
 			$('[data-toggle="tooltip"]').tooltip();
+			
+			$.unblockUI();
 
 		},
 		error : function(msg) {

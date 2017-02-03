@@ -8,7 +8,8 @@
 		<div class="col-xs-12 col-md-12 col-lg-12">
 			<div class="form-group">
 				<label style="font-size: 30px" for="">Configurações da
-					empresa - Cód </label>&nbsp;&nbsp; <label style="font-size: 30px" id="cod_empresa" ></label>
+					empresa - Cód </label>&nbsp;&nbsp; <label style="font-size: 30px"
+					id="cod_empresa"></label>
 			</div>
 		</div>
 	</div>
@@ -137,12 +138,27 @@
 			<div class=" col-xs-6 col-md-6 col-lg-6">
 				<div class="form-group">
 					<label>Bairro</label> <select id="cod_bairro_distr"
-						class="form-control" style="width: 100%" name="cod_bairro_distr">
-
+						class="form-control warn-change" style="width: 100%"
+						name="cod_bairro_distr">
 					</select>
-
 				</div>
 			</div>
+
+			<div class=" col-xs-6 col-md-6 col-lg-6">
+				<div class="form-group">
+					<label>Tipos de serviço </label> <select id="flag_entre_ret"
+						class="form-control ">
+						<option style="background-color: white !important" value='A'>
+							Ambos - Retirada no local e entrega</option>
+						<option style="background-color: white !important" value='L'>
+							Somente retirada no local</option>
+						<option style="background-color: white !important" value='T'>
+							Somente entrega</option>
+
+					</select>
+				</div>
+			</div>
+
 		</div>
 
 		<div class="row">
@@ -162,7 +178,7 @@
 				</div>
 			</div>
 
-			<div class=" col-xs-3 col-md-3 col-lg-3">
+			<div class="col-xs-3 col-md-3 col-lg-3">
 				<div class="form-group">
 					<label>Modos de pagamento </label> <select id="flag_modopag"
 						class="form-control ">
@@ -176,34 +192,40 @@
 					</select>
 				</div>
 			</div>
-
-
 			<div class=" col-xs-3 col-md-3 col-lg-3">
 				<div class="form-group">
-					<label>Tipos de serviço </label> <select id="flag_entre_ret"
-						class="form-control ">
-						<option style="background-color: white !important" value='A'>
-							Ambos - Retirada no local e entrega</option>
-						<option style="background-color: white !important" value='L'>
-							Somente retirada no local</option>
-						<option style="background-color: white !important" value='T'>
-							Somente entrega</option>
+					<label>Tempo de entrega mínimo para pedidos</label> <input
+						type="text" maxlength="22" class="form-control warn-change hora"
+						id="tempo_minimo_entrega" 
+						data-toggle="tooltip" title="Este campo tem como funcionalidade evitar que o usário final faça pedidos com tempo de entrega menor que o informado neste campo."
+						
+						/>
 
-					</select>
 				</div>
 			</div>
+
+
 
 		</div>
 
 
 		<div class="row">
 
-			<div class=" col-xs-12 col-md-12 col-lg-12">
+			<div class=" col-xs-6 col-md-6 col-lg-6">
+				<div class="form-group">
+					<label>Descrição da Loja</label>
+					<textarea data-toggle="tooltip" rows="4"
+						title="Esta descrição será exibido para o cliente no 'detalhes da loja' quando visualizado pelo aplicativo."
+						id="txt_desc_loja" class="form-control "></textarea>
+				</div>
+			</div>
+
+			<div class=" col-xs-6 col-md-6 col-lg-6">
 				<div class="form-group">
 					<label>Descritivo do horário de funcionamento para retirada
 						em local</label>
 					<textarea data-toggle="tooltip" rows="4"
-						title="Este texto será mostrado para o cliente quando ele escolher o serviço de retirada em local. Então aqui você pode  informar os seus horarios de funcionamento local e outras observações que desejar. Ex: Trabalhamos de segunda a sexta no horário das 8:30 até as 19:00."
+						title="Este texto será exibido para o cliente quando ele escolher o serviço de retirada em local. Então aqui você pode  informar os seus horarios de funcionamento local e outras observações que desejar. Ex: Trabalhamos de segunda a sexta no horário das 8:30 até as 19:00."
 						id="txt_obs_hora" class="form-control "></textarea>
 				</div>
 			</div>
@@ -237,7 +259,7 @@
 					data-sort-order="asc">
 					<thead class="header">
 						<tr>
-					
+
 							<th data-sortable="true" data-field="desc_bairro"
 								data-width="30%" data-align="left">Bairro</th>
 							<th data-sortable="false" data-width="10%" data-align="center"

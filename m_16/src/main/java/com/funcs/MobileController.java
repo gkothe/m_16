@@ -161,6 +161,8 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 
 				recSenha(request, response, conn);
 
+			} else if (cmd.equalsIgnoreCase("testedeversao")) {
+				testeversao(request, response, conn);
 			} else {
 				long cod_usuario = MobileLogin.parseJWT(request, response, conn, request.getHeader("X-Auth-Token"), sys);
 
@@ -261,6 +263,18 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 					enviarMsgContato(request, response, conn, cod_usuario, sys);
 				} else if (cmd.equalsIgnoreCase("recusouTermos")) {
 					recusouTermos(request, response, conn, cod_usuario, sys);
+				} else if (cmd.equalsIgnoreCase("listaLojas")) {
+					listaLojas(request, response, conn, cod_usuario, sys);
+				} else if (cmd.equalsIgnoreCase("detalheLoja")) {
+					detalheLoja(request, response, conn, cod_usuario, sys);
+				} else if (cmd.equalsIgnoreCase("listaLojasProds")) {
+					listaLojasProds(request, response, conn, cod_usuario, sys);
+				} else if (cmd.equalsIgnoreCase("listaHorariosBairro")) {
+					listaHorariosBairro(request, response, conn, cod_usuario, sys);
+				} else if (cmd.equalsIgnoreCase("LojacarregaBairroServ")) {
+					LojacarregaBairroServ(request, response, conn, cod_usuario, sys);
+				} else if (cmd.equalsIgnoreCase("LojaProdTestOnline")) {
+					LojaProdTestOnline(request, response, conn, cod_usuario, sys);
 				}
 
 				else {
@@ -2326,6 +2340,8 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 			sql.append("and carrinho_item.id_prod_dist = ? ");
 		}
 
+		sql.append("order by produtos.desc_abreviado  ");
+
 		PreparedStatement st = conn.prepareStatement(sql.toString());
 		st.setLong(1, (cod_usuario));
 		if (single) {
@@ -3279,7 +3295,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 		long idcarrinho = 0;
 
 		sql = new StringBuffer();
-		sql.append("select usuario.flag_maioridade,usuario.flag_leutermos,usuario.desc_email, usuario. desc_nome, carrinho_item.id_carrinho,distribuidora.id_distribuidora,carrinho.cod_bairro,usuario.desc_telefone,usuario.desc_endereco,desc_endereco_num,desc_endereco_complemento,sum(produtos_distribuidora.val_prod * carrinho_item.qtd ) as val_prod, ");
+		sql.append("select usuario.flag_maioridade,usuario.flag_leutermos,usuario.desc_email, usuario. desc_nome, carrinho_item.id_carrinho,distribuidora.id_distribuidora,carrinho.cod_bairro,usuario.desc_telefone,usuario.desc_endereco,desc_endereco_num,desc_endereco_complemento,sum(produtos_distribuidora.val_prod * carrinho_item.qtd ) as val_prod, date_format(tempo_minimo_entrega, '%H:%i') as tempo_minimo_entrega , ");
 		sql.append("  ");
 		sql.append("case when flag_telebairro = 'S' then distribuidora_bairro_entrega.val_tele_entrega else distribuidora.val_tele_entrega end as val_tele_entrega ");
 		sql.append("  ");
@@ -3580,6 +3596,42 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 
 					}
 
+					if (choiceserv.equalsIgnoreCase("T")) {
+
+						if (modoentrega.equalsIgnoreCase("A")) {
+
+							GregorianCalendar datadesejada = new GregorianCalendar();
+							datadesejada.setTime(new SimpleDateFormat("dd/MM/yyyyHHmm").parse(dataagendamento + dataagendamentohora));
+
+							GregorianCalendar dataminimo = new GregorianCalendar();
+							dataminimo.setTime(new Date());
+							dataminimo.add(Calendar.HOUR, Integer.parseInt(rs.getString("tempo_minimo_entrega").substring(0, 2)));
+							dataminimo.add(Calendar.MINUTE, Integer.parseInt(rs.getString("tempo_minimo_entrega").substring(3, 5)));
+
+							if (datadesejada.getTime().before(dataminimo.getTime())) {
+								throw new Exception("O tempo mínimo para entrega nesta loja é " + rs.getString("tempo_minimo_entrega"));
+							}
+
+						} else if (modoentrega.equalsIgnoreCase("T")) {
+
+							GregorianCalendar datadesejada = new GregorianCalendar();
+							datadesejada.setTime(new Date());
+							datadesejada.add(Calendar.HOUR, Integer.parseInt(tempomax.substring(0, 2)));
+							datadesejada.add(Calendar.MINUTE, Integer.parseInt(tempomax.substring(2, 4)));
+
+							GregorianCalendar dataminimo = new GregorianCalendar();
+							dataminimo.setTime(new Date());
+							dataminimo.add(Calendar.HOUR, Integer.parseInt(rs.getString("tempo_minimo_entrega").substring(0, 2)));
+							dataminimo.add(Calendar.MINUTE, Integer.parseInt(rs.getString("tempo_minimo_entrega").substring(3, 5)));
+
+							if (datadesejada.getTime().before(dataminimo.getTime())) {
+								throw new Exception("O tempo mínimo para entrega nesta loja é " + rs.getString("tempo_minimo_entrega"));
+							}
+
+						}
+
+					}
+
 					if (tipo_pagamento.equalsIgnoreCase("D")) {
 
 						if (!trocopara.equalsIgnoreCase("")) {
@@ -3653,6 +3705,477 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 		}
 
 		return retorno;
+	}
+
+	private static void listaLojasProds(HttpServletRequest request, HttpServletResponse response, Connection conn, long cod_usuario, Sys_parametros sys) throws Exception {
+		// TODO cidade
+		String idloja = request.getParameter("idloja") == null ? "" : request.getParameter("idloja");
+		String desc_pesquisa = request.getParameter("desc_pesquisa") == null ? "" : request.getParameter("desc_pesquisa");
+		String pag = request.getParameter("pag") == null ? "" : request.getParameter("pag");
+
+		if (pag.equalsIgnoreCase("")) {
+			pag = "1";
+		}
+
+		PrintWriter out = response.getWriter();
+		JSONObject ret = new JSONObject();
+
+		StringBuffer sql = new StringBuffer();
+		sql.append(" select produtos.id_prod, ");
+		sql.append("               desc_prod, ");
+		sql.append("               desc_abreviado, ");
+		sql.append("               produtos_distribuidora.val_prod, ");
+		sql.append("               distribuidora.id_distribuidora, ");
+		sql.append("               produtos_distribuidora.id_prod_dist, ");
+		sql.append("               desc_nome_abrev, ");
+		sql.append("               carrinho_item.qtd, ");
+		sql.append("               distribuidora.val_entrega_min, ");
+		sql.append("               distribuidora.flag_entre_ret ");
+		sql.append("        from   produtos ");
+		sql.append("               inner join produtos_distribuidora ");
+		sql.append("                       on produtos_distribuidora.id_prod = produtos.id_prod ");
+		sql.append("               inner join distribuidora ");
+		sql.append("                       on produtos_distribuidora.id_distribuidora = ");
+		sql.append("                          distribuidora.id_distribuidora ");
+		sql.append("  ");
+		sql.append("               left join carrinho ");
+		sql.append("                      on carrinho.id_usuario =   " + cod_usuario);
+		sql.append("               left join carrinho_item ");
+		sql.append("                      on carrinho_item.id_prod_dist = ");
+		sql.append("                         produtos_distribuidora.id_prod_dist ");
+		sql.append("                         and carrinho_item.id_carrinho = carrinho.id_carrinho ");
+		sql.append("        where  produtos_distribuidora.flag_ativo = 'S' ");
+		sql.append("               and distribuidora.flag_ativo_master = 'S' ");
+		sql.append("               and distribuidora.id_distribuidora =  ? ");
+
+		String[] keys = null;
+
+		if (!desc_pesquisa.equalsIgnoreCase("")) {
+
+			keys = desc_pesquisa.split(" ");
+			for (int i = 0; i < keys.length; i++) {
+				sql.append(" and desc_prod  like ? ");
+			}
+
+		}
+
+		sql.append(" order by desc_abreviado asc limit " + 20 + " OFFSET " + (Integer.parseInt(20 + "") * (Integer.parseInt(pag) - 1)));
+
+		PreparedStatement st = conn.prepareStatement(sql.toString());
+
+		int contparam = 1;
+		st.setInt(contparam, Integer.parseInt(idloja));
+		contparam++;
+
+		if (!desc_pesquisa.equalsIgnoreCase("")) {
+
+			keys = desc_pesquisa.split(" ");
+			for (int i = 0; i < keys.length; i++) {
+				st.setString(contparam, "%" + keys[i] + "%");
+				contparam++;
+			}
+
+		}
+		JSONArray prods = new JSONArray();
+		ResultSet rs = st.executeQuery();
+		while (rs.next()) {
+			JSONObject prod = new JSONObject();
+			prod.put("ID_PROD", rs.getString("id_prod"));
+			prod.put("ID_PROD_DIST", rs.getString("id_prod_dist"));
+			prod.put("QTD", rs.getString("qtd") == null ? "" : rs.getString("qtd"));
+			prod.put("DESC_PROD", rs.getString("desc_prod"));
+			prod.put("DESC_ABREVIADO", rs.getString("desc_abreviado"));// abreviado do produto
+			prod.put("VAL_PROD", "R$ " + df2.format(rs.getDouble("val_prod")));//
+			prod.put("ID_DISTRIBUIDORA", rs.getString("id_distribuidora"));
+			prod.put("DESC_NOME_ABREV", rs.getString("desc_nome_abrev"));/// abreviado da distribuidora
+			prod.put("img", rs.getString("id_prod") + "_min.jpg");/// abreviado da distribuidora
+			prods.add(prod);
+		}
+
+		double valcar = retornaValCarrinho(cod_usuario, conn);
+		if (valcar != 0) {
+			ret.put("temcar", true);
+		} else {
+			ret.put("temcar", false);
+		}
+
+		ret.put("valcar", df2.format(valcar));
+		ret.put("prods", prods);
+		ret.put("msg", "ok");
+
+		out.print(ret.toJSONString());
+
+	}
+
+	private static void detalheLoja(HttpServletRequest request, HttpServletResponse response, Connection conn, long cod_usuario, Sys_parametros sys) throws Exception {
+		// TODO cidade
+		String idloja = request.getParameter("idloja") == null ? "" : request.getParameter("idloja");
+		PrintWriter out = response.getWriter();
+		JSONObject ret = new JSONObject();
+
+		StringBuffer sql = new StringBuffer();
+		sql.append(" SELECT cod_bairro, ");
+		sql.append("       txt_obs_hora, ");
+		sql.append("       id_distribuidora, ");
+		sql.append("       desc_cidade, ");
+		sql.append("       desc_razao_social, ");
+		sql.append("       val_entrega_min, ");
+		sql.append("       desc_telefone, ");
+		sql.append("       desc_endereco, ");
+		sql.append("       num_enderec, ");
+		sql.append("       desc_loja, ");
+		sql.append("       date_format(tempo_minimo_entrega, '%H:%i') as tempo_minimo_entrega, ");
+		sql.append("       desc_complemento, ");
+		sql.append("       val_tele_entrega, ");
+		sql.append("       flag_custom, ");
+		sql.append("       desc_mail, ");
+		sql.append("       COALESCE(flag_ativo, 'N') AS flag_ativo, ");
+		sql.append("       flag_modopagamento, ");
+		sql.append("       flag_entre_ret ");
+		sql.append(" FROM   distribuidora ");
+		sql.append(" inner join cidade ");
+		sql.append(" on cidade.cod_cidade = distribuidora.cod_cidade  ");
+
+		sql.append(" WHERE  id_distribuidora = ? ");
+
+		PreparedStatement st = conn.prepareStatement(sql.toString());
+		st.setInt(1, Integer.parseInt(idloja));
+		ResultSet rs = st.executeQuery();
+		if (rs.next()) {
+
+			ret.put("nome_img", "images/logos/logo_" + idloja + ".jpg");
+			ret.put("id_distribuidora", rs.getString("id_distribuidora"));
+			ret.put("desc_cidade", rs.getString("desc_cidade"));
+
+			String endereco = rs.getString("desc_endereco");
+			String num = rs.getString("num_enderec");
+			String compl = rs.getString("desc_complemento");
+			String bairro = Utilitario.getNomeBairro(conn, rs.getInt("cod_bairro"), 0);
+
+			String endfinal = endereco + ", " + num + " " + compl + ", " + bairro + " \n";
+			ret.put("endfinal", endfinal);
+			ret.put("desc_razao_social", rs.getString("desc_razao_social"));
+			ret.put("val_entrega_min", rs.getString("val_entrega_min"));
+			ret.put("desc_telefone", rs.getString("desc_telefone"));
+			ret.put("desc_endereco", rs.getString("desc_endereco"));
+			ret.put("num_enderec", rs.getString("num_enderec"));
+			ret.put("desc_complemento", rs.getString("desc_complemento"));
+			ret.put("cod_bairro", rs.getString("cod_bairro"));
+			ret.put("desc_mail", rs.getString("desc_mail"));
+			ret.put("desc_entre_ret", Utilitario.returnDistrTiposPedido(rs.getString("flag_entre_ret")));
+			ret.put("flag_entre_ret", (rs.getString("flag_entre_ret")));
+			ret.put("tempo_minimo_entrega", (rs.getString("tempo_minimo_entrega")));
+			ret.put("desc_loja", (rs.getString("desc_loja")));
+			ret.put("flag_custom", (rs.getString("flag_custom")));
+			ret.put("text_perso", "Esta loja está temporariamente com o 'Modo de período personalizado' ativado.\nO horário abaixo é válido para todos os dias da semana. ");
+			ret.put("txt_obs_hora", rs.getString("txt_obs_hora"));
+			ret.put("flag_modopagamento", Utilitario.returnModoPagamento(rs.getString("flag_modopagamento").equalsIgnoreCase("A") ? "DC" : rs.getString("flag_modopagamento")));// TODO se mudar os modos de pagamento
+
+		}
+
+		out.print(ret.toJSONString());
+
+	}
+
+	private static void listaLojas(HttpServletRequest request, HttpServletResponse response, Connection conn, long cod_usuario, Sys_parametros sys) throws Exception {
+
+		String fp_pickbairro = request.getParameter("fp_pickbairro") == null ? "" : request.getParameter("fp_pickbairro");
+		String hp_sit = request.getParameter("hp_sit") == null ? "" : request.getParameter("hp_sit");
+
+		PrintWriter out = response.getWriter();
+		JSONObject retorno = new JSONObject();
+		StringBuffer sql = new StringBuffer();
+		sql = new StringBuffer();
+		sql.append("select * , case when flag_ativo = 'S' then 0 else 1 end as ordem ");
+		sql.append("  ");
+		sql.append(" from distribuidora ");
+		sql.append(" left join bairros ");
+		sql.append(" on bairros.cod_bairro = distribuidora.cod_bairro ");
+		sql.append(" ");
+		sql.append(" where distribuidora. cod_cidade = ? ");
+		sql.append(" ");
+
+		if (!fp_pickbairro.equalsIgnoreCase("")) {
+			sql.append("  and  bairros.cod_bairro = ? ");
+		}
+
+		if (hp_sit.equalsIgnoreCase("N")) {
+			sql.append("  and  (distribuidora.flag_ativo = 'N' or  distribuidora.flag_ativo = 'F') ");
+		} else if (hp_sit.equalsIgnoreCase("S")) {
+			sql.append("  and  distribuidora.flag_ativo = 'S' ");
+		}
+
+		sql.append("  order by ordem, desc_nome_abrev  ");
+
+		PreparedStatement st = conn.prepareStatement(sql.toString());
+
+		int contparam = 1;
+
+		st.setLong(contparam, 1);// TODO
+		contparam++;
+
+		if (!fp_pickbairro.equalsIgnoreCase("")) {
+			st.setLong(contparam, Long.parseLong(fp_pickbairro));
+			contparam++;
+		}
+
+		ResultSet rs = st.executeQuery();
+		JSONArray lojas = new JSONArray();
+		while (rs.next()) {
+			JSONObject loja = new JSONObject();
+
+			loja.put("id_distribuidora", rs.getLong("id_distribuidora"));
+			loja.put("desc_nome_abrev", rs.getString("desc_nome_abrev"));
+
+			if (rs.getString("flag_ativo").equalsIgnoreCase("F") || rs.getString("flag_ativo").equalsIgnoreCase("N")) {
+				loja.put("desc_status", "Offline");
+			} else {
+				loja.put("desc_status", "Online");
+			}
+
+			if (rs.getString("flag_ativo").equalsIgnoreCase("F")) {
+				loja.put("flag_ativo", "N");
+			} else {
+				loja.put("flag_ativo", rs.getString("flag_ativo"));
+			}
+
+			loja.put("desc_servico", Utilitario.returnDistrTiposPedido(rs.getString("flag_entre_ret")));
+			loja.put("desc_bairro", rs.getString("desc_bairro") == null ? "" : rs.getString("desc_bairro"));
+			loja.put("logo", "images/logos/logo_" + rs.getLong("id_distribuidora") + ".jpg");
+
+			lojas.add(loja);
+
+		}
+		retorno.put("lojas", lojas);
+		retorno.put("msg", "ok");
+		out.print(retorno.toJSONString());
+
+	}
+
+	private static void listaHorariosBairro(HttpServletRequest request, HttpServletResponse response, Connection conn, long cod_usuario, Sys_parametros sys) throws Exception {
+
+		String cod_bairro = request.getParameter("cod_bairro") == null ? "" : request.getParameter("cod_bairro");
+		String id_loja = request.getParameter("idloja") == null ? "" : request.getParameter("idloja");
+
+		PrintWriter out = response.getWriter();
+		JSONObject retorno = new JSONObject();
+
+		PreparedStatement st3 = null;
+		ResultSet rs3 = null;
+		PreparedStatement st2 = null;
+		ResultSet rs2 = null;
+
+		String sql = " select * from dias_semana ";
+		st2 = conn.prepareStatement(sql);
+		rs2 = st2.executeQuery();
+		while (rs2.next()) {
+
+			String horario = "";
+
+			StringBuffer sql2 = new StringBuffer();
+			sql2.append(" select *, case when flag_telebairro = 'S' then distribuidora_bairro_entrega.val_tele_entrega else distribuidora.val_tele_entrega end as frete   from distribuidora_bairro_entrega ");
+			sql2.append(" ");
+			sql2.append(" left join distribuidora_horario_dia_entre ");
+			sql2.append(" on distribuidora_horario_dia_entre.ID_DISTR_BAIRRO = distribuidora_bairro_entrega.id_distr_bairro ");
+			sql2.append(" inner join distribuidora ");
+			sql2.append(" on distribuidora.id_distribuidora = distribuidora_horario_dia_entre.id_distribuidora ");
+			sql2.append(" ");
+			sql2.append(" where Coalesce(distribuidora_bairro_entrega.id_distribuidora,? ) = ? and distribuidora_bairro_entrega.cod_bairro = ? and cod_dia = " + rs2.getString("cod_dia") + " ORDER BY HORARIO_INI desc");
+
+			st3 = conn.prepareStatement(sql2.toString());
+			st3.setInt(1, Integer.parseInt(id_loja));
+			st3.setInt(2, Integer.parseInt(id_loja));
+			st3.setInt(3, Integer.parseInt(cod_bairro));
+
+			rs3 = st3.executeQuery();
+			while (rs3.next()) {
+				String horaini = new SimpleDateFormat("HH:mm").format(rs3.getTimestamp("HORARIO_INI"));
+				String horafim = new SimpleDateFormat("HH:mm").format(rs3.getTimestamp("HORARIO_FIM"));
+
+				horario = ", " + horaini + " - " + horafim + horario;
+
+				retorno.put("frete", rs3.getString("frete"));
+
+			}
+
+			if (horario.equalsIgnoreCase("")) {
+
+				if (rs2.getInt("cod_dia") == 6) {
+					retorno.put("sab_horas", "Nenhum atendimento.");
+				} else {
+					retorno.put(rs2.getString("desc_dia").substring(0, 3).toLowerCase() + "_horas", "Nenhum atendimento.");
+				}
+
+			} else {
+
+				horario = horario.replaceFirst(", ", "");
+				if (rs2.getInt("cod_dia") == 6) {
+					retorno.put("sab_horas", horario);
+				} else {
+					retorno.put(rs2.getString("desc_dia").substring(0, 3).toLowerCase() + "_horas", horario);
+				}
+			}
+
+		}
+
+		retorno.put("msg", "ok");
+		out.print(retorno.toJSONString());
+
+	}
+
+	private static void LojacarregaBairroServ(HttpServletRequest request, HttpServletResponse response, Connection conn, long cod_usuario, Sys_parametros sys) throws Exception {
+
+		String id_loja = request.getParameter("idloja") == null ? "" : request.getParameter("idloja");
+
+		PrintWriter out = response.getWriter();
+		JSONObject retorno = new JSONObject();
+
+		PreparedStatement st2 = null;
+		ResultSet rs2 = null;
+
+		StringBuffer sql2 = new StringBuffer();
+		sql2.append(" select bairros.cod_bairro,desc_bairro from bairros ");
+
+		sql2.append(" inner join distribuidora_bairro_entrega ");
+		sql2.append(" on bairros.cod_bairro = distribuidora_bairro_entrega.cod_bairro ");
+
+		sql2.append(" inner join distribuidora_horario_dia_entre  ");
+		sql2.append(" on distribuidora_horario_dia_entre.id_distr_bairro   =   distribuidora_bairro_entrega.id_distr_bairro  ");
+
+		sql2.append(" inner join distribuidora ");
+		sql2.append(" on distribuidora_bairro_entrega.id_distribuidora = distribuidora.id_distribuidora ");
+
+		sql2.append("  where distribuidora. id_distribuidora = ? and distribuidora.cod_cidade = ? and  cod_dia = ?  and (now() between horario_ini and horario_fim)  ");
+
+		JSONArray bairros = new JSONArray();
+		JSONObject obj = new JSONObject();
+		obj.put("cod_bairro", "");
+		obj.put("desc_bairro", "Escolha um bairro");
+		bairros.add(obj);
+
+		st2 = conn.prepareStatement(sql2.toString());
+
+		st2.setInt(1, Integer.parseInt(id_loja));
+		st2.setInt(2, 1);// TODO
+		st2.setInt(3, Utilitario.diaSemana(conn, Integer.parseInt(id_loja)));
+
+		rs2 = st2.executeQuery();
+		boolean tembairro = false;
+		while (rs2.next()) {
+			obj = new JSONObject();
+			obj.put("cod_bairro", rs2.getString("cod_bairro"));
+			obj.put("desc_bairro", rs2.getString("desc_bairro"));
+			tembairro = true;
+			bairros.add(obj);
+		}
+
+		if (!tembairro) {
+			bairros = new JSONArray();
+			obj = new JSONObject();
+			obj.put("cod_bairro", "");
+			obj.put("desc_bairro", "Nenhum bairro disponivel");
+			bairros.add(obj);
+
+		}
+
+		retorno.put("bairros", bairros);
+
+		sql2 = new StringBuffer();
+		sql2.append(" select * from distribuidora ");
+		sql2.append("  where distribuidora. ID_DISTRIBUIDORA = ? and distribuidora.cod_cidade = ? ");
+
+		st2 = conn.prepareStatement(sql2.toString());
+
+		st2.setInt(1, Integer.parseInt(id_loja));
+		st2.setInt(2, 1);// TODO
+
+		rs2 = st2.executeQuery();
+
+		JSONArray servicos = new JSONArray();
+
+		obj = new JSONObject();
+		obj.put("flag_servico", "");
+		obj.put("desc_servico", "Escolha um serviço");
+		servicos.add(obj);
+
+		if (rs2.next()) {
+
+			if (rs2.getString("flag_entre_ret").equalsIgnoreCase("A")) {
+
+				obj = new JSONObject();
+				obj.put("flag_servico", "T");
+				obj.put("desc_servico", Utilitario.returnDistrTiposServicoMob("T"));
+				servicos.add(obj);
+
+				obj = new JSONObject();
+				obj.put("flag_servico", "L");
+				obj.put("desc_servico", Utilitario.returnDistrTiposServicoMob("L"));
+				servicos.add(obj);
+
+			} else {
+
+				obj = new JSONObject();
+				obj.put("flag_servico", rs2.getString("flag_entre_ret"));
+				obj.put("desc_servico", Utilitario.returnDistrTiposServicoMob(rs2.getString("flag_entre_ret")));
+				servicos.add(obj);
+
+			}
+		}
+
+		retorno.put("servicos", servicos);
+		retorno.put("bairros", bairros);
+
+		retorno.put("msg", "ok");
+		out.print(retorno.toJSONString());
+	}
+
+	private static void LojaProdTestOnline(HttpServletRequest request, HttpServletResponse response, Connection conn, long cod_usuario, Sys_parametros sys) throws Exception {
+
+		String id_loja = request.getParameter("idloja") == null ? "" : request.getParameter("idloja");
+		// TODO cidade?
+		PrintWriter out = response.getWriter();
+		JSONObject retorno = new JSONObject();
+
+		StringBuffer sql = new StringBuffer();
+		sql.append(" select flag_ativo,flag_ativo_master from  distribuidora where id_distribuidora = ? ");
+		PreparedStatement st = conn.prepareStatement(sql.toString());
+		st.setLong(1, Integer.parseInt(id_loja));
+		ResultSet rs = st.executeQuery();
+		if (rs.next()) {
+			if (!rs.getString("flag_ativo").equalsIgnoreCase("S")) {
+				throw new Exception("A loja está offline no momento.");
+			}
+
+			if (!rs.getString("flag_ativo_master").equalsIgnoreCase("S")) {
+				throw new Exception("A loja está desativada.");
+			}
+
+		}
+
+		retorno.put("msg", "ok");
+		out.print(retorno.toJSONString());
+	}
+
+	private static void testeversao(HttpServletRequest request, HttpServletResponse response, Connection conn) throws Exception {
+
+		String versao = request.getParameter("versao") == null ? "" : request.getParameter("versao");
+		PrintWriter out = response.getWriter();
+		JSONObject retorno = new JSONObject();
+
+		StringBuffer sql = new StringBuffer();
+		sql.append(" select app_versao from sys_parametros ");
+		PreparedStatement st = conn.prepareStatement(sql.toString());
+		ResultSet rs = st.executeQuery();
+		if (rs.next()) {
+
+			if (!rs.getString("app_versao").equalsIgnoreCase(versao)) {
+				throw new Exception("Atenção! A versão do aplicativo está desatualizada. Por favor atualize na Store! Se você optar por não atualizar, pode encontrar problemas e instabilidade durante o uso.");
+			}
+
+		}
+
+		retorno.put("msg", "ok");
+		out.print(retorno.toJSONString());
 	}
 
 	public static void main(String[] args) {

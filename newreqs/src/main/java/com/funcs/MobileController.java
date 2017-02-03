@@ -161,6 +161,8 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 
 				recSenha(request, response, conn);
 
+			} else if (cmd.equalsIgnoreCase("testedeversao")) {
+				testeversao(request, response, conn);
 			} else {
 				long cod_usuario = MobileLogin.parseJWT(request, response, conn, request.getHeader("X-Auth-Token"), sys);
 
@@ -2337,7 +2339,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 		if (single) {
 			sql.append("and carrinho_item.id_prod_dist = ? ");
 		}
-		
+
 		sql.append("order by produtos.desc_abreviado  ");
 
 		PreparedStatement st = conn.prepareStatement(sql.toString());
@@ -4146,6 +4148,28 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 
 			if (!rs.getString("flag_ativo_master").equalsIgnoreCase("S")) {
 				throw new Exception("A loja está desativada.");
+			}
+
+		}
+
+		retorno.put("msg", "ok");
+		out.print(retorno.toJSONString());
+	}
+
+	private static void testeversao(HttpServletRequest request, HttpServletResponse response, Connection conn) throws Exception {
+
+		String versao = request.getParameter("versao") == null ? "" : request.getParameter("versao");
+		PrintWriter out = response.getWriter();
+		JSONObject retorno = new JSONObject();
+
+		StringBuffer sql = new StringBuffer();
+		sql.append(" select app_versao from sys_parametros ");
+		PreparedStatement st = conn.prepareStatement(sql.toString());
+		ResultSet rs = st.executeQuery();
+		if (rs.next()) {
+
+			if (!rs.getString("app_versao").equalsIgnoreCase(versao)) {
+				throw new Exception("Atenção! A versão do aplicativo está desatualizada. Por favor atualize na Store! Se você optar por não atualizar, pode encontrar problemas e instabilidade durante o uso.");
 			}
 
 		}

@@ -217,6 +217,7 @@ $(document).ready(function() {
 		}, 500);
 
 	});
+	
 
 	$('.keep-open', $('.fixed-table-toolbar')).prependTo($('#colunas'));
 	$('.fixed-table-toolbar').remove();

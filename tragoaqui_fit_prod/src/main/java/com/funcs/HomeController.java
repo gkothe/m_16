@@ -51,12 +51,13 @@ public class HomeController extends javax.servlet.http.HttpServlet {
 
 	public void processaRequisicoes(HttpServletRequest request, HttpServletResponse response) {
 
-		// System.out.println("--------entro home");
-		// Map map = request.getParameterMap();
-		// for (Iterator iterator = map.keySet().iterator(); iterator.hasNext();) {
-		// String type = (String) iterator.next();
-		// System.out.println(type + " : " + request.getParameter(type));
-		// }
+//		 System.out.println("--------entro home");
+//		 Map map = request.getParameterMap();
+//		 for (Iterator iterator = map.keySet().iterator(); iterator.hasNext();) {
+//		 String type = (String) iterator.next();
+//		 System.out.println(type + " : " + request.getParameter(type));
+//		 }
+//			System.out.println( request.getParameter("cmd")+" - " + new Date());
 
 		try {
 
@@ -112,6 +113,7 @@ public class HomeController extends javax.servlet.http.HttpServlet {
 					ajax(request, response);
 				}
 			}
+//			System.out.println( request.getParameter("cmd")+ "-fim "+" - " + new Date());
 		} catch (Exception ex) {
 			ex.printStackTrace();
 			try {
@@ -191,7 +193,7 @@ public class HomeController extends javax.servlet.http.HttpServlet {
 				Pedidos_ajax.responderPedido(request, response, conn, coddistr);
 			} else if (cmd.equalsIgnoreCase("insertpedidodistri")) {
 				Pedidos_ajax.InsertPedidoDistri(request, response, conn, coddistr);
-			}  else if (cmd.equalsIgnoreCase("carregaProdutos")) {
+			} else if (cmd.equalsIgnoreCase("carregaProdutos")) {
 				Parametros_ajax.carregaProdutos(request, response, conn, coddistr);
 			} else if (cmd.equalsIgnoreCase("cleanBairrosHorarios")) {
 				Parametros_ajax.limparBairros(request, response, conn, coddistr);
@@ -243,9 +245,7 @@ public class HomeController extends javax.servlet.http.HttpServlet {
 				Relatorios.dashDiasDoMes(request, response, conn, coddistr);
 			} else if (cmd.equalsIgnoreCase("getfullprodname")) {
 				Utilitario.getFullProdname(request, response, conn);
-			} else if (cmd.equalsIgnoreCase("getfullprodname")) {
-				Utilitario.getFullProdname(request, response, conn);
-			}
+			} 
 
 			conn.commit();
 		} catch (Exception ex) {

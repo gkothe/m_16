@@ -289,6 +289,87 @@ public class Parametros_ajax {
 
 		out.print(ret.toJSONString());
 	}
+	
+	
+	
+	
+	
+	public static void loadBairrosParam2TEntativaFailed(HttpServletRequest request, HttpServletResponse response, Connection conn, int coddistr) throws Exception {
+		PrintWriter out = response.getWriter();
+		JSONArray ret = new JSONArray();
+		//problema com dias em branco
+		
+		JSONObject obj;
+		
+		
+		StringBuffer  sql = new StringBuffer();
+		sql.append("select distribuidora_bairro_entrega.cod_bairro, bairros.desc_bairro, coalesce(val_tele_entrega, 0) as val_tele , coalesce(flag_telebairro, 'N') as flag_telebairro,distribuidora_bairro_entrega.id_distr_bairro, id_horario as id_horario, date_format(horario_ini, '%H:%i')  as horario_ini ,date_format(horario_fim, '%H:%i') as horario_fim, dias_semana.cod_dia from distribuidora_bairro_entrega ");
+		sql.append("inner join bairros ");
+		sql.append("on bairros.cod_bairro = distribuidora_bairro_entrega.cod_bairro ");
+		sql.append("inner join distribuidora_horario_dia_entre ");
+		sql.append("on distribuidora_horario_dia_entre.id_distr_bairro = distribuidora_bairro_entrega.id_distr_bairro ");
+		sql.append("inner join dias_semana ");
+		sql.append("on dias_semana.cod_dia = distribuidora_horario_dia_entre.cod_dia ");
+		sql.append(" ");
+		sql.append("where distribuidora_bairro_entrega.id_distribuidora = ? order by desc_bairro,cod_dia");
+		
+		
+		PreparedStatement st = conn.prepareStatement(sql.toString());
+		st.setInt(1, coddistr);
+		ResultSet rs = st.executeQuery();
+
+		
+		int bairroatual = 0;
+		int cod_diaatual = 0;
+		JSONArray dias = new JSONArray();
+		JSONArray horarios = new JSONArray();
+		while (rs.next()) {
+		
+		
+			
+			if(bairroatual!=rs.getInt("cod_bairro")){
+				dias = new JSONArray();
+				JSONObject dados = new JSONObject();
+				dados.put("cod_bairro", rs.getString("cod_bairro"));
+				dados.put("desc_bairro", rs.getString("desc_bairro"));
+				dados.put("dias", dias);
+				dados.put("val_tele", rs.getDouble("val_tele"));
+				dados.put("flag_telebairro", rs.getString("flag_telebairro"));
+				ret.add(dados);
+				
+				
+				bairroatual = rs.getInt("cod_bairro");
+			}
+			
+			if(cod_diaatual!=rs.getInt("cod_dia")){
+				horarios = new JSONArray();
+				obj = new JSONObject();
+				obj.put("cod_dia", rs.getString("cod_dia"));
+				obj.put("horarios", horarios);
+				dias.add(obj);
+				
+				cod_diaatual = rs.getInt("cod_dia");
+			}
+			
+		
+		
+			
+			obj = new JSONObject();
+
+			obj.put("id_horario", rs.getLong("id_horario"));
+			obj.put("HORARIO_INI", rs.getString("horario_ini"));
+			obj.put("HORARIO_FIM", rs.getString("horario_fim"));
+
+			horarios.add(obj);
+		
+			
+		}
+
+		
+		System.out.println(ret.toJSONString());
+		out.print(ret.toJSONString());
+	}
+	
 
 	public static void loadDiasSemana(HttpServletRequest request, HttpServletResponse response, Connection conn, int coddistr) throws Exception {
 		PrintWriter out = response.getWriter();
@@ -309,14 +390,15 @@ public class Parametros_ajax {
 		}
 
 		out.print(prods.toJSONString());
-	}
+	}  
 
 	public static void loadDadosEmp(HttpServletRequest request, HttpServletResponse response, Connection conn, int coddistr) throws Exception {
 		PrintWriter out = response.getWriter();
 		JSONArray ret = new JSONArray();
 
-		String sql = " select cod_bairro, txt_obs_hora, id_distribuidora, cod_cidade,desc_razao_social,desc_nome_abrev,val_entrega_min,desc_telefone,desc_endereco,num_enderec,desc_complemento,val_tele_entrega,flag_custom, desc_mail, coalesce(flag_ativo,'N') as flag_ativo,flag_modopagamento, flag_entre_ret from distribuidora  where	 id_distribuidora = ? ";
+		String sql = " select cod_bairro,desc_loja, txt_obs_hora, date_format(tempo_minimo_entrega, '%H:%i') as tempo_minimo_entrega, id_distribuidora, cod_cidade,desc_razao_social,desc_nome_abrev,val_entrega_min,desc_telefone,desc_endereco,num_enderec,desc_complemento,val_tele_entrega,flag_custom, desc_mail, coalesce(flag_ativo,'N') as flag_ativo,flag_modopagamento, flag_entre_ret from distribuidora  where	 id_distribuidora = ? ";
 
+		
 		PreparedStatement st = conn.prepareStatement(sql);
 		st.setInt(1, coddistr);
 		ResultSet rs = st.executeQuery();
@@ -345,6 +427,8 @@ public class Parametros_ajax {
 			obj.put("VAL_TELE_ENTREGA", rs.getString("val_tele_entrega"));
 			obj.put("flag_custom", rs.getString("flag_custom"));
 			obj.put("cod_bairro", rs.getString("cod_bairro"));
+			obj.put("desc_loja", rs.getString("desc_loja"));
+			obj.put("tempo_minimo_entrega", rs.getString("tempo_minimo_entrega"));
 			obj.put("desc_mail", rs.getString("desc_mail"));
 			obj.put("flag_ativo", rs.getString("flag_ativo").equalsIgnoreCase("F") ? "S" : rs.getString("flag_ativo"));
 			obj.put("flag_modopag", rs.getString("flag_modopagamento"));
@@ -379,6 +463,8 @@ public class Parametros_ajax {
 		String flag_entre_ret = request.getParameter("flag_entre_ret") == null ? "" : request.getParameter("flag_entre_ret"); //
 		String txt_obs_hora = request.getParameter("txt_obs_hora") == null ? "" : request.getParameter("txt_obs_hora"); //
 		String cod_bairro_distr = request.getParameter("cod_bairro_distr") == null ? "" : request.getParameter("cod_bairro_distr"); //
+		String desc_loja = request.getParameter("desc_loja") == null ? "" : request.getParameter("desc_loja"); //
+		String tempo_minimo_entrega = request.getParameter("tempo_minimo_entrega") == null ? "00:00" : request.getParameter("tempo_minimo_entrega"); //
 
 		if (!(flag_custom.equalsIgnoreCase("S")) && !(flag_custom.equalsIgnoreCase("N"))) {
 			throw new Exception("Dados inválidos, entre em contato com o suporte.");
@@ -394,7 +480,7 @@ public class Parametros_ajax {
 
 		JSONArray bairros = (JSONArray) new JSONParser().parse(bairrosjson);
 
-		String sql = " UPDATE distribuidora SET `COD_CIDADE` = ?, `DESC_RAZAO_SOCIAL` = ?, `DESC_NOME_ABREV` = ?, `VAL_ENTREGA_MIN` = ?, `DESC_TELEFONE` = ?, `DESC_ENDERECO` = ?, `NUM_ENDEREC` = ?, `DESC_COMPLEMENTO` = ?, `VAL_TELE_ENTREGA` = ? , flag_custom = ? , flag_ativo = ?, desc_mail =?, FLAG_MODOPAGAMENTO = ? , flag_entre_ret = ? , txt_obs_hora = ?, COD_BAIRRO = ?  WHERE `ID_DISTRIBUIDORA` = ? ";
+		String sql = " UPDATE distribuidora SET `COD_CIDADE` = ?, `DESC_RAZAO_SOCIAL` = ?, `DESC_NOME_ABREV` = ?, `VAL_ENTREGA_MIN` = ?, `DESC_TELEFONE` = ?, `DESC_ENDERECO` = ?, `NUM_ENDEREC` = ?, `DESC_COMPLEMENTO` = ?, `VAL_TELE_ENTREGA` = ? , flag_custom = ? , flag_ativo = ?, desc_mail =?, FLAG_MODOPAGAMENTO = ? , flag_entre_ret = ? , txt_obs_hora = ?, COD_BAIRRO = ?, desc_loja = ? , tempo_minimo_entrega = ? WHERE `ID_DISTRIBUIDORA` = ? ";
 
 		PreparedStatement st = conn.prepareStatement(sql);
 		st.setInt(1, Integer.parseInt(cod_cidade));
@@ -413,7 +499,9 @@ public class Parametros_ajax {
 		st.setString(14, flag_entre_ret);
 		st.setString(15, txt_obs_hora);
 		st.setString(16, cod_bairro_distr);
-		st.setInt(17, coddistr);
+		st.setString(17, desc_loja);
+		st.setString(18, tempo_minimo_entrega);
+		st.setInt(19, coddistr);
 
 		st.executeUpdate();
 
