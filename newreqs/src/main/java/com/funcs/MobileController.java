@@ -89,11 +89,13 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 	public void processaRequisicoes(HttpServletRequest request, HttpServletResponse response) {
 
 		try {
-			/*
-			 * System.out.println("----------entro mob");
-			 * 
-			 * Map map = request.getParameterMap(); for (Iterator iterator = map.keySet().iterator(); iterator.hasNext();) { String type = (String) iterator.next(); System.out.println(type + " : " + request.getParameter(type)); }
-			 */
+			
+			  System.out.println("----------entro mob "  + new Date());
+			  
+			  Map map = request.getParameterMap(); for (Iterator iterator = map.keySet().iterator(); iterator.hasNext();) { String type = (String) iterator.next(); System.out.println(type + " : " + request.getParameter(type)); }
+			 
+			  
+			  
 
 			String strTipo = request.getParameter("ac"); // acho que aqui soh vai ter ajax, mas vo dexa assim por enqto.
 			if (strTipo == null) {
@@ -275,6 +277,8 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 					LojacarregaBairroServ(request, response, conn, cod_usuario, sys);
 				} else if (cmd.equalsIgnoreCase("LojaProdTestOnline")) {
 					LojaProdTestOnline(request, response, conn, cod_usuario, sys);
+				}else if (cmd.equalsIgnoreCase("teste")) {
+					teste(request, response, conn, cod_usuario, sys);
 				}
 
 				else {
@@ -362,6 +366,17 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 			e.printStackTrace();
 
 		}
+
+		objRetorno.put("msg", "ok");
+
+		out.println(objRetorno.toString());
+
+	}
+	
+	
+	private static void teste(HttpServletRequest request, HttpServletResponse response, Connection conn, long cod_usuario, Sys_parametros sys) throws Exception {
+		JSONObject objRetorno = new JSONObject();
+		PrintWriter out = response.getWriter();
 
 		objRetorno.put("msg", "ok");
 

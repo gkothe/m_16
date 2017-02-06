@@ -68,10 +68,10 @@ public class AtualizaBancos {
 
 	private static void rodar(Connection conn) throws Exception {
 
-		atualizarversao(conn, "'0.0.15'");
+	//	atualizarversao(conn, "'0.0.15'");
 	//	altertable(conn);
 	// 	
-//			update(conn, ver);
+    			update(conn);
 	}
 
 	private static void atualizarversao(Connection conn, String ver) throws Exception {
@@ -88,7 +88,7 @@ public class AtualizaBancos {
 	private static void update(Connection conn) throws Exception {
 
 		StringBuffer sql = new StringBuffer();// deleta item do carrinho se ele exister exite no carrinho, add depois
-		sql.append(" ");
+		sql.append(" INSERT INTO bairros   (COD_CIDADE, DESC_BAIRRO)  values ( 1 , 'Distrito Industrial'); ");
 		sql.append("  ");
 		PreparedStatement st = conn.prepareStatement(sql.toString());
 		// st.setLong(1, Long.parseLong(id_proddistr));
@@ -99,7 +99,7 @@ public class AtualizaBancos {
 	private static void altertable(Connection conn) throws Exception {
 
 		StringBuffer sql = new StringBuffer();// deleta item do carrinho se ele exister exite no carrinho, add depois
-		sql.append(" alter table sys_parametros add app_versao    text");
+		sql.append(" ");
 		sql.append("  ");
 		PreparedStatement st = conn.prepareStatement(sql.toString());
 		st.executeUpdate();
@@ -113,7 +113,7 @@ public class AtualizaBancos {
 		try {
 			conn = getConexaoTeste();
 			conn.setAutoCommit(false);
-			rodar(conn);
+		//	rodar(conn);
 			conn.commit();
 			conn.close();
 		} catch (Exception e) {
