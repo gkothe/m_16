@@ -39,6 +39,19 @@ public class AtualizaBancos {
 		Connection conn = DriverManager.getConnection(url + dbName, userName, password);
 		return conn;
 	}
+	
+	public static Connection getConexaoFitTeste() throws ClassNotFoundException, SQLException, InstantiationException, IllegalAccessException {
+
+		String url = "jdbc:mysql://mysql05-farm68.kinghost.net/";
+		String dbName = "tragoaqui03?characterEncoding=UTF-8";
+		String driver = "com.mysql.jdbc.Driver";
+		String userName = "tragoaqui03s";
+		String password = "m3t4alupy0ur4ass";
+
+		Class.forName(driver).newInstance();
+		Connection conn = DriverManager.getConnection(url + dbName, userName, password);
+		return conn;
+	}
 
 	public static Connection getConexaoTragoAqui() throws ClassNotFoundException, SQLException, InstantiationException, IllegalAccessException {
 
@@ -139,6 +152,21 @@ public class AtualizaBancos {
 			}
 		}
 		try {
+			conn = getConexaoFitTeste();
+			conn.setAutoCommit(false);
+			rodar(conn);
+			conn.commit();
+			conn.close();
+		} catch (Exception e) { // TODO: handle exception e.printStackTrace(); }
+			e.printStackTrace();
+			try {
+				conn.rollback();
+				conn.close();
+			} catch (Exception ex) { // TODO: handle exception } }
+			}
+		}
+		
+		try {
 			conn = getConexaoTragoAquiFit();
 			conn.setAutoCommit(false);
 			rodar(conn);
@@ -152,6 +180,8 @@ public class AtualizaBancos {
 			} catch (Exception ex) { // TODO: handle exception } }
 			}
 		}
+		
+
 	}
 
 }

@@ -94,6 +94,8 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 			 * 
 			 * Map map = request.getParameterMap(); for (Iterator iterator = map.keySet().iterator(); iterator.hasNext();) { String type = (String) iterator.next(); System.out.println(type + " : " + request.getParameter(type)); }
 			 */
+			  
+			  
 
 			String strTipo = request.getParameter("ac"); // acho que aqui soh vai ter ajax, mas vo dexa assim por enqto.
 			if (strTipo == null) {
@@ -275,6 +277,8 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 					LojacarregaBairroServ(request, response, conn, cod_usuario, sys);
 				} else if (cmd.equalsIgnoreCase("LojaProdTestOnline")) {
 					LojaProdTestOnline(request, response, conn, cod_usuario, sys);
+				}else if (cmd.equalsIgnoreCase("teste")) {
+					teste(request, response, conn, cod_usuario, sys);
 				}
 
 				else {
@@ -305,6 +309,15 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 		}
 	}
 
+	private static void teste(HttpServletRequest request, HttpServletResponse response, Connection conn, long cod_usuario, Sys_parametros sys) throws Exception {
+		JSONObject objRetorno = new JSONObject();
+		PrintWriter out = response.getWriter();
+		System.out.println(new Date());
+		objRetorno.put("msg", "ok");
+
+		out.println(objRetorno.toString());
+
+	}
 	private static void payment(HttpServletRequest request, HttpServletResponse response, Connection conn, long id_usuario, String email) throws Exception {
 
 		PrintWriter out = response.getWriter();
@@ -368,6 +381,8 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 		out.println(objRetorno.toString());
 
 	}
+	
+	
 
 	private static void confirmaIdadeTermos(HttpServletRequest request, HttpServletResponse response, Connection conn, long cod_usuario, Sys_parametros sys) throws Exception {
 

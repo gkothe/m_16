@@ -44,23 +44,38 @@ public class Parametros_ajax {
 		String val_fim = request.getParameter("val_fim") == null ? "" : request.getParameter("val_fim");
 		String flag_situacao = request.getParameter("flag_situacao") == null ? "" : request.getParameter("flag_situacao");
 		String descricaoprod = request.getParameter("descricaoprod") == null ? "" : request.getParameter("descricaoprod");
+		String id_categoria = request.getParameter("id_categoria") == null ? "" : request.getParameter("id_categoria");
 
-		String sql = "select produtos.id_prod, desc_prod, desc_abreviado, Coalesce(val_prod,0) as val_prod, Coalesce(produtos_distribuidora.flag_ativo,'N') as flag_ativo from produtos  left join produtos_distribuidora on produtos.id_prod = produtos_distribuidora.id_prod	 and id_distribuidora = ? where (produtos.flag_ativo = 'S') ";
+		StringBuffer sql = new StringBuffer();
+		sql.append("SELECT produtos.id_prod, ");
+		sql.append("       desc_prod,desc_categoria, ");
+		sql.append("       desc_abreviado, ");
+		sql.append("       COALESCE(val_prod, 0)                            AS val_prod, ");
+		sql.append("       COALESCE(produtos_distribuidora.flag_ativo, 'N') AS flag_ativo ");
+		sql.append("FROM   produtos ");
+		sql.append("       LEFT JOIN prod_categoria ");
+		sql.append("              ON prod_categoria.id_prod = produtos.id_prod ");
+		sql.append("       LEFT JOIN categoria ");
+		sql.append("              ON categoria.id_categoria = prod_categoria.id_categoria ");
+		sql.append("       LEFT JOIN produtos_distribuidora ");
+		sql.append("              ON produtos.id_prod = produtos_distribuidora.id_prod ");
+		sql.append("                 AND id_distribuidora = ? ");
+		sql.append("WHERE  ( produtos.flag_ativo = 'S' )");
 
 		if (!flag_situacao.equalsIgnoreCase("")) {
-			sql = sql + " and  Coalesce(produtos_distribuidora.flag_ativo,'N')  = ? ";
+			sql.append("  and  Coalesce(produtos_distribuidora.flag_ativo,'N')  = ? ");
 		}
 
 		if (!id_produto.equalsIgnoreCase("")) {
-			sql = sql + " and  produtos.id_prod = ? ";
+			sql.append("  and  produtos.id_prod = ? ");
 		}
 
 		if (!val_ini.equalsIgnoreCase("")) {
-			sql = sql + " and  Coalesce(val_prod,0) >= ? ";
+			sql.append("  and  Coalesce(val_prod,0) >= ? ");
 		}
 
 		if (!val_fim.equalsIgnoreCase("")) {
-			sql = sql + " and   Coalesce(val_prod,0) <= ? ";
+			sql.append("  and   Coalesce(val_prod,0) <= ? ");
 		}
 
 		String[] keys = null;
@@ -68,12 +83,20 @@ public class Parametros_ajax {
 
 			keys = descricaoprod.split(" ");
 			for (int i = 0; i < keys.length; i++) {
-				sql = sql + " and   desc_prod like  ? ";
+				sql.append("  and   desc_prod like  ? ");
 			}
 
 		}
 
-		PreparedStatement st = conn.prepareStatement(sql);
+		if (id_categoria.equalsIgnoreCase("O")) {
+			sql.append(" and categoria.id_categoria is null ");
+		} else if (!id_categoria.equalsIgnoreCase("")) {
+			sql.append(" and categoria.id_categoria = ?  ");
+		}
+
+		sql.append("  order by desc_abreviado ");
+
+		PreparedStatement st = conn.prepareStatement(sql.toString());
 		st.setInt(1, coddistr);
 
 		int contparam = 2;
@@ -106,6 +129,12 @@ public class Parametros_ajax {
 
 		}
 
+		if (id_categoria.equalsIgnoreCase("O")) {
+		} else if (!id_categoria.equalsIgnoreCase("")) {
+			st.setInt(contparam, Integer.parseInt(id_categoria));
+			contparam++;
+		}
+
 		ResultSet rs = st.executeQuery();
 		while (rs.next()) {
 			JSONObject obj = new JSONObject();
@@ -115,12 +144,106 @@ public class Parametros_ajax {
 			obj.put("desc_abreviado", rs.getString("desc_abreviado"));
 			obj.put("val_prod", rs.getString("val_prod"));
 			obj.put("flag_ativo", rs.getString("flag_ativo"));
+			obj.put("desc_categoria", rs.getString("desc_categoria") == null ? "Outros" : rs.getString("desc_categoria"));
 
 			prods.add(obj);
 
 		}
 
 		out.print(prods.toJSONString());
+	}
+
+	public static void loadProduto(HttpServletRequest request, HttpServletResponse response, Connection conn, int coddistr) throws Exception {
+		PrintWriter out = response.getWriter();
+
+		JSONObject obj = new JSONObject();
+
+		String id_produto = request.getParameter("id_produto") == null ? "" : request.getParameter("id_produto"); //
+		
+		StringBuffer  sql = new StringBuffer();
+		sql.append("SELECT qtd_images, ");
+		sql.append("       desc_abreviado,desc_categoria, ");
+		sql.append("       COALESCE(val_prod, 0)                            AS val_prod, ");
+		sql.append("       desc_prod, ");
+		sql.append("       COALESCE(produtos_distribuidora.flag_ativo, 'N') AS flag_ativo, ");
+		sql.append("       produtos.id_prod ");
+		sql.append("FROM   produtos ");
+		sql.append("       LEFT JOIN prod_categoria ");
+		sql.append("              ON prod_categoria.id_prod = produtos.id_prod ");
+		sql.append("       LEFT JOIN categoria ");
+		sql.append("              ON categoria.id_categoria = prod_categoria.id_categoria ");
+		sql.append("       LEFT JOIN produtos_distribuidora ");
+		sql.append("              ON produtos.id_prod = produtos_distribuidora.id_prod ");
+		sql.append("                 AND id_distribuidora = ? ");
+		sql.append("WHERE  ( produtos.flag_ativo = 'S' ) ");
+		sql.append("       AND produtos.id_prod = ?");
+		
+
+		PreparedStatement st = conn.prepareStatement(sql.toString());
+		st.setInt(1, coddistr);
+		st.setInt(2, Integer.parseInt(id_produto));
+
+		ResultSet rs = st.executeQuery();
+		if (rs.next()) {
+
+			obj.put("nome_abreviado", rs.getString("desc_abreviado"));
+			obj.put("p_id_produto", id_produto);
+			obj.put("valor_unit", rs.getString("val_prod"));
+			obj.put("nome_completo", rs.getString("desc_prod"));
+			obj.put("flag_ativo", rs.getString("flag_ativo"));
+			obj.put("desc_categoria", rs.getString("desc_categoria") == null ? "Outros" : rs.getString("desc_categoria"));
+
+			JSONArray imagens = new JSONArray();
+			int qtd_images = rs.getInt("qtd_images");
+			for (int i = 1; i <= qtd_images; i++) {
+				imagens.add("images/produtos/" + rs.getString("ID_PROD") + "_" + i + ".jpg");
+
+			}
+			obj.put("imgs", imagens);
+
+		}
+
+		out.print(obj.toJSONString());
+
+	}
+
+	public static void listaCategorias(HttpServletRequest request, HttpServletResponse response, Connection conn, int coddistr) throws Exception {
+		PrintWriter out = response.getWriter();
+		JSONArray cate = new JSONArray();
+
+		StringBuffer sql = new StringBuffer();
+		sql.append("SELECT * ");
+		sql.append("FROM   categoria ");
+
+		sql.append("  order by desc_categoria ");
+
+		PreparedStatement st = conn.prepareStatement(sql.toString());
+
+		JSONObject obj = new JSONObject();
+		obj.put("id_categoria", "");
+		obj.put("desc_categoria", "Todas");
+
+		cate.add(obj);
+
+		ResultSet rs = st.executeQuery();
+		while (rs.next()) {
+			obj = new JSONObject();
+
+			obj.put("id_categoria", rs.getString("id_categoria"));
+			obj.put("desc_categoria", rs.getString("desc_categoria"));
+
+			cate.add(obj);
+
+		}
+
+		obj = new JSONObject();
+
+		obj.put("id_categoria", "O");
+		obj.put("desc_categoria", "Outros");
+
+		cate.add(obj);
+
+		out.print(cate.toJSONString());
 	}
 
 	public static void salvarProd(HttpServletRequest request, HttpServletResponse response, Connection conn, int coddistr) throws Exception {
@@ -167,42 +290,6 @@ public class Parametros_ajax {
 			}
 
 			obj.put("msg", "Produto salvo!");
-
-		}
-
-		out.print(obj.toJSONString());
-
-	}
-
-	public static void loadProduto(HttpServletRequest request, HttpServletResponse response, Connection conn, int coddistr) throws Exception {
-		PrintWriter out = response.getWriter();
-
-		JSONObject obj = new JSONObject();
-
-		String id_produto = request.getParameter("id_produto") == null ? "" : request.getParameter("id_produto"); //
-		String sql = "select qtd_images, desc_abreviado,coalesce(val_prod,0) as val_prod,desc_prod,coalesce( produtos_distribuidora.flag_ativo,'N') as flag_ativo,produtos.id_prod from produtos  left join produtos_distribuidora on produtos.id_prod = produtos_distribuidora.id_prod	 and id_distribuidora = ? where (produtos.flag_ativo = 'S') and produtos.id_prod = ?  ";
-
-		PreparedStatement st = conn.prepareStatement(sql);
-		st.setInt(1, coddistr);
-		st.setInt(2, Integer.parseInt(id_produto));
-
-		ResultSet rs = st.executeQuery();
-		if (rs.next()) {
-
-			obj.put("nome_abreviado", rs.getString("desc_abreviado"));
-			obj.put("p_id_produto", id_produto);
-			obj.put("valor_unit", rs.getString("val_prod"));
-			obj.put("nome_completo", rs.getString("desc_prod"));
-			obj.put("flag_ativo", rs.getString("flag_ativo"));
-			
-			JSONArray imagens = new JSONArray();
-			int qtd_images  = rs.getInt("qtd_images");
-			for (int i = 1; i <= qtd_images; i++) {
-				imagens.add("images/produtos/"+rs.getString("ID_PROD") + "_"+i+".jpg");
-				
-			}
-			obj.put("imgs",imagens);
-			
 
 		}
 
@@ -289,20 +376,15 @@ public class Parametros_ajax {
 
 		out.print(ret.toJSONString());
 	}
-	
-	
-	
-	
-	
+
 	public static void loadBairrosParam2TEntativaFailed(HttpServletRequest request, HttpServletResponse response, Connection conn, int coddistr) throws Exception {
 		PrintWriter out = response.getWriter();
 		JSONArray ret = new JSONArray();
-		//problema com dias em branco
-		
+		// problema com dias em branco
+
 		JSONObject obj;
-		
-		
-		StringBuffer  sql = new StringBuffer();
+
+		StringBuffer sql = new StringBuffer();
 		sql.append("select distribuidora_bairro_entrega.cod_bairro, bairros.desc_bairro, coalesce(val_tele_entrega, 0) as val_tele , coalesce(flag_telebairro, 'N') as flag_telebairro,distribuidora_bairro_entrega.id_distr_bairro, id_horario as id_horario, date_format(horario_ini, '%H:%i')  as horario_ini ,date_format(horario_fim, '%H:%i') as horario_fim, dias_semana.cod_dia from distribuidora_bairro_entrega ");
 		sql.append("inner join bairros ");
 		sql.append("on bairros.cod_bairro = distribuidora_bairro_entrega.cod_bairro ");
@@ -312,22 +394,18 @@ public class Parametros_ajax {
 		sql.append("on dias_semana.cod_dia = distribuidora_horario_dia_entre.cod_dia ");
 		sql.append(" ");
 		sql.append("where distribuidora_bairro_entrega.id_distribuidora = ? order by desc_bairro,cod_dia");
-		
-		
+
 		PreparedStatement st = conn.prepareStatement(sql.toString());
 		st.setInt(1, coddistr);
 		ResultSet rs = st.executeQuery();
 
-		
 		int bairroatual = 0;
 		int cod_diaatual = 0;
 		JSONArray dias = new JSONArray();
 		JSONArray horarios = new JSONArray();
 		while (rs.next()) {
-		
-		
-			
-			if(bairroatual!=rs.getInt("cod_bairro")){
+
+			if (bairroatual != rs.getInt("cod_bairro")) {
 				dias = new JSONArray();
 				JSONObject dados = new JSONObject();
 				dados.put("cod_bairro", rs.getString("cod_bairro"));
@@ -336,24 +414,20 @@ public class Parametros_ajax {
 				dados.put("val_tele", rs.getDouble("val_tele"));
 				dados.put("flag_telebairro", rs.getString("flag_telebairro"));
 				ret.add(dados);
-				
-				
+
 				bairroatual = rs.getInt("cod_bairro");
 			}
-			
-			if(cod_diaatual!=rs.getInt("cod_dia")){
+
+			if (cod_diaatual != rs.getInt("cod_dia")) {
 				horarios = new JSONArray();
 				obj = new JSONObject();
 				obj.put("cod_dia", rs.getString("cod_dia"));
 				obj.put("horarios", horarios);
 				dias.add(obj);
-				
+
 				cod_diaatual = rs.getInt("cod_dia");
 			}
-			
-		
-		
-			
+
 			obj = new JSONObject();
 
 			obj.put("id_horario", rs.getLong("id_horario"));
@@ -361,15 +435,12 @@ public class Parametros_ajax {
 			obj.put("HORARIO_FIM", rs.getString("horario_fim"));
 
 			horarios.add(obj);
-		
-			
+
 		}
 
-		
 		System.out.println(ret.toJSONString());
 		out.print(ret.toJSONString());
 	}
-	
 
 	public static void loadDiasSemana(HttpServletRequest request, HttpServletResponse response, Connection conn, int coddistr) throws Exception {
 		PrintWriter out = response.getWriter();
@@ -390,7 +461,7 @@ public class Parametros_ajax {
 		}
 
 		out.print(prods.toJSONString());
-	}  
+	}
 
 	public static void loadDadosEmp(HttpServletRequest request, HttpServletResponse response, Connection conn, int coddistr) throws Exception {
 		PrintWriter out = response.getWriter();
@@ -398,7 +469,6 @@ public class Parametros_ajax {
 
 		String sql = " select cod_bairro,desc_loja, txt_obs_hora, date_format(tempo_minimo_entrega, '%H:%i') as tempo_minimo_entrega, id_distribuidora, cod_cidade,desc_razao_social,desc_nome_abrev,val_entrega_min,desc_telefone,desc_endereco,num_enderec,desc_complemento,val_tele_entrega,flag_custom, desc_mail, coalesce(flag_ativo,'N') as flag_ativo,flag_modopagamento, flag_entre_ret from distribuidora  where	 id_distribuidora = ? ";
 
-		
 		PreparedStatement st = conn.prepareStatement(sql);
 		st.setInt(1, coddistr);
 		ResultSet rs = st.executeQuery();

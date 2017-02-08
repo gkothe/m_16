@@ -245,8 +245,13 @@ public class HomeController extends javax.servlet.http.HttpServlet {
 				Relatorios.dashDiasDoMes(request, response, conn, coddistr);
 			} else if (cmd.equalsIgnoreCase("getfullprodname")) {
 				Utilitario.getFullProdname(request, response, conn);
-			} 
+			} else if (cmd.equalsIgnoreCase("listaCategorias")) {
+				Parametros_ajax.listaCategorias(request, response, conn,coddistr);
+			}  
 
+			
+			
+			
 			conn.commit();
 		} catch (Exception ex) {
 			if (ex.getMessage() == null || ex.getMessage().equals("")) {
