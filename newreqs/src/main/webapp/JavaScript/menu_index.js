@@ -111,6 +111,8 @@ function trocaPag(pag, jsp, e, extraparam) {
 
 }
 
+
+
 function marcarPedido_home(id_pedido) {
 
 	var flag_marcado = "";

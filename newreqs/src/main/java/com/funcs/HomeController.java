@@ -247,6 +247,8 @@ public class HomeController extends javax.servlet.http.HttpServlet {
 				Utilitario.getFullProdname(request, response, conn);
 			} else if (cmd.equalsIgnoreCase("listaCategorias")) {
 				Parametros_ajax.listaCategorias(request, response, conn,coddistr);
+			} else if (cmd.equalsIgnoreCase("listaMarcas")) {
+				Parametros_ajax.listaMarcas(request, response, conn,coddistr);
 			}  
 
 			

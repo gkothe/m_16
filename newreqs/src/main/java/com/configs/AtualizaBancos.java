@@ -45,7 +45,7 @@ public class AtualizaBancos {
 		String url = "jdbc:mysql://mysql05-farm68.kinghost.net/";
 		String dbName = "tragoaqui03?characterEncoding=UTF-8";
 		String driver = "com.mysql.jdbc.Driver";
-		String userName = "tragoaqui03s";
+		String userName = "tragoaqui03";
 		String password = "m3t4alupy0ur4ass";
 
 		Class.forName(driver).newInstance();
@@ -82,9 +82,9 @@ public class AtualizaBancos {
 	private static void rodar(Connection conn) throws Exception {
 
 	//	atualizarversao(conn, "'0.0.15'");
-	//	altertable(conn);
+		//altertable(conn);
 	// 	
-    			update(conn);
+    //			update(conn);
 	}
 
 	private static void atualizarversao(Connection conn, String ver) throws Exception {
@@ -101,7 +101,7 @@ public class AtualizaBancos {
 	private static void update(Connection conn) throws Exception {
 
 		StringBuffer sql = new StringBuffer();// deleta item do carrinho se ele exister exite no carrinho, add depois
-		sql.append(" INSERT INTO bairros   (COD_CIDADE, DESC_BAIRRO)  values ( 1 , 'Distrito Industrial'); ");
+		sql.append(" UPDATE sys_parametros SET applicacao = 2 ");
 		sql.append("  ");
 		PreparedStatement st = conn.prepareStatement(sql.toString());
 		// st.setLong(1, Long.parseLong(id_proddistr));
@@ -113,7 +113,7 @@ public class AtualizaBancos {
 
 		StringBuffer sql = new StringBuffer();// deleta item do carrinho se ele exister exite no carrinho, add depois
 		sql.append(" ");
-		sql.append("  ");
+		sql.append(" alter table  sys_parametros add	applicacao           int;   ");
 		PreparedStatement st = conn.prepareStatement(sql.toString());
 		st.executeUpdate();
 
@@ -126,7 +126,7 @@ public class AtualizaBancos {
 		try {
 			conn = getConexaoTeste();
 			conn.setAutoCommit(false);
-		//	rodar(conn);
+			rodar(conn);
 			conn.commit();
 			conn.close();
 		} catch (Exception e) {

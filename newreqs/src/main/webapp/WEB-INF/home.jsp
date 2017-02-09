@@ -934,7 +934,9 @@
 	var url = "";
 	var php = "";
 	var menu = "";
-var extraparam= "";
+	var extraparam= "";
+	var applicacao = <%=session.getAttribute("app")%>;
+	
 	$(document).ready(function() {
 <%boolean link = false;
 			if (request.getParameter("link") != null && !(request.getParameter("link").equalsIgnoreCase(""))) {%>
@@ -948,6 +950,8 @@ var extraparam= "";
 		menu = "m"
 		extraparam = "";
 <%}%>
+
+
 	$("#extra_paramfield").val(extraparam);
 		//	$('#mainpage').load('home?ac=listaped');
 

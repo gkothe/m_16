@@ -13,6 +13,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import com.funcs.Sys_parametros;
+
 public class AcessoController implements SysController {
 	Connection connCliente = null;
 	Connection connMaster = null;
@@ -87,7 +89,10 @@ public class AcessoController implements SysController {
 					session.setAttribute("username", rs.getString("desc_login"));
 					session.setAttribute("coddis", rs.getInt("id_distribuidora"));
 					session.setAttribute("cod_cidade", rs.getInt("cod_cidade"));
-
+					
+					Sys_parametros sys = new Sys_parametros(conn);
+					session.setAttribute("app", sys.getApplicacao());
+					
 					request.getRequestDispatcher("home?ac=home").forward(request, response);
 					
 					
@@ -95,6 +100,10 @@ public class AcessoController implements SysController {
 					throw new Exception("Usuário e/ou senha inválidos.");
 				}
 
+				
+				
+			
+				
 			} else {
 				throw new Exception("Usuário e/ou senha inválidos.");
 			}

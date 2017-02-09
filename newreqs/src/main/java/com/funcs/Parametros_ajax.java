@@ -45,10 +45,11 @@ public class Parametros_ajax {
 		String flag_situacao = request.getParameter("flag_situacao") == null ? "" : request.getParameter("flag_situacao");
 		String descricaoprod = request.getParameter("descricaoprod") == null ? "" : request.getParameter("descricaoprod");
 		String id_categoria = request.getParameter("id_categoria") == null ? "" : request.getParameter("id_categoria");
+		String id_marca = request.getParameter("id_marca") == null ? "" : request.getParameter("id_marca");
 
 		StringBuffer sql = new StringBuffer();
 		sql.append("SELECT produtos.id_prod, ");
-		sql.append("       desc_prod,desc_categoria, ");
+		sql.append("       desc_prod,desc_categoria,desc_marca, ");
 		sql.append("       desc_abreviado, ");
 		sql.append("       COALESCE(val_prod, 0)                            AS val_prod, ");
 		sql.append("       COALESCE(produtos_distribuidora.flag_ativo, 'N') AS flag_ativo ");
@@ -59,6 +60,8 @@ public class Parametros_ajax {
 		sql.append("              ON categoria.id_categoria = prod_categoria.id_categoria ");
 		sql.append("       LEFT JOIN produtos_distribuidora ");
 		sql.append("              ON produtos.id_prod = produtos_distribuidora.id_prod ");
+		sql.append("       LEFT JOIN marca ");
+		sql.append("              ON produtos.id_marca = marca.id_marca ");
 		sql.append("                 AND id_distribuidora = ? ");
 		sql.append("WHERE  ( produtos.flag_ativo = 'S' )");
 
@@ -92,6 +95,12 @@ public class Parametros_ajax {
 			sql.append(" and categoria.id_categoria is null ");
 		} else if (!id_categoria.equalsIgnoreCase("")) {
 			sql.append(" and categoria.id_categoria = ?  ");
+		}
+
+		if (id_marca.equalsIgnoreCase("O")) {
+			sql.append(" and marca.id_marca is null ");
+		} else if (!id_marca.equalsIgnoreCase("")) {
+			sql.append(" and marca.id_marca = ?  ");
 		}
 
 		sql.append("  order by desc_abreviado ");
@@ -135,6 +144,12 @@ public class Parametros_ajax {
 			contparam++;
 		}
 
+		if (id_marca.equalsIgnoreCase("O")) {
+		} else if (!id_marca.equalsIgnoreCase("")) {
+			st.setInt(contparam, Integer.parseInt(id_marca));
+			contparam++;
+		}
+
 		ResultSet rs = st.executeQuery();
 		while (rs.next()) {
 			JSONObject obj = new JSONObject();
@@ -145,6 +160,7 @@ public class Parametros_ajax {
 			obj.put("val_prod", rs.getString("val_prod"));
 			obj.put("flag_ativo", rs.getString("flag_ativo"));
 			obj.put("desc_categoria", rs.getString("desc_categoria") == null ? "Outros" : rs.getString("desc_categoria"));
+			obj.put("desc_marca", rs.getString("desc_marca") == null ? "Outros" : rs.getString("desc_marca"));
 
 			prods.add(obj);
 
@@ -159,10 +175,10 @@ public class Parametros_ajax {
 		JSONObject obj = new JSONObject();
 
 		String id_produto = request.getParameter("id_produto") == null ? "" : request.getParameter("id_produto"); //
-		
-		StringBuffer  sql = new StringBuffer();
+
+		StringBuffer sql = new StringBuffer();
 		sql.append("SELECT qtd_images, ");
-		sql.append("       desc_abreviado,desc_categoria, ");
+		sql.append("       desc_abreviado,desc_categoria,desc_marca, ");
 		sql.append("       COALESCE(val_prod, 0)                            AS val_prod, ");
 		sql.append("       desc_prod, ");
 		sql.append("       COALESCE(produtos_distribuidora.flag_ativo, 'N') AS flag_ativo, ");
@@ -172,12 +188,13 @@ public class Parametros_ajax {
 		sql.append("              ON prod_categoria.id_prod = produtos.id_prod ");
 		sql.append("       LEFT JOIN categoria ");
 		sql.append("              ON categoria.id_categoria = prod_categoria.id_categoria ");
+		sql.append("       LEFT JOIN marca ");
+		sql.append("              ON produtos.id_marca = marca.id_marca ");
 		sql.append("       LEFT JOIN produtos_distribuidora ");
 		sql.append("              ON produtos.id_prod = produtos_distribuidora.id_prod ");
 		sql.append("                 AND id_distribuidora = ? ");
 		sql.append("WHERE  ( produtos.flag_ativo = 'S' ) ");
 		sql.append("       AND produtos.id_prod = ?");
-		
 
 		PreparedStatement st = conn.prepareStatement(sql.toString());
 		st.setInt(1, coddistr);
@@ -192,6 +209,7 @@ public class Parametros_ajax {
 			obj.put("nome_completo", rs.getString("desc_prod"));
 			obj.put("flag_ativo", rs.getString("flag_ativo"));
 			obj.put("desc_categoria", rs.getString("desc_categoria") == null ? "Outros" : rs.getString("desc_categoria"));
+			obj.put("desc_marca", rs.getString("desc_marca") == null ? "Outros" : rs.getString("desc_marca"));
 
 			JSONArray imagens = new JSONArray();
 			int qtd_images = rs.getInt("qtd_images");
@@ -240,6 +258,45 @@ public class Parametros_ajax {
 
 		obj.put("id_categoria", "O");
 		obj.put("desc_categoria", "Outros");
+
+		cate.add(obj);
+
+		out.print(cate.toJSONString());
+	}
+
+	public static void listaMarcas(HttpServletRequest request, HttpServletResponse response, Connection conn, int coddistr) throws Exception {
+		PrintWriter out = response.getWriter();
+		JSONArray cate = new JSONArray();
+
+		StringBuffer sql = new StringBuffer();
+		sql.append("SELECT * ");
+		sql.append("FROM   marca ");
+
+		sql.append("  order by desc_marca ");
+
+		PreparedStatement st = conn.prepareStatement(sql.toString());
+
+		JSONObject obj = new JSONObject();
+		obj.put("id_marca", "");
+		obj.put("desc_marca", "Todas");
+
+		cate.add(obj);
+
+		ResultSet rs = st.executeQuery();
+		while (rs.next()) {
+			obj = new JSONObject();
+
+			obj.put("id_marca", rs.getString("id_marca"));
+			obj.put("desc_marca", rs.getString("desc_marca"));
+
+			cate.add(obj);
+
+		}
+
+		obj = new JSONObject();
+
+		obj.put("id_marca", "O");
+		obj.put("desc_marca", "Outros");
 
 		cate.add(obj);
 
