@@ -38,7 +38,15 @@ public class Sys_parametros {
 	String ignorar_regramaior18 ="";
 	String tragoaqui_num_telefone ="";
 	String tragoaqui_pag_facebook ="";
-	
+	String applicacao ="";
+
+	public String getApplicacao() {
+		return applicacao;
+	}
+
+	public void setApplicacao(String applicacao) {
+		this.applicacao = applicacao;
+	}
 
 	public String getFace_redirect_uri_webapp() {
 		return face_redirect_uri_webapp;
@@ -328,6 +336,8 @@ public class Sys_parametros {
 				this.setFace_redirect_uri_webapp(rs.getString("face_redirect_uri_webapp"));
 				this.setTragoaqui_num_telefone(rs.getString("tragoaqui_num_telefone"));
 				this.setTragoaqui_pag_facebook(rs.getString("tragoaqui_pag_facebook"));
+				this.setApplicacao(rs.getString("applicacao"));
+				
 				
 			}
 

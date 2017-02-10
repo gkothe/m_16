@@ -82,7 +82,7 @@ public class AtualizaBancos {
 	private static void rodar(Connection conn) throws Exception {
 
 	//	atualizarversao(conn, "'0.0.15'");
-		//altertable(conn);
+		altertable(conn);
 	// 	
     //			update(conn);
 	}
@@ -113,7 +113,7 @@ public class AtualizaBancos {
 
 		StringBuffer sql = new StringBuffer();// deleta item do carrinho se ele exister exite no carrinho, add depois
 		sql.append(" ");
-		sql.append(" alter table  sys_parametros add	applicacao           int;   ");
+		sql.append(" alter table produtos add desc_key_words       text;   ");
 		PreparedStatement st = conn.prepareStatement(sql.toString());
 		st.executeUpdate();
 

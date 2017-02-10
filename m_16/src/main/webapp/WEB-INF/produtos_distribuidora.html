@@ -34,7 +34,7 @@
 				align="right">
 				<label for=""> Produto</label>
 			</div>
-			<div class="col-xs-3 col-sm-3 col-md-4 col-lg-4">
+			<div class="col-xs-5 col-sm-5 col-md-5	 col-lg-5">
 
 				<div class="input-group" style="width: 100%">
 
@@ -50,7 +50,7 @@
 
 
 
-			<div class="col-xs-1 col-sm-1 col-md-2 col-lg-2 filtros"
+			<div class="col-xs-1 col-sm-1 col-md-1 col-lg-1 filtros"
 				align="right">
 				<label for="">Valor R$- De</label>
 			</div>
@@ -88,7 +88,7 @@
 				align="right">
 				<label for=""> Situação</label>
 			</div>
-			<div class="col-xs-4 col-sm-4 col-md-4	 col-lg-4">
+			<div class="col-xs-5 col-sm-5 col-md-5	 col-lg-5">
 				<select id="flag_situacao" class="form-control" style="width: 100%"
 					name="flag_situacao">
 					<option value="">Todos</option>
@@ -96,8 +96,7 @@
 					<option value="N">Desativados</option>
 				</select>
 			</div>
-			<div class="col-xs-1 col-sm-1 col-md-1 col-lg-1 filtros "
-				align="right"></div>
+
 			<div class="col-xs-1 col-sm-1 col-md-1 col-lg-1 filtros"
 				align="right">
 				<label for=""> Descrição</label>
@@ -115,10 +114,38 @@
 
 		</div>
 
+		<div class="row rowpad">
 
+
+			<div class="col-xs-1 col-sm-1 col-md-1 col-lg-1 filtros"
+				align="right">
+				<label for=""> Categorias</label>
+			</div>
+			<div class="col-xs-5 col-sm-5 col-md-5	 col-lg-5">
+				<select id="id_categoria" class="form-control" style="width: 100%"
+					name="id_categoria">
+
+				</select>
+			</div>
+
+
+			<div class="col-xs-1 col-sm-1 col-md-1 col-lg-1 filtros app2"
+				align="right">
+				<label for=""> Marcas</label>
+			</div>
+			<div class="col-xs-5 col-sm-5 col-md-5 col-lg-5 app2">
+
+				<select id="id_marca" class="form-control" style="width: 100%"
+					name="id_marca">
+
+				</select>
+
+			</div>
+
+
+		</div>
 
 		<div class="row rowpad"></div>
-
 
 		<br>
 		<div class="row">
@@ -138,7 +165,7 @@
 
 		<br>
 
-		<div class="row" id="row_da_tabelaprod">
+		<div class="row" class="" id="row_da_tabelaprod">
 			<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
 				<table id="table_produtos" data-toggle="table" data-height="375"
 					data-locale="pt-BR" class="table_boots" style="cursor: pointer;"
@@ -155,6 +182,10 @@
 								data-align="center">Cód.</th>
 							<th data-sortable="true" data-field="desc_abreviado"
 								data-width="30%" data-align="left">Produto</th>
+							<th data-sortable="true" data-field="desc_categoria"
+								data-width="30%" data-align="left">Categoria</th>
+							<th id="bla" data-sortable="true" data-field="desc_marca"
+								data-width="20%" data-align="left">Marca</th>
 							<th data-field="val_prod" data-width="15%" data-align="right"
 								data-formatter=valorFormater data-sortable="true">Valor</th>
 							<th data-field="flag_ativo" data-formatter="statusFormater"
@@ -169,6 +200,10 @@
 			</div>
 
 		</div>
+
+
+
+
 		<!--fim PEDIDOS EM ABERTO --------------------------------------------------------------------------------------------------------------------------------------->
 
 
@@ -217,6 +252,28 @@
 										</textarea>
 									</tr>
 
+									<tr>
+										<td style="padding-right: 5px; padding-top: 7px !important;"
+											align="right"><label for="">Marca: </label></td>
+										<td style="padding-top: 7px !important;"><input
+											style="text-align: right; width: 300px; background-color: white"
+											type="text" readonly="readonly" class="form-control "
+											id="desc_marca" /></td>
+
+									</tr>
+
+
+									<tr>
+										<td style="padding-right: 5px; padding-top: 7px !important;"
+											align="right"><label for="">Categoria: </label></td>
+										<td style="padding-top: 7px !important;"><input
+											style="text-align: right; width: 300px; background-color: white"
+											type="text" readonly="readonly" class="form-control "
+											id="desc_categoria" /></td>
+
+									</tr>
+
+
 
 									<tr>
 										<td style="padding-right: 5px; padding-top: 7px !important;"
@@ -245,7 +302,7 @@
 
 							<div class="col-xs-4 col-sm-4 col-md-4 col-lg-4 " align="center">
 
-								<div 	id="prod_slide" class="w3-content w3-display-container"></div>
+								<div id="prod_slide" class="w3-content w3-display-container"></div>
 
 							</div>
 

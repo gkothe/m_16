@@ -111,6 +111,8 @@ function trocaPag(pag, jsp, e, extraparam) {
 
 }
 
+
+
 function marcarPedido_home(id_pedido) {
 
 	var flag_marcado = "";
@@ -217,6 +219,7 @@ $(document).ready(function() {
 		}, 500);
 
 	});
+	
 
 	$('.keep-open', $('.fixed-table-toolbar')).prependTo($('#colunas'));
 	$('.fixed-table-toolbar').remove();

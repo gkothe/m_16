@@ -15,7 +15,9 @@ $(document).ready(function() {
 	$("#btn_filtrar").click(function() {
 		loadProdutos();
 	});
-
+	
+	loadCategorias();
+	
 	$("#btn_filtros_limpar").click(function() {
 
 		$("#id_produto_listagem").val("");
@@ -24,7 +26,9 @@ $(document).ready(function() {
 		$("#val_fim").autoNumeric('set', "");
 		$("#flag_situacao").val("");
 		$("#descricaoprod").val("");
-
+		$("#id_categoria").val("");
+		$("#id_marca").val("");
+		
 		loadProdutos();
 	});
 
@@ -83,6 +87,18 @@ $(document).ready(function() {
 	    	loadProdutos();
 	    }
 	});
+	
+	
+	if(applicacao==1){
+		$(tabela).bootstrapTable('hideColumn', 'desc_marca');
+		$('.app2').hide();
+	}else if(applicacao==2){
+		loadMarcas();
+		$(tabela).bootstrapTable('showColumn', 'desc_marca');
+		$('.app2').show();
+	}
+	
+	
 	
 
 });
@@ -167,7 +183,11 @@ function editarProduto(id_produto) {
 			$("#m_val_prod").autoNumeric('set', data.valor_unit);
 			$("#p_flag_status").val(data.flag_ativo);
 			$("#p_id_produto").val(data.p_id_produto);
-
+			$("#desc_categoria").val(data.desc_categoria);
+			$("#desc_marca").val(data.desc_marca);
+			
+			
+			
 			
 			$("#prod_slide").html("");
 			
@@ -220,6 +240,7 @@ function cleanModalprod() {
 	$("#m_val_prod").autoNumeric('set', 0);
 	$("#p_flag_status").val("");
 	$("#p_id_produto").val("");
+
 	
 	
 	
@@ -267,6 +288,77 @@ function salvarProduto(id_produto) {
 
 }
 
+
+
+
+
+function loadCategorias() {
+	
+	$.blockUI({
+		message : 'Carregando...'
+	});
+
+	$.ajax({
+		type : "POST",
+		url : "home?ac=ajax",
+		dataType : "json",
+		async : true,
+		data : {
+			cmd : 'listaCategorias',
+		},
+		success : function(data) {
+			var html = "";
+
+			for (t = 0; t < data.length; t++) {
+				html = html + "<option value='" + data[t].id_categoria + "'  > " + data[t].desc_categoria + "  </option>  ";
+			}
+
+			$("#id_categoria").html(html);
+
+			$.unblockUI();
+
+		},
+		error : function(msg) {
+			$.unblockUI();
+		}
+	});
+
+}
+
+
+function loadMarcas() {
+	
+	$.blockUI({
+		message : 'Carregando...'
+	});
+
+	$.ajax({
+		type : "POST",
+		url : "home?ac=ajax",
+		dataType : "json",
+		async : true,
+		data : {
+			cmd : 'listaMarcas',
+		},
+		success : function(data) {
+			var html = "";
+
+			for (t = 0; t < data.length; t++) {
+				html = html + "<option value='" + data[t].id_marca + "'  > " + data[t].desc_marca + "  </option>  ";
+			}
+
+			$("#id_marca").html(html);
+
+			$.unblockUI();
+
+		},
+		error : function(msg) {
+			$.unblockUI();
+		}
+	});
+
+}
+
 function loadProdutos() {
 
 	var id_produto = $("#id_produto_listagem").val();
@@ -274,6 +366,9 @@ function loadProdutos() {
 	var val_fim = $("#val_fim").autoNumeric('get');
 	var flag_situacao = $("#flag_situacao").val();
 	var descricaoprod = $("#descricaoprod").val();
+	var id_categoria = $("#id_categoria").val();
+	var id_marca = $("#id_marca").val();
+	
 	
 	
 	
@@ -292,7 +387,9 @@ function loadProdutos() {
 			val_ini : val_ini,
 			val_fim : val_fim,
 			flag_situacao : flag_situacao,
-			descricaoprod:descricaoprod
+			descricaoprod:descricaoprod,
+			id_categoria:id_categoria,
+			id_marca:id_marca
 
 		},
 		success : function(data) {

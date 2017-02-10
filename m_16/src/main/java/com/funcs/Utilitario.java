@@ -54,8 +54,6 @@ import net.sf.jasperreports.engine.export.JRPdfExporterParameter;
 
 public class Utilitario {
 
-
-	
 	public static JSONArray payments_ids() {
 		JSONArray payids = new JSONArray();
 		JSONObject obj = new JSONObject();
@@ -110,12 +108,12 @@ public class Utilitario {
 
 	public static void sendEmail(String para, String html, String subject, Connection conn) throws Exception {
 		Sys_parametros sys = new Sys_parametros(conn);
-		String rodape = "<br><br> Equipe "+ sys.getSys_fromdesc()+" <br>";
-		rodape = rodape + " "+ sys.getTragoaqui_num_telefone()+" <br>";
-		rodape = rodape + " "+ sys.getSys_fromemail() + " <br>";
-		rodape = rodape + " "+ sys.getTragoaqui_pag_facebook()+" <br>";
+		String rodape = "<br><br> Equipe " + sys.getSys_fromdesc() + " <br>";
+		rodape = rodape + " " + sys.getTragoaqui_num_telefone() + " <br>";
+		rodape = rodape + " " + sys.getSys_fromemail() + " <br>";
+		rodape = rodape + " " + sys.getTragoaqui_pag_facebook() + " <br>";
 		rodape = rodape + " www.tragoaqui.com.br <br>";
-		
+
 		HtmlEmail mailService = new HtmlEmail();
 		mailService.setHostName(sys.getSys_host_name_smtp());
 		mailService.setSmtpPort(sys.getSys_smtp_port());
@@ -123,7 +121,7 @@ public class Utilitario {
 		mailService.setFrom(sys.getSys_fromemail(), sys.getSys_fromdesc());
 		mailService.setStartTLSEnabled(sys.getSys_tls());
 		mailService.setSubject(subject);
-		mailService.setHtmlMsg(html+rodape);
+		mailService.setHtmlMsg(html + rodape);
 		mailService.addTo(para);
 		mailService.send();
 
@@ -230,7 +228,7 @@ public class Utilitario {
 
 		return "";
 	}
-	
+
 	public static String returnDistrTiposServicoMob(String flag) { // , flag_entre_ret
 
 		if (flag.equalsIgnoreCase("L")) {
@@ -308,14 +306,12 @@ public class Utilitario {
 			return "Ambos";
 		} else if (flag.equalsIgnoreCase("")) {
 			return "Todos";
-		} else if (flag.equalsIgnoreCase("DC")) {  //esse valor é pra display soh no mobile, nao existe de fato no sistema
+		} else if (flag.equalsIgnoreCase("DC")) { // esse valor é pra display soh no mobile, nao existe de fato no sistema
 			return "Dinheiro e Cartão Cred.";
 		}
 
 		return "";
 	}
-	
-	
 
 	public static int retornaIdinsert(String tabela, String coluna, Connection conn) throws Exception {
 		String varname1 = "";
@@ -818,11 +814,11 @@ public class Utilitario {
 	public static void renamefiles() throws IOException {
 
 		for (int i = 0; i < 150; i++) {
-			
-			File file = new File("D:/phonegap_projects/m_16/m_16/src/main/webapp/images/produtos/"+i+".jpg");
+
+			File file = new File("C:/Users/gkothe/Desktop/img_fit/img_fit" + i + "_1.jpg");
 
 			// File (or directory) with new name
-			File file2 = new File("D:/phonegap_projects/m_16/m_16/src/main/webapp/images/produtos/"+i+"_1.jpg");
+			File file2 = new File("D:/phonegap_projects/TragoAqui_Fit/www/img/prodsmin/" + i + "_min.jpg");
 
 			if (file2.exists())
 				throw new java.io.IOException("file exists");
@@ -833,12 +829,59 @@ public class Utilitario {
 			if (!success) {
 				// File was not successfully renamed
 			}
-			
-			
+
 		}
-		
+
 		// File (or directory) with old name
-	
+
+	}
+
+	public static void renamefiles3() throws IOException {
+
+		File dir = new File("C:/Users/gkothe/Desktop/img_fit/img_fit");
+
+		if (dir.isDirectory()) { // make sure it's a directory
+			for (final File f : dir.listFiles()) {
+				try {
+					File newfile = new File("C:/Users/gkothe/Desktop/img_fit/img_fit/"+f.getName().toLowerCase());
+
+					if (f.renameTo(newfile)) {
+						System.out.println("Rename succesful");
+					} else {
+						System.out.println("Rename failed");
+					}
+				} catch (Exception e) {
+					// TODO: handle exception
+					e.printStackTrace();
+				}
+			}
+		}
+	}
+
+	// File (or directory) with old name
+
+	public static void renamefilesSys() throws IOException {
+
+		for (int i = 0; i < 150; i++) {
+
+			File file = new File("D:/phonegap_projects/m_16/m_16/src/main/webapp/images/produtos/" + i + ".jpg");
+
+			// File (or directory) with new name
+			File file2 = new File("D:/phonegap_projects/m_16/m_16/src/main/webapp/images/produtos/" + i + "_1.jpg");
+
+			if (file2.exists())
+				throw new java.io.IOException("file exists");
+
+			// Rename file (or directory)
+			boolean success = file.renameTo(file2);
+
+			if (!success) {
+				// File was not successfully renamed
+			}
+
+		}
+
+		// File (or directory) with old name
 
 	}
 
@@ -848,35 +891,11 @@ public class Utilitario {
 		System.out.println(new Date());
 
 		try {
-			//conn = Conexao.getConexao();
-		//	Sys_parametros sys = new Sys_parametros(conn);
-			
-			String desaada = "0050";
-			String minimo = "01:20";
-			
-			
-			
-			
-			GregorianCalendar datadesejada = new GregorianCalendar();
-			datadesejada.setTime(new Date());
-			datadesejada.add(Calendar.HOUR, Integer.parseInt(desaada.substring(0, 2)));
-			datadesejada.add(Calendar.MINUTE, Integer.parseInt(desaada.substring(2, 4)));		
-			
-			System.out.println(datadesejada.getTime());
-			
-			
-			GregorianCalendar dataminimo = new GregorianCalendar();
-			dataminimo.setTime(new Date());
-			dataminimo.add(Calendar.HOUR, Integer.parseInt(minimo.substring(0, 2)));
-			dataminimo.add(Calendar.MINUTE, Integer.parseInt(minimo.substring(3, 5)));		
-			
-			System.out.println(dataminimo.getTime());
-			
-			if(datadesejada.getTime().before(dataminimo.getTime())){
-				System.out.println("yo");
-			}
-		//	renamefiles();
-			
+			// conn = Conexao.getConexao();
+			// Sys_parametros sys = new Sys_parametros(conn);
+
+			renamefiles3();
+
 			// oneSginal(sys, "g.kothe@hotmail.com", "aaaa", new JSONObject());
 			// oneSginal(sys, "morratu@hotmail.com", "aaaa", new JSONObject());
 		} catch (Exception e) {

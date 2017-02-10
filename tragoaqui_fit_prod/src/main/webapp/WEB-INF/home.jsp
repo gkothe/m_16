@@ -178,6 +178,8 @@
 											gerais</a></li>
 									<li><a href="javascript:abrirMapa();"><i
 											class="fa fa-globe pull-right"></i>Mapa</a></li>
+											<li><a href="javascript:abrirMapaJpg();"><i
+											class="fa fa-globe pull-right"></i>Mapa</a></li>
 									<li><a href="javascript:mutarsom();"><i
 											class="fa fa-pause-circle pull-right"></i> Desabilitar som
 											por 2 min. </a></li>
@@ -932,7 +934,9 @@
 	var url = "";
 	var php = "";
 	var menu = "";
-var extraparam= "";
+	var extraparam= "";
+	var applicacao = <%=session.getAttribute("app")%>;
+	
 	$(document).ready(function() {
 <%boolean link = false;
 			if (request.getParameter("link") != null && !(request.getParameter("link").equalsIgnoreCase(""))) {%>
@@ -946,6 +950,8 @@ var extraparam= "";
 		menu = "m"
 		extraparam = "";
 <%}%>
+
+
 	$("#extra_paramfield").val(extraparam);
 		//	$('#mainpage').load('home?ac=listaped');
 
