@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="rel_produtos" pageWidth="842" pageHeight="595" orientation="Landscape" whenNoDataType="AllSectionsNoDetail" columnWidth="802" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="c069c8d5-1243-4cc3-9277-141b325c51c3">
-	<property name="ireport.zoom" value="1.9487171000000127"/>
-	<property name="ireport.x" value="582"/>
-	<property name="ireport.y" value="0"/>
+	<property name="ireport.zoom" value="2.3579476910000157"/>
+	<property name="ireport.x" value="951"/>
+	<property name="ireport.y" value="36"/>
 	<parameter name="dataini" class="java.lang.String"/>
 	<parameter name="datafim" class="java.lang.String"/>
 	<parameter name="nome_distribuidora" class="java.lang.String"/>
@@ -16,6 +16,7 @@
 	<field name="dia_semana" class="java.lang.String"/>
 	<field name="hora" class="java.lang.String"/>
 	<field name="vendabairro_total" class="java.lang.String"/>
+	<field name="somaprod" class="java.lang.String"/>
 	<background>
 		<band splitType="Stretch"/>
 	</background>
@@ -76,60 +77,60 @@
 				<text><![CDATA[Produto]]></text>
 			</staticText>
 			<staticText>
-				<reportElement mode="Opaque" x="196" y="0" width="48" height="15" forecolor="#FFFFFF" backcolor="#CCCCCC" uuid="6dd78b19-4add-4cff-9427-90c563fd9c60"/>
-				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font size="8"/>
-				</textElement>
-				<text><![CDATA[Qtd Vendida]]></text>
-			</staticText>
-			<staticText>
-				<reportElement mode="Opaque" x="244" y="0" width="77" height="15" forecolor="#FFFFFF" backcolor="#CCCCCC" uuid="9b5590a8-3ea2-4b19-81b3-a4353b0eae61"/>
-				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font size="8"/>
-				</textElement>
-				<text><![CDATA[Total Faturado]]></text>
-			</staticText>
-			<staticText>
-				<reportElement mode="Opaque" x="321" y="0" width="58" height="15" forecolor="#FFFFFF" backcolor="#CCCCCC" uuid="a5501a02-6629-4c05-aec9-fbb9ab625cdb"/>
+				<reportElement mode="Opaque" x="196" y="0" width="58" height="15" forecolor="#FFFFFF" backcolor="#CCCCCC" uuid="a5501a02-6629-4c05-aec9-fbb9ab625cdb"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font size="8"/>
 				</textElement>
 				<text><![CDATA[Retirada Local]]></text>
 			</staticText>
 			<staticText>
-				<reportElement mode="Opaque" x="436" y="0" width="120" height="15" forecolor="#FFFFFF" backcolor="#CCCCCC" uuid="da71d88b-3250-4ace-918c-ee0e70e80882"/>
+				<reportElement mode="Opaque" x="311" y="0" width="120" height="15" forecolor="#FFFFFF" backcolor="#CCCCCC" uuid="da71d88b-3250-4ace-918c-ee0e70e80882"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font size="8"/>
 				</textElement>
 				<text><![CDATA[Maior Volume de Entrega / Qtd]]></text>
 			</staticText>
 			<staticText>
-				<reportElement mode="Opaque" x="556" y="0" width="93" height="15" forecolor="#FFFFFF" backcolor="#CCCCCC" uuid="6379e2b8-fa25-43c9-9e81-b2b228587aef"/>
+				<reportElement mode="Opaque" x="431" y="0" width="93" height="15" forecolor="#FFFFFF" backcolor="#CCCCCC" uuid="6379e2b8-fa25-43c9-9e81-b2b228587aef"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font size="8"/>
 				</textElement>
 				<text><![CDATA[Dia de Pico / Qtd]]></text>
 			</staticText>
 			<staticText>
-				<reportElement mode="Opaque" x="649" y="0" width="93" height="15" forecolor="#FFFFFF" backcolor="#CCCCCC" uuid="66deb196-a4d1-48b8-8284-f62955904c77"/>
+				<reportElement mode="Opaque" x="524" y="0" width="93" height="15" forecolor="#FFFFFF" backcolor="#CCCCCC" uuid="66deb196-a4d1-48b8-8284-f62955904c77"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font size="8"/>
 				</textElement>
 				<text><![CDATA[Horário de Pico / Qtd]]></text>
 			</staticText>
 			<staticText>
-				<reportElement mode="Opaque" x="741" y="0" width="61" height="15" forecolor="#FFFFFF" backcolor="#CCCCCC" uuid="db3511d1-9526-4393-8b0b-0e16d5b8ea94"/>
+				<reportElement mode="Opaque" x="616" y="0" width="61" height="15" forecolor="#FFFFFF" backcolor="#CCCCCC" uuid="db3511d1-9526-4393-8b0b-0e16d5b8ea94"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font size="8"/>
 				</textElement>
 				<text><![CDATA[Situação]]></text>
 			</staticText>
 			<staticText>
-				<reportElement mode="Opaque" x="379" y="0" width="57" height="15" forecolor="#FFFFFF" backcolor="#CCCCCC" uuid="876abbb7-0f17-4b3b-bd68-4a3f2c466ca4"/>
+				<reportElement mode="Opaque" x="254" y="0" width="57" height="15" forecolor="#FFFFFF" backcolor="#CCCCCC" uuid="876abbb7-0f17-4b3b-bd68-4a3f2c466ca4"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font size="8"/>
 				</textElement>
 				<text><![CDATA[Tele Entrega]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="677" y="0" width="48" height="15" forecolor="#FFFFFF" backcolor="#CCCCCC" uuid="6dd78b19-4add-4cff-9427-90c563fd9c60"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[Qtd Vendida]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="725" y="0" width="77" height="15" forecolor="#FFFFFF" backcolor="#CCCCCC" uuid="9b5590a8-3ea2-4b19-81b3-a4353b0eae61"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[Total Faturado]]></text>
 			</staticText>
 		</band>
 	</columnHeader>
@@ -144,23 +145,7 @@
 				</graphicElement>
 			</rectangle>
 			<textField>
-				<reportElement x="196" y="0" width="48" height="15" uuid="a94ff0cd-4474-4039-a9c7-4110b2c53403"/>
-				<box leftPadding="1" rightPadding="1"/>
-				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font size="8"/>
-				</textElement>
-				<textFieldExpression><![CDATA[$F{qtd}]]></textFieldExpression>
-			</textField>
-			<textField>
-				<reportElement x="244" y="0" width="77" height="15" uuid="ebbb0558-998a-47c7-989c-318b454ad468"/>
-				<box leftPadding="1" rightPadding="3"/>
-				<textElement textAlignment="Right" verticalAlignment="Middle">
-					<font size="8"/>
-				</textElement>
-				<textFieldExpression><![CDATA["R$ " + $F{val_totalprod}]]></textFieldExpression>
-			</textField>
-			<textField>
-				<reportElement x="321" y="0" width="58" height="15" uuid="86e5d1db-18c9-427a-b82b-eaaedbcf50fb"/>
+				<reportElement x="196" y="0" width="58" height="15" uuid="86e5d1db-18c9-427a-b82b-eaaedbcf50fb"/>
 				<box leftPadding="1" rightPadding="1"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font size="8"/>
@@ -168,7 +153,7 @@
 				<textFieldExpression><![CDATA[$F{venda_local}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="436" y="0" width="120" height="15" uuid="0ff2afde-8203-48f8-ac5e-47c38f1918d4"/>
+				<reportElement x="311" y="0" width="120" height="15" uuid="0ff2afde-8203-48f8-ac5e-47c38f1918d4"/>
 				<box leftPadding="1" rightPadding="1"/>
 				<textElement verticalAlignment="Middle">
 					<font size="8"/>
@@ -176,7 +161,7 @@
 				<textFieldExpression><![CDATA[$F{venda_bairro}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="556" y="0" width="93" height="15" uuid="05d27689-f694-4c82-a957-0aa48200a961"/>
+				<reportElement x="431" y="0" width="93" height="15" uuid="05d27689-f694-4c82-a957-0aa48200a961"/>
 				<box leftPadding="1" rightPadding="1"/>
 				<textElement verticalAlignment="Middle">
 					<font size="8"/>
@@ -184,7 +169,7 @@
 				<textFieldExpression><![CDATA[$F{dia_semana}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="649" y="0" width="93" height="15" uuid="93d768a5-8cce-4901-ab60-2f150f035ce4"/>
+				<reportElement x="524" y="0" width="93" height="15" uuid="93d768a5-8cce-4901-ab60-2f150f035ce4"/>
 				<box leftPadding="1" rightPadding="1"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font size="8"/>
@@ -192,7 +177,7 @@
 				<textFieldExpression><![CDATA[$F{hora}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="741" y="0" width="61" height="15" uuid="1ded2225-f180-45d5-be63-a53c94174d84"/>
+				<reportElement x="616" y="0" width="61" height="15" uuid="1ded2225-f180-45d5-be63-a53c94174d84"/>
 				<box leftPadding="1" rightPadding="1"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font size="8"/>
@@ -208,12 +193,28 @@
 				<textFieldExpression><![CDATA[$F{id_prod} + " - " + $F{desc_prod}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="378" y="0" width="58" height="15" uuid="97b5bbc8-b2f7-47d8-94af-395e78d0d8dd"/>
+				<reportElement x="253" y="0" width="58" height="15" uuid="97b5bbc8-b2f7-47d8-94af-395e78d0d8dd"/>
 				<box leftPadding="1" rightPadding="1"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{vendabairro_total}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="677" y="0" width="48" height="15" uuid="a94ff0cd-4474-4039-a9c7-4110b2c53403"/>
+				<box leftPadding="1" rightPadding="1"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{qtd}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="725" y="0" width="77" height="15" uuid="ebbb0558-998a-47c7-989c-318b454ad468"/>
+				<box leftPadding="1" rightPadding="3"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["R$ " + $F{val_totalprod}]]></textFieldExpression>
 			</textField>
 		</band>
 	</detail>
@@ -248,6 +249,21 @@
 					<font size="10"/>
 				</textElement>
 				<textFieldExpression><![CDATA["Quantidade de produtos listados: " + $V{REPORT_COUNT}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement mode="Opaque" x="725" y="0" width="77" height="15" forecolor="#FFFFFF" backcolor="#CCCCCC" uuid="c2384a2d-b283-442b-80d3-9c4369afff8f"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[Total Faturado]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="725" y="15" width="77" height="15" uuid="cbb86841-b9a3-4862-9d07-40497d579e98"/>
+				<box leftPadding="1" rightPadding="3"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["R$ " + $F{somaprod}]]></textFieldExpression>
 			</textField>
 		</band>
 	</summary>

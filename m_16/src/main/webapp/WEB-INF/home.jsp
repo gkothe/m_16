@@ -39,7 +39,6 @@
 <link rel="stylesheet" type="text/css"
 	href="JavaScript/bootstrap-calendar-master/css/calendar.css" />
 
-
 <link rel="stylesheet" type="text/css"
 	href="JavaScript/boostrap_multiselect/bootstrap-multiselect.css"></link>
 
@@ -764,11 +763,11 @@
 												<td>&nbsp;&nbsp;</td>
 												<td>
 													<div class="checkbox" data-toggle="tooltip"
-														title="Ao marcar esta opção, você estara usando o tempo máximo disponivel para a entrega e qualquer valor de tempo informado no campo aolado será ignorado. Por ex: Se o tempo máximo for 00:52, e você marcar esta opção, o efeito será o mesmo que digitar 00:52 minutos no campo ao lado."
+														title="Ao marcar esta opção, você estara usando o tempo máximo disponivel para a entrega e qualquer valor de tempo informado no campo ao lado será ignorado. Por ex: Se o tempo máximo for 00:52, e você marcar esta opção, o efeito será o mesmo que digitar 00:52 minutos no campo ao lado."
 														style="margin-top: 0px; margin-bottom: 0px">
 														<label> <input type="checkbox"
 															id="flag_usartempomax" style="color: black !important"
-															value="S"> Usar o tempo maximo disponivel.
+															value="S"> Usar o tempo maximo disponível.
 														</label>
 													</div>
 												</td>

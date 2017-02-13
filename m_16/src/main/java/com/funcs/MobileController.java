@@ -3694,20 +3694,21 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 
 						} else if (modoentrega.equalsIgnoreCase("T")) {
 
-							GregorianCalendar datadesejada = new GregorianCalendar();
-							datadesejada.setTime(new Date());
-							datadesejada.add(Calendar.HOUR, Integer.parseInt(tempomax.substring(0, 2)));
-							datadesejada.add(Calendar.MINUTE, Integer.parseInt(tempomax.substring(2, 4)));
+							if (rs.getString("tempo_minimo_entrega") != null) {
+								GregorianCalendar datadesejada = new GregorianCalendar();
+								datadesejada.setTime(new Date());
+								datadesejada.add(Calendar.HOUR, Integer.parseInt(tempomax.substring(0, 2)));
+								datadesejada.add(Calendar.MINUTE, Integer.parseInt(tempomax.substring(2, 4)));
 
-							GregorianCalendar dataminimo = new GregorianCalendar();
-							dataminimo.setTime(new Date());
-							dataminimo.add(Calendar.HOUR, Integer.parseInt(rs.getString("tempo_minimo_entrega").substring(0, 2)));
-							dataminimo.add(Calendar.MINUTE, Integer.parseInt(rs.getString("tempo_minimo_entrega").substring(3, 5)));
+								GregorianCalendar dataminimo = new GregorianCalendar();
+								dataminimo.setTime(new Date());
+								dataminimo.add(Calendar.HOUR, Integer.parseInt(rs.getString("tempo_minimo_entrega").substring(0, 2)));
+								dataminimo.add(Calendar.MINUTE, Integer.parseInt(rs.getString("tempo_minimo_entrega").substring(3, 5)));
 
-							if (datadesejada.getTime().before(dataminimo.getTime())) {
-								throw new Exception("O tempo mínimo para entrega nesta loja é " + rs.getString("tempo_minimo_entrega"));
+								if (datadesejada.getTime().before(dataminimo.getTime())) {
+									throw new Exception("O tempo mínimo para entrega nesta loja é " + rs.getString("tempo_minimo_entrega"));
+								}
 							}
-
 						}
 
 					}
@@ -3843,7 +3844,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 
 			keys = desc_pesquisa.split(" ");
 			for (int i = 0; i < keys.length; i++) {
-				sql.append(" and (desc_abreviado  like   or desc_categoria like ? or desc_key_words like ? or desc_marca like ? )");
+				sql.append(" and (desc_abreviado  like ?  or desc_categoria like ? or desc_key_words like ? or desc_marca like ? )");
 			}
 
 		}

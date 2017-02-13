@@ -724,7 +724,7 @@ public class Pedidos_ajax {
 				JSONObject obj = new JSONObject();
 
 				obj.put("ID_PROD", rs2.getInt("id_prod"));
-				obj.put("DESC_PROD", rs2.getString("desc_prod"));
+				obj.put("DESC_PROD", rs2.getString("desc_abreviado"));
 				obj.put("QTD_PROD", rs2.getInt("qtd_prod"));
 				obj.put("VAL_UNIT", rs2.getDouble("val_unit"));
 				obj.put("VAL_TOTAL", rs2.getDouble("val_total"));
@@ -885,7 +885,7 @@ public class Pedidos_ajax {
 
 				obj.put("SEQ_ITEM", rs2.getInt("seq_item"));
 				obj.put("ID_PROD", rs2.getInt("id_prod"));
-				obj.put("DESC_PROD", rs2.getString("desc_prod"));
+				obj.put("DESC_PROD", rs2.getString("desc_abreviado"));
 				obj.put("QTD_PROD", rs2.getInt("qtd_prod"));
 				obj.put("VAL_UNIT", rs2.getDouble("val_unit"));
 				obj.put("VAL_TOTAL", rs2.getDouble("val_total"));

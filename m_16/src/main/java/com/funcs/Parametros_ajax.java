@@ -206,7 +206,7 @@ public class Parametros_ajax {
 			obj.put("nome_abreviado", rs.getString("desc_abreviado"));
 			obj.put("p_id_produto", id_produto);
 			obj.put("valor_unit", rs.getString("val_prod"));
-			obj.put("nome_completo", rs.getString("desc_prod"));
+			obj.put("nome_completo", rs.getString("desc_prod").replace("<br><br>", ""));
 			obj.put("flag_ativo", rs.getString("flag_ativo"));
 			obj.put("desc_categoria", rs.getString("desc_categoria") == null ? "Outros" : rs.getString("desc_categoria"));
 			obj.put("desc_marca", rs.getString("desc_marca") == null ? "Outros" : rs.getString("desc_marca"));
