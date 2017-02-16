@@ -71,6 +71,12 @@ function abrirMapa() {
 	window.open("http://www.santacruz.rs.gov.br/geo/", '_blank');
 }
 
+function abrirMapaJpg(){
+
+	window.open("mapa_bairros.png", '_blank');
+}
+
+
 function sysMsg(text, tipo) {
 
 	if (tipo == 'E') {

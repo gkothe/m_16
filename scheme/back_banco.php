@@ -12,6 +12,10 @@
 		   $command = "mysqldump -h mysql05-farm68.kinghost.net -u tragoaqui02 -pm3t4alupy0ur4ass tragoaqui02 | gzip > /home/tragoaqui/backups/dbfit_tragoaqui_`date '+%Y-%m-%d_%H%M'`.gzip";
 		   exec($command);
 		   
+		   $command = "mysqldump -h mysql05-farm68.kinghost.net -u tragoaqui03 -pm3t4alupy0ur4ass tragoaqui03 | gzip > /home/tragoaqui/backups/dbfit_teste_tragoaqui_`date '+%Y-%m-%d_%H%M'`.gzip";
+		   exec($command);
+		   
+		   
 		   $command = "zip -r  /home/tragoaqui/backups/webapss_`date '+%Y-%m-%d_%H%M'`.zip  /home/tragoaqui/webapps";
 		   exec($command);
 		   

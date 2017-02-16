@@ -581,7 +581,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 				rs = st.executeQuery();
 				if (rs.next()) {
 					if (!rs.getString("flag_ativo").equalsIgnoreCase("S")) {
-						objRetorno.put("txt_obs_hora", "Esta distribuidora está offline no momento.");
+						objRetorno.put("txt_obs_hora", "Esta loja está offline no momento.");
 					} else {
 						String endereco = rs.getString("desc_endereco");
 						String num = rs.getString("num_enderec");
@@ -2974,7 +2974,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 				if (telapag) {
 					return false;
 				} else {
-					throw new Exception("O produto " + Utilitario.getNomeProdIdProdDistr(conn, id_distribuidora_prod, true) + " que está no carrinho tem um valor diferente que se encontra na distribuidora. Isto pode acontecer quando a distribuidora modifica o valor de um produto durante sua compra. Por favor clique em recalcular carrinho.");
+					throw new Exception("O produto " + Utilitario.getNomeProdIdProdDistr(conn, id_distribuidora_prod, true) + " que está no carrinho tem um valor diferente que se encontra na loja. Isto pode acontecer quando a loja modifica o valor de um produto durante sua compra. Por favor clique em recalcular carrinho.");
 				}
 			}
 		} else {
@@ -2997,7 +2997,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 			ResultSet rs = st.executeQuery();
 			while (rs.next()) {
 				if (id_distribuidora_prod != rs.getInt("ID_DISTRIBUIDORA")) {
-					throw new Exception("Produto selecionado é de uma distribuidora diferente da que se encontra no carrinho!");
+					throw new Exception("Produto selecionado é de uma loja diferente da que se encontra no carrinho!");
 				}
 			}
 
@@ -3073,10 +3073,10 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 		if (rs.next()) {
 			String servico = rs.getString("flag_entre_ret");
 			if (servico.equals("T") && choiceserv.equals("L")) {
-				throw new Exception("A distribuidora '" + rs.getString("desc_nome_abrev") + "' atualmente só está trabalhando com entrega. Para mudar de serviço, por favor limpe seu carrinho.");
+				throw new Exception("A loja '" + rs.getString("desc_nome_abrev") + "' atualmente só está trabalhando com entrega. Para mudar de serviço, por favor limpe seu carrinho.");
 			}
 			if (servico.equals("L") && choiceserv.equals("T")) {
-				throw new Exception("A distribuidora '" + rs.getString("desc_nome_abrev") + "' atualmente só está trabalhando com retirada no local. Para mudar de serviço, por favor limpe seu carrinho.");
+				throw new Exception("A loja '" + rs.getString("desc_nome_abrev") + "' atualmente só está trabalhando com retirada no local. Para mudar de serviço, por favor limpe seu carrinho.");
 			}
 
 			if (choiceserv.equals("L")) {
@@ -3189,11 +3189,11 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 				String servico = rs.getString("flag_entre_ret");
 
 				if (servico.equals("T") && choiceserv.equals("L")) {
-					throw new Exception("A distribuidora " + rs.getString("desc_nome_abrev") + " atualmente só está trabalhando com entrega.");
+					throw new Exception("A loja " + rs.getString("desc_nome_abrev") + " atualmente só está trabalhando com entrega.");
 				}
 
 				if (servico.equals("L") && choiceserv.equals("T")) {
-					throw new Exception("A distribuidora " + rs.getString("desc_nome_abrev") + " atualmente só está trabalhando com retirada no local.");
+					throw new Exception("A loja " + rs.getString("desc_nome_abrev") + " atualmente só está trabalhando com retirada no local.");
 				}
 
 				idcarrinho = rs.getLong("id_carrinho");

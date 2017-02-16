@@ -176,9 +176,9 @@
 											class="fa fa-question pull-right"></i>Ajuda/Informações
 											gerais</a></li>
 									<li><a href="javascript:abrirMapa();"><i
-											class="fa fa-globe pull-right"></i>Mapa</a></li>
+											class="fa fa-globe pull-right"></i>Mapa Online</a></li>
 											<li><a href="javascript:abrirMapaJpg();"><i
-											class="fa fa-globe pull-right"></i>Mapa</a></li>
+											class="fa fa-globe pull-right"></i>Mapa Bairros</a></li>
 									<li><a href="javascript:mutarsom();"><i
 											class="fa fa-pause-circle pull-right"></i> Desabilitar som
 											por 2 min. </a></li>
