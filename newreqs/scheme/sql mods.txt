@@ -11,13 +11,9 @@ Se kra fazer um agendamento e retirar local.
 
 
 
-
-
-
-
 alter table distribuidora DROP COLUMN flag_entre_ret;
-alter table distribuidora add   flag_agendamento     char(1); S e N
-alter table distribuidora add   flag_tele_entrega    char(1); S e N
-alter table distribuidora add   flag_retirada        char(1); S e N
+alter table distribuidora add   flag_agendamento     char(1);// S e N
+alter table distribuidora add   flag_tele_entrega    char(1);// S e N
+alter table distribuidora add   flag_retirada        char(1);// S e N
 
 alter table carrinho add flag_servico char(1);

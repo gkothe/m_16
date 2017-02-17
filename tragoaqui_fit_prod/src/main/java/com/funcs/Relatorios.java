@@ -1293,7 +1293,12 @@ public class Relatorios {
 				hmParams.put("situacao", Utilitario.returnStatusPedidoFlag(flag_situacao, ""));
 			}
 
-			hmParams.put("servico", Utilitario.returnDistrTiposPedido(flag_servico));
+			if(flag_servico.equalsIgnoreCase("T")){
+				hmParams.put("servico", "Entrega");	
+			}else if(flag_servico.equalsIgnoreCase("L")){
+				hmParams.put("servico", "Retirada em local");
+			}
+			
 			hmParams.put("modo_pay", Utilitario.returnModoPagamento(flag_pagamento));
 			if (!cod_bairro.equalsIgnoreCase(""))
 				hmParams.put("bairro", Utilitario.getNomeBairro(conn, Integer.parseInt(cod_bairro), 0));
@@ -1589,8 +1594,8 @@ public class Relatorios {
 			List listaReport = new LinkedList();
 
 			JasperReport objRelJasper_ordemprod = null;
-			// objRelJasper_ordemprod = JasperCompileManager.compileReport("D:/phonegap_projects/m_16/m_16/src/main/webapp/rels/" + nome + ".jrxml");
-			// String arq = "" + new File("D:/phonegap_projects/m_16/m_16/src/main/webapp/rels/" + nome + ".pdf");
+//			 objRelJasper_ordemprod = JasperCompileManager.compileReport("D:/phonegap_projects/m_16/m_16/src/main/webapp/rels/" + nome + ".jrxml");
+//			 String arq = "" + new File("D:/phonegap_projects/m_16/m_16/src/main/webapp/rels/" + nome + ".pdf");
 
 			String arq = "" + new File(sys.getPath() + "/rels/" + nome + ".pdf");
 			objRelJasper_ordemprod = JasperCompileManager.compileReport(sys.getPath() + "/rels/" + nome + ".jrxml");
@@ -1786,7 +1791,7 @@ public class Relatorios {
 
 			ResultSet rs = st.executeQuery();
 			HashMap<String, Object> hmFat = new HashMap<String, Object>();
-
+			double somaprod = 0;
 			StringBuffer varname1;
 			while (rs.next()) {
 				double vendabairro_total = 0;
@@ -1798,7 +1803,7 @@ public class Relatorios {
 				} else {
 					hmFat.put("desc_prod", rs.getString("desc_abreviado"));
 				}
-
+				somaprod = somaprod + rs.getDouble("total");
 				hmFat.put("id_prod", rs.getLong("id_prod"));
 				hmFat.put("qtd", df.format(rs.getLong("qtd")));
 				hmFat.put("val_totalprod", df2.format(rs.getDouble("total")));
@@ -1897,7 +1902,9 @@ public class Relatorios {
 					hmFat.put("hora", "-");
 				}
 				hmFat.put("vendabairro_total", df.format(vendabairro_total));
-
+				hmFat.put("somaprod", df2.format(somaprod));
+				
+				
 				arrLinhas.add(hmFat);
 			}
 

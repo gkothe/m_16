@@ -8,7 +8,7 @@
 <link rel="shortcut icon" href="images/favicon.png" type="image/x-icon">
 <meta content="width=device-width, initial-scale=1.0" name="viewport" />
 <title>TragoAqui!</title>
-
+<script type="text/javascript" src="JavaScript/httpsredirect.js"></script>
 <script src="gentelella-master/vendors/jquery/dist/jquery.min.js"></script>
 <script
 	src="gentelella-master/vendors/bootstrap/dist/js/bootstrap.min.js"></script>
@@ -17,8 +17,6 @@
 	src="JavaScript/jquery-ui-1.10.4.custom/js/jquery.blockUI.js"></script>
 <link href="gentelella-master/vendors/bootstrap/dist/css/bootstrap.css"
 	rel="stylesheet">
-
-
 
 
 

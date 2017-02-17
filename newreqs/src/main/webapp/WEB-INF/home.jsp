@@ -10,6 +10,7 @@
 <meta content="width=device-width, initial-scale=1.0" name="viewport" />
 
 <title>TragoAqui</title>
+<script type="text/javascript" src="JavaScript/httpsredirect.js"></script>
 <link rel="shortcut icon" href="images/favicon.png" type="image/x-icon">
 <!-- Bootstrap -->
 <link href="gentelella-master/vendors/bootstrap/dist/css/bootstrap.css"

@@ -70,7 +70,8 @@
 
 						PreparedStatement st = conn.prepareStatement(sql.toString());
 						ResultSet rs = st.executeQuery();
-						if(rs.next()){}
+						if (rs.next()) {
+						}
 				%>
 
 				<div class="col-xs-1 col-sm-1 col-md-1 col-lg-1 filtros"
@@ -82,10 +83,10 @@
 					<div class="input-group" style="width: 100%">
 
 						<input id="id_produto" placeholder="Cód." style="width: 25%"
-							class="form-control" type="text" value="<%=rs.getInt("id")%>" name="id_produto">
-						<input id="desc_abreviado" style="width: 75%" class="form-control"
-							placeholder="Nome" type="text" maxlength="" value=""
-							name="desc_abreviado">
+							class="form-control" type="text" value="<%=rs.getInt("id")%>"
+							name="id_produto"> <input id="desc_abreviado"
+							style="width: 75%" class="form-control" placeholder="Nome"
+							type="text" maxlength="" value="" name="desc_abreviado">
 					</div>
 				</div>
 
@@ -115,12 +116,9 @@
 				</div>
 				<div class="col-xs-10 col-sm-10 col-md-10 col-lg-12 ">
 
-
-
 					<textarea style="width: 100%" rows="10" cols="" id="desc_prod">  </textarea>
 
 				</div>
-
 
 
 			</div>
@@ -129,8 +127,6 @@
 					<label for="">Keywords</label>
 				</div>
 				<div class="col-xs-10 col-sm-10 col-md-10 col-lg-12 ">
-
-
 
 					<textarea style="width: 100%" rows="2" cols="" id="key_words">  </textarea>
 
@@ -206,6 +202,14 @@
 						<button class="btn btn-primary  " type="button" id="btn_produto">Adicionar
 							Produto</button>
 					</div>
+
+					<div class="col-xs-3 col-sm-3 col-md-3 col-lg-3 filtros"
+						align="right"></div>
+					<div class="col-xs-3 col-sm-3 col-md-3 col-lg-3 filtros"
+						align="right">
+						<button class="btn btn-primary  " type="button"
+							id="btn_atuproduto">Atuailzar Produto</button>
+					</div>
 				</div>
 				<br> <br>
 
@@ -255,7 +259,7 @@
 							Marca</button>
 					</div>
 				</div>
-				s <Br>
+				 <Br>
 			</div>
 
 
@@ -336,6 +340,104 @@
 
 	}
 
+	function atualizarProd() {
+
+		var desc_senha = $("#desc_senha").val();
+		var id_produto = $("#id_produto").val();
+		var desc_abreviado = $("#desc_abreviado").val();
+		var desc_prod = $("#desc_prod").val();
+		var key_words = $("#key_words").val();
+		var id_categoria = $("#id_categoria").val();
+		var id_marca = $("#id_marca").val();
+		var qtd_image = $("#qtd_image").val();
+
+		$.blockUI({
+			message : 'salvando...'
+		});
+
+		$.ajax({
+			type : "POST",
+			url : "admin?ac=ajax",
+			dataType : "json",
+			async : true,
+			data : {
+				cmd : 'atualizarProd',
+				desc_senha : desc_senha,
+				id_produto : id_produto,
+				desc_abreviado : desc_abreviado,
+				desc_prod : desc_prod,
+				key_words : key_words,
+				id_categoria : id_categoria,
+				id_marca : id_marca,
+				qtd_image : qtd_image
+
+			},
+			success : function(data) {
+
+				if (data.erro) {
+
+					alert(data.erro);
+				} else if (data.msg == "ok") {
+					alert("produto inserido");
+
+					$("#id_produto").val("");
+					$("#desc_abreviado").val("");
+					$("#desc_prod").val("");
+					$("#key_words").val("");
+					$("#id_categoria").val("");
+					$("#id_marca").val("");
+					$("#qtd_image").val("");
+
+				}
+
+				$.unblockUI();
+			},
+			error : function(msg) {
+				$.unblockUI();
+				alert(msg);
+
+			}
+		});
+
+	}
+
+	function getProd() {
+
+		var id_produto = $("#id_produto").val();
+		var desc_senha = $("#desc_senha").val();
+
+		$.ajax({
+			type : "POST",
+			url : "admin?ac=ajax",
+			dataType : "json",
+			async : true,
+			data : {
+				cmd : 'getProd',
+				desc_senha : desc_senha,
+				id_produto : id_produto
+
+			},
+			success : function(data) {
+
+				$("#id_produto").val(data.id_prod);
+				$("#desc_abreviado").val(data.desc_abreviado);
+				$("#desc_prod").val(data.desc_prod);
+				$("#key_words").val(data.desc_key_words);
+				$("#id_categoria").val(data.id_categoria);
+				$("#id_marca").val(data.id_marca);
+				$("#qtd_image").val(data.qtd_images);
+
+				
+			},
+			error : function(msg) {
+				$.unblockUI();
+				alert(msg);
+
+			}
+		});
+
+	}
+
 	function inserirCateg() {
 
 		var desc_senha = $("#desc_senha").val();
@@ -405,10 +507,10 @@
 				if (data.erro) {
 
 					alert(data.erro);
-				}else if (data.msg == "ok") {
+				} else if (data.msg == "ok") {
 					alert("Marca inserida");
 					$("#desc_marca").val("");
-					
+
 					location.reload()
 
 				}
@@ -426,8 +528,18 @@
 
 	$(document).ready(function() {
 
+		
+		$("#id_produto").blur(function() {
+			getProd();
+		});
+		
+		
 		$("#btn_produto").click(function() {
 			inserirProduto();
+		});
+
+		$("#btn_atuproduto").click(function() {
+			atualizarProd();
 		});
 
 		$("#btn_categ").click(function() {

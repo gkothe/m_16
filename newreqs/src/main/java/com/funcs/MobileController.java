@@ -89,14 +89,11 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 	public void processaRequisicoes(HttpServletRequest request, HttpServletResponse response) {
 
 		try {
-
-			System.out.println("----------entro mob");
-
-			Map map = request.getParameterMap();
-			for (Iterator iterator = map.keySet().iterator(); iterator.hasNext();) {
-				String type = (String) iterator.next();
-				System.out.println(type + " : " + request.getParameter(type));
-			}
+			/*
+			 * System.out.println("----------entro mob");
+			 * 
+			 * Map map = request.getParameterMap(); for (Iterator iterator = map.keySet().iterator(); iterator.hasNext();) { String type = (String) iterator.next(); System.out.println(type + " : " + request.getParameter(type)); }
+			 */
 
 			String strTipo = request.getParameter("ac"); // acho que aqui soh vai ter ajax, mas vo dexa assim por enqto.
 			if (strTipo == null) {
@@ -141,7 +138,9 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 			Sys_parametros sys = new Sys_parametros(conn);
 			String cmd = request.getParameter("cmd") == null ? "" : request.getParameter("cmd");
 
-			if (cmd.equalsIgnoreCase("login")) {
+			if (cmd.equalsIgnoreCase("getapp")) {
+				appplicacao(request, response, conn,  sys);
+			} else if (cmd.equalsIgnoreCase("login")) {
 				String flag_face = request.getParameter("flag_face") == null ? "" : request.getParameter("flag_face");
 
 				if (!(flag_face.equalsIgnoreCase("S")) && !(flag_face.equalsIgnoreCase("N"))) {
@@ -217,8 +216,6 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 					Parametros_ajax.listaCategorias(request, response, conn, 0);
 				} else if (cmd.equalsIgnoreCase("carregaMarcas")) {
 					Parametros_ajax.listaMarcas(request, response, conn, 0);
-				} else if (cmd.equalsIgnoreCase("getapp")) {
-					appplicacao(request, response, conn, cod_usuario, sys);
 				} else if (cmd.equalsIgnoreCase("listaLojas")) {
 					listaLojas(request, response, conn, cod_usuario, sys);
 				} else if (cmd.equalsIgnoreCase("detalheLoja")) {
@@ -326,7 +323,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 
 	}
 
-	private static void appplicacao(HttpServletRequest request, HttpServletResponse response, Connection conn, long cod_usuario, Sys_parametros sys) throws Exception {
+	private static void appplicacao(HttpServletRequest request, HttpServletResponse response, Connection conn, Sys_parametros sys) throws Exception {
 		JSONObject objRetorno = new JSONObject();
 		PrintWriter out = response.getWriter();
 		objRetorno.put("app", sys.getApplicacao());
@@ -3558,7 +3555,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 				st.setString(14, "N");
 				st.setString(15, tipo_pagamento);
 				st.setString(16, rs.getString("DESC_NOME"));
-				st.setString(17, choiceserv.equalsIgnoreCase("A")? "T" : choiceserv);//agendamentos no pedido são modelados asism: FLAG_PEDIDO_RET_ENTRE  = 'T' e flag_modoentrega ='A'
+				st.setString(17, choiceserv.equalsIgnoreCase("A") ? "T" : choiceserv);// agendamentos no pedido são modelados asism: FLAG_PEDIDO_RET_ENTRE = 'T' e flag_modoentrega ='A'
 				if (choiceserv.equalsIgnoreCase("A")) {
 					st.setString(18, "00:00");
 					// st.setString(18, "00:30");

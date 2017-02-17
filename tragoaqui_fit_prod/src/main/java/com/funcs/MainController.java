@@ -34,11 +34,11 @@ public class MainController extends javax.servlet.http.HttpServlet {
 
 		try {
 
-			/*
-			 * System.out.println("----------entro main");
-			 * 
-			 * Map map = request.getParameterMap(); for (Iterator iterator = map.keySet().iterator(); iterator.hasNext();) { String type = (String) iterator.next(); System.out.println(type + " : " + request.getParameter(type)); }
-			 */
+			
+			 System.out.println("----------entro main");
+			  
+			Map map = request.getParameterMap(); for (Iterator iterator = map.keySet().iterator(); iterator.hasNext();) { String type = (String) iterator.next(); System.out.println(type + " : " + request.getParameter(type)); }
+			 
 
 			SysController controller = null;
 

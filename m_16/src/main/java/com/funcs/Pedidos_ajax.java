@@ -139,7 +139,6 @@ public class Pedidos_ajax {
 
 	}
 
-	
 	public static void carregaPedidosAbertos(HttpServletRequest request, HttpServletResponse response, Connection conn, int coddistr) throws Exception {
 		
 		carregaPedidosAbertos( request,  response,  conn,  coddistr, false, new JSONObject(), new JSONArray()); 
@@ -407,11 +406,10 @@ public class Pedidos_ajax {
 		retorno.put("temfiltro", temfiltro);
 		retorno.put("pedidos", pedidos);
 		
-		
 		if(segundaconsulta){
 			out.print(retorno.toJSONString());	
 		}else{
-			carregaPedidosAbertos(request, response, conn, coddistr, true, retorno, pedidos);; 	
+			carregaPedidosAbertos(request, response, conn, coddistr, true, retorno, pedidos);
 		}
 		
 
@@ -493,10 +491,22 @@ public class Pedidos_ajax {
 			sql2 = sql2 + "  and  val_totalprod <= ? ";
 		}
 
-		if (!flag_pedido_ret_entre.equalsIgnoreCase("")) {
-			sql = sql + "  and  flag_pedido_ret_entre = ? ";
-			sql2 = sql2 + "  and  flag_pedido_ret_entre = ? ";
+		if (flag_pedido_ret_entre.equalsIgnoreCase("A")) {
+
+			sql = sql + "  and  flag_pedido_ret_entre = 'T' and flag_modoentrega = 'A' ";
+			sql2 = sql2 + "  and  flag_pedido_ret_entre = 'T' and flag_modoentrega = 'A' ";
+
+		} else if (flag_pedido_ret_entre.equalsIgnoreCase("T")) {
+
+			sql = sql + "  and  flag_pedido_ret_entre = 'T' and flag_modoentrega = 'T' ";
+			sql2 = sql2 + "  and  flag_pedido_ret_entre = 'T' and flag_modoentrega = 'T' ";
+		} else if (flag_pedido_ret_entre.equalsIgnoreCase("L")) {
+
+			sql = sql + "  and  flag_pedido_ret_entre = 'L' ";
+			sql2 = sql2 + "  and  flag_pedido_ret_entre = 'L' ";
 		}
+
+		
 
 		try {
 			Integer.parseInt(pag);
@@ -601,11 +611,7 @@ public class Pedidos_ajax {
 			contparam++;
 		}
 
-		if (!flag_pedido_ret_entre.equalsIgnoreCase("")) {
-			st.setString(contparam, (flag_pedido_ret_entre));
-			st2.setString(contparam, (flag_pedido_ret_entre));
-			contparam++;
-		}
+		
 
 		ResultSet rs = st2.executeQuery();
 		if (rs.next()) {

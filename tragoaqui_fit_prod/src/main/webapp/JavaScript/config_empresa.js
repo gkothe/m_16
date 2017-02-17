@@ -82,9 +82,7 @@ $(document).ready(function() {
 		ativaWarningSalvar();
 	});
 
-	$("#flag_entre_ret").change(function() {
-		ativaWarningSalvar();
-	});
+	
 	$("#txt_obs_hora").change(function() {
 		ativaWarningSalvar();
 	});
@@ -311,13 +309,32 @@ function salvarTela() {
 	var val_min_entrega = $("#val_min_entrega").autoNumeric('get');
 	var val_padrao_tele = $("#val_padrao_tele").autoNumeric('get');
 	var flag_modopag = $("#flag_modopag").val();
-	var flag_entre_ret = $("#flag_entre_ret").val();
+	
 	var txt_obs_hora = $("#txt_obs_hora").val();
 	var cod_bairro_distr = $("#cod_bairro_distr").val();
 	var desc_loja = $("#txt_desc_loja").val();
 	var tempo_minimo_entrega = $("#tempo_minimo_entrega").val();
 	
+	var flag_agendamento = "";
+	if ($("#flag_agendamento").is(":checked")) {
+		flag_agendamento = "S"
+	} else {
+		flag_agendamento = "N"
+	}
 	
+	var flag_tele_entrega = "";
+	if ($("#flag_tele_entrega").is(":checked")) {
+		flag_tele_entrega = "S"
+	} else {
+		flag_tele_entrega = "N"
+	}
+	
+	var flag_retirada = "";
+	if ($("#flag_retirada").is(":checked")) {
+		flag_retirada = "S"
+	} else {
+		flag_retirada = "N"
+	}
 
 	var flag_custom = "";
 
@@ -351,11 +368,14 @@ function salvarTela() {
 			bairros : bairros,
 			desc_mail : desc_mail,
 			flag_modopag : flag_modopag,
-			flag_entre_ret : flag_entre_ret,
 			txt_obs_hora : txt_obs_hora,
 			cod_bairro_distr : cod_bairro_distr,
 			desc_loja:desc_loja,
-			tempo_minimo_entrega:tempo_minimo_entrega
+			tempo_minimo_entrega:tempo_minimo_entrega,
+			flag_agendamento:flag_agendamento,
+			flag_tele_entrega:flag_tele_entrega,
+			flag_retirada:flag_retirada
+			
 
 		},
 		success : function(data) {
@@ -579,7 +599,7 @@ function loadDados() {
 			$("#desc_mail").val(data[0].desc_mail);
 			$("#flag_modopag").val(data[0].flag_modopag);
 			$("#emp_logo").attr("src", data[0].nome_img);
-			$("#flag_entre_ret").val(data[0].flag_entre_ret);
+			
 			$("#cod_bairro_distr").val(data[0].cod_bairro);
 			$("#txt_desc_loja").val(data[0].desc_loja);
 			$("#tempo_minimo_entrega").val(data[0].tempo_minimo_entrega);
@@ -590,6 +610,28 @@ function loadDados() {
 			} else {
 				$("#check_custommode").prop('checked', false);
 			}
+			
+			
+			if (data[0].flag_agendamento == 'S') {
+				$("#flag_agendamento").prop('checked', true);
+			} else {
+				$("#flag_agendamento").prop('checked', false);
+			}
+			
+			if (data[0].flag_tele_entrega == 'S') {
+				$("#flag_tele_entrega").prop('checked', true);
+			} else {
+				$("#flag_tele_entrega").prop('checked', false);
+			}
+			
+			if (data[0].flag_retirada == 'S') {
+				$("#flag_retirada").prop('checked', true);
+			} else {
+				$("#flag_retirada").prop('checked', false);
+			}
+			
+			
+			
 
 			id_horariomax = data[0].id_horariomax;
 			testComboOnline();

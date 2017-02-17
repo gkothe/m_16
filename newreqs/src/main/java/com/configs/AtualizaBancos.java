@@ -81,8 +81,8 @@ public class AtualizaBancos {
 
 	private static void rodar(Connection conn) throws Exception {
 
-	//	atualizarversao(conn, "'0.0.15'");
-		altertable(conn);
+		atualizarversao(conn, "'0.0.19'");
+		//altertable(conn);
 	// 	
     //			update(conn);
 	}

@@ -80,9 +80,7 @@ public class Utilitario {
 	public static JSONArray FlagEntreRet() {
 		JSONArray payids = new JSONArray();
 		JSONObject obj = new JSONObject();
-		/*
-		 * obj = new JSONObject(); obj.put("flag_entre_ret", "A"); obj.put("desc", "Todos - Retirada no local e entrega"); payids.add(obj);
-		 */
+		
 		obj = new JSONObject();
 		obj.put("flag_entre_ret", "L");
 		obj.put("desc", "Retirada no local");
@@ -90,7 +88,12 @@ public class Utilitario {
 
 		obj = new JSONObject();
 		obj.put("flag_entre_ret", "T");
-		obj.put("desc", "Entrega");
+		obj.put("desc", "Tele-entrega");
+		payids.add(obj);
+		
+		obj = new JSONObject();
+		obj.put("flag_entre_ret", "A");
+		obj.put("desc", "Agendamento");
 		payids.add(obj);
 
 		return payids;
@@ -214,16 +217,14 @@ public class Utilitario {
 		return 0;
 	}
 
-	public static String returnDistrTiposPedido(String flag) { // , flag_entre_ret
+	public static String returnDistrTiposPedido(String flag_pedido_ret_entre, String flag_modoentrega) { // , flag_entre_ret
 
-		if (flag.equalsIgnoreCase("L")) {
+		if (flag_pedido_ret_entre.equalsIgnoreCase("L")) {
 			return "Retirada no local";
-		} else if (flag.equalsIgnoreCase("T")) {
-			return "Entrega";
-		} else if (flag.equalsIgnoreCase("A")) {
-			return "Retirada no local e Entrega";
-		} else if (flag.equalsIgnoreCase("")) {
-			return "Todos";
+		} else if (flag_pedido_ret_entre.equalsIgnoreCase("T") && flag_modoentrega.equalsIgnoreCase("T")) {
+			return "Tele-Entrega";
+		} else if (flag_pedido_ret_entre.equalsIgnoreCase("T") && flag_modoentrega.equalsIgnoreCase("A")) {
+			return "Agendamento";
 		}
 
 		return "";
@@ -234,7 +235,9 @@ public class Utilitario {
 		if (flag.equalsIgnoreCase("L")) {
 			return "Retirada no local";
 		} else if (flag.equalsIgnoreCase("T")) {
-			return "Tele-Entrega/Agendamento";
+			return "Tele-Entrega";
+		} else if (flag.equalsIgnoreCase("A")) {
+			return "Agendamento";
 		}
 
 		return "";
@@ -247,7 +250,9 @@ public class Utilitario {
 			return "Retirada no local";
 		} else if (flag.equalsIgnoreCase("T")) {
 			// return "Somente tele-entrega";
-			return "Entrega";
+			return "Tele-entrega";
+		}else if (flag.equalsIgnoreCase("A")) {
+			return "Agendamento";
 		} else if (flag.equalsIgnoreCase("")) {
 			return "Todos";
 		}
@@ -833,6 +838,7 @@ public class Utilitario {
 		}
 
 		// File (or directory) with old name
+
 
 	}
 

@@ -10,6 +10,7 @@
 <meta content="width=device-width, initial-scale=1.0" name="viewport" />
 
 <title>TragoAqui</title>
+<script type="text/javascript" src="JavaScript/httpsredirect.js"></script>
 <link rel="shortcut icon" href="images/favicon.png" type="image/x-icon">
 <!-- Bootstrap -->
 <link href="gentelella-master/vendors/bootstrap/dist/css/bootstrap.css"
@@ -38,7 +39,6 @@
 	href="JavaScript/bootstrap_date1.4.0/css/bootstrap-datepicker.css" />
 <link rel="stylesheet" type="text/css"
 	href="JavaScript/bootstrap-calendar-master/css/calendar.css" />
-
 
 <link rel="stylesheet" type="text/css"
 	href="JavaScript/boostrap_multiselect/bootstrap-multiselect.css"></link>
@@ -177,9 +177,9 @@
 											class="fa fa-question pull-right"></i>Ajuda/Informações
 											gerais</a></li>
 									<li><a href="javascript:abrirMapa();"><i
-											class="fa fa-globe pull-right"></i>Mapa</a></li>
+											class="fa fa-globe pull-right"></i>Mapa Online</a></li>
 											<li><a href="javascript:abrirMapaJpg();"><i
-											class="fa fa-globe pull-right"></i>Mapa</a></li>
+											class="fa fa-globe pull-right"></i>Mapa Bairros</a></li>
 									<li><a href="javascript:mutarsom();"><i
 											class="fa fa-pause-circle pull-right"></i> Desabilitar som
 											por 2 min. </a></li>
@@ -764,11 +764,11 @@
 												<td>&nbsp;&nbsp;</td>
 												<td>
 													<div class="checkbox" data-toggle="tooltip"
-														title="Ao marcar esta opção, você estara usando o tempo máximo disponivel para a entrega e qualquer valor de tempo informado no campo aolado será ignorado. Por ex: Se o tempo máximo for 00:52, e você marcar esta opção, o efeito será o mesmo que digitar 00:52 minutos no campo ao lado."
+														title="Ao marcar esta opção, você estara usando o tempo máximo disponivel para a entrega e qualquer valor de tempo informado no campo ao lado será ignorado. Por ex: Se o tempo máximo for 00:52, e você marcar esta opção, o efeito será o mesmo que digitar 00:52 minutos no campo ao lado."
 														style="margin-top: 0px; margin-bottom: 0px">
 														<label> <input type="checkbox"
 															id="flag_usartempomax" style="color: black !important"
-															value="S"> Usar o tempo maximo disponivel.
+															value="S"> Usar o tempo maximo disponível.
 														</label>
 													</div>
 												</td>

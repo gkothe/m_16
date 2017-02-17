@@ -47,3 +47,4 @@ Temporary Items
 .apdisk
 m_16/src/main/java/com/configs/Conexao.java
 m_16/target/classes/com/configs/Conexao.class
+*.bak

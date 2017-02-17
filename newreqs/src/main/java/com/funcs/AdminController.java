@@ -140,7 +140,13 @@ public class AdminController extends javax.servlet.http.HttpServlet {
 				inserirCateg(request, response, conn);
 			} else if (cmd.equalsIgnoreCase("inserirMarca")) {
 				inserirMarca(request, response, conn);
+			} else if (cmd.equalsIgnoreCase("atualizarProd")) {
+				atualizarProd(request, response, conn);
+			} else if (cmd.equalsIgnoreCase("getprod")) {
+				getProd(request, response, conn);
 			}
+			
+			
 
 			conn.commit();
 		} catch (Exception ex) {
@@ -164,6 +170,41 @@ public class AdminController extends javax.servlet.http.HttpServlet {
 		}
 	}
 
+	
+	
+	public static void getProd(HttpServletRequest request, HttpServletResponse response, Connection conn) throws Exception {
+
+		PrintWriter out = response.getWriter();
+
+		JSONObject objret = new JSONObject();
+
+		String id_produto = request.getParameter("id_produto") == null ? "" : request.getParameter("id_produto"); //
+		String sql = " select * from  produtos left join prod_categoria on produtos.id_prod = prod_categoria.id_prod where produtos. id_prod = ? ";
+		
+		PreparedStatement st = conn.prepareStatement(sql);
+		st.setInt(1, Integer.parseInt(id_produto));
+		ResultSet rs =	st.executeQuery();
+
+		if(rs.next()){
+			
+			objret.put("id_prod", rs.getInt("id_prod"));
+			objret.put("desc_prod", rs.getString("desc_prod"));
+			objret.put("desc_abreviado", rs.getString("desc_abreviado"));
+			objret.put("qtd_images", rs.getInt("qtd_images"));
+			objret.put("id_marca", rs.getInt("id_marca"));
+			objret.put("desc_key_words", rs.getString("desc_key_words"));
+			objret.put("id_categoria", rs.getInt("id_categoria"));
+			
+		}
+		
+
+		objret.put("msg", "ok");
+		out.print(objret.toJSONString());
+
+	}
+	
+	
+	
 	public static void inserirProd(HttpServletRequest request, HttpServletResponse response, Connection conn) throws Exception {
 
 		PrintWriter out = response.getWriter();
@@ -213,6 +254,63 @@ public class AdminController extends javax.servlet.http.HttpServlet {
 		out.print(objret.toJSONString());
 
 	}
+	
+	
+	public static void atualizarProd(HttpServletRequest request, HttpServletResponse response, Connection conn) throws Exception {
+
+		PrintWriter out = response.getWriter();
+
+		JSONObject objret = new JSONObject();
+
+		String id_produto = request.getParameter("id_produto") == null ? "" : request.getParameter("id_produto"); //
+		String desc_abreviado = request.getParameter("desc_abreviado") == null ? "" : request.getParameter("desc_abreviado");
+		String desc_prod = request.getParameter("desc_prod") == null ? "" : request.getParameter("desc_prod");
+		String key_words = request.getParameter("key_words") == null ? "" : request.getParameter("key_words");
+		String id_categoria = request.getParameter("id_categoria") == null ? "" : request.getParameter("id_categoria");
+		String id_marca = request.getParameter("id_marca") == null ? "" : request.getParameter("id_marca");
+		String qtd_image = request.getParameter("qtd_image") == null ? "" : request.getParameter("qtd_image");
+		
+		String sql = " update produtos set desc_prod = ?, desc_abreviado = ?,  qtd_images = ? , id_marca = ? , desc_key_words = ? where id_prod = ?; ";
+		
+		PreparedStatement st = conn.prepareStatement(sql);
+		st.setString(1, desc_prod);
+		st.setString(2, desc_abreviado);
+		st.setInt(3, Integer.parseInt(qtd_image));
+		
+		if(id_marca.equalsIgnoreCase("")){
+			st.setNull(4, java.sql.Types.INTEGER);
+		}else{
+			st.setInt(4, Integer.parseInt(id_marca));
+		}
+		
+		st.setString(5, key_words);
+		st.setInt(6, Integer.parseInt(id_produto));
+		
+		
+		st.executeUpdate();
+
+		sql = "delete from prod_categoria where id_prod = ?;";
+		st = conn.prepareStatement(sql);
+		st.setInt(1, Integer.parseInt(id_produto));
+		st.executeUpdate();
+		
+		if (!id_categoria.equalsIgnoreCase("")) {
+			
+			sql = "INSERT INTO prod_categoria (id_categoria, id_prod ) VALUES (?, ?);";
+			st = conn.prepareStatement(sql);
+			st.setInt(1, Integer.parseInt(id_categoria));
+			st.setInt(2, Integer.parseInt(id_produto));
+			st.executeUpdate();
+		}
+
+		objret.put("msg", "ok");
+		out.print(objret.toJSONString());
+
+	}
+	
+	
+	
+	
 
 	public static void inserirMarca(HttpServletRequest request, HttpServletResponse response, Connection conn) throws Exception {
 

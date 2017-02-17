@@ -524,7 +524,7 @@ public class Parametros_ajax {
 		PrintWriter out = response.getWriter();
 		JSONArray ret = new JSONArray();
 
-		String sql = " select cod_bairro,desc_loja, txt_obs_hora, date_format(tempo_minimo_entrega, '%H:%i') as tempo_minimo_entrega, id_distribuidora, cod_cidade,desc_razao_social,desc_nome_abrev,val_entrega_min,desc_telefone,desc_endereco,num_enderec,desc_complemento,val_tele_entrega,flag_custom, desc_mail, coalesce(flag_ativo,'N') as flag_ativo,flag_modopagamento, flag_entre_ret from distribuidora  where	 id_distribuidora = ? ";
+		String sql = " select cod_bairro,desc_loja, txt_obs_hora, date_format(tempo_minimo_entrega, '%H:%i') as tempo_minimo_entrega, id_distribuidora, cod_cidade,desc_razao_social,desc_nome_abrev,val_entrega_min,desc_telefone,desc_endereco,num_enderec,desc_complemento,val_tele_entrega,flag_custom, desc_mail, coalesce(flag_ativo,'N') as flag_ativo,flag_modopagamento,flag_agendamento,flag_tele_entrega,flag_retirada from distribuidora  where	 id_distribuidora = ? ";
 
 		PreparedStatement st = conn.prepareStatement(sql);
 		st.setInt(1, coddistr);
@@ -559,9 +559,13 @@ public class Parametros_ajax {
 			obj.put("desc_mail", rs.getString("desc_mail"));
 			obj.put("flag_ativo", rs.getString("flag_ativo").equalsIgnoreCase("F") ? "S" : rs.getString("flag_ativo"));
 			obj.put("flag_modopag", rs.getString("flag_modopagamento"));
-			obj.put("flag_entre_ret", rs.getString("flag_entre_ret"));
 			obj.put("txt_obs_hora", rs.getString("txt_obs_hora"));
 
+			obj.put("flag_agendamento", rs.getString("flag_agendamento"));
+			obj.put("flag_tele_entrega", rs.getString("flag_tele_entrega"));
+			obj.put("flag_retirada", rs.getString("flag_retirada"));
+			
+			
 			ret.add(obj);
 
 		}
@@ -593,6 +597,27 @@ public class Parametros_ajax {
 		String desc_loja = request.getParameter("desc_loja") == null ? "" : request.getParameter("desc_loja"); //
 		String tempo_minimo_entrega = request.getParameter("tempo_minimo_entrega") == null ? "00:00" : request.getParameter("tempo_minimo_entrega"); //
 
+		String flag_agendamento = request.getParameter("flag_agendamento") == null ? "" : request.getParameter("flag_agendamento"); //
+		String flag_tele_entrega = request.getParameter("flag_tele_entrega") == null ? "" : request.getParameter("flag_tele_entrega"); //
+		String flag_retirada = request.getParameter("flag_retirada") == null ? "" : request.getParameter("flag_retirada"); //
+		
+		
+		
+		
+		if (!(flag_agendamento.equalsIgnoreCase("S")) && !(flag_agendamento.equalsIgnoreCase("N"))) {
+			throw new Exception("Dados inválidos, entre em contato com o suporte.");
+		}
+
+		
+		if (!(flag_tele_entrega.equalsIgnoreCase("S")) && !(flag_tele_entrega.equalsIgnoreCase("N"))) {
+			throw new Exception("Dados inválidos, entre em contato com o suporte.");
+		}
+
+		
+		if (!(flag_retirada.equalsIgnoreCase("S")) && !(flag_retirada.equalsIgnoreCase("N"))) {
+			throw new Exception("Dados inválidos, entre em contato com o suporte.");
+		}
+
 		if (!(flag_custom.equalsIgnoreCase("S")) && !(flag_custom.equalsIgnoreCase("N"))) {
 			throw new Exception("Dados inválidos, entre em contato com o suporte.");
 		}
@@ -602,12 +627,12 @@ public class Parametros_ajax {
 		}
 
 		if (desc_endereco.equalsIgnoreCase("") || desc_num.equalsIgnoreCase("") || cod_bairro_distr.equalsIgnoreCase("")) {
-			throw new Exception("Dados de endereço, entre em contato com o suporte.");
+			throw new Exception("Por favor preencha os campos de endereço, número e bairro.");
 		}
 
 		JSONArray bairros = (JSONArray) new JSONParser().parse(bairrosjson);
 
-		String sql = " UPDATE distribuidora SET `COD_CIDADE` = ?, `DESC_RAZAO_SOCIAL` = ?, `DESC_NOME_ABREV` = ?, `VAL_ENTREGA_MIN` = ?, `DESC_TELEFONE` = ?, `DESC_ENDERECO` = ?, `NUM_ENDEREC` = ?, `DESC_COMPLEMENTO` = ?, `VAL_TELE_ENTREGA` = ? , flag_custom = ? , flag_ativo = ?, desc_mail =?, FLAG_MODOPAGAMENTO = ? , flag_entre_ret = ? , txt_obs_hora = ?, COD_BAIRRO = ?, desc_loja = ? , tempo_minimo_entrega = ? WHERE `ID_DISTRIBUIDORA` = ? ";
+		String sql = " UPDATE distribuidora SET `COD_CIDADE` = ?, `DESC_RAZAO_SOCIAL` = ?, `DESC_NOME_ABREV` = ?, `VAL_ENTREGA_MIN` = ?, `DESC_TELEFONE` = ?, `DESC_ENDERECO` = ?, `NUM_ENDEREC` = ?, `DESC_COMPLEMENTO` = ?, `VAL_TELE_ENTREGA` = ? , flag_custom = ? , flag_ativo = ?, desc_mail =?, FLAG_MODOPAGAMENTO = ? ,  txt_obs_hora = ?, COD_BAIRRO = ?, desc_loja = ? , tempo_minimo_entrega = ?, flag_agendamento = ? , flag_tele_entrega = ? , flag_retirada = ?  WHERE `ID_DISTRIBUIDORA` = ? ";
 
 		PreparedStatement st = conn.prepareStatement(sql);
 		st.setInt(1, Integer.parseInt(cod_cidade));
@@ -623,12 +648,14 @@ public class Parametros_ajax {
 		st.setString(11, flag_online);
 		st.setString(12, desc_mail);
 		st.setString(13, flag_modopag);
-		st.setString(14, flag_entre_ret);
-		st.setString(15, txt_obs_hora);
-		st.setString(16, cod_bairro_distr);
-		st.setString(17, desc_loja);
-		st.setString(18, tempo_minimo_entrega);
-		st.setInt(19, coddistr);
+		st.setString(14, txt_obs_hora);
+		st.setString(15, cod_bairro_distr);
+		st.setString(16, desc_loja);
+		st.setString(17, tempo_minimo_entrega);
+		st.setString(18, flag_agendamento);
+		st.setString(19, flag_tele_entrega);
+		st.setString(20, flag_retirada);
+		st.setInt(21, coddistr);
 
 		st.executeUpdate();
 

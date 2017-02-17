@@ -410,7 +410,6 @@ public class Pedidos_ajax {
 			out.print(retorno.toJSONString());
 		} else {
 			carregaPedidosAbertos(request, response, conn, coddistr, true, retorno, pedidos);
-			;
 		}
 
 	}

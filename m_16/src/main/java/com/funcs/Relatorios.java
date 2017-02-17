@@ -1293,7 +1293,14 @@ public class Relatorios {
 				hmParams.put("situacao", Utilitario.returnStatusPedidoFlag(flag_situacao, ""));
 			}
 
-			hmParams.put("servico", Utilitario.returnDistrTiposPedido(flag_servico));
+			if(flag_servico.equalsIgnoreCase("T")){
+				hmParams.put("servico", "Entrega");	
+			}else if(flag_servico.equalsIgnoreCase("L")){
+				hmParams.put("servico", "Retirada em local");
+			}else{
+				hmParams.put("servico", "Todos");
+			}
+			
 			hmParams.put("modo_pay", Utilitario.returnModoPagamento(flag_pagamento));
 			if (!cod_bairro.equalsIgnoreCase(""))
 				hmParams.put("bairro", Utilitario.getNomeBairro(conn, Integer.parseInt(cod_bairro), 0));

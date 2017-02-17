@@ -1293,7 +1293,14 @@ public class Relatorios {
 				hmParams.put("situacao", Utilitario.returnStatusPedidoFlag(flag_situacao, ""));
 			}
 
-			hmParams.put("servico", Utilitario.returnDistrTiposPedido(flag_servico));
+			if(flag_servico.equalsIgnoreCase("T")){
+				hmParams.put("servico", "Entrega");	
+			}else if(flag_servico.equalsIgnoreCase("L")){
+				hmParams.put("servico", "Retirada em local");
+			}else{
+				hmParams.put("servico", "Todos");
+			}
+			
 			hmParams.put("modo_pay", Utilitario.returnModoPagamento(flag_pagamento));
 			if (!cod_bairro.equalsIgnoreCase(""))
 				hmParams.put("bairro", Utilitario.getNomeBairro(conn, Integer.parseInt(cod_bairro), 0));
@@ -1589,11 +1596,11 @@ public class Relatorios {
 			List listaReport = new LinkedList();
 
 			JasperReport objRelJasper_ordemprod = null;
-			 objRelJasper_ordemprod = JasperCompileManager.compileReport("D:/phonegap_projects/m_16/m_16/src/main/webapp/rels/" + nome + ".jrxml");
-			 String arq = "" + new File("D:/phonegap_projects/m_16/m_16/src/main/webapp/rels/" + nome + ".pdf");
+//			 objRelJasper_ordemprod = JasperCompileManager.compileReport("D:/phonegap_projects/m_16/m_16/src/main/webapp/rels/" + nome + ".jrxml");
+//			 String arq = "" + new File("D:/phonegap_projects/m_16/m_16/src/main/webapp/rels/" + nome + ".pdf");
 
-//			String arq = "" + new File(sys.getPath() + "/rels/" + nome + ".pdf");
-//			objRelJasper_ordemprod = JasperCompileManager.compileReport(sys.getPath() + "/rels/" + nome + ".jrxml");
+			String arq = "" + new File(sys.getPath() + "/rels/" + nome + ".pdf");
+			objRelJasper_ordemprod = JasperCompileManager.compileReport(sys.getPath() + "/rels/" + nome + ".jrxml");
 			hmParams.put(JRParameter.REPORT_LOCALE, new Locale("pt", "BR"));
 			listaReport.add(JasperFillManager.fillReport(objRelJasper_ordemprod, hmParams, datasource));
 
