@@ -25,14 +25,14 @@ public class Tasker implements ServletContextListener {
 
 	public void contextDestroyed(ServletContextEvent sce) {
 		try {
-
+			myThread.rodar = false;
 			myThread.doShutdown();
 			myThread.interrupt();
 		} catch (Exception ex) {
 		}
 
 		try {
-
+			myThread2.rodar = false;
 			myThread2.doShutdown();
 			myThread2.interrupt();
 

@@ -897,12 +897,12 @@ public class Utilitario {
 		System.out.println(new Date());
 
 		try {
-			// conn = Conexao.getConexao();
-			// Sys_parametros sys = new Sys_parametros(conn);
+			 conn = Conexao.getConexao();
+			 Sys_parametros sys = new Sys_parametros(conn);
 
-			renamefiles3();
+			//renamefiles3();
 
-			// oneSginal(sys, "g.kothe@hotmail.com", "aaaa", new JSONObject());
+			 oneSginal(sys, "g.kothe@hotmail.com", "aaaa", new JSONObject());
 			// oneSginal(sys, "morratu@hotmail.com", "aaaa", new JSONObject());
 		} catch (Exception e) {
 			System.out.println(e);

@@ -3445,7 +3445,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 		long idcarrinho = 0;
 
 		sql = new StringBuffer();
-		sql.append("select usuario.flag_maioridade,usuario.flag_leutermos,usuario.desc_email, usuario. desc_nome, carrinho_item.id_carrinho,distribuidora.id_distribuidora,carrinho.cod_bairro,usuario.desc_telefone,usuario.desc_endereco,desc_endereco_num,desc_endereco_complemento,sum(produtos_distribuidora.val_prod * carrinho_item.qtd ) as val_prod, date_format(tempo_minimo_entrega, '%H:%i') as tempo_minimo_entrega , ");
+		sql.append("select distribuidora.desc_mail as mailoja, usuario.flag_maioridade,usuario.flag_leutermos,usuario.desc_email, usuario. desc_nome, carrinho_item.id_carrinho,distribuidora.id_distribuidora,carrinho.cod_bairro,usuario.desc_telefone,usuario.desc_endereco,desc_endereco_num,desc_endereco_complemento,sum(produtos_distribuidora.val_prod * carrinho_item.qtd ) as val_prod, date_format(tempo_minimo_entrega, '%H:%i') as tempo_minimo_entrega , ");
 		sql.append("  ");
 		sql.append("case when flag_telebairro = 'S' then distribuidora_bairro_entrega.val_tele_entrega else distribuidora.val_tele_entrega end as val_tele_entrega ");
 		sql.append("  ");
@@ -3474,7 +3474,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 		sql.append("  ");
 		sql.append("where usuario.id_usuario = ? ");
 		sql.append(" ");
-		sql.append("group by usuario.flag_maioridade,usuario.flag_leutermos , usuario.desc_email, usuario. desc_nome, carrinho_item.id_carrinho,distribuidora_bairro_entrega.id_distribuidora,carrinho.cod_bairro,usuario.desc_telefone,usuario.desc_endereco,desc_endereco_num,desc_endereco_complemento, val_tele_entrega");
+		sql.append("group by distribuidora.desc_mail, usuario.flag_maioridade,usuario.flag_leutermos , usuario.desc_email, usuario. desc_nome, carrinho_item.id_carrinho,distribuidora_bairro_entrega.id_distribuidora,carrinho.cod_bairro,usuario.desc_telefone,usuario.desc_endereco,desc_endereco_num,desc_endereco_complemento, val_tele_entrega");
 
 		st = conn.prepareStatement(sql.toString());
 		PreparedStatement st2 = null;
@@ -3486,7 +3486,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 		String email = "";
 		if (rs.next()) {
 			idcarrinho = rs.getLong("id_carrinho");
-
+			String emailoja  = rs.getString("mailoja");
 			double valmin_entrgega = 0;
 			boolean offline = false;
 			try {
@@ -3538,7 +3538,9 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 				} else {
 					st.setDouble(7, 0.0);
 				}
-				st.setLong(8, Utilitario.getNextNumpad(conn, rs.getInt("id_distribuidora")));
+				
+				long numpad = Utilitario.getNextNumpad(conn, rs.getInt("id_distribuidora"));
+				st.setLong(8, numpad);
 
 				st.setString(10, rs.getString("desc_telefone"));
 				if (choiceserv.equalsIgnoreCase("T") || choiceserv.equalsIgnoreCase("A")) {
@@ -3745,6 +3747,11 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 
 					// payment(request, response, conn, cod_usuario,email);
 
+					
+					
+					
+					
+					
 					{
 						sql = new StringBuffer();// deleta item do carrinho se ele exister exite no carrinho, add depois
 						sql.append(" delete from carrinho_item where ID_CARRINHO = ? ");
@@ -3758,6 +3765,12 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 						st.setLong(1, (idcarrinho));
 						st.executeUpdate();
 					}
+					
+					if(choiceserv.equalsIgnoreCase("A")){
+						String texto = " Você recebeu um pedido! O número do pedido é "+numpad+". <br> Clique <a href='" + sys.getUrl_system() + "'> AQUI </a> para acessar nosso sistema, verificar os produtos requisitados e responder o pedido.";
+						Utilitario.sendEmail(emailoja, texto, sys.getSys_fromdesc()+ " - Você recebeu um pedido! Nº "+ numpad, conn);	
+					}
+					
 				}
 			}
 		} else
@@ -3768,6 +3781,9 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 		retorno.put("msg", "ok");
 		retorno.put("id_pedido", idped);
 
+
+		
+		
 		if (outprint)
 			out.print(retorno.toJSONString());
 		else {

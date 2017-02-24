@@ -8,7 +8,7 @@
 <head>
 <meta charset="utf-8" />
 <meta content="width=device-width, initial-scale=1.0" name="viewport" />
-
+<link rel="shortcut icon" href="favicon.ico"/> 
 <title>TragoAqui</title>
 <script type="text/javascript" src="JavaScript/httpsredirect.js"></script>
 <link rel="shortcut icon" href="images/favicon.png" type="image/x-icon">
