@@ -211,7 +211,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 				} else if (cmd.equalsIgnoreCase("testesMudaServico")) {
 					testesMudaServico(request, response, conn, cod_usuario);
 				} else if (cmd.equalsIgnoreCase("servicoCarrinho")) {
-					servicoCarrinho(request, response, conn, cod_usuario);
+					servicoCarrinho(request, response, conn, cod_usuario,sys);
 				} else if (cmd.equalsIgnoreCase("carregaCategorias")) {
 					Parametros_ajax.listaCategorias(request, response, conn, 0);
 				} else if (cmd.equalsIgnoreCase("carregaMarcas")) {
@@ -3081,11 +3081,16 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 
 	}
 
-	private static void servicoCarrinho(HttpServletRequest request, HttpServletResponse response, Connection conn, long cod_usuario) throws Exception {
+	private static void servicoCarrinho(HttpServletRequest request, HttpServletResponse response, Connection conn, long cod_usuario, Sys_parametros sys) throws Exception {
 
 		PrintWriter out = response.getWriter();
 		JSONObject retorno = new JSONObject();
-		retorno.put("serv", "T");// padrao
+		if(sys.getApplicacao().equalsIgnoreCase("1")){
+			retorno.put("serv", "T");// padrao	
+		}else{
+			retorno.put("serv", "A");
+		}
+		
 		StringBuffer sql = new StringBuffer();
 		sql = new StringBuffer();
 		sql.append("select *  ");

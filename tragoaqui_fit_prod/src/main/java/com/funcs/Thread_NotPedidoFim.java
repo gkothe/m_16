@@ -25,6 +25,7 @@ public class Thread_NotPedidoFim extends Thread {
 	JSONObject data;
 	StringBuffer varname1;
 	JSONObject obj = null;
+	public boolean rodar = true;
 
 	public void run() {
 
@@ -49,7 +50,8 @@ public class Thread_NotPedidoFim extends Thread {
 			} catch (Exception e2) {
 				// TODO: handle exception
 			}
-
+			if(rodar)
+				run();
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
@@ -112,7 +114,7 @@ public class Thread_NotPedidoFim extends Thread {
 
 		} catch (Exception e) {
 			e.printStackTrace();
-			// TODO: handle exception
+			// TODO: handle exception  
 		}
 
 	}

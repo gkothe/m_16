@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="rel_gradehorario" pageWidth="842" pageHeight="595" orientation="Landscape" whenNoDataType="AllSectionsNoDetail" columnWidth="802" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="4e56c072-32bc-4521-b4c2-2f64501d11e8">
 	<property name="ireport.zoom" value="1.6105100000000134"/>
-	<property name="ireport.x" value="279"/>
+	<property name="ireport.x" value="307"/>
 	<property name="ireport.y" value="0"/>
 	<subDataset name="PRODUTOS" uuid="8915ee26-d983-4741-84f8-37606df93cd9">
 		<property name="id_pedido" value="$F{id_pedido}"/>
@@ -738,7 +738,7 @@ FROM   pedido
 				<text><![CDATA[Serviço:]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="537" y="35" width="107" height="15" uuid="73a6efad-b532-4588-b71a-4be89f783ff5"/>
+				<reportElement x="537" y="35" width="115" height="15" uuid="73a6efad-b532-4588-b71a-4be89f783ff5"/>
 				<textElement>
 					<font isBold="true" isPdfEmbedded="true"/>
 				</textElement>
@@ -778,7 +778,7 @@ FROM   pedido
 				<textFieldExpression><![CDATA[$P{situacao}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="644" y="35" width="148" height="15" uuid="377fc8dd-a7f6-45a6-98f5-4ca75832fcf9"/>
+				<reportElement x="652" y="35" width="136" height="15" uuid="377fc8dd-a7f6-45a6-98f5-4ca75832fcf9"/>
 				<textFieldExpression><![CDATA[$P{modo_pay}]]></textFieldExpression>
 			</textField>
 			<textField>
