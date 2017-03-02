@@ -51,13 +51,13 @@ public class HomeController extends javax.servlet.http.HttpServlet {
 
 	public void processaRequisicoes(HttpServletRequest request, HttpServletResponse response) {
 
-//		 System.out.println("--------entro home");
-//		 Map map = request.getParameterMap();
-//		 for (Iterator iterator = map.keySet().iterator(); iterator.hasNext();) {
-//		 String type = (String) iterator.next();
-//		 System.out.println(type + " : " + request.getParameter(type));
-//		 }
-//			System.out.println( request.getParameter("cmd")+" - " + new Date());
+		System.out.println("--------entro home");
+		Map map = request.getParameterMap();
+		for (Iterator iterator = map.keySet().iterator(); iterator.hasNext();) {
+			String type = (String) iterator.next();
+			System.out.println(type + " : " + request.getParameter(type));
+		}
+		// System.out.println( request.getParameter("cmd")+" - " + new Date());
 
 		try {
 
@@ -87,6 +87,8 @@ public class HomeController extends javax.servlet.http.HttpServlet {
 					listaconfigemp(request, response);
 				} else if (strTipo.equalsIgnoreCase("wizardhorarios")) {
 					wizardhorarios(request, response);
+				} else if (strTipo.equalsIgnoreCase("mobileusers")) {
+					mobileusers(request, response);
 				} else if (strTipo.equalsIgnoreCase("home")) {
 					home(request, response);
 				} else if (strTipo.equalsIgnoreCase("dashpedidos")) {
@@ -113,7 +115,7 @@ public class HomeController extends javax.servlet.http.HttpServlet {
 					ajax(request, response);
 				}
 			}
-//			System.out.println( request.getParameter("cmd")+ "-fim "+" - " + new Date());
+			// System.out.println( request.getParameter("cmd")+ "-fim "+" - " + new Date());
 		} catch (Exception ex) {
 			ex.printStackTrace();
 			try {
@@ -246,12 +248,14 @@ public class HomeController extends javax.servlet.http.HttpServlet {
 			} else if (cmd.equalsIgnoreCase("getfullprodname")) {
 				Utilitario.getFullProdname(request, response, conn);
 			} else if (cmd.equalsIgnoreCase("listaCategorias")) {
-				Parametros_ajax.listaCategorias(request, response, conn,coddistr);
+				Parametros_ajax.listaCategorias(request, response, conn, coddistr);
 			} else if (cmd.equalsIgnoreCase("listaMarcas")) {
-				Parametros_ajax.listaMarcas(request, response, conn,coddistr);
-			}  
-
-			
+				Parametros_ajax.listaMarcas(request, response, conn, coddistr);
+			} else if (cmd.equalsIgnoreCase("savelojamobileusers")) {
+				Parametros_ajax.saveLojaMobileUsers(request, response, conn, coddistr);
+			} else if (cmd.equalsIgnoreCase("loadlojamobileusers")) {
+				Parametros_ajax.loadLojaMobileUsers(request, response, conn, coddistr);
+			}
 			
 			
 			conn.commit();
@@ -380,6 +384,16 @@ public class HomeController extends javax.servlet.http.HttpServlet {
 	private void wizardhorarios(HttpServletRequest request, HttpServletResponse response) throws Exception {
 		try {
 			request.getRequestDispatcher("/WEB-INF/wizard_bairros_horarios.html").forward(request, response);
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw e;
+		} finally {
+		}
+	}
+
+	private void mobileusers(HttpServletRequest request, HttpServletResponse response) throws Exception {
+		try {
+			request.getRequestDispatcher("/WEB-INF/mobileusers.html").forward(request, response);
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw e;

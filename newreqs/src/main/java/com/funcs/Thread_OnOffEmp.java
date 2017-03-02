@@ -18,6 +18,8 @@ public class Thread_OnOffEmp extends Thread {
 	long secs_param = 0;
 	long seconds = 0;
 	long rodateste = 0;
+	public boolean rodar = true;	
+	
 	public void run() {
 
 		try {
@@ -45,9 +47,12 @@ public class Thread_OnOffEmp extends Thread {
 			} catch (Exception e2) {
 				// TODO: handle exception
 			}
-
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+			
+			if(rodar){
+				run();
+			}
 		}
 	}
 
@@ -78,7 +83,7 @@ public class Thread_OnOffEmp extends Thread {
 
 
 				
-				//	System.out.println(rs.getInt("ID_DISTRIBUIDORA") +" "+ agora + " " + date + " " + seconds + " " + secs_param + " " + rs.getString("FLAG_ATIVO"));
+//					System.out.println(rs.getInt("ID_DISTRIBUIDORA") +" "+ agora + " " + date + " " + seconds + " " + secs_param + " " + rs.getString("FLAG_ATIVO"));
 					
 					if (seconds > secs_param && rs.getString("FLAG_ATIVO").equalsIgnoreCase("S")) { // empresa esta offine
 

@@ -560,12 +560,11 @@ public class Parametros_ajax {
 			obj.put("flag_ativo", rs.getString("flag_ativo").equalsIgnoreCase("F") ? "S" : rs.getString("flag_ativo"));
 			obj.put("flag_modopag", rs.getString("flag_modopagamento"));
 			obj.put("txt_obs_hora", rs.getString("txt_obs_hora"));
-			
+
 			obj.put("flag_agendamento", rs.getString("flag_agendamento"));
 			obj.put("flag_tele_entrega", rs.getString("flag_tele_entrega"));
 			obj.put("flag_retirada", rs.getString("flag_retirada"));
-			
-			
+
 			ret.add(obj);
 
 		}
@@ -596,24 +595,19 @@ public class Parametros_ajax {
 		String cod_bairro_distr = request.getParameter("cod_bairro_distr") == null ? "" : request.getParameter("cod_bairro_distr"); //
 		String desc_loja = request.getParameter("desc_loja") == null ? "" : request.getParameter("desc_loja"); //
 		String tempo_minimo_entrega = request.getParameter("tempo_minimo_entrega") == null ? "00:00" : request.getParameter("tempo_minimo_entrega"); //
-		
+
 		String flag_agendamento = request.getParameter("flag_agendamento") == null ? "" : request.getParameter("flag_agendamento"); //
 		String flag_tele_entrega = request.getParameter("flag_tele_entrega") == null ? "" : request.getParameter("flag_tele_entrega"); //
 		String flag_retirada = request.getParameter("flag_retirada") == null ? "" : request.getParameter("flag_retirada"); //
-		
-		
-		
-		
+
 		if (!(flag_agendamento.equalsIgnoreCase("S")) && !(flag_agendamento.equalsIgnoreCase("N"))) {
 			throw new Exception("Dados inválidos, entre em contato com o suporte.");
 		}
 
-		
 		if (!(flag_tele_entrega.equalsIgnoreCase("S")) && !(flag_tele_entrega.equalsIgnoreCase("N"))) {
 			throw new Exception("Dados inválidos, entre em contato com o suporte.");
 		}
 
-		
 		if (!(flag_retirada.equalsIgnoreCase("S")) && !(flag_retirada.equalsIgnoreCase("N"))) {
 			throw new Exception("Dados inválidos, entre em contato com o suporte.");
 		}
@@ -656,7 +650,7 @@ public class Parametros_ajax {
 		st.setString(19, flag_tele_entrega);
 		st.setString(20, flag_retirada);
 		st.setInt(21, coddistr);
-		
+
 		st.executeUpdate();
 
 		sql = " delete from distribuidora_horario_dia_entre where id_distribuidora = ? ";
@@ -998,6 +992,97 @@ public class Parametros_ajax {
 
 		ret.put("msg", "ok");
 		out.print(ret.toJSONString());
+	}
+
+	public static void saveLojaMobileUsers(HttpServletRequest request, HttpServletResponse response, Connection conn, int coddistr) throws Exception {
+		PrintWriter out = response.getWriter();
+		JSONObject ret = new JSONObject();
+
+		String usersjson = request.getParameter("usersjson") == null ? "" : request.getParameter("usersjson"); //
+		JSONArray users = (JSONArray) new JSONParser().parse(usersjson);
+		PreparedStatement st = null;
+		ResultSet rs = null;
+
+		st = conn.prepareStatement("delete from distribuidora_mobile where id_distribuidora = ? ");
+		st.setInt(1, coddistr);
+		st.executeUpdate();
+		boolean roleadm = false;
+		for (int i = 0; i < users.size(); i++) {
+			JSONObject user = (JSONObject) users.get(i);
+			String desc_mail = user.get("desc_mail").toString();
+			String flag_role = user.get("flag_role").toString();
+			String desc_obs = user.get("desc_obs").toString();
+			st = conn.prepareStatement(" select * from usuario  where desc_email = ?  ");
+			st.setString(1, desc_mail);
+			rs = st.executeQuery();
+			if (rs.next()) {
+
+				if (desc_mail.equalsIgnoreCase("")) {
+					throw new Exception("E-mail em branco");
+				}
+
+				if (!flag_role.equalsIgnoreCase("A") && !flag_role.equalsIgnoreCase("V")) {
+					throw new Exception("Tipo de permissão inválida.");
+				}
+
+				if (roleadm && flag_role.equalsIgnoreCase("A")) {
+					throw new Exception("É permitido somente um ásuario administrador.");
+				}
+
+				if (!roleadm && flag_role.equalsIgnoreCase("A")) {
+					roleadm = true;
+				}
+
+				int codusuario = rs.getInt("id_usuario");
+				st = conn.prepareStatement("INSERT INTO distribuidora_mobile  (cod_distribuidora_mobile, id_usuario, id_distribuidora, desc_mail, flag_role, desc_obs, date_modificacao) VALUES (?, ?, ?, ?, ?, ?, ?)");
+				st.setLong(1, Utilitario.retornaIdinsert("distribuidora_mobile", "cod_distribuidora_mobile", conn));
+				st.setLong(2, codusuario);
+				st.setLong(3, coddistr);
+				st.setString(4, desc_mail);
+				st.setString(5, flag_role);
+				st.setString(6, desc_obs);
+				st.setTimestamp(7, Utilitario.getTimeStamp(new Date()));
+
+				st.executeUpdate();
+
+			} else {
+
+				throw new Exception("O e-mail '" + desc_mail + "' não foi encontrado.");
+
+			}
+
+		}
+
+		ret.put("msg", "ok");
+		out.print(ret.toJSONString());
+
+	}
+
+	public static void loadLojaMobileUsers(HttpServletRequest request, HttpServletResponse response, Connection conn, int coddistr) throws Exception {
+		PrintWriter out = response.getWriter();
+		JSONObject ret = new JSONObject();
+		ResultSet rs = null;
+
+		PreparedStatement st = null;
+		JSONObject user = null;
+		st = conn.prepareStatement(" select * from distribuidora_mobile  where id_distribuidora = ?  ");
+		st.setInt(1, coddistr);
+		rs = st.executeQuery();
+		JSONArray users = new JSONArray();
+		while (rs.next()) {
+			user = new JSONObject();
+			user.put("desc_mail", rs.getString("desc_mail"));
+			user.put("flag_role", rs.getString("flag_role"));
+			user.put("desc_obs", rs.getString("desc_obs"));
+			users.add(user);
+
+		}
+
+		ret.put("users", users);
+		ret.put("msg", "ok");
+
+		out.print(ret.toJSONString());
+
 	}
 
 	public static void salvarConfigsHorariosBairrosNovo(HttpServletRequest request, HttpServletResponse response, Connection conn, int coddistr) throws Exception {

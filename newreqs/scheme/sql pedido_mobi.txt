@@ -1,0 +1,40 @@
+distribuidora_mobile
+
+cod_distribuidora_mobile
+id_distribuidora
+id_usuario
+desc_mail
+flag_role
+desc_obs
+data_modificacao
+
+
+
+
+create table DISTRIBUIDORA_MOBILE
+(
+   COD_DISTRIBUIDORA_MOBILE bigint not null,
+   ID_USUARIO           INT8,
+   ID_DISTRIBUIDORA     INT4,
+   DESC_MAIL            text,
+   FLAG_ROLE            char(1),
+   DESC_OBS             text,
+   DATE_MODIFICACAO     datetime,
+   primary key (COD_DISTRIBUIDORA_MOBILE)
+);
+
+alter table DISTRIBUIDORA_MOBILE add constraint FK_REFERENCE_35 foreign key (ID_USUARIO)
+      references USUARIO (ID_USUARIO) on delete restrict on update restrict;
+
+alter table DISTRIBUIDORA_MOBILE add constraint FK_REFERENCE_36 foreign key (ID_DISTRIBUIDORA)
+      references DISTRIBUIDORA (ID_DISTRIBUIDORA) on delete restrict on update restrict;
+
+
+
+
+
+
+
+
+
+
