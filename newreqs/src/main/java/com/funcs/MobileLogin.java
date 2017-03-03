@@ -387,7 +387,7 @@ public class MobileLogin {
 				st.setLong(1, (codusuer));
 				st.executeUpdate();
 
-				if (rs.getString("FLAG_ATIVADO").equalsIgnoreCase("v")) {
+				if (rs.getString("FLAG_ATIVADO").equalsIgnoreCase("V")) {
 					return sys.getSys_id_visistante();
 				}
 				if (rs.wasNull()) {// acho que nao tem como isso acontecer, mas por via das duvida...

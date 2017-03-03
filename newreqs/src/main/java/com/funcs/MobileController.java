@@ -89,11 +89,14 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 	public void processaRequisicoes(HttpServletRequest request, HttpServletResponse response) {
 
 		try {
-			/*
-			 * System.out.println("----------entro mob");
-			 * 
-			 * Map map = request.getParameterMap(); for (Iterator iterator = map.keySet().iterator(); iterator.hasNext();) { String type = (String) iterator.next(); System.out.println(type + " : " + request.getParameter(type)); }
-			 */
+
+			System.out.println("----------entro mob");
+
+			Map map = request.getParameterMap();
+			for (Iterator iterator = map.keySet().iterator(); iterator.hasNext();) {
+				String type = (String) iterator.next();
+				System.out.println(type + " : " + request.getParameter(type));
+			}
 
 			String strTipo = request.getParameter("ac"); // acho que aqui soh vai ter ajax, mas vo dexa assim por enqto.
 			if (strTipo == null) {
@@ -139,7 +142,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 			String cmd = request.getParameter("cmd") == null ? "" : request.getParameter("cmd");
 
 			if (cmd.equalsIgnoreCase("getapp")) {
-				appplicacao(request, response, conn,  sys);
+				appplicacao(request, response, conn, sys);
 			} else if (cmd.equalsIgnoreCase("login")) {
 				String flag_face = request.getParameter("flag_face") == null ? "" : request.getParameter("flag_face");
 
@@ -211,7 +214,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 				} else if (cmd.equalsIgnoreCase("testesMudaServico")) {
 					testesMudaServico(request, response, conn, cod_usuario);
 				} else if (cmd.equalsIgnoreCase("servicoCarrinho")) {
-					servicoCarrinho(request, response, conn, cod_usuario,sys);
+					servicoCarrinho(request, response, conn, cod_usuario, sys);
 				} else if (cmd.equalsIgnoreCase("carregaCategorias")) {
 					Parametros_ajax.listaCategorias(request, response, conn, 0);
 				} else if (cmd.equalsIgnoreCase("carregaMarcas")) {
@@ -283,6 +286,8 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 					teste(request, response, conn, cod_usuario, sys);
 				} else if (cmd.equalsIgnoreCase("LojaProdTestOnline")) {
 					LojaProdTestOnline(request, response, conn, cod_usuario, sys);
+				} else if (cmd.equalsIgnoreCase("isloja")) {
+					isLoja(request, response, conn, cod_usuario, sys);
 				}
 
 				else {
@@ -311,6 +316,25 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 			} catch (Exception ex) {
 			}
 		}
+	}
+
+	private static void isLoja(HttpServletRequest request, HttpServletResponse response, Connection conn, long cod_usuario, Sys_parametros sys) throws Exception {
+		PrintWriter out = response.getWriter();
+		JSONObject objRetorno = new JSONObject();
+
+		PreparedStatement st = conn.prepareStatement(" select * from  distribuidora_mobile where id_usuario = ?  ");
+		st.setLong(1, cod_usuario);
+		ResultSet rs = st.executeQuery();
+		if (rs.next()) {
+			objRetorno.put("loja", true);
+		} else {
+			objRetorno.put("loja", false);
+		}
+
+		objRetorno.put("msg", "ok");
+
+		out.println(objRetorno.toString());
+
 	}
 
 	private static void teste(HttpServletRequest request, HttpServletResponse response, Connection conn, long cod_usuario, Sys_parametros sys) throws Exception {
@@ -1823,7 +1847,6 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 			contparam++;
 		}
 
-
 		rs = st.executeQuery();
 		// carrega produto unico foi para outra função
 		if (listagem) {
@@ -2109,37 +2132,32 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 
 		String title = request.getParameter("title") == null ? "" : request.getParameter("title");
 		String msg = request.getParameter("msg") == null ? "" : request.getParameter("msg");
-		
-		
-		if(msg.equalsIgnoreCase("")){
+
+		if (msg.equalsIgnoreCase("")) {
 			throw new Exception("Escreva uma mensagem!");
 		}
-		
-		if(title.equalsIgnoreCase("")){
+
+		if (title.equalsIgnoreCase("")) {
 			throw new Exception("Título em branco!");
 		}
-		
-		
-		StringBuffer	sql = new StringBuffer();
+
+		StringBuffer sql = new StringBuffer();
 		sql.append(" select * from usuario ");
 		sql.append(" where id_usuario = ? ");
 
 		PreparedStatement st = conn.prepareStatement(sql.toString());
 		st.setLong(1, (cod_usuario));
 
-		ResultSet  rs = st.executeQuery();
+		ResultSet rs = st.executeQuery();
 
 		if (rs.next()) {
-			
+
 			msg = msg + " <br> ";
 			msg = msg + "Cod. Usuário: " + cod_usuario + " -  " + rs.getString("desc_mail");
 			Utilitario.sendEmail(sys.getSys_email(), msg, "Contato: " + title, conn);
 
-			
 		}
-		
 
-		
 		objRetorno.put("msg", "ok");
 		out.print(objRetorno.toJSONString());
 
@@ -2981,7 +2999,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 			st.setLong(1, (cod_bairro));
 			st.setLong(2, (id_distribuidora_prod));
 			if (servico.equalsIgnoreCase("T")) {
-			st.setLong(3, Utilitario.diaSemana(conn, id_distribuidora_prod));
+				st.setLong(3, Utilitario.diaSemana(conn, id_distribuidora_prod));
 			}
 
 			ResultSet rs = st.executeQuery();
@@ -2994,16 +3012,16 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 
 	private static void validacaoTipoServico(HttpServletRequest request, HttpServletResponse response, Connection conn, long id_distribuidora, String tiposerv) throws Exception {
 
-			StringBuffer sql = new StringBuffer();// testa para ver se a distribuidora é compativel com o bairro no horario atual
+		StringBuffer sql = new StringBuffer();// testa para ver se a distribuidora é compativel com o bairro no horario atual
 
 		sql.append(" select flag_ativo,flag_agendamento,flag_tele_entrega,flag_retirada,desc_nome_abrev from distribuidora  ");
-			sql.append(" where distribuidora.id_distribuidora  = ? ");
+		sql.append(" where distribuidora.id_distribuidora  = ? ");
 
-			PreparedStatement st = conn.prepareStatement(sql.toString());
+		PreparedStatement st = conn.prepareStatement(sql.toString());
 
-			st.setLong(1, (id_distribuidora));
-			ResultSet rs = st.executeQuery();
-			if (rs.next()) {
+		st.setLong(1, (id_distribuidora));
+		ResultSet rs = st.executeQuery();
+		if (rs.next()) {
 
 			if (tiposerv.equalsIgnoreCase("A")) {
 				if (rs.getString("flag_agendamento").equalsIgnoreCase("N")) {
@@ -3018,7 +3036,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 
 				if (rs.getString("flag_ativo").equalsIgnoreCase("N") || rs.getString("flag_ativo").equalsIgnoreCase("F")) {
 					throw new Exception("A loja '" + rs.getString("desc_nome_abrev") + "' contém produtos no seu carrinho e  está offline. Para mudar de serviço acesse o Carrinho pelo menu e exclua os produtos.");
-			}
+				}
 
 			} else if (tiposerv.equalsIgnoreCase("L")) {
 
@@ -3028,9 +3046,9 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 
 				if (rs.getString("flag_ativo").equalsIgnoreCase("N") || rs.getString("flag_ativo").equalsIgnoreCase("F")) {
 					throw new Exception("A loja '" + rs.getString("desc_nome_abrev") + "' contém produtos no seu carrinho e  está offline. Para mudar de serviço acesse o Carrinho pelo menu e exclua os produtos.");
-		}
+				}
 
-	}
+			}
 
 		}
 
@@ -3047,9 +3065,9 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 			if (rs.next()) {
 
 				if (!serv.equalsIgnoreCase("A")) {
-				if (!rs.getString("flag_ativo").equalsIgnoreCase("S")) {
-					throw new Exception("Loja que se encontra no seu carrinho está offline no momento. Limpe seu carrinho primeiramente para proceder.");
-				}
+					if (!rs.getString("flag_ativo").equalsIgnoreCase("S")) {
+						throw new Exception("Loja que se encontra no seu carrinho está offline no momento. Limpe seu carrinho primeiramente para proceder.");
+					}
 				}
 
 				if (!rs.getString("flag_ativo_master").equalsIgnoreCase("S")) {
@@ -3110,12 +3128,12 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 
 		PrintWriter out = response.getWriter();
 		JSONObject retorno = new JSONObject();
-		if(sys.getApplicacao().equalsIgnoreCase("1")){
-			retorno.put("serv", "T");// padrao	
-		}else{
+		if (sys.getApplicacao().equalsIgnoreCase("1")) {
+			retorno.put("serv", "T");// padrao
+		} else {
 			retorno.put("serv", "A");
 		}
-		
+
 		StringBuffer sql = new StringBuffer();
 		sql = new StringBuffer();
 		sql.append("select *  ");
@@ -3124,12 +3142,16 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 		sql.append(" ");
 		sql.append("where carrinho.id_usuario = ? ");
 		sql.append(" ");
-
+		
+		
+		retorno.put("cod_bairro", 0);//dando erro no mobile
+		
 		PreparedStatement st = conn.prepareStatement(sql.toString());
 		st.setLong(1, (cod_usuario));
 		ResultSet rs = st.executeQuery();
 		if (rs.next()) {
-			retorno.put("serv", rs.getObject("flag_servico"));
+			retorno.put("serv", rs.getString("flag_servico"));
+			retorno.put("cod_bairro", rs.getString("cod_bairro")==null?"":rs.getInt("cod_bairro"));
 
 		}
 		retorno.put("msg", "ok");
@@ -3516,7 +3538,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 		String email = "";
 		if (rs.next()) {
 			idcarrinho = rs.getLong("id_carrinho");
-			String emailoja  = rs.getString("mailoja");
+			String emailoja = rs.getString("mailoja");
 			double valmin_entrgega = 0;
 			boolean offline = false;
 			try {
@@ -3568,7 +3590,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 				} else {
 					st.setDouble(7, 0.0);
 				}
-				
+
 				long numpad = Utilitario.getNextNumpad(conn, rs.getInt("id_distribuidora"));
 				st.setLong(8, numpad);
 
@@ -3701,8 +3723,25 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 
 					if (choiceserv.equalsIgnoreCase("A")) {
 
+						GregorianCalendar datadesejada = new GregorianCalendar();
+						datadesejada.setTime(new SimpleDateFormat("dd/MM/yyyyHHmm").parse(dataagendamento + dataagendamentohora));
+
+						GregorianCalendar dataminimo = new GregorianCalendar();
+						dataminimo.setTime(new Date());
+						dataminimo.add(Calendar.HOUR, Integer.parseInt(rs.getString("tempo_minimo_entrega").substring(0, 2)));
+						dataminimo.add(Calendar.MINUTE, Integer.parseInt(rs.getString("tempo_minimo_entrega").substring(3, 5)));
+
+						if (datadesejada.getTime().before(dataminimo.getTime())) {
+							throw new Exception("O tempo mínimo para entrega nesta loja é " + rs.getString("tempo_minimo_entrega"));
+						}
+
+					} else if (choiceserv.equalsIgnoreCase("T")) {
+
+						if (rs.getString("tempo_minimo_entrega") != null) {
 							GregorianCalendar datadesejada = new GregorianCalendar();
-							datadesejada.setTime(new SimpleDateFormat("dd/MM/yyyyHHmm").parse(dataagendamento + dataagendamentohora));
+							datadesejada.setTime(new Date());
+							datadesejada.add(Calendar.HOUR, Integer.parseInt(tempomax.substring(0, 2)));
+							datadesejada.add(Calendar.MINUTE, Integer.parseInt(tempomax.substring(2, 4)));
 
 							GregorianCalendar dataminimo = new GregorianCalendar();
 							dataminimo.setTime(new Date());
@@ -3712,25 +3751,8 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 							if (datadesejada.getTime().before(dataminimo.getTime())) {
 								throw new Exception("O tempo mínimo para entrega nesta loja é " + rs.getString("tempo_minimo_entrega"));
 							}
-
-					} else if (choiceserv.equalsIgnoreCase("T")) {
-
-							if (rs.getString("tempo_minimo_entrega") != null) {
-								GregorianCalendar datadesejada = new GregorianCalendar();
-								datadesejada.setTime(new Date());
-								datadesejada.add(Calendar.HOUR, Integer.parseInt(tempomax.substring(0, 2)));
-								datadesejada.add(Calendar.MINUTE, Integer.parseInt(tempomax.substring(2, 4)));
-
-								GregorianCalendar dataminimo = new GregorianCalendar();
-								dataminimo.setTime(new Date());
-								dataminimo.add(Calendar.HOUR, Integer.parseInt(rs.getString("tempo_minimo_entrega").substring(0, 2)));
-								dataminimo.add(Calendar.MINUTE, Integer.parseInt(rs.getString("tempo_minimo_entrega").substring(3, 5)));
-
-								if (datadesejada.getTime().before(dataminimo.getTime())) {
-									throw new Exception("O tempo mínimo para entrega nesta loja é " + rs.getString("tempo_minimo_entrega"));
-								}
-							}
 						}
+					}
 
 					if (tipo_pagamento.equalsIgnoreCase("D")) {
 
@@ -3777,11 +3799,6 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 
 					// payment(request, response, conn, cod_usuario,email);
 
-					
-					
-					
-					
-					
 					{
 						sql = new StringBuffer();// deleta item do carrinho se ele exister exite no carrinho, add depois
 						sql.append(" delete from carrinho_item where ID_CARRINHO = ? ");
@@ -3795,12 +3812,12 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 						st.setLong(1, (idcarrinho));
 						st.executeUpdate();
 					}
-					
-					if(choiceserv.equalsIgnoreCase("A")){
-						String texto = " Você recebeu um pedido! O número do pedido é "+numpad+". <br> Clique <a href='" + sys.getUrl_system() + "'> AQUI </a> para acessar nosso sistema, verificar os produtos requisitados e responder o pedido.";
-						Utilitario.sendEmail(emailoja, texto, sys.getSys_fromdesc()+ " - Você recebeu um pedido! Nº "+ numpad, conn);	
+
+					if (choiceserv.equalsIgnoreCase("A")) {
+						String texto = " Você recebeu um pedido! O número do pedido é " + numpad + ". <br> Clique <a href='" + sys.getUrl_system() + "'> AQUI </a> para acessar nosso sistema, verificar os produtos requisitados e responder o pedido.";
+						Utilitario.sendEmail(emailoja, texto, sys.getSys_fromdesc() + " - Você recebeu um pedido! Nº " + numpad, conn);
 					}
-					
+
 				}
 			}
 		} else
@@ -3811,9 +3828,6 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 		retorno.put("msg", "ok");
 		retorno.put("id_pedido", idped);
 
-
-		
-		
 		if (outprint)
 			out.print(retorno.toJSONString());
 		else {
@@ -4343,8 +4357,8 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 		if (rs.next()) {
 
 			if (!choiveserv.equalsIgnoreCase("A")) {
-			if (!rs.getString("flag_ativo").equalsIgnoreCase("S")) {
-				throw new Exception("A loja está offline no momento.");
+				if (!rs.getString("flag_ativo").equalsIgnoreCase("S")) {
+					throw new Exception("A loja está offline no momento.");
 				}
 			}
 
