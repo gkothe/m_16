@@ -404,7 +404,7 @@ function eConsole(param) {
 		},
 		success : function(data) {
 
-			$("#desc_produto_listagem").val(data.name);
+			$("#desc_produto_listagem").val(data.nameabrev);
 			$("#desc_produto_listagem").blur();
 
 			setTimeout(function() {

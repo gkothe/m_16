@@ -215,7 +215,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 				} else if (cmd.equalsIgnoreCase("carregaCategorias")) {
 					Parametros_ajax.listaCategorias(request, response, conn, 0);
 				} else if (cmd.equalsIgnoreCase("carregaMarcas")) {
-					Parametros_ajax.listaMarcas(request, response, conn, 0);
+					Parametros_ajax.listaMarcas(request, response, conn, 0,false);
 				} else if (cmd.equalsIgnoreCase("listaLojas")) {
 					listaLojas(request, response, conn, cod_usuario, sys);
 				} else if (cmd.equalsIgnoreCase("detalheLoja")) {
@@ -2109,12 +2109,36 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 
 		String title = request.getParameter("title") == null ? "" : request.getParameter("title");
 		String msg = request.getParameter("msg") == null ? "" : request.getParameter("msg");
+		
+		
+		if(msg.equalsIgnoreCase("")){
+			throw new Exception("Escreva uma mensagem!");
+		}
+		
+		if(title.equalsIgnoreCase("")){
+			throw new Exception("Título em branco!");
+		}
+		
+		
+		StringBuffer	sql = new StringBuffer();
+		sql.append(" select * from usuario ");
+		sql.append(" where id_usuario = ? ");
 
-		msg = msg + " <br> ";
-		msg = msg + "Cod. Usuário: " + cod_usuario;
+		PreparedStatement st = conn.prepareStatement(sql.toString());
+		st.setLong(1, (cod_usuario));
 
-		Utilitario.sendEmail(sys.getSys_email(), msg, "Contato: " + title, conn);
+		ResultSet  rs = st.executeQuery();
 
+		if (rs.next()) {
+			
+			msg = msg + " <br> ";
+			msg = msg + "Cod. Usuário: " + cod_usuario + " -  " + rs.getString("desc_mail");
+			Utilitario.sendEmail(sys.getSys_email(), msg, "Contato: " + title, conn);
+			
+		}
+		
+
+		
 		objRetorno.put("msg", "ok");
 		out.print(objRetorno.toJSONString());
 

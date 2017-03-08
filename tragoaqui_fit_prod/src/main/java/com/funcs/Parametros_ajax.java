@@ -264,14 +264,24 @@ public class Parametros_ajax {
 		out.print(cate.toJSONString());
 	}
 
-	public static void listaMarcas(HttpServletRequest request, HttpServletResponse response, Connection conn, int coddistr) throws Exception {
+	public static void listaMarcas(HttpServletRequest request, HttpServletResponse response, Connection conn, int coddistr, boolean todas) throws Exception {
 		PrintWriter out = response.getWriter();
 		JSONArray cate = new JSONArray();
 
 		StringBuffer sql = new StringBuffer();
-		sql.append("SELECT * ");
-		sql.append("FROM   marca ");
 
+		if (todas) {
+			sql.append("SELECT * ");
+			sql.append("FROM   marca ");
+
+		} else {
+			sql.append(" SELECT marca.id_marca, desc_marca FROM   marca  ");
+			sql.append(" inner join produtos ");
+			sql.append(" on produtos.id_marca = marca.id_marca");
+			sql.append(" inner join  produtos_distribuidora ");
+			sql.append(" on produtos_distribuidora.id_prod = produtos.id_prod  and produtos_distribuidora.flag_ativo = 'S' ");
+			sql.append(" group by id_marca, desc_marca");
+		}
 		sql.append("  order by desc_marca ");
 
 		PreparedStatement st = conn.prepareStatement(sql.toString());

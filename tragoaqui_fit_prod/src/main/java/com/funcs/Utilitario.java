@@ -581,7 +581,8 @@ public class Utilitario {
 		st.setString(1, desc_produto);
 		ResultSet rs2 = st.executeQuery();
 		if (rs2.next()) {
-			retorno.put("name", rs2.getString("DESC_PROD"));
+			retorno.put("name", rs2.getString("desc_prod"));
+			retorno.put("nameabrev", rs2.getString("desc_abreviado"));
 		}
 
 		out.print(retorno.toJSONString());
