@@ -218,7 +218,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 				} else if (cmd.equalsIgnoreCase("carregaCategorias")) {
 					Parametros_ajax.listaCategorias(request, response, conn, 0);
 				} else if (cmd.equalsIgnoreCase("carregaMarcas")) {
-					Parametros_ajax.listaMarcas(request, response, conn, 0);
+					Parametros_ajax.listaMarcas(request, response, conn, 0, false);
 				} else if (cmd.equalsIgnoreCase("listaLojas")) {
 					listaLojas(request, response, conn, cod_usuario, sys);
 				} else if (cmd.equalsIgnoreCase("detalheLoja")) {
@@ -288,6 +288,16 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 					LojaProdTestOnline(request, response, conn, cod_usuario, sys);
 				} else if (cmd.equalsIgnoreCase("isloja")) {
 					isLoja(request, response, conn, cod_usuario, sys);
+				} else if (cmd.equalsIgnoreCase("carregaPedidosLoja")) {
+					carregaPedidosLoja(request, response, conn, cod_usuario, sys);
+				} else if (cmd.equalsIgnoreCase("abrePedidoLoja")) {
+					abrePedidosLoja(request, response, conn, cod_usuario, sys);
+				} else if (cmd.equalsIgnoreCase("loadMotivos")) {
+					Home_ajax.loadMotivos(request, response, conn);
+				} else if (cmd.equalsIgnoreCase("finalizandoPedidoLoja")) {
+					finalizandoPedido(request, response, conn, cod_usuario, sys);
+				} else if (cmd.equalsIgnoreCase("responderPedidoLoja")) {
+					responderPedidoLoja(request, response, conn, cod_usuario, sys);
 				}
 
 				else {
@@ -316,6 +326,93 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 			} catch (Exception ex) {
 			}
 		}
+	}
+
+	private static void responderPedidoLoja(HttpServletRequest request, HttpServletResponse response, Connection conn, long cod_usuario, Sys_parametros sys) throws Exception {
+
+		PreparedStatement st = conn.prepareStatement(" select * from  distribuidora_mobile where id_usuario = ?  ");
+		st.setLong(1, cod_usuario);
+		ResultSet rs = st.executeQuery();
+		if (rs.next()) {
+			Pedidos_ajax.responderPedido(request, response, conn, rs.getInt("id_distribuidora"));
+
+		} else {
+			throw new Exception("Pedido não acessivel para seu usuário.");
+
+		}
+
+	}
+
+	private static void abrePedidosLoja(HttpServletRequest request, HttpServletResponse response, Connection conn, long cod_usuario, Sys_parametros sys) throws Exception {
+
+		PreparedStatement st = conn.prepareStatement(" select * from  distribuidora_mobile where id_usuario = ?  ");
+		st.setLong(1, cod_usuario);
+		ResultSet rs = st.executeQuery();
+		if (rs.next()) {
+
+			Pedidos_ajax.carregaPedido_AbertoEnvio(request, response, conn, rs.getInt("id_distribuidora"));
+
+		} else {
+			throw new Exception("Pedido não acessivel para seu usuário.");
+		}
+
+	}
+
+	private static void carregaPedidosLoja(HttpServletRequest request, HttpServletResponse response, Connection conn, long cod_usuario, Sys_parametros sys) throws Exception {
+		PrintWriter out = response.getWriter();
+		JSONObject objRetorno = new JSONObject();
+
+		PreparedStatement st = conn.prepareStatement(" select * from  distribuidora_mobile where id_usuario = ?  ");
+		st.setLong(1, cod_usuario);
+		ResultSet rs = st.executeQuery();
+		if (rs.next()) {
+
+			Pedidos_ajax.carregaPedidosAbertos(request, response, conn, rs.getInt("id_distribuidora"));
+
+		} else {
+			objRetorno.put("msg", "ok");
+
+			out.println(objRetorno.toString());
+		}
+
+	}
+
+	private static void finalizandoPedido(HttpServletRequest request, HttpServletResponse response, Connection conn, long cod_usuario, Sys_parametros sys) throws Exception {
+		PrintWriter out = response.getWriter();
+		JSONObject objRetorno = new JSONObject();
+
+		PreparedStatement st = conn.prepareStatement(" select * from  distribuidora_mobile where id_usuario = ?  ");
+		st.setLong(1, cod_usuario);
+		ResultSet rs = st.executeQuery();
+		if (rs.next()) {
+
+			Pedidos_ajax.finalizandoPedido(request, response, conn, rs.getInt("id_distribuidora"));
+
+		} else {
+			objRetorno.put("msg", "ok");
+
+			out.println(objRetorno.toString());
+		}
+
+	}
+
+	private static void responderPedido(HttpServletRequest request, HttpServletResponse response, Connection conn, long cod_usuario, Sys_parametros sys) throws Exception {
+		PrintWriter out = response.getWriter();
+		JSONObject objRetorno = new JSONObject();
+
+		PreparedStatement st = conn.prepareStatement(" select * from  distribuidora_mobile where id_usuario = ?  ");
+		st.setLong(1, cod_usuario);
+		ResultSet rs = st.executeQuery();
+		if (rs.next()) {
+
+			Pedidos_ajax.finalizandoPedido(request, response, conn, rs.getInt("id_distribuidora"));
+
+		} else {
+			objRetorno.put("msg", "ok");
+
+			out.println(objRetorno.toString());
+		}
+
 	}
 
 	private static void isLoja(HttpServletRequest request, HttpServletResponse response, Connection conn, long cod_usuario, Sys_parametros sys) throws Exception {
@@ -3142,16 +3239,15 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 		sql.append(" ");
 		sql.append("where carrinho.id_usuario = ? ");
 		sql.append(" ");
-		
-		
-		retorno.put("cod_bairro", 0);//dando erro no mobile
-		
+
+		retorno.put("cod_bairro", 0);// dando erro no mobile
+
 		PreparedStatement st = conn.prepareStatement(sql.toString());
 		st.setLong(1, (cod_usuario));
 		ResultSet rs = st.executeQuery();
 		if (rs.next()) {
 			retorno.put("serv", rs.getString("flag_servico"));
-			retorno.put("cod_bairro", rs.getString("cod_bairro")==null?"":rs.getInt("cod_bairro"));
+			retorno.put("cod_bairro", rs.getString("cod_bairro") == null ? "" : rs.getInt("cod_bairro"));
 
 		}
 		retorno.put("msg", "ok");

@@ -1,7 +1,7 @@
 distribuidora_mobile
 
 cod_distribuidora_mobile
-id_distribuidora
+id_distribuidoras
 id_usuario
 desc_mail
 flag_role
@@ -37,4 +37,4 @@ alter table DISTRIBUIDORA_MOBILE add constraint FK_REFERENCE_36 foreign key (ID_
 
 
 
-
+email role obs

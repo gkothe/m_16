@@ -593,6 +593,8 @@ public class InsertDados {
 				st = conn.prepareStatement(sql);
 				st.executeUpdate();
 
+				
+				System.out.println(ped);
 			}
 
 			/*
@@ -628,11 +630,11 @@ public class InsertDados {
 		// randomValuesProds(1);
 		// randomValuesProds(2);
 		
-		readProds();
-		randomValuesProds(1);
+//		readProds();
+//		randomValuesProds(1);
 		// insertRandomPeds(1, 17, "2016-01-01 00:00:00", "2016-10-31 23:59:59", 500);
-		 insertRandomPeds(1, 1, "2015-01-01 00:00:00", "2016-10-31 23:59:59", 500);
-		 insertRandomPeds(1, 1, "2015-01-01 00:00:00", "2016-10-31 23:59:59", 500);
+		 insertRandomPeds(1, 1, "2015-01-01 00:00:00", "2016-10-31 23:59:59", 50);
+		 //insertRandomPeds(1, 1, "2015-01-01 00:00:00", "2016-10-31 23:59:59", 500);
 //		 insertRandomPeds(1, 27, "2015-01-01 00:00:00", "2016-10-31 23:59:59", 500);
 //		 insertRandomPeds(1, 27, "2016-01-01 00:00:00", "2016-10-31 23:59:59", 500);
 		// insertRandomPeds(1, 17, "2016-01-01 00:00:00", "2016-10-31 23:59:59", 500);

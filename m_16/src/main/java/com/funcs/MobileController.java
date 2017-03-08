@@ -215,7 +215,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 				} else if (cmd.equalsIgnoreCase("carregaCategorias")) {
 					Parametros_ajax.listaCategorias(request, response, conn, 0);
 				} else if (cmd.equalsIgnoreCase("carregaMarcas")) {
-					Parametros_ajax.listaMarcas(request, response, conn, 0);
+					Parametros_ajax.listaMarcas(request, response, conn, 0,false);
 				} else if (cmd.equalsIgnoreCase("listaLojas")) {
 					listaLojas(request, response, conn, cod_usuario, sys);
 				} else if (cmd.equalsIgnoreCase("detalheLoja")) {
