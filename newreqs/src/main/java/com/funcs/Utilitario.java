@@ -402,6 +402,20 @@ public class Utilitario {
 		return new GregorianCalendar().get(Calendar.DAY_OF_WEEK) == 1 ? 7 : new GregorianCalendar().get(Calendar.DAY_OF_WEEK) - 1;
 	}
 
+	public static Integer diaDasemanaFromDate(String date) throws Exception {
+
+		Calendar c = Calendar.getInstance();
+		c.setTime(new SimpleDateFormat("dd/MM/yyyy").parse(date));
+		int dayOfWeek = c.get(Calendar.DAY_OF_WEEK);
+		if (dayOfWeek == 1) {
+			dayOfWeek = 7;
+		} else {
+			dayOfWeek = dayOfWeek - 1;
+		}
+		return dayOfWeek;
+
+	}
+
 	public static Integer diaSemana(Connection conn, int distribuidora) throws Exception {
 
 		// de acordo com o que ta no banco de dados, se for DAY_OF_WEEK = 1 vai ser domingo (codigo 7 no banco), resto é o dia menos 1.

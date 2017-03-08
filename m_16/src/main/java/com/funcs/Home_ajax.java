@@ -244,7 +244,7 @@ public class Home_ajax {
 
 	}
 
-	public static void loadMotivos(HttpServletRequest request, HttpServletResponse response, Connection conn, int coddistr) throws Exception {
+	public static void loadMotivos(HttpServletRequest request, HttpServletResponse response, Connection conn) throws Exception {
 
 		PrintWriter out = response.getWriter();
 

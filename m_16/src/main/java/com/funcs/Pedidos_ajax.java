@@ -153,9 +153,9 @@ public class Pedidos_ajax {
 		String id_produto = request.getParameter("id_produto") == null ? "" : request.getParameter("id_produto");
 		String cod_bairro_aberto = request.getParameter("cod_bairro_aberto") == null ? "" : request.getParameter("cod_bairro_aberto");
 		String data_pedido_ini = request.getParameter("data_pedido_ini") == null ? "" : request.getParameter("data_pedido_ini");
-		String data_pedido_ini_hora = request.getParameter("data_pedido_ini_hora") == null ? "" : request.getParameter("data_pedido_ini_hora");
+		String data_pedido_ini_hora = request.getParameter("data_pedido_ini_hora") == null ? "00:00" : request.getParameter("data_pedido_ini_hora");
 		String data_pedido_fim = request.getParameter("data_pedido_fim") == null ? "" : request.getParameter("data_pedido_fim");
-		String data_pedido_fim_hora = request.getParameter("data_pedido_fim_hora") == null ? "" : request.getParameter("data_pedido_fim_hora");
+		String data_pedido_fim_hora = request.getParameter("data_pedido_fim_hora") == null ? "23:59" : request.getParameter("data_pedido_fim_hora");
 		String val_ini_aberto = request.getParameter("val_ini_aberto") == null ? "" : request.getParameter("val_ini_aberto");
 		String val_fim_aberto = request.getParameter("val_fim_aberto") == null ? "" : request.getParameter("val_fim_aberto");
 		String flag_situacao = request.getParameter("flag_situacao") == null ? "" : request.getParameter("flag_situacao");
@@ -203,7 +203,7 @@ public class Pedidos_ajax {
 		}
 
 		if (!id_produto.equalsIgnoreCase("")) {
-			sql.append(" and id_pedido in (select id_pedido from pedido_item where id_prod = ? ) ");
+			sql.append(" and pedido.id_pedido in (select id_pedido from pedido_item where id_prod = ? ) ");
 			temfiltro = "S";
 		}
 
@@ -285,17 +285,25 @@ public class Pedidos_ajax {
 			contparam++;
 		}
 
-		if (!(data_pedido_ini.equalsIgnoreCase("")) && data_pedido_ini_hora != null) {
+		if (data_pedido_ini_hora.equalsIgnoreCase("")) {
+			data_pedido_ini_hora = "00:00";
+		}
+
+		if (!(data_pedido_ini.equalsIgnoreCase(""))) {
 
 			Date data = new SimpleDateFormat("dd/MM/yyyy HH:mm").parse(data_pedido_ini + " " + data_pedido_ini_hora);
 			st.setString(contparam, new SimpleDateFormat("yyyy-MM-dd HH:mm").format(data));
 			contparam++;
 		}
 
-		if (!(data_pedido_fim.equalsIgnoreCase("")) && data_pedido_fim_hora != null) {
+		if (data_pedido_fim_hora.equalsIgnoreCase("")) {
+			data_pedido_fim_hora = "23:59";
+		}
 
-			Date data = new SimpleDateFormat("dd/MM/yyyy HH:mm").parse(data_pedido_fim + " " + data_pedido_fim_hora);
-			st.setString(contparam, new SimpleDateFormat("yyyy-MM-dd HH:mm").format(data));
+		if (!(data_pedido_fim.equalsIgnoreCase(""))) {
+
+			Date data = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").parse(data_pedido_fim + " " + data_pedido_fim_hora + ":59");
+			st.setString(contparam, new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(data));
 			contparam++;
 		}
 
@@ -1247,6 +1255,10 @@ public class Pedidos_ajax {
 				st.executeUpdate();
 
 				Utilitario.oneSginal(sys, rs.getString("DESC_EMAIL"), "Seu pedido foi aceito!", data);
+				String html = "";
+				Utilitario.sendEmail(rs.getString("DESC_EMAIL"), html, "TRagoaqui - Pedido "+ rs.getString("num_ped") + " ACEITO.", conn);
+				
+				
 
 				objRetorno.put("msg", "ok");
 
@@ -1338,6 +1350,10 @@ public class Pedidos_ajax {
 
 				}
 				Utilitario.oneSginal(sys, rs.getString("DESC_EMAIL"), "Seu pedido foi recusado!", data);
+				
+				String html = "";
+				Utilitario.sendEmail(rs.getString("DESC_EMAIL"), html, "TRagoaqui - Pedido "+ rs.getString("num_ped") + " RECUSADO.", conn);
+				
 				objRetorno.put("msg", "ok");
 
 			} else {

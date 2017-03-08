@@ -716,12 +716,6 @@ function loadMotivos() {
 					html.push("<div   class=\"checkbox\" style=\"margin-top: 0px; margin-bottom: 0px;\">");
 					html.push("<label> <input type=\"checkbox\"  id=\"element_clickrecusar\" class=\"motivo\" value=\"" + data.mot[t].COD_MOTIVO + "\"> " + data.mot[t].DESC_MOTIVO + "</label> </div> &nbsp; ");
 					html.push('<button data-toggle=\"tooltip\" style="margin-bottom: 0px;padding-bottom: 2px;padding-top: 1px;height: 21px;"  id=\"modal_prodsrecusa_btn_prods\" type="button" class="btn btn-primary" title="Listar produtos"> <span class="glyphicon glyphicon-list-alt" aria-hidden="true"></span></button>');
-					// html.push("<a role=\"button\" title=\"Escolher produtos\"
-					// class=\"btn btn-default btn_tabela \"
-					// data-container=\"body\" data-placement=\"left\" >");
-					// html.push("<i class=\"glyphicon
-					// glyphicon-list-alt\"></i>");
-					// html.push("</a></td>");
 					html.push(" </tr>");
 				}
 

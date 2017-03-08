@@ -613,14 +613,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 			varname11.append("where cod_bairro = ? and distribuidora_bairro_entrega.id_distribuidora = ? and cod_dia = ?  order by HORARIO_INI ");
 			varname11.append(" ");
 
-			Calendar c = Calendar.getInstance();
-			c.setTime(new SimpleDateFormat("dd/MM/yyyy").parse(datayar));
-			int dayOfWeek = c.get(Calendar.DAY_OF_WEEK);
-			if (dayOfWeek == 1) {
-				dayOfWeek = 7;
-			} else {
-				dayOfWeek = dayOfWeek - 1;
-			}
+			int dayOfWeek = Utilitario.diaDasemanaFromDate(datayar);
 
 			if (codbairro.equalsIgnoreCase("")) {
 				throw new Exception("Nenhum bairro selecionado.");
@@ -1590,6 +1583,9 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 		String id_marca = request.getParameter("id_marca") == null ? "" : request.getParameter("id_marca");
 		String pag = request.getParameter("pag") == null ? "" : request.getParameter("pag");
 
+		String diaagend = request.getParameter("diaagend") == null ? "" : request.getParameter("diaagend");
+		String horaagend = request.getParameter("horaagend") == null ? "" : request.getParameter("horaagend");
+
 		if (pag.equalsIgnoreCase("")) {
 			pag = "1";
 		}
@@ -1798,6 +1794,21 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 			sql.append("                      distribuidora.flag_ativo = 'S' ");
 			sql.append("                                 || distribuidora.flag_ativo = 'F') ");
 			sql.append("AND        distribuidora_bairro_entrega.cod_bairro = ? ");
+
+			if (!diaagend.equalsIgnoreCase("") && !horaagend.equalsIgnoreCase("")) {
+
+				Utilitario.testeHora("HHmm", horaagend, "Horário de entrega inválido!");
+
+				try {
+					new SimpleDateFormat("dd/MM/yyyy").parse(diaagend).before(new Date());
+				} catch (Exception e) {
+					throw new Exception("O dia de agendamento é inválido.");
+				}
+
+				sql.append("and (( cod_dia = 8 and ? between horario_ini and horario_fim and flag_custom = 'S' ) or ( cod_dia = ? and ? between horario_ini and horario_fim and flag_custom = 'N'  ))");
+
+			}
+
 			sql.append("GROUP BY   produtos.id_prod, ");
 			sql.append("           desc_prod, ");
 			sql.append("           desc_abreviado, ");
@@ -1864,8 +1875,6 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 			sql.append(" order by tab.desc_abreviado asc limit " + 20 + " OFFSET " + (Integer.parseInt(20 + "") * (Integer.parseInt(pag) - 1)));
 		}
 
-		System.out.println(sql.toString());
-
 		Calendar cal = Calendar.getInstance();
 
 		int contparam = 1;
@@ -1892,6 +1901,21 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 
 			st.setInt(contparam, Integer.parseInt(cod_bairro));
 			contparam++;
+
+			if (!diaagend.equalsIgnoreCase("") && !horaagend.equalsIgnoreCase("")) {
+
+				int dayOfWeek = Utilitario.diaDasemanaFromDate(diaagend);
+
+				st.setString(contparam, horaagend.substring(0, 1) + horaagend.substring(1, 2) + ":" + horaagend.substring(2, 3) + horaagend.substring(3, 4));
+				contparam++;
+
+				st.setInt(contparam, dayOfWeek);
+				contparam++;
+
+				st.setString(contparam, horaagend.substring(0, 1) + horaagend.substring(1, 2) + ":" + horaagend.substring(2, 3) + horaagend.substring(3, 4));
+				contparam++;
+
+			}
 
 		}
 		if (listagem) {
@@ -3746,14 +3770,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 					varname11.append("where cod_bairro = ? and distribuidora_bairro_entrega.id_distribuidora = ? and cod_dia = ? and horario_ini <= ? and horario_fim >= ? order by horario_ini ");
 					varname11.append(" ");
 
-					Calendar c = Calendar.getInstance();
-					c.setTime(new SimpleDateFormat("dd/MM/yyyy").parse(dataagendamento));
-					int dayOfWeek = c.get(Calendar.DAY_OF_WEEK);
-					if (dayOfWeek == 1) {
-						dayOfWeek = 7;
-					} else {
-						dayOfWeek = dayOfWeek - 1;
-					}
+					int dayOfWeek = Utilitario.diaDasemanaFromDate(dataagendamento);
 
 					PreparedStatement st3 = conn.prepareStatement(varname11.toString());
 					st3.setLong(1, rs.getInt("cod_bairro"));

@@ -172,7 +172,7 @@ public class HomeController extends javax.servlet.http.HttpServlet {
 			} else if (cmd.equalsIgnoreCase("getLogo")) {
 				Home_ajax.getLogo(request, response, conn, coddistr);
 			} else if (cmd.equalsIgnoreCase("loadMotivos")) {
-				Home_ajax.loadMotivos(request, response, conn, coddistr);
+				Home_ajax.loadMotivos(request, response, conn);
 			} else if (cmd.equalsIgnoreCase("autocomplete")) {
 				Home_ajax.autoComplete(request, response, conn, coddistr);
 			} else if (cmd.equalsIgnoreCase("carregaPedidosAbertos")) {

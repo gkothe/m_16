@@ -203,7 +203,7 @@ public class Pedidos_ajax {
 		}
 
 		if (!id_produto.equalsIgnoreCase("")) {
-			sql.append(" and id_pedido in (select id_pedido from pedido_item where id_prod = ? ) ");
+			sql.append(" and pedido.id_pedido in (select id_pedido from pedido_item where id_prod = ? ) ");
 			temfiltro = "S";
 		}
 
