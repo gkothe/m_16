@@ -298,6 +298,8 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 					finalizandoPedido(request, response, conn, cod_usuario, sys);
 				} else if (cmd.equalsIgnoreCase("responderPedidoLoja")) {
 					responderPedidoLoja(request, response, conn, cod_usuario, sys);
+				} else if (cmd.equalsIgnoreCase("checkPedidos")) {
+					checkPedidos(request, response, conn, cod_usuario, sys);
 				}
 
 				else {
@@ -341,6 +343,16 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 
 		}
 
+	}
+
+	private static void checkPedidos(HttpServletRequest request, HttpServletResponse response, Connection conn, long cod_usuario, Sys_parametros sys) throws Exception {
+
+		PreparedStatement st = conn.prepareStatement(" select * from  distribuidora_mobile where id_usuario = ?  ");
+		st.setLong(1, cod_usuario);
+		ResultSet rs = st.executeQuery();
+		if (rs.next()) {
+			Home_ajax.checkPedidos(request, response, conn, rs.getInt("id_distribuidora"));
+		}
 	}
 
 	private static void abrePedidosLoja(HttpServletRequest request, HttpServletResponse response, Connection conn, long cod_usuario, Sys_parametros sys) throws Exception {
@@ -1305,6 +1317,16 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 
 					}
 
+					try {
+
+						msgLojasMobile(conn, sys, Long.parseLong(id_pedido), 1);
+
+					} catch (Exception e) {
+						System.out.println("Falha no envio de email cancela pedido " + id_pedido + " " + new Date());
+					}
+
+					// mandar one sginal e memail
+
 				}
 
 			}
@@ -1317,6 +1339,55 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 			out.print(objRetorno.toJSONString());
 		}
 		return objRetorno;
+	}
+
+	private static void msgLojasMobile(Connection conn, Sys_parametros sys, long id_pedido, int codtipomsg) throws Exception {
+		String html = "";
+		String title = "";
+		JSONObject data = new JSONObject();
+		data.put("loja", true);
+		data.put("id_pedido", id_pedido);
+
+		StringBuffer sql = new StringBuffer();
+		sql.append(" SELECT distribuidora.desc_mail        AS emaildis, ");
+		sql.append("       distribuidora_mobile.desc_mail AS emailmobile, num_ped ");
+		sql.append(" FROM   pedido ");
+		sql.append("       INNER JOIN distribuidora ");
+		sql.append("               ON distribuidora.id_distribuidora = pedido.id_distribuidora ");
+		sql.append("       left JOIN distribuidora_mobile ");
+		sql.append("               ON distribuidora.id_distribuidora = ");
+		sql.append("                  distribuidora_mobile.id_distribuidora ");
+		sql.append("                  AND distribuidora_mobile.flag_role = 'A' ");
+		sql.append(" WHERE  id_pedido =  ? ");
+
+		PreparedStatement st2 = conn.prepareStatement(sql.toString());
+		st2.setLong(1, (id_pedido));
+		ResultSet rs2 = st2.executeQuery();
+
+		if (rs2.next()) {
+			if (codtipomsg == 1) {// cancelamento
+				html = " Olá, o pedido nº " + rs2.getString("num_ped") + " foi cancelado. Para mais informações do pedido clique <a href='" + sys.getUrl_system() + "'> AQUI </a> e acesse o sistema do TragoAqui. ";
+				title = sys.getSys_fromdesc() + " - Pedido nº " + rs2.getString("num_ped") + " foi cancelado!";
+
+			} else if (codtipomsg == 2) {// novopedido
+				html = "Você recebeu um pedido! O número do pedido é " + rs2.getString("num_ped") + ". <br> Clique <a href='" + sys.getUrl_system() + "'> AQUI </a> para acessar nosso sistema, verificar os produtos requisitados e responder o pedido.";
+				title = sys.getSys_fromdesc() + " - Você recebeu um pedido! Nº " + rs2.getString("num_ped");
+
+			} else if (codtipomsg == 3) {// pedido atrasado
+				html = "Atenção! O cliente informou que o pedido  Nº " + rs2.getString("num_ped")+" ainda não foi entregue!";
+				title = sys.getSys_fromdesc() + " - O pedido  Nº " + rs2.getString("num_ped")+" ainda não foi entregue!";
+			}
+
+			Utilitario.sendEmail(rs2.getString("emaildis"), html, title, conn);
+			if (rs2.getString("emailmobile") != null && !(rs2.getString("emailmobile").equalsIgnoreCase(""))) {
+
+				Utilitario.oneSginal(sys, rs2.getString("emailmobile"), title, data);
+				if (!rs2.getString("emailmobile").equalsIgnoreCase(rs2.getString("emaildis"))) {
+					Utilitario.sendEmail(rs2.getString("emailmobile"), html, title, conn);
+				}
+			}
+		}
+
 	}
 
 	private static void carregaUser(HttpServletRequest request, HttpServletResponse response, Connection conn, long cod_usuario) throws Exception {
@@ -2325,8 +2396,11 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 			Calendar data6 = Calendar.getInstance();
 			data6.setTime(rs.getTimestamp("tempocanc"));
 
+			System.out.println(data6.getTime());
+			System.out.println(new Date());
+			
 			if (data6.getTime().after(new Date())) {
-				throw new Exception("Você deve esperar o tempo maximo de estimado desejado para informar que não recebeu seu pedido.");
+				throw new Exception("Você deve esperar o tempo máximo de estimado desejado para informar que não recebeu seu pedido.");
 			}
 
 		}
@@ -2336,6 +2410,17 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 		st = conn.prepareStatement(sql.toString());
 		st.setLong(1, Long.parseLong(id_pedido));
 		st.executeUpdate();
+		
+		
+		try {
+
+			msgLojasMobile(conn, sys, Long.parseLong(id_pedido), 3);
+
+		} catch (Exception e) {
+			System.out.println("Falha no envio de email nãorecebi pedido " + id_pedido + " " + new Date());
+		}
+		
+		
 
 		objRetorno.put("msg", "ok");
 		out.print(objRetorno.toJSONString());
@@ -2353,7 +2438,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 		}
 
 		StringBuffer sql = new StringBuffer();
-		sql.append("select val_entrega,flag_modoentrega, ");
+		sql.append("select val_entrega,flag_modoentrega,data_agenda_entrega, ");
 		sql.append("       num_ped, ");
 		sql.append("       val_totalprod, ");
 		sql.append("       desc_razao_social, ");
@@ -2395,6 +2480,8 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 
 			ped.put("flag_status2", (rs.getString("flag_status")));
 			ped.put("flag_serv", (rs.getString("flag_pedido_ret_entre")));
+			ped.put("flag_modoentrega", (rs.getString("flag_modoentrega")));
+			
 
 			ped.put("tempo_entrega_max", rs.getTimestamp("tempo_estimado_desejado") == null ? "" : new SimpleDateFormat("HH:mm").format(rs.getTimestamp("tempo_estimado_desejado")));
 			ped.put("desc_serv", Utilitario.returnDistrTiposPedido(rs.getString("flag_pedido_ret_entre"), rs.getString("flag_modoentrega")));
@@ -2417,6 +2504,15 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 			ped.put("desc_endereco_complemento_entrega", rs.getString("desc_endereco_complemento_entrega"));
 			ped.put("tempo_entrega2", rs.getTimestamp("tempo_estimado_entrega") == null ? "" : new SimpleDateFormat("HH:mm").format(rs.getTimestamp("tempo_estimado_entrega")));
 			ped.put("tempo_entrega", rs.getTimestamp("hora_entrega") == null ? "" : new SimpleDateFormat("dd/MM/yyyy HH:mm").format(rs.getTimestamp("hora_entrega")));
+
+			
+			if (rs.getTimestamp("data_agenda_entrega") != null) {
+				ped.put("data_agenda_entrega", new SimpleDateFormat("dd/MM/yyyy HH:mm").format(rs.getTimestamp("data_agenda_entrega")));
+			}else{
+				ped.put("data_agenda_entrega", "");
+			}
+			
+			
 
 			StringBuffer sql2 = new StringBuffer();
 			sql2.append("select id_prod_dist, recusado_disponivel,flag_recusado,  desc_prod, val_unit, qtd_prod, qtd_prod * val_unit   as total, desc_abreviado, produtos.id_prod from pedido_item ");
@@ -3910,8 +4006,6 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 
 					}
 
-					// payment(request, response, conn, cod_usuario,email);
-
 					{
 						sql = new StringBuffer();// deleta item do carrinho se ele exister exite no carrinho, add depois
 						sql.append(" delete from carrinho_item where ID_CARRINHO = ? ");
@@ -3927,8 +4021,13 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 					}
 
 					if (choiceserv.equalsIgnoreCase("A")) {
-						String texto = " Você recebeu um pedido! O número do pedido é " + numpad + ". <br> Clique <a href='" + sys.getUrl_system() + "'> AQUI </a> para acessar nosso sistema, verificar os produtos requisitados e responder o pedido.";
-						Utilitario.sendEmail(emailoja, texto, sys.getSys_fromdesc() + " - Você recebeu um pedido! Nº " + numpad, conn);
+
+						try {
+							msgLojasMobile(conn, sys, idped, 2);
+						} catch (Exception e) {
+							System.out.println("Falha no envio de email cria pedido " + idped + " " + new Date());
+						}
+
 					}
 
 				}

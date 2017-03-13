@@ -5,10 +5,14 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
+import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.Locale;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -17,7 +21,8 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 public class Home_ajax {
-
+	public static DecimalFormatSymbols dfs = new DecimalFormatSymbols(new Locale("pt", "BR"));
+	public static NumberFormat df2 = new DecimalFormat("#,###,##0.00", dfs);
 	public static void checkPedidos(HttpServletRequest request, HttpServletResponse response, Connection conn, int coddistr) throws Exception {
 
 		JSONArray pedidos_todos = new JSONArray();
@@ -42,6 +47,17 @@ public class Home_ajax {
 
 			}
 
+		}
+
+		sql = "select cod_cidade from distribuidora where id_distribuidora =  ? ";
+		st = conn.prepareStatement(sql);
+		st.setInt(1, coddistr);
+		rs = st.executeQuery();
+		int cod_cidade = 0;
+		if (rs.next()) {
+			cod_cidade = rs.getInt("cod_cidade");
+		} else {
+			throw new Exception("Loja sem cidade informada.");
 		}
 
 		sql = "select * from pedido join pedido_motivo_cancelamento on pedido_motivo_cancelamento.id_pedido = pedido.id_pedido  where ID_DISTRIBUIDORA = ? and (flag_status = 'C' and flag_popupinicial = 'N')  ";
@@ -73,8 +89,8 @@ public class Home_ajax {
 		objRetorno.put("flag_vizualizado", "S");
 		if (objRetorno.get("tem").toString().equalsIgnoreCase("true")) {
 
-			sql = "" + "select " + "           coalesce(flag_vizualizado,'N') AS flag_vizualizado " + "from       pedido " + " inner join distribuidora on pedido.id_distribuidora = distribuidora.id_distribuidora left JOIN bairros " + "ON         bairros.cod_bairro = pedido.cod_bairro " + "WHERE     distribuidora.id_distribuidora = ? " + "AND        flag_status = 'A' " + "AND        Coalesce(bairros.cod_cidade,distribuidora.cod_cidade) = "
-					+ request.getSession(false).getAttribute("cod_cidade").toString() + " and  COALESCE(flag_vizualizado,'N') = 'N' group by COALESCE(flag_vizualizado,'N');";
+			sql = "" + "select " + "           coalesce(flag_vizualizado,'N') AS flag_vizualizado " + "from       pedido " + " inner join distribuidora on pedido.id_distribuidora = distribuidora.id_distribuidora left JOIN bairros " + "ON         bairros.cod_bairro = pedido.cod_bairro " + "WHERE     distribuidora.id_distribuidora = ? " + "AND        flag_status = 'A' " + "AND        Coalesce(bairros.cod_cidade,distribuidora.cod_cidade) = " + cod_cidade
+					+ " and  COALESCE(flag_vizualizado,'N') = 'N' group by COALESCE(flag_vizualizado,'N');";
 
 			st = conn.prepareStatement(sql);
 			st.setInt(1, coddistr);
@@ -86,8 +102,7 @@ public class Home_ajax {
 				}
 			}
 
-			sql = "select id_pedido,desc_bairro,num_ped,val_totalprod,data_pedido, now() as agora, coalesce(flag_vizualizado,'N') as flag_vizualizado  from pedido inner join distribuidora on pedido.id_distribuidora = distribuidora.id_distribuidora left join bairros on bairros.cod_bairro = pedido.cod_bairro where distribuidora.ID_DISTRIBUIDORA = ? and flag_status = \'A\' and Coalesce(bairros.cod_cidade,distribuidora.cod_cidade) = " + request.getSession(false).getAttribute("cod_cidade").toString()
-					+ "  order by data_pedido asc limit 5";
+			sql = "select id_pedido,desc_bairro,num_ped,val_totalprod,data_pedido, now() as agora, coalesce(flag_vizualizado,'N') as flag_vizualizado  from pedido inner join distribuidora on pedido.id_distribuidora = distribuidora.id_distribuidora left join bairros on bairros.cod_bairro = pedido.cod_bairro where distribuidora.ID_DISTRIBUIDORA = ? and flag_status = \'A\' and Coalesce(bairros.cod_cidade,distribuidora.cod_cidade) = " + cod_cidade + "  order by data_pedido asc limit 5";
 
 			st = conn.prepareStatement(sql);
 			st.setInt(1, coddistr);
@@ -197,24 +212,41 @@ public class Home_ajax {
 			JSONArray pedido1_agend = new JSONArray();
 			while (rs.next()) {
 				JSONObject pedidos = new JSONObject();
-				
-				
-				if(rs.getTimestamp("data_agenda_entrega").before(new Date())){
+
+				if (rs.getTimestamp("data_agenda_entrega").before(new Date())) {
 					pedidos.put("passou", true);
 					pedidos.put("horario", "EXPIRADO!");
-				}else{
+				} else {
 					pedidos.put("horario", new SimpleDateFormat("HH:mm").format(rs.getTimestamp("data_agenda_entrega")));
 					pedidos.put("passou", false);
 				}
-				
-				
+
+				if (rs.getTimestamp("data_agenda_entrega") != null) {
+					pedidos.put("data_agenda_entrega", new SimpleDateFormat("dd/MM/yyyy HH:mm").format(rs.getTimestamp("data_agenda_entrega")));
+
+				}
+
+				if (rs.getString("FLAG_PEDIDO_RET_ENTRE").equalsIgnoreCase("L")) {
+					pedidos.put("DESC_BAIRRO", "Retirar no local");
+					pedidos.put("FLAG_STATUS", rs.getString("flag_status").equalsIgnoreCase("E") ? "S" : rs.getString("flag_status"));
+				} else {
+
+					if (rs.getString("flag_modoentrega").equalsIgnoreCase("A")) {
+						pedidos.put("DESC_BAIRRO", rs.getString("desc_bairro") + " - Agendamento");
+					} else {
+						pedidos.put("DESC_BAIRRO", rs.getString("desc_bairro"));
+					}
+				}
+
+				pedidos.put("data_formatada", new SimpleDateFormat("dd/MM/yyyy HH:mm").format(rs.getTimestamp("data_pedido")));
+				pedidos.put("val_totalprod_mobile", df2.format(rs.getDouble("val_totalprod")));
 				pedidos.put("num_ped", rs.getString("num_ped"));
 				pedidos.put("desc_bairro", rs.getString("desc_bairro") == null ? "Retirada no local" : rs.getString("desc_bairro"));
 				pedidos.put("valor", rs.getString("val_totalprod"));
 				pedidos.put("id_pedido", rs.getString("id_pedido"));
 				pedido1_agend.add(pedidos);
 			}
-		
+
 			objRetorno.put("pedidosagend", pedido1_agend);
 
 		}
@@ -297,7 +329,7 @@ public class Home_ajax {
 				ResultSet rs = st.executeQuery();
 				if (rs.next()) {
 					objValor.put("descr", rs.getString("descr"));
-				}else{
+				} else {
 					objValor.put("descr", "Produto não encontrado.");
 				}
 
@@ -331,7 +363,7 @@ public class Home_ajax {
 				ResultSet rs = st.executeQuery();
 				if (rs.next()) {
 					objValor.put("descr", rs.getString("descr"));
-				}else{
+				} else {
 					objValor.put("descr", "Produto não encontrado.");
 				}
 

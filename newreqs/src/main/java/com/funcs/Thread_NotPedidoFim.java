@@ -31,7 +31,7 @@ public class Thread_NotPedidoFim extends Thread {
 
 		try {
 			conn = Conexao.getConexao();
-			
+
 			Sys_parametros sys = new Sys_parametros(conn);
 			secs_param = sys.getNum_segs_not_final_exec();
 			rodateste = secs_param * 1000;
@@ -50,8 +50,16 @@ public class Thread_NotPedidoFim extends Thread {
 			} catch (Exception e2) {
 				// TODO: handle exception
 			}
-			if(rodar)
-				run();
+
+			try {
+				this.sleep(5000);
+				if (rodar) {
+					run();
+				}
+			} catch (Exception e2) {
+				// TODO: handle exception
+			}
+
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
@@ -114,12 +122,10 @@ public class Thread_NotPedidoFim extends Thread {
 
 		} catch (Exception e) {
 			e.printStackTrace();
-			// TODO: handle exception  
+			// TODO: handle exception
 		}
 
 	}
-	
-	
 
 	private void checkExpired(Connection conn, Sys_parametros sys) {
 
@@ -141,9 +147,9 @@ public class Thread_NotPedidoFim extends Thread {
 				data.put("id_ped", rs.getString("ID_PEDIDO"));
 				data.put("num_ped", rs.getString("NUM_PED"));
 				obj = MobileController.cancelaPedido(null, null, conn, rs.getInt("ID_USUARIO"), sys, rs.getString("ID_PEDIDO"), "Cancelado pelo sistema", sys.getCod_cancelamentosys() + "", false);
-				
+
 				if (obj.get("msg").toString().equalsIgnoreCase("ok")) {
-					
+
 					Utilitario.oneSginal(sys, rs.getString("mail"), "Aviso. Pedido cancelado automaticamente. Motivo: A loja não respondeu dentro do tempo desejado de entrega.", data);
 				}
 

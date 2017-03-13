@@ -18,8 +18,8 @@ public class Thread_OnOffEmp extends Thread {
 	long secs_param = 0;
 	long seconds = 0;
 	long rodateste = 0;
-	public boolean rodar = true;	
-	
+	public boolean rodar = true;
+
 	public void run() {
 
 		try {
@@ -28,12 +28,12 @@ public class Thread_OnOffEmp extends Thread {
 			Sys_parametros sys = new Sys_parametros(conn);
 			secs_param = sys.getSegs_teste_ajax();
 			rodateste = 0;
-			if(secs_param*100> 1000)
-				rodateste = 10000; //testa de 10 em 10 segs
+			if (secs_param * 100 > 1000)
+				rodateste = 10000; // testa de 10 em 10 segs
 			else
-				rodateste = secs_param*1000;  //se o tempo de teste for menor q 10, fazeoms a thread rodar no mesmo tempo
+				rodateste = secs_param * 1000; // se o tempo de teste for menor q 10, fazeoms a thread rodar no mesmo tempo
 			conn.close();
-			
+
 			while (true) {
 				conn = Conexao.getConexao();
 				testeDistribuidorasonline(conn);
@@ -49,10 +49,15 @@ public class Thread_OnOffEmp extends Thread {
 			}
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-			
-			if(rodar){
-				run();
+			try {
+				this.sleep(5000);
+				if (rodar) {
+					run();
+				}
+			} catch (Exception e2) {
+				// TODO: handle exception
 			}
+
 		}
 	}
 
@@ -69,8 +74,8 @@ public class Thread_OnOffEmp extends Thread {
 	private void testeDistribuidorasonline(Connection conn) {
 
 		try {
-			// flag_ativo = 'S' significa que estava online, flag_ativo = 'F' significa que apesar de estar marcada como online, a empresa esta com o browser fechado e nao esta vendo os pedidos, e nem  os usuarios estão vendo os produtos disponiveis. 
-			//Uma empresa no estado F , não poderia receber pedidos. Sera avisado para o usuario que ela está offline.
+			// flag_ativo = 'S' significa que estava online, flag_ativo = 'F' significa que apesar de estar marcada como online, a empresa esta com o browser fechado e nao esta vendo os pedidos, e nem os usuarios estão vendo os produtos disponiveis.
+			// Uma empresa no estado F , não poderia receber pedidos. Sera avisado para o usuario que ela está offline.
 			st = conn.prepareStatement(" select id_distribuidora,flag_ativo,date_lastajax from distribuidora where flag_ativo_master = 'S' and (flag_ativo='S' or  flag_ativo='F') ");
 			rs = st.executeQuery();
 			while (rs.next()) {
@@ -80,19 +85,16 @@ public class Thread_OnOffEmp extends Thread {
 					agora = new Date();
 					seconds = (agora.getTime() - date.getTime()) / 1000;
 
+					// System.out.println(rs.getInt("ID_DISTRIBUIDORA") +" "+ agora + " " + date + " " + seconds + " " + secs_param + " " + rs.getString("FLAG_ATIVO"));
 
-
-				
-//					System.out.println(rs.getInt("ID_DISTRIBUIDORA") +" "+ agora + " " + date + " " + seconds + " " + secs_param + " " + rs.getString("FLAG_ATIVO"));
-					
 					if (seconds > secs_param && rs.getString("FLAG_ATIVO").equalsIgnoreCase("S")) { // empresa esta offine
 
 						st = conn.prepareStatement("update distribuidora set FLAG_ATIVO = 'F' where id_distribuidora = ? ");
 						st.setInt(1, rs.getInt("ID_DISTRIBUIDORA"));
 						st.executeUpdate();
-					
+
 					} else if (seconds < secs_param && rs.getString("FLAG_ATIVO").equalsIgnoreCase("F")) {
-					
+
 						st = conn.prepareStatement("update distribuidora set FLAG_ATIVO = 'S' where id_distribuidora = ? ");
 						st.setInt(1, rs.getInt("ID_DISTRIBUIDORA"));
 						st.executeUpdate();

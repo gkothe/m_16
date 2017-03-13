@@ -1255,10 +1255,9 @@ public class Pedidos_ajax {
 				st.executeUpdate();
 
 				Utilitario.oneSginal(sys, rs.getString("DESC_EMAIL"), "Seu pedido foi aceito!", data);
-				String html = "";
-				Utilitario.sendEmail(rs.getString("DESC_EMAIL"), html, "TRagoaqui - Pedido "+ rs.getString("num_ped") + " ACEITO.", conn);
+				String html = "Olá, o seu pedido Nº "+rs.getString("num_ped")+" foi ACEITO! <br> Para mais informações acesse o TragoAqui e clique em Histórico de pedidos.";
 				
-				
+				Utilitario.sendEmail(rs.getString("DESC_EMAIL"), html, "Tragoaqui - Pedido "+ rs.getString("num_ped") + " ACEITO.", conn);
 
 				objRetorno.put("msg", "ok");
 
@@ -1351,8 +1350,8 @@ public class Pedidos_ajax {
 				}
 				Utilitario.oneSginal(sys, rs.getString("DESC_EMAIL"), "Seu pedido foi recusado!", data);
 				
-				String html = "";
-				Utilitario.sendEmail(rs.getString("DESC_EMAIL"), html, "TRagoaqui - Pedido "+ rs.getString("num_ped") + " RECUSADO.", conn);
+				String html = "Olá, o seu pedido Nº "+rs.getString("num_ped")+" foi RECUSADO! <br> Para mais informações acesse o TragoAqui e clique em Histórico de pedidos.";
+				Utilitario.sendEmail(rs.getString("DESC_EMAIL"), html, "Tragoaqui - Pedido "+ rs.getString("num_ped") + " RECUSADO.", conn);
 				
 				objRetorno.put("msg", "ok");
 

@@ -80,7 +80,7 @@ public class Utilitario {
 	public static JSONArray FlagEntreRet() {
 		JSONArray payids = new JSONArray();
 		JSONObject obj = new JSONObject();
-		
+
 		obj = new JSONObject();
 		obj.put("flag_entre_ret", "L");
 		obj.put("desc", "Retirada no local");
@@ -90,7 +90,7 @@ public class Utilitario {
 		obj.put("flag_entre_ret", "T");
 		obj.put("desc", "Tele-entrega");
 		payids.add(obj);
-		
+
 		obj = new JSONObject();
 		obj.put("flag_entre_ret", "A");
 		obj.put("desc", "Agendamento");
@@ -251,7 +251,7 @@ public class Utilitario {
 		} else if (flag.equalsIgnoreCase("T")) {
 			// return "Somente tele-entrega";
 			return "Tele-entrega";
-		}else if (flag.equalsIgnoreCase("A")) {
+		} else if (flag.equalsIgnoreCase("A")) {
 			return "Agendamento";
 		} else if (flag.equalsIgnoreCase("")) {
 			return "Todos";
@@ -400,6 +400,20 @@ public class Utilitario {
 		// SATURDAY. 7
 
 		return new GregorianCalendar().get(Calendar.DAY_OF_WEEK) == 1 ? 7 : new GregorianCalendar().get(Calendar.DAY_OF_WEEK) - 1;
+	}
+
+	public static Integer diaDasemanaFromDate(String date) throws Exception {
+
+		Calendar c = Calendar.getInstance();
+		c.setTime(new SimpleDateFormat("dd/MM/yyyy").parse(date));
+		int dayOfWeek = c.get(Calendar.DAY_OF_WEEK);
+		if (dayOfWeek == 1) {
+			dayOfWeek = 7;
+		} else {
+			dayOfWeek = dayOfWeek - 1;
+		}
+		return dayOfWeek;
+
 	}
 
 	public static Integer diaSemana(Connection conn, int distribuidora) throws Exception {
@@ -840,7 +854,6 @@ public class Utilitario {
 
 		// File (or directory) with old name
 
-
 	}
 
 	public static void renamefiles3() throws IOException {
@@ -850,7 +863,7 @@ public class Utilitario {
 		if (dir.isDirectory()) { // make sure it's a directory
 			for (final File f : dir.listFiles()) {
 				try {
-					File newfile = new File("C:/Users/gkothe/Desktop/img_fit/img_fit/"+f.getName().toLowerCase());
+					File newfile = new File("C:/Users/gkothe/Desktop/img_fit/img_fit/" + f.getName().toLowerCase());
 
 					if (f.renameTo(newfile)) {
 						System.out.println("Rename succesful");
@@ -898,12 +911,12 @@ public class Utilitario {
 		System.out.println(new Date());
 
 		try {
-			 conn = Conexao.getConexao();
-			 Sys_parametros sys = new Sys_parametros(conn);
+			conn = Conexao.getConexao();
+			Sys_parametros sys = new Sys_parametros(conn);
 
-			//renamefiles3();
+			// renamefiles3();
 
-			 oneSginal(sys, "g.kothe@hotmail.com", "aaaa", new JSONObject());
+			oneSginal(sys, "g.kothe@hotmail.com", "aaaa", new JSONObject());
 			// oneSginal(sys, "morratu@hotmail.com", "aaaa", new JSONObject());
 		} catch (Exception e) {
 			System.out.println(e);

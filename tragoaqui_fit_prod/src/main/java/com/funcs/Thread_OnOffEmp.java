@@ -49,10 +49,15 @@ public class Thread_OnOffEmp extends Thread {
 			}
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-			
-			if(rodar){
-				run();
+			try {
+				 this.sleep(5000);
+				 if(rodar){
+						run();
+					}
+			} catch (Exception e2) {
+				// TODO: handle exception
 			}
+			
 		}
 	}
 

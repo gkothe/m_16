@@ -128,6 +128,7 @@ public class Utilitario {
 		mailService.addTo(para);
 		mailService.send();
 
+		System.out.println("Email sent:" + new Date());
 	}
 
 	public static String StringGen(int a, int b) {

@@ -521,6 +521,8 @@ public class Pedidos_ajax {
 			sql2 = sql2 + "  and  flag_pedido_ret_entre = 'L' ";
 		}
 
+		
+
 		try {
 			Integer.parseInt(pag);
 			Integer.parseInt(size);
@@ -623,6 +625,8 @@ public class Pedidos_ajax {
 			st2.setDouble(contparam, Double.parseDouble(val_fim_historico));
 			contparam++;
 		}
+
+		
 
 		ResultSet rs = st2.executeQuery();
 		if (rs.next()) {
@@ -1274,6 +1278,9 @@ public class Pedidos_ajax {
 				st.executeUpdate();
 
 				Utilitario.oneSginal(sys, rs.getString("DESC_EMAIL"), "Seu pedido foi aceito!", data);
+				String html = "Olá, o seu pedido Nº "+rs.getString("num_ped")+" foi ACEITO! <br> Para mais informações acesse o TragoAqui e clique em Histórico de pedidos.";
+				
+				Utilitario.sendEmail(rs.getString("DESC_EMAIL"), html, "Tragoaqui - Pedido "+ rs.getString("num_ped") + " ACEITO.", conn);
 
 				objRetorno.put("msg", "ok");
 
@@ -1365,6 +1372,10 @@ public class Pedidos_ajax {
 
 				}
 				Utilitario.oneSginal(sys, rs.getString("DESC_EMAIL"), "Seu pedido foi recusado!", data);
+				
+				String html = "Olá, o seu pedido Nº "+rs.getString("num_ped")+" foi RECUSADO! <br> Para mais informações acesse o TragoAqui e clique em Histórico de pedidos.";
+				Utilitario.sendEmail(rs.getString("DESC_EMAIL"), html, "Tragoaqui - Pedido "+ rs.getString("num_ped") + " RECUSADO.", conn);
+				
 				objRetorno.put("msg", "ok");
 
 			} else {
