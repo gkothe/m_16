@@ -213,7 +213,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 				} else if (cmd.equalsIgnoreCase("servicoCarrinho")) {
 					servicoCarrinho(request, response, conn, cod_usuario, sys);
 				} else if (cmd.equalsIgnoreCase("carregaCategorias")) {
-					Parametros_ajax.listaCategorias(request, response, conn, 0);
+					Parametros_ajax.listaCategorias(request, response, conn, 0,false);
 				} else if (cmd.equalsIgnoreCase("carregaMarcas")) {
 					Parametros_ajax.listaMarcas(request, response, conn, 0, false);
 				} else if (cmd.equalsIgnoreCase("listaLojas")) {
@@ -2455,24 +2455,33 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 			sql2.append(" on produtos.id_prod  = pedido_item.id_prod ");
 			sql2.append(" inner join produtos_distribuidora ");
 			sql2.append(" on produtos_distribuidora.id_prod  = produtos.id_prod and produtos_distribuidora.id_distribuidora = " + rs.getString("id_distribuidora"));
-			sql2.append(" where id_pedido = ?  order by desc_prod");
+			sql2.append(" where id_pedido = ?  order by desc_prod ");
 
 			st2 = conn.prepareStatement(sql2.toString());
 			st2.setLong(1, Long.parseLong(id_pedido));
 			rs2 = st2.executeQuery();
+			
+			String choiceserv = "";
+			if(rs.getString("flag_pedido_ret_entre").equalsIgnoreCase("L")){
+				choiceserv = "L";
+			}else if(rs.getString("flag_pedido_ret_entre").equalsIgnoreCase("T") && rs.getString("flag_modoentrega").equalsIgnoreCase("T")){
+				choiceserv = "T";
+			}else if(rs.getString("flag_pedido_ret_entre").equalsIgnoreCase("T") && rs.getString("flag_modoentrega").equalsIgnoreCase("A")){
+				choiceserv = "A";
+			}
 
 			while (rs2.next()) {
 				if (rs2.getString("ativo1").equalsIgnoreCase("S") && rs2.getString("ativo2").equalsIgnoreCase("S")) {
 
 					if (rs2.getString("flag_recusado").equalsIgnoreCase("S")) {
 						if (rs2.getInt("recusado_disponivel") > 0) {
-							addCarrinho(request, response, conn, cod_usuario, rs2.getString("id_prod_dist"), rs2.getString("recusado_disponivel"), rs.getString("cod_bairro"), rs.getString("flag_pedido_ret_entre"), false);
+							addCarrinho(request, response, conn, cod_usuario, rs2.getString("id_prod_dist"), rs2.getString("recusado_disponivel"), rs.getString("cod_bairro"), choiceserv, false);
 						} else {
 							prods = prods + rs2.getString("desc_abreviado") + " \n ";
 							prods_notadded = true;
 						}
 					} else {
-						addCarrinho(request, response, conn, cod_usuario, rs2.getString("id_prod_dist"), rs2.getString("qtd_prod"), rs.getString("cod_bairro"), rs.getString("flag_pedido_ret_entre"), false);
+						addCarrinho(request, response, conn, cod_usuario, rs2.getString("id_prod_dist"), rs2.getString("qtd_prod"), rs.getString("cod_bairro"),choiceserv, false);
 					}
 				} else {
 					prods = prods + rs2.getString("DESC_ABREVIADO") + " \n";
