@@ -2203,8 +2203,9 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 			Calendar data6 = Calendar.getInstance();
 			data6.setTime(rs.getTimestamp("tempocanc"));
 
+			
 			if (data6.getTime().after(new Date())) {
-				throw new Exception("Você deve esperar o tempo maximo de estimado desejado para informar que não recebeu seu pedido.");
+				throw new Exception("Você deve esperar o tempo máximo de estimado desejado para informar que não recebeu seu pedido.");
 			}
 
 		}
@@ -2231,7 +2232,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 		}
 
 		StringBuffer sql = new StringBuffer();
-		sql.append("select val_entrega,flag_modoentrega, ");
+		sql.append("select val_entrega,flag_modoentrega,data_agenda_entrega, ");
 		sql.append("       num_ped, ");
 		sql.append("       val_totalprod, ");
 		sql.append("       desc_razao_social, ");
@@ -2273,6 +2274,8 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 
 			ped.put("flag_status2", (rs.getString("flag_status")));
 			ped.put("flag_serv", (rs.getString("flag_pedido_ret_entre")));
+			ped.put("flag_modoentrega", (rs.getString("flag_modoentrega")));
+			
 
 			ped.put("tempo_entrega_max", rs.getTimestamp("tempo_estimado_desejado") == null ? "" : new SimpleDateFormat("HH:mm").format(rs.getTimestamp("tempo_estimado_desejado")));
 			ped.put("desc_serv", Utilitario.returnDistrTiposPedido(rs.getString("flag_pedido_ret_entre"), rs.getString("flag_modoentrega")));
@@ -2295,6 +2298,15 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 			ped.put("desc_endereco_complemento_entrega", rs.getString("desc_endereco_complemento_entrega"));
 			ped.put("tempo_entrega2", rs.getTimestamp("tempo_estimado_entrega") == null ? "" : new SimpleDateFormat("HH:mm").format(rs.getTimestamp("tempo_estimado_entrega")));
 			ped.put("tempo_entrega", rs.getTimestamp("hora_entrega") == null ? "" : new SimpleDateFormat("dd/MM/yyyy HH:mm").format(rs.getTimestamp("hora_entrega")));
+
+			
+			if (rs.getTimestamp("data_agenda_entrega") != null) {
+				ped.put("data_agenda_entrega", new SimpleDateFormat("dd/MM/yyyy HH:mm").format(rs.getTimestamp("data_agenda_entrega")));
+			}else{
+				ped.put("data_agenda_entrega", "");
+			}
+			
+			
 
 			StringBuffer sql2 = new StringBuffer();
 			sql2.append("select id_prod_dist, recusado_disponivel,flag_recusado,  desc_prod, val_unit, qtd_prod, qtd_prod * val_unit   as total, desc_abreviado, produtos.id_prod from pedido_item ");
@@ -3142,11 +3154,14 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 		sql.append("where carrinho.id_usuario = ? ");
 		sql.append(" ");
 
+		retorno.put("cod_bairro", 0);// dando erro no mobile
+
 		PreparedStatement st = conn.prepareStatement(sql.toString());
 		st.setLong(1, (cod_usuario));
 		ResultSet rs = st.executeQuery();
 		if (rs.next()) {
-			retorno.put("serv", rs.getObject("flag_servico"));
+			retorno.put("serv", rs.getString("flag_servico"));
+			retorno.put("cod_bairro", rs.getString("cod_bairro") == null ? "" : rs.getInt("cod_bairro"));
 
 		}
 		retorno.put("msg", "ok");

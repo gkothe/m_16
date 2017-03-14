@@ -575,6 +575,7 @@ public class Parametros_ajax {
 			obj.put("flag_tele_entrega", rs.getString("flag_tele_entrega"));
 			obj.put("flag_retirada", rs.getString("flag_retirada"));
 
+			
 			ret.add(obj);
 
 		}
@@ -610,14 +611,19 @@ public class Parametros_ajax {
 		String flag_tele_entrega = request.getParameter("flag_tele_entrega") == null ? "" : request.getParameter("flag_tele_entrega"); //
 		String flag_retirada = request.getParameter("flag_retirada") == null ? "" : request.getParameter("flag_retirada"); //
 
+		
+		
+		
 		if (!(flag_agendamento.equalsIgnoreCase("S")) && !(flag_agendamento.equalsIgnoreCase("N"))) {
 			throw new Exception("Dados inválidos, entre em contato com o suporte.");
 		}
 
+		
 		if (!(flag_tele_entrega.equalsIgnoreCase("S")) && !(flag_tele_entrega.equalsIgnoreCase("N"))) {
 			throw new Exception("Dados inválidos, entre em contato com o suporte.");
 		}
 
+		
 		if (!(flag_retirada.equalsIgnoreCase("S")) && !(flag_retirada.equalsIgnoreCase("N"))) {
 			throw new Exception("Dados inválidos, entre em contato com o suporte.");
 		}

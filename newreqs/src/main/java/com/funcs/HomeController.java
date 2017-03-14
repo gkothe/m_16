@@ -258,6 +258,8 @@ public class HomeController extends javax.servlet.http.HttpServlet {
 			}
 			
 			
+			
+			
 			conn.commit();
 		} catch (Exception ex) {
 			if (ex.getMessage() == null || ex.getMessage().equals("")) {

@@ -1010,6 +1010,97 @@ public class Parametros_ajax {
 		out.print(ret.toJSONString());
 	}
 
+	public static void saveLojaMobileUsers(HttpServletRequest request, HttpServletResponse response, Connection conn, int coddistr) throws Exception {
+		PrintWriter out = response.getWriter();
+		JSONObject ret = new JSONObject();
+
+		String usersjson = request.getParameter("usersjson") == null ? "" : request.getParameter("usersjson"); //
+		JSONArray users = (JSONArray) new JSONParser().parse(usersjson);
+		PreparedStatement st = null;
+		ResultSet rs = null;
+
+		st = conn.prepareStatement("delete from distribuidora_mobile where id_distribuidora = ? ");
+		st.setInt(1, coddistr);
+		st.executeUpdate();
+		boolean roleadm = false;
+		for (int i = 0; i < users.size(); i++) {
+			JSONObject user = (JSONObject) users.get(i);
+			String desc_mail = user.get("desc_mail").toString();
+			String flag_role = user.get("flag_role").toString();
+			String desc_obs = user.get("desc_obs").toString();
+			st = conn.prepareStatement(" select * from usuario  where desc_email = ?  ");
+			st.setString(1, desc_mail);
+			rs = st.executeQuery();
+			if (rs.next()) {
+
+				if (desc_mail.equalsIgnoreCase("")) {
+					throw new Exception("E-mail em branco");
+				}
+
+				if (!flag_role.equalsIgnoreCase("A") && !flag_role.equalsIgnoreCase("V")) {
+					throw new Exception("Tipo de permissão inválida.");
+				}
+
+				if (roleadm && flag_role.equalsIgnoreCase("A")) {
+					throw new Exception("É permitido somente um ásuario administrador.");
+				}
+
+				if (!roleadm && flag_role.equalsIgnoreCase("A")) {
+					roleadm = true;
+				}
+
+				int codusuario = rs.getInt("id_usuario");
+				st = conn.prepareStatement("INSERT INTO distribuidora_mobile  (cod_distribuidora_mobile, id_usuario, id_distribuidora, desc_mail, flag_role, desc_obs, date_modificacao) VALUES (?, ?, ?, ?, ?, ?, ?)");
+				st.setLong(1, Utilitario.retornaIdinsert("distribuidora_mobile", "cod_distribuidora_mobile", conn));
+				st.setLong(2, codusuario);
+				st.setLong(3, coddistr);
+				st.setString(4, desc_mail);
+				st.setString(5, flag_role);
+				st.setString(6, desc_obs);
+				st.setTimestamp(7, Utilitario.getTimeStamp(new Date()));
+
+				st.executeUpdate();
+
+			} else {
+
+				throw new Exception("O e-mail '" + desc_mail + "' não foi encontrado.");
+
+			}
+
+		}
+
+		ret.put("msg", "ok");
+		out.print(ret.toJSONString());
+
+	}
+
+	public static void loadLojaMobileUsers(HttpServletRequest request, HttpServletResponse response, Connection conn, int coddistr) throws Exception {
+		PrintWriter out = response.getWriter();
+		JSONObject ret = new JSONObject();
+		ResultSet rs = null;
+
+		PreparedStatement st = null;
+		JSONObject user = null;
+		st = conn.prepareStatement(" select * from distribuidora_mobile  where id_distribuidora = ?  ");
+		st.setInt(1, coddistr);
+		rs = st.executeQuery();
+		JSONArray users = new JSONArray();
+		while (rs.next()) {
+			user = new JSONObject();
+			user.put("desc_mail", rs.getString("desc_mail"));
+			user.put("flag_role", rs.getString("flag_role"));
+			user.put("desc_obs", rs.getString("desc_obs"));
+			users.add(user);
+
+		}
+
+		ret.put("users", users);
+		ret.put("msg", "ok");
+
+		out.print(ret.toJSONString());
+
+	}
+
 	public static void salvarConfigsHorariosBairrosNovo(HttpServletRequest request, HttpServletResponse response, Connection conn, int coddistr) throws Exception {
 		PrintWriter out = response.getWriter();
 		JSONObject ret = new JSONObject();

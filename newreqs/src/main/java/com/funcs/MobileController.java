@@ -2396,8 +2396,6 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 			Calendar data6 = Calendar.getInstance();
 			data6.setTime(rs.getTimestamp("tempocanc"));
 
-			System.out.println(data6.getTime());
-			System.out.println(new Date());
 			
 			if (data6.getTime().after(new Date())) {
 				throw new Exception("Você deve esperar o tempo máximo de estimado desejado para informar que não recebeu seu pedido.");
@@ -4005,6 +4003,8 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 						st.executeUpdate();
 
 					}
+
+					// payment(request, response, conn, cod_usuario,email);
 
 					{
 						sql = new StringBuffer();// deleta item do carrinho se ele exister exite no carrinho, add depois
