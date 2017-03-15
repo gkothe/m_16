@@ -137,7 +137,7 @@ public class Thread_NotPedidoFim extends Thread {
 		varname1.append("       INNER JOIN usuario ");
 		varname1.append("               ON usuario.id_usuario = pedido.id_usuario ");
 		varname1.append("WHERE ");
-		varname1.append("       flag_status = 'A' and flag_modoentrega = 'T' and  Timestampdiff(second, Now(), Addtime ( data_pedido, tempo_estimado_desejado))    < 0");
+		varname1.append("       flag_status = 'A' and   ((flag_modoentrega = 'T'   and  (Timestampdiff(second, Now(), Addtime ( data_pedido, tempo_estimado_desejado)) < 0))   or  ( flag_modoentrega = 'A' and (Timestampdiff(second, Now(),data_agenda_entrega )) < 0)) ");
 
 		try {
 			st = conn.prepareStatement(varname1.toString());

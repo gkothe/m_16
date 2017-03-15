@@ -225,13 +225,27 @@ public class Parametros_ajax {
 
 	}
 
-	public static void listaCategorias(HttpServletRequest request, HttpServletResponse response, Connection conn, int coddistr) throws Exception {
+	public static void listaCategorias(HttpServletRequest request, HttpServletResponse response, Connection conn, int coddistr, boolean todas) throws Exception {
 		PrintWriter out = response.getWriter();
 		JSONArray cate = new JSONArray();
 
 		StringBuffer sql = new StringBuffer();
+
+		
+		
+		if (todas) {
 		sql.append("SELECT * ");
 		sql.append("FROM   categoria ");
+
+
+		} else {
+			sql.append(" select categoria.id_categoria,desc_categoria from categoria  ");
+			sql.append(" inner join prod_categoria ");
+			sql.append(" on prod_categoria.id_categoria = categoria.id_categoria");
+			sql.append(" inner join produtos_distribuidora ");
+			sql.append(" on produtos_distribuidora.id_prod = prod_categoria.id_prod  and produtos_distribuidora.flag_ativo = 'S' ");
+			sql.append(" group by categoria.id_categoria,desc_categoria ");
+		}
 
 		sql.append("  order by desc_categoria ");
 
@@ -242,6 +256,8 @@ public class Parametros_ajax {
 		obj.put("desc_categoria", "Todas");
 
 		cate.add(obj);
+
+		//oi
 
 		ResultSet rs = st.executeQuery();
 		while (rs.next()) {

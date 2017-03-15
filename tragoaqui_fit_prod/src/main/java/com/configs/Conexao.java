@@ -22,14 +22,24 @@ public class Conexao {
 //	public final static String password = "m3t4alupy0ur4ass";
 	//
 	
-	//fit
+	
+	//teste_fit
 	public final static String url = "jdbc:mysql://mysql05-farm68.kinghost.net/";
-	public final static String dbName = "tragoaqui02?characterEncoding=UTF-8";
+	public final static String dbName = "tragoaqui03?characterEncoding=UTF-8";
 	public final static String driver = "com.mysql.jdbc.Driver";
-	public final static String userName = "tragoaqui02";
+	public final static String userName = "tragoaqui03";
 	public final static String password = "m3t4alupy0ur4ass";
+	//
+	
+	
+	//fit
+//	public final static String url = "jdbc:mysql://mysql05-farm68.kinghost.net/";
+//	public final static String dbName = "tragoaqui02?characterEncoding=UTF-8";
+//	public final static String driver = "com.mysql.jdbc.Driver";
+//	public final static String userName = "tragoaqui02";
+//	public final static String password = "m3t4alupy0ur4ass";
 
-	//tragoaqui
+	//tragoaquidrink
 //	public final static String url = "jdbc:mysql://mysql05-farm68.kinghost.net/";
 //	public final static String dbName = "tragoaqui01?characterEncoding=UTF-8";
 //	public final static String driver = "com.mysql.jdbc.Driver";

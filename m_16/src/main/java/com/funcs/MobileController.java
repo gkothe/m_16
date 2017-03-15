@@ -2375,12 +2375,12 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 						try {
 							int qtddis = Integer.parseInt(obj.get("recusado_disponivel").toString());
 							if (qtddis != 0) {
-								text_recusa = text_recusa + "" + obj.get("desc_prod") + " está parcialmente falta. Qtd. disponível: " + qtddis + " \n";
+								text_recusa = text_recusa + "" + obj.get("desc_abreviado") + " está parcialmente falta. Qtd. disponível: " + qtddis + " \n";
 							} else {
-								text_recusa = text_recusa + "" + obj.get("desc_prod") + " está em falta. \n";
+								text_recusa = text_recusa + "" + obj.get("desc_abreviado") + " está em falta. \n";
 							}
 						} catch (Exception e) {
-							text_recusa = text_recusa + "" + obj.get("desc_prod") + " está em falta. \n";
+							text_recusa = text_recusa + "" + obj.get("desc_abreviado") + " está em falta. \n";
 						}
 
 					}

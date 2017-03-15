@@ -705,12 +705,12 @@ public class Utilitario {
 	public static void sizeimage(String cod) {
 		try {
 			// mudei direitorio para o m16_/***/produtos
-			BufferedImage originalImage = ImageIO.read(new File("D:\\Program Files\\Mydocs\\Visual Studio 2015\\Projects\\chamaTrago\\chamaTrago\\www\\img\\prods\\" + cod + ".jpg"));
+			BufferedImage originalImage = ImageIO.read(new File("D:\\phonegap_projects\\m_16\\m_16\\src\\main\\webapp\\images\\produtos\\" + cod + "_1.jpg"));
 			int type = originalImage.getType() == 0 ? BufferedImage.TYPE_INT_ARGB : originalImage.getType();
 			Double IMG_WIDTH = new Double(maxsize);
 			Double IMG_HEIGHT = new Double(maxsize);
 
-			BufferedImage resizedImage = ImageIO.read(new File("D:\\Program Files\\Mydocs\\Visual Studio 2015\\Projects\\chamaTrago\\chamaTrago\\www\\img\\prods\\" + cod + ".jpg"));
+			BufferedImage resizedImage = ImageIO.read(new File("D:\\phonegap_projects\\m_16\\m_16\\src\\main\\webapp\\images\\produtos\\" + cod + "_1.jpg"));
 			int width = resizedImage.getWidth();
 			int height = resizedImage.getHeight();
 
@@ -732,7 +732,8 @@ public class Utilitario {
 				g.drawImage(originalImage, 0, 0, IMG_WIDTH.intValue(), IMG_HEIGHT.intValue(), null);
 				g.dispose();
 
-				ImageIO.write(resizedImage, "jpg", new File("D:\\Program Files\\Mydocs\\Visual Studio 2015\\Projects\\chamaTrago\\chamaTrago\\www\\img\\prodsmin\\" + cod + "_min.jpg"));
+				//ImageIO.write(resizedImage, "jpg", new File("D:\\Program Files\\Mydocs\\Visual Studio 2015\\Projects\\chamaTrago\\chamaTrago\\www\\img\\prodsmin\\" + cod + "_min.jpg"));
+				ImageIO.write(resizedImage, "jpg", new File("D:\\phonegap_projects\\m_16\\m_16\\src\\main\\webapp\\images\\prodsmin\\" + cod + "_min.jpg"));
 
 			}
 
@@ -913,12 +914,12 @@ public class Utilitario {
 		System.out.println(new Date());
 
 		try {
-			 conn = Conexao.getConexao();
-			 Sys_parametros sys = new Sys_parametros(conn);
+//			conn = Conexao.getConexao();
+//			Sys_parametros sys = new Sys_parametros(conn);
 
-			//renamefiles3();
+			resizeAllimage();
 
-			 oneSginal(sys, "g.kothe@hotmail.com", "aaaa", new JSONObject());
+		//	oneSginal(sys, "g.kothe@hotmail.com", "aaaa", new JSONObject());
 			// oneSginal(sys, "morratu@hotmail.com", "aaaa", new JSONObject());
 		} catch (Exception e) {
 			System.out.println(e);

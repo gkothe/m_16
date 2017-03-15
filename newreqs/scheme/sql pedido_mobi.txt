@@ -30,6 +30,7 @@ alter table DISTRIBUIDORA_MOBILE add constraint FK_REFERENCE_36 foreign key (ID_
       references DISTRIBUIDORA (ID_DISTRIBUIDORA) on delete restrict on update restrict;
 
 
+INSERT INTO motivos_recusa (`DESC_MOTIVO`) VALUES ('Tempo Expirado');
 
 
 

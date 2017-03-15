@@ -812,7 +812,12 @@ public class Pedidos_ajax {
 
 	}
 
+	
 	public static void carregaPedido_AbertoEnvio(HttpServletRequest request, HttpServletResponse response, Connection conn, int coddistr) throws Exception {
+		carregaPedido_AbertoEnvio(request, response, conn, coddistr, true);
+	}
+	
+	public static void carregaPedido_AbertoEnvio(HttpServletRequest request, HttpServletResponse response, Connection conn, int coddistr, boolean vizua) throws Exception {
 
 		PrintWriter out = response.getWriter();
 		JSONObject objRetorno = new JSONObject();

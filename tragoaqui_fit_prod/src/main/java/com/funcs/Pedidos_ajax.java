@@ -359,6 +359,8 @@ public class Pedidos_ajax {
 
 			prods = prods.replaceFirst(",", "");
 
+			objRetorno.put("id_pedido", rs.getString("id_pedido"));
+
 			objRetorno.put("DESCPROD", prods);
 			objRetorno.put("qtdprod", qtdprod);
 			objRetorno.put("data_formatada", new SimpleDateFormat("dd/MM/yyyy HH:mm").format(rs.getTimestamp("data_pedido")));
@@ -385,6 +387,9 @@ public class Pedidos_ajax {
 				}
 			}
 
+			objRetorno.put("desc_status", Utilitario.returnStatusPedidoFlag(rs.getString("flag_status"), rs.getString("flag_pedido_ret_entre")));
+			objRetorno.put("val_totalprod_mobile", df2.format(rs.getDouble("val_totalprod")));
+
 			objRetorno.put("VAL_TOTALPROD", rs.getString("val_totalprod"));
 			objRetorno.put("flag_marcado", rs.getString("flag_marcado"));
 
@@ -404,8 +409,10 @@ public class Pedidos_ajax {
 				if (rs.getString("flag_vizualizado_canc").equalsIgnoreCase("N")) {
 					// retorno.put("canc_vizu", true);
 				}
+				objRetorno.put("descflag_visu", rs.getString("flag_vizualizado_canc").equalsIgnoreCase("S") ? "Visualizado" : "Não visualizado");
 				objRetorno.put("flag_visu", rs.getString("flag_vizualizado_canc"));
 			} else {
+				objRetorno.put("descflag_visu", rs.getString("flag_vizualizado").equalsIgnoreCase("S") ? "Visualizado" : "Não visualizado");
 				objRetorno.put("flag_visu", rs.getString("flag_vizualizado"));
 			}
 
@@ -868,6 +875,13 @@ public class Pedidos_ajax {
 			}
 
 			objRetorno.put("data_pedido", new SimpleDateFormat("dd/MM/yyyy HH:mm").format(rs.getTimestamp("data_pedido")));
+
+			objRetorno.put("val_totalped", "R$ " + df2.format(rs.getDouble("val_totalprod") + rs.getDouble("val_entrega")));
+			objRetorno.put("val_totalprod_mob","R$ " +  df2.format(rs.getDouble("val_totalprod")));
+			objRetorno.put("val_entrega_mob","R$ " +  df2.format(rs.getDouble("val_entrega")));
+
+	
+			
 			objRetorno.put("VAL_TOTALPROD", rs.getString("val_totalprod"));
 			objRetorno.put("VAL_ENTREGA", rs.getString("val_entrega"));
 			objRetorno.put("num_ped", rs.getString("num_ped"));
@@ -886,6 +900,7 @@ public class Pedidos_ajax {
 			String status = rs.getString("flag_status");
 
 			objRetorno.put("flag_status", status);
+			objRetorno.put("desc_status", Utilitario.returnStatusPedidoFlag(rs.getString("flag_status"), rs.getString("flag_pedido_ret_entre")));
 
 			sql = " 	select *, val_unit * qtd_prod as val_total from pedido_item inner join produtos on produtos.id_prod  =  pedido_item.id_prod and id_pedido = ? order by desc_prod";
 
@@ -904,6 +919,11 @@ public class Pedidos_ajax {
 				obj.put("VAL_UNIT", rs2.getDouble("val_unit"));
 				obj.put("VAL_TOTAL", rs2.getDouble("val_total"));
 
+				obj.put("disponivel", 0);//para mobile
+				obj.put("val_unit_mob", df2.format(rs2.getDouble("val_unit")));
+				obj.put("val_total_mob", df2.format(rs2.getDouble("val_total")));
+				
+
 				prods.add(obj);
 
 			}
@@ -912,8 +932,11 @@ public class Pedidos_ajax {
 			objRetorno.put("darok", false);
 			Sys_parametros sys = new Sys_parametros(conn);
 
+			if (!rs.getString("flag_status").equalsIgnoreCase("A")) {
 			objRetorno.put("DESC_NOME", rs.getString("nome_pessoa"));
 			objRetorno.put("DESC_TELEFONE", rs.getString("num_telefonecontato_cliente"));
+			}
+
 			String end = rs.getString("desc_endereco_entrega") == null ? "" : rs.getString("desc_endereco_entrega");
 			String num = rs.getString("desc_endereco_num_entrega") == null ? "" : rs.getString("desc_endereco_num_entrega");
 			String compl = rs.getString("desc_endereco_complemento_entrega") == null ? "" : rs.getString("desc_endereco_complemento_entrega");

@@ -167,7 +167,7 @@ public class InsertDados {
 
 			JSONArray registros = new JSONArray();
 
-			FileInputStream fis = new FileInputStream("D:/lista_bebidas.xlt");
+			FileInputStream fis = new FileInputStream("D:/lista_fit.xlt");
 			HSSFWorkbook myWorkBook = new HSSFWorkbook(fis);
 			HSSFSheet sheet = myWorkBook.getSheetAt(0);
 
@@ -185,11 +185,11 @@ public class InsertDados {
 
 					System.out.println(cod + "," + "" + descfull + "," + descabrev);
 					if (!descfull.trim().equalsIgnoreCase("")) {
-						sql = "INSERT INTO produtos (`ID_PROD`, `DESC_PROD`, `DESC_ABREVIADO`, `FLAG_ATIVO`) VALUES (?, ?, ?, ?);";
+						sql = "INSERT INTO produtos (`ID_PROD`, `DESC_PROD`, `DESC_ABREVIADO`, `FLAG_ATIVO`,QTD_IMAGES) VALUES (?, ?, ?, ?,1);";
 						st3 = conn.prepareStatement(sql);
 						st3.setInt(1, Integer.parseInt(cod));
 						st3.setString(2, descfull);
-						st3.setString(3, descfull);
+						st3.setString(3, descabrev);
 						st3.setString(4, "S");
 						st3.executeUpdate();
 					}
@@ -230,7 +230,7 @@ public class InsertDados {
 				st.setInt(1, rs.getInt("ID_PROD"));
 				st.setInt(2, iddistr);
 				Random r = new Random();
-				double randomValue = 1 + (30 - 1) * r.nextDouble();
+				double randomValue = 1 + (200 - 1) * r.nextDouble();
 				st.setDouble(3, randomValue);
 				st.setString(4, "S");
 				st.executeUpdate();
@@ -627,11 +627,14 @@ public class InsertDados {
 		// readProds();
 		// randomValuesProds(1);
 		// randomValuesProds(2);
+		
+		readProds();
+		randomValuesProds(1);
 		// insertRandomPeds(1, 17, "2016-01-01 00:00:00", "2016-10-31 23:59:59", 500);
-		 insertRandomPeds(1, 27, "2015-01-01 00:00:00", "2016-10-31 23:59:59", 500);
-		 insertRandomPeds(1, 27, "2015-01-01 00:00:00", "2016-10-31 23:59:59", 500);
-		 insertRandomPeds(1, 27, "2015-01-01 00:00:00", "2016-10-31 23:59:59", 500);
-		 insertRandomPeds(1, 27, "2016-01-01 00:00:00", "2016-10-31 23:59:59", 500);
+		 insertRandomPeds(1, 1, "2015-01-01 00:00:00", "2016-10-31 23:59:59", 500);
+		 insertRandomPeds(1, 1, "2015-01-01 00:00:00", "2016-10-31 23:59:59", 500);
+//		 insertRandomPeds(1, 27, "2015-01-01 00:00:00", "2016-10-31 23:59:59", 500);
+//		 insertRandomPeds(1, 27, "2016-01-01 00:00:00", "2016-10-31 23:59:59", 500);
 		// insertRandomPeds(1, 17, "2016-01-01 00:00:00", "2016-10-31 23:59:59", 500);
 		// insertRandomPeds(1, 17, "2016-01-01 00:00:00", "2016-10-31 23:59:59", 500);
 //		   insertRandomPedsAberto(1, 17, "2016-12-6 8:45:00", "2016-12-6 8:58:00", 10); 
