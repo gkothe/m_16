@@ -521,8 +521,6 @@ public class Pedidos_ajax {
 			sql2 = sql2 + "  and  flag_pedido_ret_entre = 'L' ";
 		}
 
-		
-
 		try {
 			Integer.parseInt(pag);
 			Integer.parseInt(size);
@@ -625,8 +623,6 @@ public class Pedidos_ajax {
 			st2.setDouble(contparam, Double.parseDouble(val_fim_historico));
 			contparam++;
 		}
-
-		
 
 		ResultSet rs = st2.executeQuery();
 		if (rs.next()) {
@@ -812,11 +808,10 @@ public class Pedidos_ajax {
 
 	}
 
-	
 	public static void carregaPedido_AbertoEnvio(HttpServletRequest request, HttpServletResponse response, Connection conn, int coddistr) throws Exception {
 		carregaPedido_AbertoEnvio(request, response, conn, coddistr, true);
 	}
-	
+
 	public static void carregaPedido_AbertoEnvio(HttpServletRequest request, HttpServletResponse response, Connection conn, int coddistr, boolean vizua) throws Exception {
 
 		PrintWriter out = response.getWriter();
@@ -882,11 +877,9 @@ public class Pedidos_ajax {
 			objRetorno.put("data_pedido", new SimpleDateFormat("dd/MM/yyyy HH:mm").format(rs.getTimestamp("data_pedido")));
 
 			objRetorno.put("val_totalped", "R$ " + df2.format(rs.getDouble("val_totalprod") + rs.getDouble("val_entrega")));
-			objRetorno.put("val_totalprod_mob","R$ " +  df2.format(rs.getDouble("val_totalprod")));
-			objRetorno.put("val_entrega_mob","R$ " +  df2.format(rs.getDouble("val_entrega")));
+			objRetorno.put("val_totalprod_mob", "R$ " + df2.format(rs.getDouble("val_totalprod")));
+			objRetorno.put("val_entrega_mob", "R$ " + df2.format(rs.getDouble("val_entrega")));
 
-	
-			
 			objRetorno.put("VAL_TOTALPROD", rs.getString("val_totalprod"));
 			objRetorno.put("VAL_ENTREGA", rs.getString("val_entrega"));
 			objRetorno.put("num_ped", rs.getString("num_ped"));
@@ -923,11 +916,10 @@ public class Pedidos_ajax {
 				obj.put("QTD_PROD", rs2.getInt("qtd_prod"));
 				obj.put("VAL_UNIT", rs2.getDouble("val_unit"));
 				obj.put("VAL_TOTAL", rs2.getDouble("val_total"));
-				
-				obj.put("disponivel", 0);//para mobile
+
+				obj.put("disponivel", 0);// para mobile
 				obj.put("val_unit_mob", df2.format(rs2.getDouble("val_unit")));
 				obj.put("val_total_mob", df2.format(rs2.getDouble("val_total")));
-				
 
 				prods.add(obj);
 
@@ -995,12 +987,12 @@ public class Pedidos_ajax {
 				objRetorno.put("darok", true);
 
 			}
-
-			sql = " update  pedido  set flag_vizualizado = 'S' where id_pedido = ?  ";
-			st = conn.prepareStatement(sql);
-			st.setInt(1, Integer.parseInt(id_pedido));
-			st.executeUpdate();
-
+			if (vizua) {
+				sql = " update  pedido  set flag_vizualizado = 'S' where id_pedido = ?  ";
+				st = conn.prepareStatement(sql);
+				st.setInt(1, Integer.parseInt(id_pedido));
+				st.executeUpdate();
+			}
 		}
 
 		out.print(objRetorno.toJSONString());
@@ -1283,9 +1275,9 @@ public class Pedidos_ajax {
 				st.executeUpdate();
 
 				Utilitario.oneSginal(sys, rs.getString("DESC_EMAIL"), "Seu pedido foi aceito!", data);
-				String html = "Olá, o seu pedido Nº "+rs.getString("num_ped")+" foi ACEITO! <br> Para mais informações acesse o TragoAqui e clique em Histórico de pedidos.";
-				
-				Utilitario.sendEmail(rs.getString("DESC_EMAIL"), html, "Tragoaqui - Pedido "+ rs.getString("num_ped") + " ACEITO.", conn);
+				String html = "Olá, o seu pedido Nº " + rs.getString("num_ped") + " foi ACEITO! <br> Para mais informações acesse o TragoAqui e clique em Histórico de pedidos.";
+
+				Utilitario.sendEmail(rs.getString("DESC_EMAIL"), html, "Tragoaqui - Pedido " + rs.getString("num_ped") + " ACEITO.", conn);
 
 				objRetorno.put("msg", "ok");
 
@@ -1377,10 +1369,10 @@ public class Pedidos_ajax {
 
 				}
 				Utilitario.oneSginal(sys, rs.getString("DESC_EMAIL"), "Seu pedido foi recusado!", data);
-				
-				String html = "Olá, o seu pedido Nº "+rs.getString("num_ped")+" foi RECUSADO! <br> Para mais informações acesse o TragoAqui e clique em Histórico de pedidos.";
-				Utilitario.sendEmail(rs.getString("DESC_EMAIL"), html, "Tragoaqui - Pedido "+ rs.getString("num_ped") + " RECUSADO.", conn);
-				
+
+				String html = "Olá, o seu pedido Nº " + rs.getString("num_ped") + " foi RECUSADO! <br> Para mais informações acesse o TragoAqui e clique em Histórico de pedidos.";
+				Utilitario.sendEmail(rs.getString("DESC_EMAIL"), html, "Tragoaqui - Pedido " + rs.getString("num_ped") + " RECUSADO.", conn);
+
 				objRetorno.put("msg", "ok");
 
 			} else {

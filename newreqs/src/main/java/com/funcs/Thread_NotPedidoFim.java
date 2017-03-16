@@ -41,6 +41,7 @@ public class Thread_NotPedidoFim extends Thread {
 				sendNotificacao(conn, sys);
 				checkExpired(conn, sys);
 				conn.close();
+				System.out.println(new Date());
 				this.sleep(rodateste);
 			}
 

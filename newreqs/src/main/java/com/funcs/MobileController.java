@@ -388,8 +388,13 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 		st.setLong(1, cod_usuario);
 		ResultSet rs = st.executeQuery();
 		if (rs.next()) {
-
-			Pedidos_ajax.carregaPedido_AbertoEnvio(request, response, conn, rs.getInt("id_distribuidora"), false);
+			if(rs.getString("flag_role").equalsIgnoreCase("V")){
+				Pedidos_ajax.carregaPedido_AbertoEnvio(request, response, conn, rs.getInt("id_distribuidora"), false);
+			}else{
+				Pedidos_ajax.carregaPedido_AbertoEnvio(request, response, conn, rs.getInt("id_distribuidora"), true);
+			}
+			
+			
 
 		} else {
 			throw new Exception("Pedido não acessivel para seu usuário.");
