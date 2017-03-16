@@ -26,6 +26,9 @@ public class Thread_NotPedidoFim extends Thread {
 	StringBuffer varname1;
 	JSONObject obj = null;
 	public boolean rodar = true;
+	String html = "";
+	String title = "";
+	
 
 	public void run() {
 
@@ -40,8 +43,8 @@ public class Thread_NotPedidoFim extends Thread {
 				conn = Conexao.getConexao();
 				sendNotificacao(conn, sys);
 				checkExpired(conn, sys);
+				checkAgendamentosNaoResp(conn, sys);
 				conn.close();
-				System.out.println(new Date());
 				this.sleep(rodateste);
 			}
 
@@ -128,6 +131,71 @@ public class Thread_NotPedidoFim extends Thread {
 
 	}
 
+	
+	
+	private void checkAgendamentosNaoResp(Connection conn, Sys_parametros sys) {//testar e botar na thead para rodaer.
+
+		varname1 = new StringBuffer();
+		varname1.append("SELECT ");
+		varname1.append(" ");
+		varname1.append("distribuidora.id_distribuidora, distribuidora.desc_mail as emaildis, distribuidora_mobile.desc_mail as emailmobile ");
+		varname1.append(" ");
+		varname1.append("FROM   pedido ");
+		varname1.append("       inner join distribuidora ");
+		varname1.append("               ON distribuidora.id_distribuidora = pedido.id_distribuidora ");
+		varname1.append("       left join distribuidora_mobile ");
+		varname1.append("               ON distribuidora_mobile.id_distribuidora = distribuidora.id_distribuidora and flag_role = 'A' ");
+		varname1.append(" ");
+		varname1.append(" ");
+		varname1.append("WHERE  flag_status = 'A' ");
+		varname1.append("       AND Date_add(data_pedido, interval ? minute) < now() ");
+		varname1.append("       AND Date_add(coalesce(data_mob_notific_last,'20150101'), interval ? minute)  < now() ");
+		varname1.append("       AND flag_pedido_ret_entre = 'T' ");
+		varname1.append("       AND flag_modoentrega = 'A' ");
+		varname1.append(" ");
+		varname1.append(" ");
+		varname1.append("group by distribuidora.id_distribuidora, distribuidora.desc_mail, distribuidora_mobile.desc_mail");
+	
+		html = "Olá, você possui pedidos de agendamentos que ainda nao foram não respondidos. <br> Por favor clique <a href='" + sys.getUrl_system() + "'> AQUI </a> para acessar nosso sistema e responde-los.";
+		title = sys.getSys_fromdesc() + " - Você possui pedidos de agendamento que ainda não foram respondidos!";
+		data = new JSONObject();
+		data.put("gominhaloja", true);
+		try {
+			st = conn.prepareStatement(varname1.toString());
+			st.setInt(1, sys.getSys_minutes_agen_not_resp());
+			st.setInt(2, sys.getSys_minutes_agen_not_resp());
+			rs = st.executeQuery();
+			
+			while (rs.next()) {
+				
+				Utilitario.sendEmail(rs.getString("emaildis"), html, title, conn);
+				if (rs.getString("emailmobile") != null && !(rs.getString("emailmobile").equalsIgnoreCase(""))) {
+
+					Utilitario.oneSginal(sys, rs.getString("emailmobile"), title, data);
+					if (!rs.getString("emailmobile").equalsIgnoreCase(rs.getString("emaildis"))) {
+						Utilitario.sendEmail(rs.getString("emailmobile"), html, title, conn);
+					}
+				}
+				
+				
+				varname1 = new StringBuffer();
+				varname1.append(" update distribuidora set DATA_MOB_NOTIFIC_LAST = now() where id_distribuidora = ? ");
+				st = conn.prepareStatement(varname1.toString());
+				st.setLong(1, (rs.getInt("id_distribuidora")));
+				st.executeUpdate();
+			}
+
+			
+			
+			//fazer update na distribui
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			// TODO: handle exception
+		}
+
+	}
+	
 	private void checkExpired(Connection conn, Sys_parametros sys) {
 
 		varname1 = new StringBuffer();

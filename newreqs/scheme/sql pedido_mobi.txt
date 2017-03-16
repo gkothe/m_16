@@ -32,10 +32,12 @@ alter table DISTRIBUIDORA_MOBILE add constraint FK_REFERENCE_36 foreign key (ID_
 
 INSERT INTO motivos_recusa (`DESC_MOTIVO`) VALUES ('Tempo Expirado');
 
+alter table  distribuidora add DATA_MOB_NOTIFIC_LAST datetime;
+
+alter table sys_parametros add SYS_MINUTES_AGEN_NOT_RESP int;
 
 
 
 
 
 
-email role obs

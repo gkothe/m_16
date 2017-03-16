@@ -48,22 +48,22 @@ public class Parametros_ajax {
 		String id_marca = request.getParameter("id_marca") == null ? "" : request.getParameter("id_marca");
 
 		StringBuffer sql = new StringBuffer();
-		sql.append("SELECT produtos.id_prod, ");
+		sql.append(" SELECT produtos.id_prod, ");
 		sql.append("       desc_prod,desc_categoria,desc_marca, ");
 		sql.append("       desc_abreviado, ");
 		sql.append("       COALESCE(val_prod, 0)                            AS val_prod, ");
 		sql.append("       COALESCE(produtos_distribuidora.flag_ativo, 'N') AS flag_ativo ");
-		sql.append("FROM   produtos ");
+		sql.append(" FROM   produtos ");
 		sql.append("       LEFT JOIN prod_categoria ");
 		sql.append("              ON prod_categoria.id_prod = produtos.id_prod ");
 		sql.append("       LEFT JOIN categoria ");
 		sql.append("              ON categoria.id_categoria = prod_categoria.id_categoria ");
 		sql.append("       LEFT JOIN produtos_distribuidora ");
-		sql.append("              ON produtos.id_prod = produtos_distribuidora.id_prod ");
+		sql.append("              ON produtos.id_prod = produtos_distribuidora.id_prod and id_distribuidora = ? ");
 		sql.append("       LEFT JOIN marca ");
 		sql.append("              ON produtos.id_marca = marca.id_marca ");
-		sql.append("                 AND id_distribuidora = ? ");
-		sql.append("WHERE  ( produtos.flag_ativo = 'S' )");
+		sql.append("                  ");
+		sql.append(" WHERE  ( produtos.flag_ativo = 'S' )  ");
 
 		if (!flag_situacao.equalsIgnoreCase("")) {
 			sql.append("  and  Coalesce(produtos_distribuidora.flag_ativo,'N')  = ? ");
