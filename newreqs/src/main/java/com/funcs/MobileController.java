@@ -336,11 +336,11 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 		st.setLong(1, cod_usuario);
 		ResultSet rs = st.executeQuery();
 		if (rs.next()) {
-			
-			if(rs.getString("flag_role").equalsIgnoreCase("V")){
+
+			if (rs.getString("flag_role").equalsIgnoreCase("V")) {
 				throw new Exception("Você nao tem permissão para realizar esta operação.");
 			}
-			
+
 			int distribuidora = rs.getInt("id_distribuidora");
 			String id_pedido = request.getParameter("id") == null ? "" : request.getParameter("id"); //
 
@@ -388,13 +388,11 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 		st.setLong(1, cod_usuario);
 		ResultSet rs = st.executeQuery();
 		if (rs.next()) {
-			if(rs.getString("flag_role").equalsIgnoreCase("V")){
+			if (rs.getString("flag_role").equalsIgnoreCase("V")) {
 				Pedidos_ajax.carregaPedido_AbertoEnvio(request, response, conn, rs.getInt("id_distribuidora"), false);
-			}else{
+			} else {
 				Pedidos_ajax.carregaPedido_AbertoEnvio(request, response, conn, rs.getInt("id_distribuidora"), true);
 			}
-			
-			
 
 		} else {
 			throw new Exception("Pedido não acessivel para seu usuário.");
@@ -430,11 +428,10 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 		ResultSet rs = st.executeQuery();
 		if (rs.next()) {
 
-			
-			if(rs.getString("flag_role").equalsIgnoreCase("V")){
+			if (rs.getString("flag_role").equalsIgnoreCase("V")) {
 				throw new Exception("Você nao tem permissão para realizar esta operação.");
 			}
-			
+
 			Pedidos_ajax.finalizandoPedido(request, response, conn, rs.getInt("id_distribuidora"));
 
 		} else {
@@ -444,8 +441,6 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 		}
 
 	}
-
-
 
 	private static void isLoja(HttpServletRequest request, HttpServletResponse response, Connection conn, long cod_usuario, Sys_parametros sys) throws Exception {
 		PrintWriter out = response.getWriter();
@@ -636,35 +631,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 
 		if (rs.next()) {
 
-			StringBuffer varname11 = new StringBuffer();
-			varname11.append("select date_format(horario_ini, '%H:%i') as horario_ini,date_format(horario_fim, '%H:%i') as horario_fim from distribuidora_bairro_entrega ");
-			varname11.append("  ");
-			varname11.append("inner join distribuidora_horario_dia_entre ");
-			varname11.append("on distribuidora_horario_dia_entre.id_distr_bairro = distribuidora_bairro_entrega.id_distr_bairro ");
-			varname11.append(" ");
-			varname11.append("where cod_bairro = ? and distribuidora_bairro_entrega.id_distribuidora = ? and cod_dia = ?  order by HORARIO_INI ");
-			varname11.append(" ");
-
-			int dayOfWeek = Utilitario.diaDasemanaFromDate(datayar);
-
-			if (codbairro.equalsIgnoreCase("")) {
-				throw new Exception("Nenhum bairro selecionado.");
-			}
-
-			st = conn.prepareStatement(varname11.toString());
-			st.setLong(1, Integer.parseInt(codbairro));
-			st.setLong(2, rs.getInt("id_distribuidora"));
-			st.setLong(3, dayOfWeek);
-			ResultSet rs2 = st.executeQuery();
-			String text = "Horários de atendimento no dia escolhido \n";
-			boolean temhora = false;
-			while (rs2.next()) {
-				temhora = true;
-				text = text + "" + rs2.getString("horario_ini") + " - " + rs2.getString("horario_fim") + " \n";
-			}
-			if (!temhora) {
-				text = "Sem horários de atendimento para o dia escolhido.";
-			}
+			String text = txtHoraAtendConsulta(request, response, conn, cod_usuario, sys, codbairro, datayar, rs.getInt("id_distribuidora"), "Horários de atendimento no dia escolhido \n", false);
 
 			objRetorno.put("txt_texto", text);
 		} else {
@@ -674,6 +641,44 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 		objRetorno.put("msg", "ok");
 		out.print(objRetorno.toJSONString());
 
+	}
+
+	public static String txtHoraAtendConsulta(HttpServletRequest request, HttpServletResponse response, Connection conn, long cod_usuario, Sys_parametros sys, String codbairro, String datayar, int idloja, String msg, boolean tipohtml) throws Exception {
+
+		StringBuffer varname11 = new StringBuffer();
+		varname11.append("select date_format(horario_ini, '%H:%i') as horario_ini,date_format(horario_fim, '%H:%i') as horario_fim from distribuidora_bairro_entrega ");
+		varname11.append("  ");
+		varname11.append("inner join distribuidora_horario_dia_entre ");
+		varname11.append("on distribuidora_horario_dia_entre.id_distr_bairro = distribuidora_bairro_entrega.id_distr_bairro ");
+		varname11.append(" ");
+		varname11.append("where cod_bairro = ? and distribuidora_bairro_entrega.id_distribuidora = ? and cod_dia = ?  order by HORARIO_INI ");
+		varname11.append(" ");
+
+		int dayOfWeek = Utilitario.diaDasemanaFromDate(datayar);
+
+		if (codbairro.equalsIgnoreCase("")) {
+			throw new Exception("Nenhum bairro selecionado.");
+		}
+
+		PreparedStatement st = conn.prepareStatement(varname11.toString());
+		st.setLong(1, Integer.parseInt(codbairro));
+		st.setLong(2, idloja);
+		st.setLong(3, dayOfWeek);
+		ResultSet rs2 = st.executeQuery();
+		String text = msg;
+		boolean temhora = false;
+		while (rs2.next()) {
+			temhora = true;
+			if (tipohtml)
+				text = text + "" + rs2.getString("horario_ini") + " - " + rs2.getString("horario_fim") + " <br> ";
+			else
+				text = text + "" + rs2.getString("horario_ini") + " - " + rs2.getString("horario_fim") + " \n ";
+		}
+		if (!temhora) {
+			text = "Sem horários de atendimento para o dia escolhido.";
+		}
+
+		return text;
 	}
 
 	private static void txtObsHora(HttpServletRequest request, HttpServletResponse response, Connection conn, long cod_usuario, Sys_parametros sys) throws Exception {
@@ -1842,6 +1847,12 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 
 		} else if (fp_flag_entre_ret.equalsIgnoreCase("A")) {
 
+			try {
+				new SimpleDateFormat("dd/MM/yyyy").parse(diaagend).before(new Date());
+			} catch (Exception e) {
+				throw new Exception("O dia de agendamento é inválido.");
+			}
+
 			sql = new StringBuffer();
 			sql.append(" select * from (  SELECT     produtos.id_prod, ");
 			sql.append("           desc_prod, ");
@@ -1857,7 +1868,9 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 			sql.append("           desc_marca, ");
 			sql.append("           carrinho_item.qtd, ");
 			sql.append("           distribuidora.val_entrega_min, ");
-			sql.append("           qtd_images ");
+			sql.append("           qtd_images, ");
+			sql.append("           GROUP_CONCAT(CONCAT(date_format(horario_ini, '%H:%i'), '-',date_format(horario_fim, '%H:%i')) )   as horario ");
+
 			sql.append("FROM       produtos ");
 			sql.append("INNER JOIN produtos_distribuidora ");
 			sql.append("ON         produtos_distribuidora.id_prod = produtos.id_prod ");
@@ -1884,19 +1897,13 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 			sql.append("AND        ( ");
 			sql.append("                      distribuidora.flag_ativo = 'S' ");
 			sql.append("                                 || distribuidora.flag_ativo = 'F') ");
-			sql.append("AND        distribuidora_bairro_entrega.cod_bairro = ? ");
+			sql.append("AND        distribuidora_bairro_entrega.cod_bairro = ?  ");
+			sql.append("and ((cod_dia = ? and distribuidora.flag_custom = 'N') or (cod_dia = 8 and distribuidora.flag_custom = 'S')) ");
 
-			if (!diaagend.equalsIgnoreCase("") && !horaagend.equalsIgnoreCase("")) {
+			if (!horaagend.equalsIgnoreCase("")) {
 
 				Utilitario.testeHora("HHmm", horaagend, "Horário de entrega inválido!");
-
-				try {
-					new SimpleDateFormat("dd/MM/yyyy").parse(diaagend).before(new Date());
-				} catch (Exception e) {
-					throw new Exception("O dia de agendamento é inválido.");
-				}
-
-				sql.append("and (( cod_dia = 8 and ? between horario_ini and horario_fim and flag_custom = 'S' ) or ( cod_dia = ? and ? between horario_ini and horario_fim and flag_custom = 'N'  ))");
+				sql.append("and ((? between horario_ini and horario_fim and flag_custom = 'N' ) or ( ? between horario_ini and horario_fim and flag_custom = 'S'  ))");
 
 			}
 
@@ -1992,15 +1999,14 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 
 			st.setInt(contparam, Integer.parseInt(cod_bairro));
 			contparam++;
+			int dayOfWeek = Utilitario.diaDasemanaFromDate(diaagend);
 
-			if (!diaagend.equalsIgnoreCase("") && !horaagend.equalsIgnoreCase("")) {
+			st.setInt(contparam, dayOfWeek);
+			contparam++;
 
-				int dayOfWeek = Utilitario.diaDasemanaFromDate(diaagend);
+			if (!horaagend.equalsIgnoreCase("")) {
 
 				st.setString(contparam, horaagend.substring(0, 1) + horaagend.substring(1, 2) + ":" + horaagend.substring(2, 3) + horaagend.substring(3, 4));
-				contparam++;
-
-				st.setInt(contparam, dayOfWeek);
 				contparam++;
 
 				st.setString(contparam, horaagend.substring(0, 1) + horaagend.substring(1, 2) + ":" + horaagend.substring(2, 3) + horaagend.substring(3, 4));
@@ -2073,6 +2079,12 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 				prod.put("DESC_ABREVIADO", rs.getString("desc_abreviado"));// abreviado do produto
 				prod.put("VAL_PROD", "R$ " + df2.format(rs.getDouble("val_prod")));//
 				prod.put("ID_DISTRIBUIDORA", rs.getString("id_distribuidora"));
+				 if (fp_flag_entre_ret.equalsIgnoreCase("A")){
+					 prod.put("desc_horario", rs.getString("horario"));	 
+				 }else{
+					 prod.put("desc_horario", "");
+				 }
+				
 				prod.put("DESC_NOME_ABREV", rs.getString("desc_nome_abrev"));/// abreviado da distribuidora
 				prod.put("img", rs.getString("id_prod") + "_min.jpg");/// abreviado da distribuidora
 				prods.add(prod);
@@ -3711,6 +3723,10 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 				throw new Exception("Seu número de endereço está em branco!");
 			}
 
+			if (c_telefone.equalsIgnoreCase("")) {
+				throw new Exception("Por favor informe seu telefone, caso a loja precise entrar em contato com você.");
+			}
+
 			Utilitario.testeHora("HHmm", tempomax, "Tempo maximo de entrega inválido!");
 
 		}
@@ -4306,8 +4322,12 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 
 	private static void listaLojas(HttpServletRequest request, HttpServletResponse response, Connection conn, long cod_usuario, Sys_parametros sys) throws Exception {
 
-		String fp_pickbairro = request.getParameter("fp_pickbairro") == null ? "" : request.getParameter("fp_pickbairro");
+		String fp_pickbairro = request.getParameter("fp_pickbairro") == null ? "" : request.getParameter("fp_pickbairro");// bairro da loja
 		String hp_sit = request.getParameter("hp_sit") == null ? "" : request.getParameter("hp_sit");
+		String data_agend = request.getParameter("data_agend") == null ? "" : request.getParameter("data_agend");
+		String bairroatendimento = request.getParameter("bairroatendimento") == null ? "" : request.getParameter("bairroatendimento"); // bairro onde atende
+		String fp_flag_entre_ret = request.getParameter("fp_flag_entre_ret") == null ? "" : request.getParameter("fp_flag_entre_ret");
+		
 
 		PrintWriter out = response.getWriter();
 		JSONObject retorno = new JSONObject();
@@ -4330,6 +4350,14 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 			sql.append("  and  (distribuidora.flag_ativo = 'N' or  distribuidora.flag_ativo = 'F') ");
 		} else if (hp_sit.equalsIgnoreCase("S")) {
 			sql.append("  and  distribuidora.flag_ativo = 'S' ");
+		}
+		
+		if(fp_flag_entre_ret.equalsIgnoreCase("A")){
+			sql.append("  and  distribuidora.flag_agendamento = 'S' ");
+		}else if(fp_flag_entre_ret.equalsIgnoreCase("T")){
+			sql.append("  and  distribuidora.flag_tele_entrega = 'S' ");
+		} else if(fp_flag_entre_ret.equalsIgnoreCase("L")){
+			sql.append("  and  distribuidora.flag_retirada = 'S' ");
 		}
 
 		sql.append("  order by ordem, desc_nome_abrev  ");
@@ -4385,6 +4413,19 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 			loja.put("desc_servico", servico);
 			loja.put("desc_bairro", rs.getString("desc_bairro") == null ? "" : rs.getString("desc_bairro"));
 			loja.put("logo", "images/logos/logo_" + rs.getLong("id_distribuidora") + ".jpg");
+
+			if (!data_agend.equalsIgnoreCase("")) {
+				loja.put("desc_horario", txtHoraAtendConsulta(request, response, conn, cod_usuario, sys, bairroatendimento, data_agend, rs.getInt("id_distribuidora"), "", true));
+			}
+			
+			
+			String endereco = rs.getString("desc_endereco");
+			String num = rs.getString("num_enderec");
+			String compl = rs.getString("desc_complemento");
+			String endfinal = endereco + ", " + num + " " + compl ;
+
+			loja.put("endfinal", endfinal);
+			
 
 			lojas.add(loja);
 
