@@ -300,6 +300,8 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 					responderPedidoLoja(request, response, conn, cod_usuario, sys);
 				} else if (cmd.equalsIgnoreCase("checkPedidos")) {
 					checkPedidos(request, response, conn, cod_usuario, sys);
+				} else if (cmd.equalsIgnoreCase("agendarnot")) {
+					agendarNot(request, response, conn, cod_usuario, sys);
 				}
 
 				else {
@@ -396,6 +398,52 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 
 		} else {
 			throw new Exception("Pedido não acessivel para seu usuário.");
+		}
+
+	}
+
+	private static void agendarNot(HttpServletRequest request, HttpServletResponse response, Connection conn, long cod_usuario, Sys_parametros sys) throws Exception {
+		PrintWriter out = response.getWriter();
+		JSONObject objRetorno = new JSONObject();
+
+		String id_pedido = request.getParameter("id_pedido") == null ? "" : request.getParameter("id_pedido"); //
+		String notlater = request.getParameter("notlater") == null ? "" : request.getParameter("notlater"); //
+
+		if (!Utilitario.isNumeric(notlater)) {
+			throw new Exception("Você deve escolher uma quantidade de horas válida!");
+		}
+
+		PreparedStatement st = conn.prepareStatement(" select * from  distribuidora_mobile where id_usuario = ?  ");
+		st.setLong(1, cod_usuario);
+		ResultSet rs = st.executeQuery();
+		if (rs.next()) {
+
+			StringBuffer varname1 = new StringBuffer();
+			varname1.append("select * from pedido where id_distribuidora = ? and id_pedido = ? ");
+			PreparedStatement st2 = conn.prepareStatement(varname1.toString());
+			st2.setInt(1, rs.getInt("id_distribuidora"));
+			st2.setInt(2, Integer.parseInt(id_pedido));
+			ResultSet rs2 = st2.executeQuery();
+			if (rs2.next()) {
+
+				GregorianCalendar dataagend = new GregorianCalendar();
+				dataagend.setTime(new Date());
+				dataagend.add(Calendar.HOUR, Integer.parseInt(notlater));
+
+				varname1 = new StringBuffer();
+				varname1.append(" update pedido set data_proxnot = ?  ");
+				varname1.append(" WHERE   id_pedido = ? ");
+				st = conn.prepareStatement(varname1.toString());
+				st.setTimestamp(1, Utilitario.getTimeStamp(dataagend.getTime()));
+				st.setLong(2, Integer.parseInt(id_pedido));
+				st.executeUpdate();
+
+				objRetorno.put("datanot", new SimpleDateFormat("dd/MM/yyyy HH:mm").format(Utilitario.getTimeStamp(dataagend.getTime())));
+			}
+			objRetorno.put("msg", "ok");
+			out.println(objRetorno.toString());
+		} else {
+			throw new Exception("Acesso inválido!");
 		}
 
 	}
@@ -1366,7 +1414,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 		return objRetorno;
 	}
 
-	private static void msgLojasMobile(Connection conn, Sys_parametros sys, long id_pedido, int codtipomsg) throws Exception {
+	public static void msgLojasMobile(Connection conn, Sys_parametros sys, long id_pedido, int codtipomsg) throws Exception {
 		String html = "";
 		String title = "";
 		JSONObject data = new JSONObject();
@@ -1401,6 +1449,9 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 			} else if (codtipomsg == 3) {// pedido atrasado
 				html = "Atenção! O cliente informou que o pedido  Nº " + rs2.getString("num_ped") + " ainda não foi entregue!";
 				title = sys.getSys_fromdesc() + " - O pedido  Nº " + rs2.getString("num_ped") + " ainda não foi entregue!";
+			} else if (codtipomsg == 4) {// pedido atrasado
+				html = "Olá, este é um lembrete que você requisitou em relação ao pedido Nº "+rs2.getString("num_ped")+". Ele ainda está em aberto. <br> Por favor clique <a href='" + sys.getUrl_system() + "'> AQUI </a> para acessar nosso sistema e responde-lo.";
+				title = sys.getSys_fromdesc() + " - Lembrete do pedido Nº "+rs2.getString("num_ped")+" !";
 			}
 
 			Utilitario.sendEmail(rs2.getString("emaildis"), html, title, conn);
@@ -2079,12 +2130,12 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 				prod.put("DESC_ABREVIADO", rs.getString("desc_abreviado"));// abreviado do produto
 				prod.put("VAL_PROD", "R$ " + df2.format(rs.getDouble("val_prod")));//
 				prod.put("ID_DISTRIBUIDORA", rs.getString("id_distribuidora"));
-				 if (fp_flag_entre_ret.equalsIgnoreCase("A")){
-					 prod.put("desc_horario", rs.getString("horario"));	 
-				 }else{
-					 prod.put("desc_horario", "");
-				 }
-				
+				if (fp_flag_entre_ret.equalsIgnoreCase("A")) {
+					prod.put("desc_horario", rs.getString("horario"));
+				} else {
+					prod.put("desc_horario", "");
+				}
+
 				prod.put("DESC_NOME_ABREV", rs.getString("desc_nome_abrev"));/// abreviado da distribuidora
 				prod.put("img", rs.getString("id_prod") + "_min.jpg");/// abreviado da distribuidora
 				prods.add(prod);
@@ -4327,7 +4378,6 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 		String data_agend = request.getParameter("data_agend") == null ? "" : request.getParameter("data_agend");
 		String bairroatendimento = request.getParameter("bairroatendimento") == null ? "" : request.getParameter("bairroatendimento"); // bairro onde atende
 		String fp_flag_entre_ret = request.getParameter("fp_flag_entre_ret") == null ? "" : request.getParameter("fp_flag_entre_ret");
-		
 
 		PrintWriter out = response.getWriter();
 		JSONObject retorno = new JSONObject();
@@ -4351,12 +4401,12 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 		} else if (hp_sit.equalsIgnoreCase("S")) {
 			sql.append("  and  distribuidora.flag_ativo = 'S' ");
 		}
-		
-		if(fp_flag_entre_ret.equalsIgnoreCase("A")){
+
+		if (fp_flag_entre_ret.equalsIgnoreCase("A")) {
 			sql.append("  and  distribuidora.flag_agendamento = 'S' ");
-		}else if(fp_flag_entre_ret.equalsIgnoreCase("T")){
+		} else if (fp_flag_entre_ret.equalsIgnoreCase("T")) {
 			sql.append("  and  distribuidora.flag_tele_entrega = 'S' ");
-		} else if(fp_flag_entre_ret.equalsIgnoreCase("L")){
+		} else if (fp_flag_entre_ret.equalsIgnoreCase("L")) {
 			sql.append("  and  distribuidora.flag_retirada = 'S' ");
 		}
 
@@ -4417,15 +4467,13 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 			if (!data_agend.equalsIgnoreCase("")) {
 				loja.put("desc_horario", txtHoraAtendConsulta(request, response, conn, cod_usuario, sys, bairroatendimento, data_agend, rs.getInt("id_distribuidora"), "", true));
 			}
-			
-			
+
 			String endereco = rs.getString("desc_endereco");
 			String num = rs.getString("num_enderec");
 			String compl = rs.getString("desc_complemento");
-			String endfinal = endereco + ", " + num + " " + compl ;
+			String endfinal = endereco + ", " + num + " " + compl;
 
 			loja.put("endfinal", endfinal);
-			
 
 			lojas.add(loja);
 

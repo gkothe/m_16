@@ -879,7 +879,11 @@ public class Pedidos_ajax {
 			objRetorno.put("val_totalped", "R$ " + df2.format(rs.getDouble("val_totalprod") + rs.getDouble("val_entrega")));
 			objRetorno.put("val_totalprod_mob", "R$ " + df2.format(rs.getDouble("val_totalprod")));
 			objRetorno.put("val_entrega_mob", "R$ " + df2.format(rs.getDouble("val_entrega")));
-
+			if(rs.getTimestamp("data_proxnot")!=null)
+				objRetorno.put("datanot", new SimpleDateFormat("dd/MM/yyyy HH:mm").format(rs.getTimestamp("data_proxnot")));
+			else
+				objRetorno.put("datanot", "");
+			
 			objRetorno.put("VAL_TOTALPROD", rs.getString("val_totalprod"));
 			objRetorno.put("VAL_ENTREGA", rs.getString("val_entrega"));
 			objRetorno.put("num_ped", rs.getString("num_ped"));

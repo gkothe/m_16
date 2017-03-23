@@ -1309,7 +1309,7 @@ public class Relatorios {
 
 			StringBuffer sql = new StringBuffer();
 
-			sql.append("SELECT desc_prod,pedido.id_pedido, ");
+			sql.append("SELECT desc_prod,pedido.id_pedido,desc_abreviado,produtos.id_prod, ");
 			sql.append("       pedido_item.val_unit, ");
 			sql.append("       qtd_prod, ");
 			sql.append("       pedido_item.val_unit * qtd_prod          AS val_subtotalprod, ");
@@ -1451,6 +1451,7 @@ public class Relatorios {
 
 			while (rs.next()) {
 				hmFat = new HashMap<String, Object>();
+				hmFat.put("id_prod", rs.getLong("id_prod"));
 				hmFat.put("flag_status", (rs.getString("flag_status")));
 				hmFat.put("desc_status", Utilitario.returnStatusPedidoFlag(rs.getString("flag_status"), rs.getString("flag_pedido_ret_entre")));
 				hmFat.put("data_pedido", rs.getTimestamp("DATA_PEDIDO"));
@@ -1462,7 +1463,7 @@ public class Relatorios {
 				hmFat.put("tragoaqui_perc", new BigDecimal(rs.getDouble("tragoaqui_perc")));
 				hmFat.put("desc_bairro", rs.getString("DESC_BAIRRO"));
 				hmFat.put("id_pedido", rs.getLong("id_pedido"));
-				hmFat.put("desc_prod", rs.getString("desc_prod"));
+				hmFat.put("desc_prod", rs.getString("desc_abreviado"));
 				hmFat.put("val_unit", new BigDecimal(rs.getDouble("val_unit")));
 				hmFat.put("qtd_prod", rs.getLong("QTD_PROD"));
 				hmFat.put("val_subtotalprod", new BigDecimal(rs.getDouble("VAL_SUBTOTALPROD")));
@@ -1596,11 +1597,11 @@ public class Relatorios {
 			List listaReport = new LinkedList();
 
 			JasperReport objRelJasper_ordemprod = null;
-//			 objRelJasper_ordemprod = JasperCompileManager.compileReport("D:/phonegap_projects/m_16/m_16/src/main/webapp/rels/" + nome + ".jrxml");
-//			 String arq = "" + new File("D:/phonegap_projects/m_16/m_16/src/main/webapp/rels/" + nome + ".pdf");
+			 objRelJasper_ordemprod = JasperCompileManager.compileReport("D:/phonegap_projects/m_16/m_16/src/main/webapp/rels/" + nome + ".jrxml");
+			 String arq = "" + new File("D:/phonegap_projects/m_16/m_16/src/main/webapp/rels/" + nome + ".pdf");
 
-			String arq = "" + new File(sys.getPath() + "/rels/" + nome + ".pdf");
-			objRelJasper_ordemprod = JasperCompileManager.compileReport(sys.getPath() + "/rels/" + nome + ".jrxml");
+//			String arq = "" + new File(sys.getPath() + "/rels/" + nome + ".pdf");
+//			objRelJasper_ordemprod = JasperCompileManager.compileReport(sys.getPath() + "/rels/" + nome + ".jrxml");
 			hmParams.put(JRParameter.REPORT_LOCALE, new Locale("pt", "BR"));
 			listaReport.add(JasperFillManager.fillReport(objRelJasper_ordemprod, hmParams, datasource));
 

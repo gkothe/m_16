@@ -161,6 +161,38 @@ function marcarPedido_home(id_pedido) {
 }
 
 
+
+function pdfPedido(id) {
+	
+	var flag_opc = 'A';
+
+	var rel_ped_fim = id;
+	var rel_ped_ini = id;
+
+	var erro = false;
+
+	
+	var filtros = "";
+	
+	if (flag_opc != "") {
+		filtros = filtros + "&flag_opc=" + flag_opc;
+	}
+
+	if (rel_ped_ini != "") {
+		filtros = filtros + "&rel_ped_ini=" + rel_ped_ini;
+	}
+
+	if (rel_ped_fim != "") {
+		filtros = filtros + "&rel_ped_fim=" + rel_ped_fim;
+	}
+
+	if (!erro) {
+		var nome = "Relátorio de pedidos"
+		var w = window.open("home/" + nome + ".pdf?ac=rel_pedidospdf" + filtros, '_blank');
+	}
+}
+
+
 var active_menu;
 $(document).ready(function() {
 
@@ -269,6 +301,13 @@ $(document).ready(function() {
 
 	});
 
+	$("#btn_pdf").click(function() {
+		pdfPedido($("#m_num_pedido").val());
+		
+
+	});	
+	
+	
 	$("#m_finalizar").click(function() {
 		finalizarPedido();
 
@@ -388,6 +427,7 @@ function limpaModal() {
 	$("#m_total_produtos").autoNumeric('set', 0);
 	$("#m_data_pedido").html("");
 	$("#m_id_pedido").val("");
+	$("#m_num_pedido").val("");
 	$('#m_table_produtos').bootstrapTable('removeAll');
 	$('input[type=radio][name=flag_aceita_recusa]').prop('checked', false);
 	$('.motivo').prop('checked', false);
@@ -964,6 +1004,7 @@ function visualizarPedido(id) {
 			$("#m_total_produtos").autoNumeric('set', data.VAL_TOTALPROD);
 			$("#m_data_pedido").html(data.data_pedido);
 			$("#m_id_pedido").val(data.ID_PEDIDO);
+			$("#m_num_pedido").val(data.num_ped);
 
 			if (data.tipo_servico == "T") {
 				$("#m_tempo_entrega_div").show();

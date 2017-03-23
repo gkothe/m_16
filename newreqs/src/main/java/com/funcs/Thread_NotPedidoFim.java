@@ -44,6 +44,7 @@ public class Thread_NotPedidoFim extends Thread {
 				sendNotificacao(conn, sys);
 				checkExpired(conn, sys);
 				checkAgendamentosNaoResp(conn, sys);
+				checkLembretes(conn, sys);
 				conn.close();
 				this.sleep(rodateste);
 			}
@@ -131,6 +132,55 @@ public class Thread_NotPedidoFim extends Thread {
 
 	}
 
+	
+	
+	
+	
+	
+	private void checkLembretes(Connection conn, Sys_parametros sys) {//testar e botar na thead para rodaer.
+
+		varname1 = new StringBuffer();
+		varname1.append("SELECT ");
+		varname1.append(" distribuidora.id_distribuidora, distribuidora.desc_mail as emaildis, distribuidora_mobile.desc_mail as emailmobile, id_pedido, num_ped ");
+		varname1.append("FROM   pedido ");
+		varname1.append("       inner join distribuidora ");
+		varname1.append("               ON distribuidora.id_distribuidora = pedido.id_distribuidora ");
+		varname1.append("       left join distribuidora_mobile ");
+		varname1.append("               ON distribuidora_mobile.id_distribuidora = distribuidora.id_distribuidora and flag_role = 'A' ");
+		varname1.append("WHERE  flag_status = 'A' ");
+		
+		varname1.append("       AND data_proxnot < now() ");
+		varname1.append("       AND flag_pedido_ret_entre = 'T' ");
+		varname1.append("       AND flag_modoentrega = 'A' ");
+		varname1.append(" ");
+		
+		
+		try {
+			st = conn.prepareStatement(varname1.toString());
+			rs = st.executeQuery();
+			
+			while (rs.next()) {
+				
+				MobileController. msgLojasMobile(conn, sys, rs.getInt("id_pedido"), 4);
+		
+				varname1 = new StringBuffer();
+				varname1.append(" update pedido set data_proxnot = null where id_pedido = ? ");
+				st = conn.prepareStatement(varname1.toString());
+				st.setLong(1, (rs.getInt("id_pedido")));
+				st.executeUpdate();
+			}
+
+			
+			
+			//fazer update na distribui
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			// TODO: handle exception
+		}
+
+	}
+	
 	
 	
 	private void checkAgendamentosNaoResp(Connection conn, Sys_parametros sys) {//testar e botar na thead para rodaer.
