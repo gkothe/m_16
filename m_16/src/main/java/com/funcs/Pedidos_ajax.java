@@ -521,8 +521,6 @@ public class Pedidos_ajax {
 			sql2 = sql2 + "  and  flag_pedido_ret_entre = 'L' ";
 		}
 
-		
-
 		try {
 			Integer.parseInt(pag);
 			Integer.parseInt(size);
@@ -625,8 +623,6 @@ public class Pedidos_ajax {
 			st2.setDouble(contparam, Double.parseDouble(val_fim_historico));
 			contparam++;
 		}
-
-		
 
 		ResultSet rs = st2.executeQuery();
 		if (rs.next()) {
@@ -813,6 +809,10 @@ public class Pedidos_ajax {
 	}
 
 	public static void carregaPedido_AbertoEnvio(HttpServletRequest request, HttpServletResponse response, Connection conn, int coddistr) throws Exception {
+		carregaPedido_AbertoEnvio(request, response, conn, coddistr, true);
+	}
+
+	public static void carregaPedido_AbertoEnvio(HttpServletRequest request, HttpServletResponse response, Connection conn, int coddistr, boolean vizua) throws Exception {
 
 		PrintWriter out = response.getWriter();
 		JSONObject objRetorno = new JSONObject();
@@ -879,8 +879,10 @@ public class Pedidos_ajax {
 			objRetorno.put("val_totalped", "R$ " + df2.format(rs.getDouble("val_totalprod") + rs.getDouble("val_entrega")));
 			objRetorno.put("val_totalprod_mob","R$ " +  df2.format(rs.getDouble("val_totalprod")));
 			objRetorno.put("val_entrega_mob","R$ " +  df2.format(rs.getDouble("val_entrega")));
-
-	
+			if(rs.getTimestamp("data_proxnot")!=null)
+				objRetorno.put("datanot", new SimpleDateFormat("dd/MM/yyyy HH:mm").format(rs.getTimestamp("data_proxnot")));
+			else
+				objRetorno.put("datanot", "");
 			
 			objRetorno.put("VAL_TOTALPROD", rs.getString("val_totalprod"));
 			objRetorno.put("VAL_ENTREGA", rs.getString("val_entrega"));
@@ -990,12 +992,12 @@ public class Pedidos_ajax {
 				objRetorno.put("darok", true);
 
 			}
-
+			if (vizua) {
 			sql = " update  pedido  set flag_vizualizado = 'S' where id_pedido = ?  ";
 			st = conn.prepareStatement(sql);
 			st.setInt(1, Integer.parseInt(id_pedido));
 			st.executeUpdate();
-
+			}
 		}
 
 		out.print(objRetorno.toJSONString());

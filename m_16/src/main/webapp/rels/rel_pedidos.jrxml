@@ -144,6 +144,7 @@ FROM   pedido
 		<fieldDescription><![CDATA[]]></fieldDescription>
 	</field>
 	<field name="motivos_recusa" class="java.lang.String"/>
+	<field name="id_prod" class="java.lang.Long"/>
 	<variable name="variable1" class="java.lang.Integer" incrementType="Group" incrementGroup="A" calculation="Count">
 		<variableExpression><![CDATA[1]]></variableExpression>
 		<initialValueExpression><![CDATA[0]]></initialValueExpression>
@@ -968,7 +969,7 @@ FROM   pedido
 				<textElement>
 					<font size="8"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{desc_prod}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{id_prod} +" - " +  $F{desc_prod}]]></textFieldExpression>
 			</textField>
 			<textField pattern="R$ #,##0.00">
 				<reportElement x="424" y="0" width="64" height="15" uuid="6bef7f09-86e8-43b4-8f12-ca3a94a609a7"/>

@@ -39,6 +39,31 @@ public class Sys_parametros {
 	String tragoaqui_num_telefone ="";
 	String tragoaqui_pag_facebook ="";
 	String applicacao ="";
+	int sys_minutes_agen_not_resp = 0;
+
+	public String getPath() {
+		return path;
+	}
+
+	public void setPath(String path) {
+		this.path = path;
+	}
+
+	public int getPED_HORASOKEY() {
+		return PED_HORASOKEY;
+	}
+
+	public void setPED_HORASOKEY(int pED_HORASOKEY) {
+		PED_HORASOKEY = pED_HORASOKEY;
+	}
+	
+	public int getSys_minutes_agen_not_resp() {
+		return sys_minutes_agen_not_resp;
+	}
+
+	public void setSys_minutes_agen_not_resp(int sys_minutes_agen_not_resp) {
+		this.sys_minutes_agen_not_resp = sys_minutes_agen_not_resp;
+	}
 
 	public String getApplicacao() {
 		return applicacao;
@@ -337,6 +362,7 @@ public class Sys_parametros {
 				this.setTragoaqui_num_telefone(rs.getString("tragoaqui_num_telefone"));
 				this.setTragoaqui_pag_facebook(rs.getString("tragoaqui_pag_facebook"));
 				this.setApplicacao(rs.getString("applicacao"));
+				this.setSys_minutes_agen_not_resp(rs.getInt("SYS_MINUTES_AGEN_NOT_RESP"));
 				
 				
 			}
@@ -347,20 +373,6 @@ public class Sys_parametros {
 
 	}
 
-	public String getPath() {
-		return path;
-	}
 
-	public void setPath(String path) {
-		this.path = path;
-	}
-
-	public int getPED_HORASOKEY() {
-		return PED_HORASOKEY;
-	}
-
-	public void setPED_HORASOKEY(int pED_HORASOKEY) {
-		PED_HORASOKEY = pED_HORASOKEY;
-	}
 
 }

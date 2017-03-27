@@ -89,14 +89,11 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 	public void processaRequisicoes(HttpServletRequest request, HttpServletResponse response) {
 
 		try {
-
-			System.out.println("----------entro mob");
-
-			Map map = request.getParameterMap();
-			for (Iterator iterator = map.keySet().iterator(); iterator.hasNext();) {
-				String type = (String) iterator.next();
-				System.out.println(type + " : " + request.getParameter(type));
-			}
+			/*
+			 * System.out.println("----------entro mob");
+			 * 
+			 * Map map = request.getParameterMap(); for (Iterator iterator = map.keySet().iterator(); iterator.hasNext();) { String type = (String) iterator.next(); System.out.println(type + " : " + request.getParameter(type)); }
+			 */
 
 			String strTipo = request.getParameter("ac"); // acho que aqui soh vai ter ajax, mas vo dexa assim por enqto.
 			if (strTipo == null) {

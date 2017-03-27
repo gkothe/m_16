@@ -34,3 +34,42 @@ alter table pedido add DATA_PROXNOT         datetime;
 
 UPDATE sys_parametros SET `SYS_MINUTES_AGEN_NOT_RESP` = 1440 ;
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ mobileusers.html
+ 
+ home.jsp
+ menu_index.js 
+ mobileusers.js
+ 
+ Thread_NotPedidoFim.java 
+ MobileController.java 
+ Pedidos_ajax.java
+ Sys_parametros.java
+ Relatorios.java
+ 
+ rel_pedidos.jrxml
+ 
+
+
+
+
+
+
+
+
+
+
