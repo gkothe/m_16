@@ -1597,11 +1597,11 @@ public class Relatorios {
 			List listaReport = new LinkedList();
 
 			JasperReport objRelJasper_ordemprod = null;
-			 objRelJasper_ordemprod = JasperCompileManager.compileReport("D:/phonegap_projects/m_16/m_16/src/main/webapp/rels/" + nome + ".jrxml");
-			 String arq = "" + new File("D:/phonegap_projects/m_16/m_16/src/main/webapp/rels/" + nome + ".pdf");
+//			 objRelJasper_ordemprod = JasperCompileManager.compileReport("D:/phonegap_projects/m_16/m_16/src/main/webapp/rels/" + nome + ".jrxml");
+//			 String arq = "" + new File("D:/phonegap_projects/m_16/m_16/src/main/webapp/rels/" + nome + ".pdf");
 
-//			String arq = "" + new File(sys.getPath() + "/rels/" + nome + ".pdf");
-//			objRelJasper_ordemprod = JasperCompileManager.compileReport(sys.getPath() + "/rels/" + nome + ".jrxml");
+			String arq = "" + new File(sys.getPath() + "/rels/" + nome + ".pdf");
+			objRelJasper_ordemprod = JasperCompileManager.compileReport(sys.getPath() + "/rels/" + nome + ".jrxml");
 			hmParams.put(JRParameter.REPORT_LOCALE, new Locale("pt", "BR"));
 			listaReport.add(JasperFillManager.fillReport(objRelJasper_ordemprod, hmParams, datasource));
 
