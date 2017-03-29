@@ -283,6 +283,22 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 					teste(request, response, conn, cod_usuario, sys);
 				} else if (cmd.equalsIgnoreCase("LojaProdTestOnline")) {
 					LojaProdTestOnline(request, response, conn, cod_usuario, sys);
+				} else if (cmd.equalsIgnoreCase("isloja")) {
+					isLoja(request, response, conn, cod_usuario, sys);
+				} else if (cmd.equalsIgnoreCase("carregaPedidosLoja")) {
+					carregaPedidosLoja(request, response, conn, cod_usuario, sys);
+				} else if (cmd.equalsIgnoreCase("abrePedidoLoja")) {
+					abrePedidosLoja(request, response, conn, cod_usuario, sys);
+				} else if (cmd.equalsIgnoreCase("loadMotivos")) {
+					Home_ajax.loadMotivos(request, response, conn);
+				} else if (cmd.equalsIgnoreCase("finalizandoPedidoLoja")) {
+					finalizandoPedido(request, response, conn, cod_usuario, sys);
+				} else if (cmd.equalsIgnoreCase("responderPedidoLoja")) {
+					responderPedidoLoja(request, response, conn, cod_usuario, sys);
+				} else if (cmd.equalsIgnoreCase("checkPedidos")) {
+					checkPedidos(request, response, conn, cod_usuario, sys);
+				} else if (cmd.equalsIgnoreCase("agendarnot")) {
+					agendarNot(request, response, conn, cod_usuario, sys);
 				}
 
 				else {
@@ -311,6 +327,183 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 			} catch (Exception ex) {
 			}
 		}
+	}
+
+	private static void responderPedidoLoja(HttpServletRequest request, HttpServletResponse response, Connection conn, long cod_usuario, Sys_parametros sys) throws Exception {
+
+		PreparedStatement st = conn.prepareStatement(" select * from  distribuidora_mobile where id_usuario = ?  ");
+		st.setLong(1, cod_usuario);
+		ResultSet rs = st.executeQuery();
+		if (rs.next()) {
+
+			if (rs.getString("flag_role").equalsIgnoreCase("V")) {
+				throw new Exception("Você nao tem permissão para realizar esta operação.");
+			}
+
+			int distribuidora = rs.getInt("id_distribuidora");
+			String id_pedido = request.getParameter("id") == null ? "" : request.getParameter("id"); //
+
+			StringBuffer sql = new StringBuffer();
+			sql.append(" SELECT *  ");
+			sql.append(" from   pedido ");
+			sql.append(" WHERE  id_distribuidora = ? ");
+			sql.append("       AND id_pedido = ? ");
+
+			st = conn.prepareStatement(sql.toString());
+			st.setInt(1, distribuidora);
+			st.setInt(2, Integer.parseInt(id_pedido));
+			rs = st.executeQuery();
+			if (rs.next()) {
+
+				if (rs.getString("flag_pedido_ret_entre").equalsIgnoreCase("L")) {
+					throw new Exception("Pedidos de retirada em local devem ser respondidos pelo sistema web.");
+				} else if (rs.getString("flag_pedido_ret_entre").equalsIgnoreCase("T") && rs.getString("flag_modoentrega").equalsIgnoreCase("T")) {
+					throw new Exception("Pedidos de tele-entrega devem ser respondidos pelo sistema web.");
+				}
+
+				Pedidos_ajax.responderPedido(request, response, conn, distribuidora);
+			}
+
+		} else {
+			throw new Exception("Operação não acessivel para seu usuário.");
+
+		}
+
+	}
+
+	private static void checkPedidos(HttpServletRequest request, HttpServletResponse response, Connection conn, long cod_usuario, Sys_parametros sys) throws Exception {
+
+		PreparedStatement st = conn.prepareStatement(" select * from  distribuidora_mobile where id_usuario = ?  ");
+		st.setLong(1, cod_usuario);
+		ResultSet rs = st.executeQuery();
+		if (rs.next()) {
+			Home_ajax.checkPedidos(request, response, conn, rs.getInt("id_distribuidora"));
+		}
+	}
+
+	private static void abrePedidosLoja(HttpServletRequest request, HttpServletResponse response, Connection conn, long cod_usuario, Sys_parametros sys) throws Exception {
+
+		PreparedStatement st = conn.prepareStatement(" select * from  distribuidora_mobile where id_usuario = ?  ");
+		st.setLong(1, cod_usuario);
+		ResultSet rs = st.executeQuery();
+		if (rs.next()) {
+			if (rs.getString("flag_role").equalsIgnoreCase("V")) {
+				Pedidos_ajax.carregaPedido_AbertoEnvio(request, response, conn, rs.getInt("id_distribuidora"), false);
+			} else {
+				Pedidos_ajax.carregaPedido_AbertoEnvio(request, response, conn, rs.getInt("id_distribuidora"), true);
+			}
+
+		} else {
+			throw new Exception("Pedido não acessivel para seu usuário.");
+		}
+
+	}
+
+	private static void agendarNot(HttpServletRequest request, HttpServletResponse response, Connection conn, long cod_usuario, Sys_parametros sys) throws Exception {
+		PrintWriter out = response.getWriter();
+		JSONObject objRetorno = new JSONObject();
+
+		String id_pedido = request.getParameter("id_pedido") == null ? "" : request.getParameter("id_pedido"); //
+		String notlater = request.getParameter("notlater") == null ? "" : request.getParameter("notlater"); //
+
+		if (!Utilitario.isNumeric(notlater)) {
+			throw new Exception("Você deve escolher uma quantidade de horas válida!");
+		}
+
+		PreparedStatement st = conn.prepareStatement(" select * from  distribuidora_mobile where id_usuario = ?  ");
+		st.setLong(1, cod_usuario);
+		ResultSet rs = st.executeQuery();
+		if (rs.next()) {
+
+			StringBuffer varname1 = new StringBuffer();
+			varname1.append("select * from pedido where id_distribuidora = ? and id_pedido = ? ");
+			PreparedStatement st2 = conn.prepareStatement(varname1.toString());
+			st2.setInt(1, rs.getInt("id_distribuidora"));
+			st2.setInt(2, Integer.parseInt(id_pedido));
+			ResultSet rs2 = st2.executeQuery();
+			if (rs2.next()) {
+
+				GregorianCalendar dataagend = new GregorianCalendar();
+				dataagend.setTime(new Date());
+				dataagend.add(Calendar.HOUR, Integer.parseInt(notlater));
+
+				varname1 = new StringBuffer();
+				varname1.append(" update pedido set data_proxnot = ?  ");
+				varname1.append(" WHERE   id_pedido = ? ");
+				st = conn.prepareStatement(varname1.toString());
+				st.setTimestamp(1, Utilitario.getTimeStamp(dataagend.getTime()));
+				st.setLong(2, Integer.parseInt(id_pedido));
+				st.executeUpdate();
+
+				objRetorno.put("datanot", new SimpleDateFormat("dd/MM/yyyy HH:mm").format(Utilitario.getTimeStamp(dataagend.getTime())));
+			}
+			objRetorno.put("msg", "ok");
+			out.println(objRetorno.toString());
+		} else {
+			throw new Exception("Acesso inválido!");
+		}
+
+	}
+
+	private static void carregaPedidosLoja(HttpServletRequest request, HttpServletResponse response, Connection conn, long cod_usuario, Sys_parametros sys) throws Exception {
+		PrintWriter out = response.getWriter();
+		JSONObject objRetorno = new JSONObject();
+
+		PreparedStatement st = conn.prepareStatement(" select * from  distribuidora_mobile where id_usuario = ?  ");
+		st.setLong(1, cod_usuario);
+		ResultSet rs = st.executeQuery();
+		if (rs.next()) {
+
+			Pedidos_ajax.carregaPedidosAbertos(request, response, conn, rs.getInt("id_distribuidora"));
+
+		} else {
+			objRetorno.put("msg", "ok");
+
+			out.println(objRetorno.toString());
+		}
+
+	}
+
+	private static void finalizandoPedido(HttpServletRequest request, HttpServletResponse response, Connection conn, long cod_usuario, Sys_parametros sys) throws Exception {
+		PrintWriter out = response.getWriter();
+		JSONObject objRetorno = new JSONObject();
+
+		PreparedStatement st = conn.prepareStatement(" select * from  distribuidora_mobile where id_usuario = ?  ");
+		st.setLong(1, cod_usuario);
+		ResultSet rs = st.executeQuery();
+		if (rs.next()) {
+
+			if (rs.getString("flag_role").equalsIgnoreCase("V")) {
+				throw new Exception("Você nao tem permissão para realizar esta operação.");
+			}
+
+			Pedidos_ajax.finalizandoPedido(request, response, conn, rs.getInt("id_distribuidora"));
+
+		} else {
+			objRetorno.put("msg", "ok");
+
+			out.println(objRetorno.toString());
+		}
+
+	}
+
+	private static void isLoja(HttpServletRequest request, HttpServletResponse response, Connection conn, long cod_usuario, Sys_parametros sys) throws Exception {
+		PrintWriter out = response.getWriter();
+		JSONObject objRetorno = new JSONObject();
+
+		PreparedStatement st = conn.prepareStatement(" select * from  distribuidora_mobile where id_usuario = ?  ");
+		st.setLong(1, cod_usuario);
+		ResultSet rs = st.executeQuery();
+		if (rs.next()) {
+			objRetorno.put("loja", true);
+		} else {
+			objRetorno.put("loja", false);
+		}
+
+		objRetorno.put("msg", "ok");
+
+		out.println(objRetorno.toString());
+
 	}
 
 	private static void teste(HttpServletRequest request, HttpServletResponse response, Connection conn, long cod_usuario, Sys_parametros sys) throws Exception {
@@ -483,6 +676,20 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 
 		if (rs.next()) {
 
+			String text = txtHoraAtendConsulta(request, response, conn, cod_usuario, sys, codbairro, datayar, rs.getInt("id_distribuidora"), "Horários de atendimento no dia escolhido \n", false);
+
+			objRetorno.put("txt_texto", text);
+		} else {
+			objRetorno.put("txt_texto", "");
+		}
+
+		objRetorno.put("msg", "ok");
+		out.print(objRetorno.toJSONString());
+
+	}
+
+	public static String txtHoraAtendConsulta(HttpServletRequest request, HttpServletResponse response, Connection conn, long cod_usuario, Sys_parametros sys, String codbairro, String datayar, int idloja, String msg, boolean tipohtml) throws Exception {
+
 			StringBuffer varname11 = new StringBuffer();
 			varname11.append("select date_format(horario_ini, '%H:%i') as horario_ini,date_format(horario_fim, '%H:%i') as horario_fim from distribuidora_bairro_entrega ");
 			varname11.append("  ");
@@ -498,29 +705,25 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 				throw new Exception("Nenhum bairro selecionado.");
 			}
 
-			st = conn.prepareStatement(varname11.toString());
+		PreparedStatement st = conn.prepareStatement(varname11.toString());
 			st.setLong(1, Integer.parseInt(codbairro));
-			st.setLong(2, rs.getInt("id_distribuidora"));
+		st.setLong(2, idloja);
 			st.setLong(3, dayOfWeek);
 			ResultSet rs2 = st.executeQuery();
-			String text = "Horários de atendimento no dia escolhido \n";
+		String text = msg;
 			boolean temhora = false;
 			while (rs2.next()) {
 				temhora = true;
+			if (tipohtml)
+				text = text + "" + rs2.getString("horario_ini") + " - " + rs2.getString("horario_fim") + " <br> ";
+			else
 				text = text + "" + rs2.getString("horario_ini") + " - " + rs2.getString("horario_fim") + " \n";
 			}
 			if (!temhora) {
 				text = "Sem horários de atendimento para o dia escolhido.";
 			}
 
-			objRetorno.put("txt_texto", text);
-		} else {
-			objRetorno.put("txt_texto", "");
-		}
-
-		objRetorno.put("msg", "ok");
-		out.print(objRetorno.toJSONString());
-
+		return text;
 	}
 
 	private static void txtObsHora(HttpServletRequest request, HttpServletResponse response, Connection conn, long cod_usuario, Sys_parametros sys) throws Exception {
@@ -1184,6 +1387,16 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 
 					}
 
+					try {
+
+						msgLojasMobile(conn, sys, Long.parseLong(id_pedido), 1);
+
+					} catch (Exception e) {
+						System.out.println("Falha no envio de email cancela pedido " + id_pedido + " " + new Date());
+					}
+
+					// mandar one sginal e memail
+
 				}
 
 			}
@@ -1196,6 +1409,58 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 			out.print(objRetorno.toJSONString());
 		}
 		return objRetorno;
+	}
+
+	public static void msgLojasMobile(Connection conn, Sys_parametros sys, long id_pedido, int codtipomsg) throws Exception {
+		String html = "";
+		String title = "";
+		JSONObject data = new JSONObject();
+		data.put("loja", true);
+		data.put("id_pedido", id_pedido);
+
+		StringBuffer sql = new StringBuffer();
+		sql.append(" SELECT distribuidora.desc_mail        AS emaildis, ");
+		sql.append("       distribuidora_mobile.desc_mail AS emailmobile, num_ped ");
+		sql.append(" FROM   pedido ");
+		sql.append("       INNER JOIN distribuidora ");
+		sql.append("               ON distribuidora.id_distribuidora = pedido.id_distribuidora ");
+		sql.append("       left JOIN distribuidora_mobile ");
+		sql.append("               ON distribuidora.id_distribuidora = ");
+		sql.append("                  distribuidora_mobile.id_distribuidora ");
+		sql.append("                  AND distribuidora_mobile.flag_role = 'A' ");
+		sql.append(" WHERE  id_pedido =  ? ");
+
+		PreparedStatement st2 = conn.prepareStatement(sql.toString());
+		st2.setLong(1, (id_pedido));
+		ResultSet rs2 = st2.executeQuery();
+
+		if (rs2.next()) {
+			if (codtipomsg == 1) {// cancelamento
+				html = " Olá, o pedido nº " + rs2.getString("num_ped") + " foi cancelado. Para mais informações do pedido clique <a href='" + sys.getUrl_system() + "'> AQUI </a> e acesse o sistema do TragoAqui. ";
+				title = sys.getSys_fromdesc() + " - Pedido nº " + rs2.getString("num_ped") + " foi cancelado!";
+
+			} else if (codtipomsg == 2) {// novopedido
+				html = "Você recebeu um pedido! O número do pedido é " + rs2.getString("num_ped") + ". <br> Clique <a href='" + sys.getUrl_system() + "'> AQUI </a> para acessar nosso sistema, verificar os produtos requisitados e responder o pedido.";
+				title = sys.getSys_fromdesc() + " - Você recebeu um pedido! Nº " + rs2.getString("num_ped");
+
+			} else if (codtipomsg == 3) {// pedido atrasado
+				html = "Atenção! O cliente informou que o pedido  Nº " + rs2.getString("num_ped") + " ainda não foi entregue!";
+				title = sys.getSys_fromdesc() + " - O pedido  Nº " + rs2.getString("num_ped") + " ainda não foi entregue!";
+			} else if (codtipomsg == 4) {// pedido atrasado
+				html = "Olá, este é um lembrete que você requisitou em relação ao pedido Nº "+rs2.getString("num_ped")+". Ele ainda está em aberto. <br> Por favor clique <a href='" + sys.getUrl_system() + "'> AQUI </a> para acessar nosso sistema e responde-lo.";
+				title = sys.getSys_fromdesc() + " - Lembrete do pedido Nº "+rs2.getString("num_ped")+" !";
+			}
+
+			Utilitario.sendEmail(rs2.getString("emaildis"), html, title, conn);
+			if (rs2.getString("emailmobile") != null && !(rs2.getString("emailmobile").equalsIgnoreCase(""))) {
+
+				Utilitario.oneSginal(sys, rs2.getString("emailmobile"), title, data);
+				if (!rs2.getString("emailmobile").equalsIgnoreCase(rs2.getString("emaildis"))) {
+					Utilitario.sendEmail(rs2.getString("emailmobile"), html, title, conn);
+				}
+			}
+		}
+
 	}
 
 	private static void carregaUser(HttpServletRequest request, HttpServletResponse response, Connection conn, long cod_usuario) throws Exception {
@@ -1630,6 +1895,12 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 
 		} else if (fp_flag_entre_ret.equalsIgnoreCase("A")) {
 
+			try {
+				new SimpleDateFormat("dd/MM/yyyy").parse(diaagend).before(new Date());
+			} catch (Exception e) {
+				throw new Exception("O dia de agendamento é inválido.");
+			}
+
 			sql = new StringBuffer();
 			sql.append(" select * from (  SELECT     produtos.id_prod, ");
 			sql.append("           desc_prod, ");
@@ -1645,7 +1916,9 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 			sql.append("           desc_marca, ");
 			sql.append("           carrinho_item.qtd, ");
 			sql.append("           distribuidora.val_entrega_min, ");
-			sql.append("           qtd_images ");
+			sql.append("           qtd_images, ");
+			sql.append("           GROUP_CONCAT(CONCAT(date_format(horario_ini, '%H:%i'), '-',date_format(horario_fim, '%H:%i')) )   as horario ");
+
 			sql.append("FROM       produtos ");
 			sql.append("INNER JOIN produtos_distribuidora ");
 			sql.append("ON         produtos_distribuidora.id_prod = produtos.id_prod ");
@@ -1673,18 +1946,12 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 			sql.append("                      distribuidora.flag_ativo = 'S' ");
 			sql.append("                                 || distribuidora.flag_ativo = 'F') ");
 			sql.append("AND        distribuidora_bairro_entrega.cod_bairro = ? ");
+			sql.append("and ((cod_dia = ? and distribuidora.flag_custom = 'N') or (cod_dia = 8 and distribuidora.flag_custom = 'S')) ");
 
-			if (!diaagend.equalsIgnoreCase("") && !horaagend.equalsIgnoreCase("")) {
+			if (!horaagend.equalsIgnoreCase("")) {
 
 				Utilitario.testeHora("HHmm", horaagend, "Horário de entrega inválido!");
-
-				try {
-					new SimpleDateFormat("dd/MM/yyyy").parse(diaagend).before(new Date());
-				} catch (Exception e) {
-					throw new Exception("O dia de agendamento é inválido.");
-				}
-
-				sql.append("and (( cod_dia = 8 and ? between horario_ini and horario_fim and flag_custom = 'S' ) or ( cod_dia = ? and ? between horario_ini and horario_fim and flag_custom = 'N'  ))");
+				sql.append("and ((? between horario_ini and horario_fim and flag_custom = 'N' ) or ( ? between horario_ini and horario_fim and flag_custom = 'S'  ))");
 
 			}
 
@@ -1779,15 +2046,14 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 
 			st.setInt(contparam, Integer.parseInt(cod_bairro));
 			contparam++;
+			int dayOfWeek = Utilitario.diaDasemanaFromDate(diaagend);
 
-			if (!diaagend.equalsIgnoreCase("") && !horaagend.equalsIgnoreCase("")) {
+			st.setInt(contparam, dayOfWeek);
+			contparam++;
 
-				int dayOfWeek = Utilitario.diaDasemanaFromDate(diaagend);
+			if (!horaagend.equalsIgnoreCase("")) {
 
 				st.setString(contparam, horaagend.substring(0, 1) + horaagend.substring(1, 2) + ":" + horaagend.substring(2, 3) + horaagend.substring(3, 4));
-				contparam++;
-
-				st.setInt(contparam, dayOfWeek);
 				contparam++;
 
 				st.setString(contparam, horaagend.substring(0, 1) + horaagend.substring(1, 2) + ":" + horaagend.substring(2, 3) + horaagend.substring(3, 4));
@@ -1860,6 +2126,12 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 				prod.put("DESC_ABREVIADO", rs.getString("desc_abreviado"));// abreviado do produto
 				prod.put("VAL_PROD", "R$ " + df2.format(rs.getDouble("val_prod")));//
 				prod.put("ID_DISTRIBUIDORA", rs.getString("id_distribuidora"));
+				if (fp_flag_entre_ret.equalsIgnoreCase("A")) {
+					prod.put("desc_horario", rs.getString("horario"));
+				} else {
+					prod.put("desc_horario", "");
+				}
+
 				prod.put("DESC_NOME_ABREV", rs.getString("desc_nome_abrev"));/// abreviado da distribuidora
 				prod.put("img", rs.getString("id_prod") + "_min.jpg");/// abreviado da distribuidora
 				prods.add(prod);
@@ -2203,7 +2475,6 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 			Calendar data6 = Calendar.getInstance();
 			data6.setTime(rs.getTimestamp("tempocanc"));
 
-			
 			if (data6.getTime().after(new Date())) {
 				throw new Exception("Você deve esperar o tempo máximo de estimado desejado para informar que não recebeu seu pedido.");
 			}
@@ -2215,6 +2486,14 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 		st = conn.prepareStatement(sql.toString());
 		st.setLong(1, Long.parseLong(id_pedido));
 		st.executeUpdate();
+
+		try {
+
+			msgLojasMobile(conn, sys, Long.parseLong(id_pedido), 3);
+
+		} catch (Exception e) {
+			System.out.println("Falha no envio de email nãorecebi pedido " + id_pedido + " " + new Date());
+		}
 
 		objRetorno.put("msg", "ok");
 		out.print(objRetorno.toJSONString());
@@ -2299,15 +2578,12 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 			ped.put("tempo_entrega2", rs.getTimestamp("tempo_estimado_entrega") == null ? "" : new SimpleDateFormat("HH:mm").format(rs.getTimestamp("tempo_estimado_entrega")));
 			ped.put("tempo_entrega", rs.getTimestamp("hora_entrega") == null ? "" : new SimpleDateFormat("dd/MM/yyyy HH:mm").format(rs.getTimestamp("hora_entrega")));
 
-			
 			if (rs.getTimestamp("data_agenda_entrega") != null) {
 				ped.put("data_agenda_entrega", new SimpleDateFormat("dd/MM/yyyy HH:mm").format(rs.getTimestamp("data_agenda_entrega")));
 			}else{
 				ped.put("data_agenda_entrega", "");
 			}
 			
-			
-
 			StringBuffer sql2 = new StringBuffer();
 			sql2.append("select id_prod_dist, recusado_disponivel,flag_recusado,  desc_prod, val_unit, qtd_prod, qtd_prod * val_unit   as total, desc_abreviado, produtos.id_prod from pedido_item ");
 			sql2.append("inner join produtos ");
@@ -2344,49 +2620,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 			}
 			ped.put("motrecusa", "");
 			if (rs.getString("flag_status").equalsIgnoreCase("R")) {
-
-				sql2 = new StringBuffer();
-				sql2.append("select  * from pedido_motivos_recusa ");
-				sql2.append("inner join motivos_recusa ");
-				sql2.append("on motivos_recusa.cod_motivo  = pedido_motivos_recusa.cod_motivo ");
-				sql2.append("where id_pedido = ? order by desc_motivo");
-
-				JSONArray motivos = new JSONArray();
-
-				st2 = conn.prepareStatement(sql2.toString());
-				st2.setLong(1, Long.parseLong(id_pedido));
-				rs2 = st2.executeQuery();
-
-				String text_recusa = "";
-
-				while (rs2.next()) {
-					if (rs2.getInt("cod_motivo") != sys.getCod_recusa_estoque()) {
-						JSONObject mot = new JSONObject();
-						text_recusa = text_recusa + "" + rs2.getString("desc_motivo") + " \n";
-						mot.put("desc_motivo", rs2.getString("desc_motivo"));
-						motivos.add(mot);
-					}
-				}
-
-				if (produtos_semestq.size() != 0) {
-					text_recusa = text_recusa + "Produtos insuficientes ou em falta no estoque: \n";
-					for (int i = 0; i < produtos_semestq.size(); i++) {
-						JSONObject obj = (JSONObject) produtos_semestq.get(i);
-						try {
-							int qtddis = Integer.parseInt(obj.get("recusado_disponivel").toString());
-							if (qtddis != 0) {
-								text_recusa = text_recusa + "" + obj.get("desc_prod") + " está parcialmente falta. Qtd. disponível: " + qtddis + " \n";
-							} else {
-								text_recusa = text_recusa + "" + obj.get("desc_prod") + " está em falta. \n";
-							}
-						} catch (Exception e) {
-							text_recusa = text_recusa + "" + obj.get("desc_prod") + " está em falta. \n";
-						}
-
-					}
-
-				}
-				ped.put("motrecusa", text_recusa);
+				ped.put("motrecusa", Pedidos_ajax.retornaTextRecusado(conn, id_pedido, sys, produtos_semestq));
 			}
 
 			ped.put("produtos", produtos);
@@ -3495,6 +3729,10 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 				throw new Exception("Seu número de endereço está em branco!");
 			}
 
+			if (c_telefone.equalsIgnoreCase("")) {
+				throw new Exception("Por favor informe seu telefone, caso a loja precise entrar em contato com você.");
+			}
+
 			Utilitario.testeHora("HHmm", tempomax, "Tempo maximo de entrega inválido!");
 
 		}
@@ -3826,8 +4064,13 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 					}
 
 					if (choiceserv.equalsIgnoreCase("A")) {
-						String texto = " Você recebeu um pedido! O número do pedido é " + numpad + ". <br> Clique <a href='" + sys.getUrl_system() + "'> AQUI </a> para acessar nosso sistema, verificar os produtos requisitados e responder o pedido.";
-						Utilitario.sendEmail(emailoja, texto, sys.getSys_fromdesc() + " - Você recebeu um pedido! Nº " + numpad, conn);
+
+						try {
+							msgLojasMobile(conn, sys, idped, 2);
+						} catch (Exception e) {
+							System.out.println("Falha no envio de email cria pedido " + idped + " " + new Date());
+						}
+
 					}
 
 				}
@@ -4085,8 +4328,11 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 
 	private static void listaLojas(HttpServletRequest request, HttpServletResponse response, Connection conn, long cod_usuario, Sys_parametros sys) throws Exception {
 
-		String fp_pickbairro = request.getParameter("fp_pickbairro") == null ? "" : request.getParameter("fp_pickbairro");
+		String fp_pickbairro = request.getParameter("fp_pickbairro") == null ? "" : request.getParameter("fp_pickbairro");// bairro da loja
 		String hp_sit = request.getParameter("hp_sit") == null ? "" : request.getParameter("hp_sit");
+		String data_agend = request.getParameter("data_agend") == null ? "" : request.getParameter("data_agend");
+		String bairroatendimento = request.getParameter("bairroatendimento") == null ? "" : request.getParameter("bairroatendimento"); // bairro onde atende
+		String fp_flag_entre_ret = request.getParameter("fp_flag_entre_ret") == null ? "" : request.getParameter("fp_flag_entre_ret");
 
 		PrintWriter out = response.getWriter();
 		JSONObject retorno = new JSONObject();
@@ -4109,6 +4355,14 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 			sql.append("  and  (distribuidora.flag_ativo = 'N' or  distribuidora.flag_ativo = 'F') ");
 		} else if (hp_sit.equalsIgnoreCase("S")) {
 			sql.append("  and  distribuidora.flag_ativo = 'S' ");
+		}
+
+		if (fp_flag_entre_ret.equalsIgnoreCase("A")) {
+			sql.append("  and  distribuidora.flag_agendamento = 'S' ");
+		} else if (fp_flag_entre_ret.equalsIgnoreCase("T")) {
+			sql.append("  and  distribuidora.flag_tele_entrega = 'S' ");
+		} else if (fp_flag_entre_ret.equalsIgnoreCase("L")) {
+			sql.append("  and  distribuidora.flag_retirada = 'S' ");
 		}
 
 		sql.append("  order by ordem, desc_nome_abrev  ");
@@ -4164,6 +4418,17 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 			loja.put("desc_servico", servico);
 			loja.put("desc_bairro", rs.getString("desc_bairro") == null ? "" : rs.getString("desc_bairro"));
 			loja.put("logo", "images/logos/logo_" + rs.getLong("id_distribuidora") + ".jpg");
+
+			if (!data_agend.equalsIgnoreCase("")) {
+				loja.put("desc_horario", txtHoraAtendConsulta(request, response, conn, cod_usuario, sys, bairroatendimento, data_agend, rs.getInt("id_distribuidora"), "", true));
+			}
+
+			String endereco = rs.getString("desc_endereco");
+			String num = rs.getString("num_enderec");
+			String compl = rs.getString("desc_complemento");
+			String endfinal = endereco + ", " + num + " " + compl;
+
+			loja.put("endfinal", endfinal);
 
 			lojas.add(loja);
 

@@ -2620,49 +2620,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 			}
 			ped.put("motrecusa", "");
 			if (rs.getString("flag_status").equalsIgnoreCase("R")) {
-
-				sql2 = new StringBuffer();
-				sql2.append("select  * from pedido_motivos_recusa ");
-				sql2.append("inner join motivos_recusa ");
-				sql2.append("on motivos_recusa.cod_motivo  = pedido_motivos_recusa.cod_motivo ");
-				sql2.append("where id_pedido = ? order by desc_motivo");
-
-				JSONArray motivos = new JSONArray();
-
-				st2 = conn.prepareStatement(sql2.toString());
-				st2.setLong(1, Long.parseLong(id_pedido));
-				rs2 = st2.executeQuery();
-
-				String text_recusa = "";
-
-				while (rs2.next()) {
-					if (rs2.getInt("cod_motivo") != sys.getCod_recusa_estoque()) {
-						JSONObject mot = new JSONObject();
-						text_recusa = text_recusa + "" + rs2.getString("desc_motivo") + " \n";
-						mot.put("desc_motivo", rs2.getString("desc_motivo"));
-						motivos.add(mot);
-					}
-				}
-
-				if (produtos_semestq.size() != 0) {
-					text_recusa = text_recusa + "Produtos insuficientes ou em falta no estoque: \n";
-					for (int i = 0; i < produtos_semestq.size(); i++) {
-						JSONObject obj = (JSONObject) produtos_semestq.get(i);
-						try {
-							int qtddis = Integer.parseInt(obj.get("recusado_disponivel").toString());
-							if (qtddis != 0) {
-								text_recusa = text_recusa + "" + obj.get("desc_abreviado") + " está parcialmente falta. Qtd. disponível: " + qtddis + " \n";
-							} else {
-								text_recusa = text_recusa + "" + obj.get("desc_abreviado") + " está em falta. \n";
-							}
-						} catch (Exception e) {
-							text_recusa = text_recusa + "" + obj.get("desc_abreviado") + " está em falta. \n";
-						}
-
-					}
-
-				}
-				ped.put("motrecusa", text_recusa);
+				ped.put("motrecusa", Pedidos_ajax.retornaTextRecusado(conn, id_pedido, sys, produtos_semestq));
 			}
 
 			ped.put("produtos", produtos);

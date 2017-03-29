@@ -225,18 +225,80 @@ public class Parametros_ajax {
 
 	}
 
+	public static void listaModosPagamento(HttpServletRequest request, HttpServletResponse response, Connection conn, int coddistr) throws Exception {
+		PrintWriter out = response.getWriter();
+		JSONArray cate = new JSONArray();
+
+		StringBuffer sql = new StringBuffer();
+
+		sql.append(" SELECT * ");
+		sql.append(" FROM modo_pagamento ");
+		sql.append(" left join distribuidora_pagamento  ");
+		sql.append(" on distribuidora_pagamento.id_modo_pagamento  = modo_pagamento.id_modo_pagamento and id_distribuidora = ? ");
+		sql.append(" order by desc_modo ");
+
+		PreparedStatement st = conn.prepareStatement(sql.toString());
+		st.setInt(1, coddistr);
+
+		JSONObject obj = new JSONObject();
+
+		ResultSet rs = st.executeQuery();
+		while (rs.next()) {
+			obj = new JSONObject();
+
+			obj.put("id_modo_pagamento", rs.getString("id_modo_pagamento"));
+			obj.put("desc_modo", rs.getString("desc_modo"));
+			obj.put("checked", rs.getString("id_distribuidora") == null ? false : true);
+
+			cate.add(obj);
+
+		}
+
+		out.print(cate.toJSONString());
+	}
+
+	public static void salvarModosPagamento(HttpServletRequest request, HttpServletResponse response, Connection conn, int coddistr) throws Exception {
+		PrintWriter out = response.getWriter();
+		JSONObject ret = new JSONObject();
+
+		String modopagbox = request.getParameter("modopag") == null ? "" : request.getParameter("modopag"); //
+
+		String[] modopag = modopagbox.split(",");
+
+		for (int i = 0; i < modopag.length; i++) {
+			if (!Utilitario.isNumeric(modopag[i])) {
+				throw new Exception("Modo de pagamento inválido.");
+			}
+		}
+
+		PreparedStatement st = null;
+
+		st = conn.prepareStatement("delete from distribuidora_pagamento where id_distribuidora = ? ");
+		st.setInt(1, coddistr);
+		st.executeUpdate();
+
+		for (int i = 0; i < modopag.length; i++) {
+
+			String sql = "insert into distribuidora_pagamento  ( id_modo_pagamento, id_distribuidora ) VALUES   (?, ? );   ";
+			PreparedStatement st3 = conn.prepareStatement(sql);
+			st3.setInt(1, Integer.parseInt(modopag[i]));
+			st3.setInt(2, coddistr);
+			st3.executeUpdate();
+		}
+
+		ret.put("msg", "ok");
+		out.print(ret.toJSONString());
+	}
+
 	public static void listaCategorias(HttpServletRequest request, HttpServletResponse response, Connection conn, int coddistr, boolean todas) throws Exception {
 		PrintWriter out = response.getWriter();
 		JSONArray cate = new JSONArray();
 
 		StringBuffer sql = new StringBuffer();
 
-		
-		
 		if (todas) {
-		sql.append("SELECT * ");
-		sql.append("FROM   categoria ");
-
+			sql.append("SELECT * ");
+			sql.append("FROM   categoria ");
 
 		} else {
 			sql.append(" select categoria.id_categoria,desc_categoria from categoria  ");
@@ -256,8 +318,6 @@ public class Parametros_ajax {
 		obj.put("desc_categoria", "Todas");
 
 		cate.add(obj);
-
-		//oi
 
 		ResultSet rs = st.executeQuery();
 		while (rs.next()) {
@@ -591,7 +651,6 @@ public class Parametros_ajax {
 			obj.put("flag_tele_entrega", rs.getString("flag_tele_entrega"));
 			obj.put("flag_retirada", rs.getString("flag_retirada"));
 
-			
 			ret.add(obj);
 
 		}
@@ -627,19 +686,14 @@ public class Parametros_ajax {
 		String flag_tele_entrega = request.getParameter("flag_tele_entrega") == null ? "" : request.getParameter("flag_tele_entrega"); //
 		String flag_retirada = request.getParameter("flag_retirada") == null ? "" : request.getParameter("flag_retirada"); //
 
-		
-		
-		
 		if (!(flag_agendamento.equalsIgnoreCase("S")) && !(flag_agendamento.equalsIgnoreCase("N"))) {
 			throw new Exception("Dados inválidos, entre em contato com o suporte.");
 		}
 
-		
 		if (!(flag_tele_entrega.equalsIgnoreCase("S")) && !(flag_tele_entrega.equalsIgnoreCase("N"))) {
 			throw new Exception("Dados inválidos, entre em contato com o suporte.");
 		}
 
-		
 		if (!(flag_retirada.equalsIgnoreCase("S")) && !(flag_retirada.equalsIgnoreCase("N"))) {
 			throw new Exception("Dados inválidos, entre em contato com o suporte.");
 		}

@@ -92,6 +92,7 @@
 												de horários</a></li>
 										<li><a linkmenu="listaconfigemp" onMouseup="trocaPag(this,'N',event);" class="clickmenu">Configurações
 												da empresa</a></li>
+										<li><a linkmenu="listapagmods" onMouseup="trocaPag(this,'N',event);" class="clickmenu">Modos de Pagamento</a></li>
 										<li><a linkmenu="mobileusers" onMouseup="trocaPag(this,'N',event);" class="clickmenu">Configurações
 												do mobile</a></li>
 									</ul></li>
@@ -505,14 +506,12 @@
 									</table>
 								</div>
 							</div>
-							<DIV>
-								<div class="row">
+							<div class="row" id="row_marcar">
 									<div id="flag_marcado_detail_div" class="col-xs-4 col-sm-4 col-md-4 col-lg-4" align="">
 										<input type="checkbox" id="flag_marcado_detail" style="color: black !important"> <strong>Marcar
 											pedido <strong>
 									</div>
 								</div>
-							</div>
 							<div class="modal-footer">
 								<div class="row"">
 									<div class="col-xs-2 col-sm-2 col-md-2 col-lg-2 " align="left">
@@ -524,7 +523,6 @@
 									<div class="col-xs-1 col-sm-1 col-md-1 col-lg-1 ">
 									<button type="button" id="btn_pdf" class="btn btn-primary">PDF/Imprimir</button>
 									</div>
-									
 									<div class="col-xs-1 col-sm-1 col-md-1 col-lg-1 "></div>
 									<div class="col-xs-1 col-sm-1 col-md-1 col-lg-1 "></div>
 									<div class="col-xs-1 col-sm-1 col-md-1 col-lg-1 "></div>

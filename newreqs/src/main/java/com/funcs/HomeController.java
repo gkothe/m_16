@@ -85,7 +85,10 @@ public class HomeController extends javax.servlet.http.HttpServlet {
 					listaprod(request, response);
 				} else if (strTipo.equalsIgnoreCase("listaconfigemp")) {
 					listaconfigemp(request, response);
-				} else if (strTipo.equalsIgnoreCase("wizardhorarios")) {
+				} else if (strTipo.equalsIgnoreCase("listapagmods")) {
+					listapagmods(request, response);
+				}
+				else if (strTipo.equalsIgnoreCase("wizardhorarios")) {
 					wizardhorarios(request, response);
 				} else if (strTipo.equalsIgnoreCase("mobileusers")) {
 					mobileusers(request, response);
@@ -217,6 +220,10 @@ public class HomeController extends javax.servlet.http.HttpServlet {
 				Parametros_ajax.loadBairrosWizard(request, response, conn, coddistr);
 			} else if (cmd.equalsIgnoreCase("salvarConfigsHorariosBairros")) {
 				Parametros_ajax.salvarConfigsHorariosBairrosNovo(request, response, conn, coddistr);
+			} else if (cmd.equalsIgnoreCase("listaModosPagamento")) {
+				Parametros_ajax.listaModosPagamento(request, response, conn, coddistr);
+			}  else if (cmd.equalsIgnoreCase("salvarModosPagamento")) {
+				Parametros_ajax.salvarModosPagamento(request, response, conn, coddistr);
 			} else if (cmd.equalsIgnoreCase("dashServico")) {
 				Relatorios.dashServico(request, response, conn, coddistr);
 			} else if (cmd.equalsIgnoreCase("dashPagamento")) {
@@ -373,6 +380,17 @@ public class HomeController extends javax.servlet.http.HttpServlet {
 		}
 	}
 
+	private void listapagmods(HttpServletRequest request, HttpServletResponse response) throws Exception {
+		try {
+			request.getRequestDispatcher("/WEB-INF/modo_pagamentos.html").forward(request, response);
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw e;
+		} finally {
+		}
+	}
+
+	
 	private void listaped(HttpServletRequest request, HttpServletResponse response) throws Exception {
 		try {
 			request.getRequestDispatcher("/WEB-INF/lista_pedidos_aberto.html").forward(request, response);

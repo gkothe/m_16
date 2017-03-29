@@ -140,13 +140,13 @@ public class Pedidos_ajax {
 	}
 
 	public static void carregaPedidosAbertos(HttpServletRequest request, HttpServletResponse response, Connection conn, int coddistr) throws Exception {
-		
-		carregaPedidosAbertos( request,  response,  conn,  coddistr, false, new JSONObject(), new JSONArray()); 
+
+		carregaPedidosAbertos(request, response, conn, coddistr, false, new JSONObject(), new JSONArray());
 	}
-	
-	public static void carregaPedidosAbertos(HttpServletRequest request, HttpServletResponse response, Connection conn, int coddistr, boolean segundaconsulta,JSONObject retorno,JSONArray pedidos) throws Exception {
-//		JSONObject retorno = new JSONObject();
-//		JSONArray pedidos = new JSONArray();
+
+	public static void carregaPedidosAbertos(HttpServletRequest request, HttpServletResponse response, Connection conn, int coddistr, boolean segundaconsulta, JSONObject retorno, JSONArray pedidos) throws Exception {
+		// JSONObject retorno = new JSONObject();
+		// JSONArray pedidos = new JSONArray();
 		PrintWriter out = response.getWriter();
 
 		String num_pedido_aberto = request.getParameter("num_pedido_aberto") == null ? "" : request.getParameter("num_pedido_aberto"); //
@@ -190,7 +190,7 @@ public class Pedidos_ajax {
 			sql.append("              on pedido_motivo_cancelamento.id_pedido = pedido.id_pedido ");
 			sql.append("WHERE  id_distribuidora = ? ");
 			sql.append("       AND ( flag_status = 'E' &&  flag_modoentrega  ='A') ");
-			
+
 		}
 		if (!num_pedido_aberto.equalsIgnoreCase("")) {
 			sql.append(" and num_ped  = ? ");
@@ -369,7 +369,7 @@ public class Pedidos_ajax {
 
 			if (rs.getTimestamp("data_agenda_entrega") != null) {
 				objRetorno.put("data_agenda_entrega", new SimpleDateFormat("dd/MM/yyyy HH:mm").format(rs.getTimestamp("data_agenda_entrega")));
-//				objRetorno.put("data_formatada", new SimpleDateFormat("dd/MM/yyyy HH:mm").format(rs.getTimestamp("data_agenda_entrega")));
+				// objRetorno.put("data_formatada", new SimpleDateFormat("dd/MM/yyyy HH:mm").format(rs.getTimestamp("data_agenda_entrega")));
 			} else {
 
 			}
@@ -420,13 +420,12 @@ public class Pedidos_ajax {
 		}
 		retorno.put("temfiltro", temfiltro);
 		retorno.put("pedidos", pedidos);
-		
-		if(segundaconsulta){
-			out.print(retorno.toJSONString());	
-		}else{
+
+		if (segundaconsulta) {
+			out.print(retorno.toJSONString());
+		} else {
 			carregaPedidosAbertos(request, response, conn, coddistr, true, retorno, pedidos);
 		}
-		
 
 	}
 
@@ -736,7 +735,8 @@ public class Pedidos_ajax {
 			st2.setInt(1, Integer.parseInt(id_pedido));
 			ResultSet rs2 = st2.executeQuery();
 			JSONArray prods = new JSONArray();
-
+			JSONArray produtos_semestq = new JSONArray();
+			
 			while (rs2.next()) {
 				JSONObject obj = new JSONObject();
 
@@ -747,7 +747,15 @@ public class Pedidos_ajax {
 				obj.put("VAL_TOTAL", rs2.getDouble("val_total"));
 				obj.put("FLAG_RECUSADO", rs2.getString("flag_recusado"));
 				obj.put("RECUSADO_DISPONIVEL", rs2.getString("recusado_disponivel"));
+				obj.put("recusado_disponivel", rs2.getString("recusado_disponivel"));
+				obj.put("desc_abreviado", rs2.getString("desc_abreviado"));
+				
+				
 
+				if (rs2.getString("FLAG_RECUSADO") !=null && rs2.getString("FLAG_RECUSADO").equalsIgnoreCase("S")) {
+					produtos_semestq.add(obj);
+				}
+				
 				prods.add(obj);
 
 			}
@@ -786,20 +794,11 @@ public class Pedidos_ajax {
 				}
 			}
 			if (status.equalsIgnoreCase("R")) {
+		
+				Sys_parametros sys = new Sys_parametros(conn); 
+				objRetorno.put("motrecusa", Pedidos_ajax.retornaTextRecusado(conn, id_pedido, sys, produtos_semestq).replaceAll("\n","<br/>"));
 
-				st2 = conn.prepareStatement(" select * from pedido_motivos_recusa inner join motivos_recusa on motivos_recusa.cod_motivo = pedido_motivos_recusa.cod_motivo  where id_pedido =  ?");
-				st2.setInt(1, Integer.parseInt(id_pedido));
-				rs2 = st2.executeQuery();
-				JSONArray motivos = new JSONArray();
-				while (rs2.next()) {
-					JSONObject obj = new JSONObject();
-					obj.put("desc_motivo", rs2.getString("desc_motivo"));
-					obj.put("cod_motivo", rs2.getString("cod_motivo"));
-
-					motivos.add(obj);
-				}
-
-				objRetorno.put("motivos", motivos);
+				
 			}
 
 		}
@@ -877,13 +876,13 @@ public class Pedidos_ajax {
 			objRetorno.put("data_pedido", new SimpleDateFormat("dd/MM/yyyy HH:mm").format(rs.getTimestamp("data_pedido")));
 
 			objRetorno.put("val_totalped", "R$ " + df2.format(rs.getDouble("val_totalprod") + rs.getDouble("val_entrega")));
-			objRetorno.put("val_totalprod_mob","R$ " +  df2.format(rs.getDouble("val_totalprod")));
-			objRetorno.put("val_entrega_mob","R$ " +  df2.format(rs.getDouble("val_entrega")));
-			if(rs.getTimestamp("data_proxnot")!=null)
+			objRetorno.put("val_totalprod_mob", "R$ " + df2.format(rs.getDouble("val_totalprod")));
+			objRetorno.put("val_entrega_mob", "R$ " + df2.format(rs.getDouble("val_entrega")));
+			if (rs.getTimestamp("data_proxnot") != null)
 				objRetorno.put("datanot", new SimpleDateFormat("dd/MM/yyyy HH:mm").format(rs.getTimestamp("data_proxnot")));
 			else
 				objRetorno.put("datanot", "");
-			
+
 			objRetorno.put("VAL_TOTALPROD", rs.getString("val_totalprod"));
 			objRetorno.put("VAL_ENTREGA", rs.getString("val_entrega"));
 			objRetorno.put("num_ped", rs.getString("num_ped"));
@@ -921,10 +920,9 @@ public class Pedidos_ajax {
 				obj.put("VAL_UNIT", rs2.getDouble("val_unit"));
 				obj.put("VAL_TOTAL", rs2.getDouble("val_total"));
 
-				obj.put("disponivel", 0);//para mobile
+				obj.put("disponivel", 0);// para mobile
 				obj.put("val_unit_mob", df2.format(rs2.getDouble("val_unit")));
 				obj.put("val_total_mob", df2.format(rs2.getDouble("val_total")));
-				
 
 				prods.add(obj);
 
@@ -935,8 +933,8 @@ public class Pedidos_ajax {
 			Sys_parametros sys = new Sys_parametros(conn);
 
 			if (!rs.getString("flag_status").equalsIgnoreCase("A")) {
-			objRetorno.put("DESC_NOME", rs.getString("nome_pessoa"));
-			objRetorno.put("DESC_TELEFONE", rs.getString("num_telefonecontato_cliente"));
+				objRetorno.put("DESC_NOME", rs.getString("nome_pessoa"));
+				objRetorno.put("DESC_TELEFONE", rs.getString("num_telefonecontato_cliente"));
 			}
 
 			String end = rs.getString("desc_endereco_entrega") == null ? "" : rs.getString("desc_endereco_entrega");
@@ -993,10 +991,10 @@ public class Pedidos_ajax {
 
 			}
 			if (vizua) {
-			sql = " update  pedido  set flag_vizualizado = 'S' where id_pedido = ?  ";
-			st = conn.prepareStatement(sql);
-			st.setInt(1, Integer.parseInt(id_pedido));
-			st.executeUpdate();
+				sql = " update  pedido  set flag_vizualizado = 'S' where id_pedido = ?  ";
+				st = conn.prepareStatement(sql);
+				st.setInt(1, Integer.parseInt(id_pedido));
+				st.executeUpdate();
 			}
 		}
 
@@ -1280,9 +1278,9 @@ public class Pedidos_ajax {
 				st.executeUpdate();
 
 				Utilitario.oneSginal(sys, rs.getString("DESC_EMAIL"), "Seu pedido foi aceito!", data);
-				String html = "Olá, o seu pedido Nº "+rs.getString("num_ped")+" foi ACEITO! <br> Para mais informações acesse o TragoAqui e clique em Histórico de pedidos.";
-				
-				Utilitario.sendEmail(rs.getString("DESC_EMAIL"), html, "Tragoaqui - Pedido "+ rs.getString("num_ped") + " ACEITO.", conn);
+				String html = "Olá, o seu pedido Nº " + rs.getString("num_ped") + " foi ACEITO! <br> Para mais informações acesse o TragoAqui e clique em Histórico de pedidos.";
+
+				Utilitario.sendEmail(rs.getString("DESC_EMAIL"), html, "Tragoaqui - Pedido " + rs.getString("num_ped") + " ACEITO.", conn);
 
 				objRetorno.put("msg", "ok");
 
@@ -1374,10 +1372,10 @@ public class Pedidos_ajax {
 
 				}
 				Utilitario.oneSginal(sys, rs.getString("DESC_EMAIL"), "Seu pedido foi recusado!", data);
-				
-				String html = "Olá, o seu pedido Nº "+rs.getString("num_ped")+" foi RECUSADO! <br> Para mais informações acesse o TragoAqui e clique em Histórico de pedidos.";
-				Utilitario.sendEmail(rs.getString("DESC_EMAIL"), html, "Tragoaqui - Pedido "+ rs.getString("num_ped") + " RECUSADO.", conn);
-				
+
+				String html = "Olá, o seu pedido Nº " + rs.getString("num_ped") + " foi RECUSADO! <br> Para mais informações acesse o TragoAqui e clique em Histórico de pedidos.";
+				Utilitario.sendEmail(rs.getString("DESC_EMAIL"), html, "Tragoaqui - Pedido " + rs.getString("num_ped") + " RECUSADO.", conn);
+
 				objRetorno.put("msg", "ok");
 
 			} else {
@@ -1388,6 +1386,57 @@ public class Pedidos_ajax {
 		objRetorno.put("msg", "ok");
 		if (outprint)
 			out.print(objRetorno.toJSONString());
+
+	}
+
+	public static String retornaTextRecusado(Connection conn, String id_pedido, Sys_parametros sys, JSONArray produtos_semestq) throws Exception {
+
+		StringBuffer sql2 = new StringBuffer();
+		sql2.append("select  * from pedido_motivos_recusa ");
+		sql2.append("inner join motivos_recusa ");
+		sql2.append("on motivos_recusa.cod_motivo  = pedido_motivos_recusa.cod_motivo ");
+		sql2.append("where id_pedido = ? order by desc_motivo");
+
+		JSONArray motivos = new JSONArray();
+
+		PreparedStatement st2;
+		ResultSet rs2;
+
+		st2 = conn.prepareStatement(sql2.toString());
+		st2.setLong(1, Long.parseLong(id_pedido));
+		rs2 = st2.executeQuery();
+
+		String text_recusa = "";
+
+		while (rs2.next()) {
+			if (rs2.getInt("cod_motivo") != sys.getCod_recusa_estoque()) {
+				JSONObject mot = new JSONObject();
+				text_recusa = text_recusa + "" + rs2.getString("desc_motivo") + " \n";
+				mot.put("desc_motivo", rs2.getString("desc_motivo"));
+				motivos.add(mot);
+			}
+		}
+
+		if (produtos_semestq.size() != 0) {
+			text_recusa = text_recusa + "Produtos insuficientes ou em falta no estoque: \n";
+			for (int i = 0; i < produtos_semestq.size(); i++) {
+				JSONObject obj = (JSONObject) produtos_semestq.get(i);
+				try {
+					int qtddis = Integer.parseInt(obj.get("recusado_disponivel").toString());
+					if (qtddis != 0) {
+						text_recusa = text_recusa + "" + obj.get("desc_abreviado") + " está parcialmente falta. Qtd. disponível: " + qtddis + " \n";
+					} else {
+						text_recusa = text_recusa + "" + obj.get("desc_abreviado") + " está em falta. \n";
+					}
+				} catch (Exception e) {
+					text_recusa = text_recusa + "" + obj.get("desc_abreviado") + " está em falta. \n";
+				}
+
+			}
+
+		}
+
+		return text_recusa;
 
 	}
 

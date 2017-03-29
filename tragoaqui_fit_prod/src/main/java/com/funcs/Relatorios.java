@@ -1293,14 +1293,14 @@ public class Relatorios {
 				hmParams.put("situacao", Utilitario.returnStatusPedidoFlag(flag_situacao, ""));
 			}
 
-			if(flag_servico.equalsIgnoreCase("T")){
-				hmParams.put("servico", "Entrega");	
-			}else if(flag_servico.equalsIgnoreCase("L")){
+			if (flag_servico.equalsIgnoreCase("T")) {
+				hmParams.put("servico", "Entrega");
+			} else if (flag_servico.equalsIgnoreCase("L")) {
 				hmParams.put("servico", "Retirada em local");
-			}else{
+			} else {
 				hmParams.put("servico", "Todos");
 			}
-			
+
 			hmParams.put("modo_pay", Utilitario.returnModoPagamento(flag_pagamento));
 			if (!cod_bairro.equalsIgnoreCase(""))
 				hmParams.put("bairro", Utilitario.getNomeBairro(conn, Integer.parseInt(cod_bairro), 0));
@@ -1309,7 +1309,7 @@ public class Relatorios {
 
 			StringBuffer sql = new StringBuffer();
 
-			sql.append("SELECT desc_prod,pedido.id_pedido, ");
+			sql.append("SELECT desc_prod,pedido.id_pedido,desc_abreviado,produtos.id_prod, ");
 			sql.append("       pedido_item.val_unit, ");
 			sql.append("       qtd_prod, ");
 			sql.append("       pedido_item.val_unit * qtd_prod          AS val_subtotalprod, ");
@@ -1451,6 +1451,7 @@ public class Relatorios {
 
 			while (rs.next()) {
 				hmFat = new HashMap<String, Object>();
+				hmFat.put("id_prod", rs.getLong("id_prod"));
 				hmFat.put("flag_status", (rs.getString("flag_status")));
 				hmFat.put("desc_status", Utilitario.returnStatusPedidoFlag(rs.getString("flag_status"), rs.getString("flag_pedido_ret_entre")));
 				hmFat.put("data_pedido", rs.getTimestamp("DATA_PEDIDO"));
@@ -1462,7 +1463,7 @@ public class Relatorios {
 				hmFat.put("tragoaqui_perc", new BigDecimal(rs.getDouble("tragoaqui_perc")));
 				hmFat.put("desc_bairro", rs.getString("DESC_BAIRRO"));
 				hmFat.put("id_pedido", rs.getLong("id_pedido"));
-				hmFat.put("desc_prod", rs.getString("desc_prod"));
+				hmFat.put("desc_prod", rs.getString("desc_abreviado"));
 				hmFat.put("val_unit", new BigDecimal(rs.getDouble("val_unit")));
 				hmFat.put("qtd_prod", rs.getLong("QTD_PROD"));
 				hmFat.put("val_subtotalprod", new BigDecimal(rs.getDouble("VAL_SUBTOTALPROD")));
@@ -1541,48 +1542,7 @@ public class Relatorios {
 			produtos.add(prod);
 		}
 
-		sql2 = new StringBuffer();
-		sql2.append("select  * from pedido_motivos_recusa ");
-		sql2.append("inner join motivos_recusa ");
-		sql2.append("on motivos_recusa.COD_MOTIVO  = pedido_motivos_recusa.COD_MOTIVO ");
-		sql2.append("where id_pedido = ? order by DESC_MOTIVO");
-
-		JSONArray motivos = new JSONArray();
-
-		st2 = conn.prepareStatement(sql2.toString());
-		st2.setLong(1, Long.parseLong(id_pedido));
-		rs2 = st2.executeQuery();
-
-		String text_recusa = "";
-
-		while (rs2.next()) {
-			if (rs2.getInt("cod_motivo") != sys.getCod_recusa_estoque()) {
-				JSONObject mot = new JSONObject();
-				text_recusa = text_recusa + "" + rs2.getString("desc_motivo") + " \n";
-				mot.put("desc_motivo", rs2.getString("desc_motivo"));
-				motivos.add(mot);
-			}
-		}
-
-		if (produtos_semestq.size() != 0) {
-			text_recusa = text_recusa + "Produtos insuficientes ou em falta no estoque: \n";
-			for (int i = 0; i < produtos_semestq.size(); i++) {
-				JSONObject obj = (JSONObject) produtos_semestq.get(i);
-				try {
-					int qtddis = Integer.parseInt(obj.get("recusado_disponivel").toString());
-					if (qtddis != 0) {
-						text_recusa = text_recusa + "" + obj.get("desc_prod") + " está parcialmente falta. Qtd. disponível: " + qtddis + " \n";
-					} else {
-						text_recusa = text_recusa + "" + obj.get("desc_prod") + " está em falta. \n";
-					}
-				} catch (Exception e) {
-					text_recusa = text_recusa + "" + obj.get("desc_prod") + " está em falta. \n";
-				}
-
-			}
-
-		}
-		hmFat.put("motivos_recusa", text_recusa);
+		hmFat.put("motivos_recusa", Pedidos_ajax.retornaTextRecusado(conn, id_pedido, sys, produtos_semestq));
 
 		return hmFat;
 
@@ -1905,8 +1865,7 @@ public class Relatorios {
 				}
 				hmFat.put("vendabairro_total", df.format(vendabairro_total));
 				hmFat.put("somaprod", df2.format(somaprod));
-				
-				
+
 				arrLinhas.add(hmFat);
 			}
 

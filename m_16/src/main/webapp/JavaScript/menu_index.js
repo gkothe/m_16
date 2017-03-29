@@ -71,11 +71,10 @@ function abrirMapa() {
 	window.open("http://www.santacruz.rs.gov.br/geo/", '_blank');
 }
 
-function abrirMapaJpg(){
+function abrirMapaJpg() {
 
 	window.open("mapa_bairros.png", '_blank');
 }
-
 
 function sysMsg(text, tipo) {
 
@@ -94,8 +93,6 @@ function sysMsg(text, tipo) {
 
 function trocaPag(pag, jsp, e, extraparam) {
 
-	 
-	
 	var link = $(pag).attr('linkmenu');
 	var men = "";
 	if ($BODY.hasClass('nav-md')) {
@@ -108,7 +105,6 @@ function trocaPag(pag, jsp, e, extraparam) {
 		extraparam = "";
 	}
 
-	
 	if (e && (e.which == 2 || e.button == 4)) {
 		window.open("home?link=" + link + "&jsp=" + jsp + "&m=" + men + "&extra=" + extraparam, '_blank');
 	} else {
@@ -140,12 +136,12 @@ function marcarPedido_home(id_pedido) {
 		},
 		success : function(data) {
 
-			try{
-				loadAbertos(false);  //se tiver na tela de abertos.
-			}catch(err){
-				
+			try {
+				loadAbertos(false); // se tiver na tela de abertos.
+			} catch (err) {
+
 			}
-			 
+
 		},
 		error : function(msg) {
 
@@ -160,10 +156,8 @@ function marcarPedido_home(id_pedido) {
 
 }
 
-
-
 function pdfPedido(id) {
-	
+
 	var flag_opc = 'A';
 
 	var rel_ped_fim = id;
@@ -171,9 +165,8 @@ function pdfPedido(id) {
 
 	var erro = false;
 
-	
 	var filtros = "";
-	
+
 	if (flag_opc != "") {
 		filtros = filtros + "&flag_opc=" + flag_opc;
 	}
@@ -192,30 +185,26 @@ function pdfPedido(id) {
 	}
 }
 
-
 var active_menu;
 $(document).ready(function() {
 
 	$("#flag_marcado_detail").click(function(event) {
-		
+
 		event.stopPropagation();
-		marcarPedido_home( $("#m_id_pedido").val());
+		marcarPedido_home($("#m_id_pedido").val());
 	})
-	
-	
+
 	$("#flag_marcado_detail_div").click(function() {
-		
-		
-		
+
 		if ($("#flag_marcado_detail").is(":checked")) {
 			$("#flag_marcado_detail").prop('checked', false);
 		} else {
 			$("#flag_marcado_detail").prop('checked', true);
 		}
-		
-		marcarPedido_home( $("#m_id_pedido").val());
+
+		marcarPedido_home($("#m_id_pedido").val());
 	})
-	
+
 	$('#mainpage').load('home?ac=' + url);
 	$("#msg_cancholder").hide();
 	$("[linkmenu=" + url + "]").parent().addClass("current-page");
@@ -255,7 +244,6 @@ $(document).ready(function() {
 		}, 500);
 
 	});
-	
 
 	$('.keep-open', $('.fixed-table-toolbar')).prependTo($('#colunas'));
 	$('.fixed-table-toolbar').remove();
@@ -303,11 +291,9 @@ $(document).ready(function() {
 
 	$("#btn_pdf").click(function() {
 		pdfPedido($("#m_num_pedido").val());
-		
 
-	});	
-	
-	
+	});
+
 	$("#m_finalizar").click(function() {
 		finalizarPedido();
 
@@ -389,15 +375,13 @@ var sommute = false;
 var audio = new Audio('audiopedido.mp3');
 var audioCanc = new Audio('audiopedido.mp3');
 
-
-
 function mutarsom() {
 	audio.pause();
 	audio.currentTime = 0;
-	
+
 	audioCanc.pause();
 	audioCanc.currentTime = 0;
-	
+
 	sommute = true;
 	setTimeout(function() {
 		sommute = false;
@@ -413,9 +397,6 @@ function playAudioPedidoCanc() {
 	if (!sommute)
 		audioCanc.play();
 }
-
-
-
 
 function limpaModal() {
 
@@ -505,8 +486,8 @@ function checarPedidos() {
 
 			if (data.errologin != undefined) {
 				window.location.href = "";
-			} 
-			
+			}
+
 			if (data.tem == "true") {
 				changeTitle(true, data.qtd);
 
@@ -532,7 +513,7 @@ function checarPedidos() {
 
 				$("#menu_notification").html($("#menu_notification").html() + html);
 
-//				$(".not_numerico").autoNumeric('init', numerico);
+				// $(".not_numerico").autoNumeric('init', numerico);
 
 				if (data.flag_vizualizado == "N") {
 					playAudioPedido();
@@ -543,34 +524,25 @@ function checarPedidos() {
 				changeTitle(false, "");
 
 			}
-			
 
-
-			
-			
-			
-			
-			
 			if (data.temagend == "true") {
 
 				var html = "";
 
 				$("#h_qtd_pedz_agend").html(data.qtd_agend);
-				
+
 				html = ("<li> <div class=\"text-center\"> <a   > <strong> Pedidos agendados para serem entregues dentro das próximas 24 horas.  </strong>  </a> </div> </li>");
 
 				$("#menu_notification_agend").html($("#menu_notification_agend").html() + html);
 
-				
 				for (t = 0; t < data.pedidosagend.length; t++) {
 					var html = "";
-					if(data.pedidosagend[t].passou==false){
-						html = html + (" <li> <a onClick=\"visualizarPedido(" + data.pedidosagend[t].id_pedido + ")\" >     ");	
-					}else{
+					if (data.pedidosagend[t].passou == false) {
+						html = html + (" <li> <a onClick=\"visualizarPedido(" + data.pedidosagend[t].id_pedido + ")\" >     ");
+					} else {
 						html = html + (" <li> <a style='background-color: #E8F2FE !important' onClick=\"visualizarPedido(" + data.pedidosagend[t].id_pedido + ")\" >     ");
 					}
-					
-					
+
 					html = html + ("	<span class=\"message\">Número do pedido:  " + data.pedidosagend[t].num_ped + " <span class=\"time\">Hora: " + data.pedidosagend[t].horario + " </span> </span>    ");
 					html = html + ("	<span class=\"message\">Bairro: " + data.pedidosagend[t].desc_bairro + "  </span>    ");
 					html = html + ("	<span class=\"message\">Valor: R$ <label style='font-weight:normal !important;' id='lbl_notval1_" + t + "'>   </span>  	</a> </li> ");
@@ -580,23 +552,10 @@ function checarPedidos() {
 					$("#lbl_notval1_" + t).autoNumeric('set', data.pedidosagend[t].valor);
 
 				}
-				
 
-
-
-//				$(".not_numerico").autoNumeric('init', numerico);
-
-				
+				// $(".not_numerico").autoNumeric('init', numerico);
 
 			}
-			
-			
-			
-			
-			
-			
-			
-			
 
 			if (data.canc_vizu == true) {
 				$("#msg_cancholder").show();
@@ -928,39 +887,34 @@ function visualizarPedido(id) {
 			$("#table_enderaberto").hide();
 			$(".cancelamento").hide();
 			$("#m_finalizar").show();
-			
+			$("#row_marcar").show();
+
 			$("#m_finalizar").removeClass("btn-grey");
 			$("#m_finalizar").addClass("btn-danger");
-			
-			
+
 			if (data.flag_marcado == 'S') {
 				$("#flag_marcado_detail").prop('checked', true);
 			} else {
 				$("#flag_marcado_detail").prop('checked', false);
 			}
-			
-			
-			
+
 			$("#m_finalizar").html("Mover para histórico");
 			$("#m_tempo_max_lbl").html("Tempo máximo desejado para a entrega");
 			audio.pause();
 			audio.currentTime = 0;
-			
+
 			audioCanc.pause();
 			audioCanc.currentTime = 0;
-			if(data.m_observ!=""){
+			if (data.m_observ != "") {
 				$("#m_observ").html(data.m_observ)
 				$(".obsped").show();
 			}
-			
-			
-			
+
 			if (data.tipo_servico == "T") {
 				$("#m_lbl_bairro").html("Bairro:");
 				$("#table_enderaberto").show();
 				$("#desc_enderaberto").html(data.DESC_ENDERECO);
-				
-				
+
 				if (data.flag_modoentrega == 'A') {
 					$("#m_tempomax_div").hide();
 					$("#m_agendamento").html(data.data_agenda_entrega);
@@ -1052,7 +1006,7 @@ function visualizarPedido(id) {
 				} else {
 					$("#m_finalizar").removeClass("btn-danger");
 					$("#m_finalizar").addClass("btn-grey");
-					//$("#m_finalizar").hide();
+					// $("#m_finalizar").hide();
 				}
 
 				$(".m_enviado").show();
@@ -1062,9 +1016,8 @@ function visualizarPedido(id) {
 					$("#m_tempo_entrega_div").hide();
 				}
 
-				
 				$("#m_tempo_max_lbl").html("Tempo restante para realizar a entrega:");
-				
+
 			} else if (data.flag_status == "C") {
 				$("#m_lbl_titulo").css("color", "red");
 
@@ -1091,11 +1044,11 @@ function visualizarPedido(id) {
 				if (data.darok == true) {
 					$("#m_finalizar").show();
 				} else {
-					
+
 					$("#m_finalizar").removeClass("btn-danger");
 					$("#m_finalizar").addClass("btn-grey");
-					
-					//$("#m_finalizar").hide();
+
+					// $("#m_finalizar").hide();
 				}
 
 				$(".m_enviado").show();
@@ -1241,7 +1194,7 @@ function responderPedido() {
 					var motivos_json = JSON.stringify(motivos);
 					var prodsrecusadosjson = JSON.stringify(prodsrecusados);
 
-					var flag_usartempomax ;
+					var flag_usartempomax;
 
 					if ($("#flag_usartempomax").is(":checked")) {
 						flag_usartempomax = "S"
@@ -1261,7 +1214,7 @@ function responderPedido() {
 							id : id,
 							resposta : resposta,
 							prodsrecusadosjson : prodsrecusadosjson,
-							flag_usartempomax:flag_usartempomax
+							flag_usartempomax : flag_usartempomax
 
 						},
 						success : function(data) {

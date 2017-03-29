@@ -48,22 +48,22 @@ public class Parametros_ajax {
 		String id_marca = request.getParameter("id_marca") == null ? "" : request.getParameter("id_marca");
 
 		StringBuffer sql = new StringBuffer();
-		sql.append("SELECT produtos.id_prod, ");
+		sql.append(" SELECT produtos.id_prod, ");
 		sql.append("       desc_prod,desc_categoria,desc_marca, ");
 		sql.append("       desc_abreviado, ");
 		sql.append("       COALESCE(val_prod, 0)                            AS val_prod, ");
 		sql.append("       COALESCE(produtos_distribuidora.flag_ativo, 'N') AS flag_ativo ");
-		sql.append("FROM   produtos ");
+		sql.append(" FROM   produtos ");
 		sql.append("       LEFT JOIN prod_categoria ");
 		sql.append("              ON prod_categoria.id_prod = produtos.id_prod ");
 		sql.append("       LEFT JOIN categoria ");
 		sql.append("              ON categoria.id_categoria = prod_categoria.id_categoria ");
 		sql.append("       LEFT JOIN produtos_distribuidora ");
-		sql.append("              ON produtos.id_prod = produtos_distribuidora.id_prod ");
+		sql.append("              ON produtos.id_prod = produtos_distribuidora.id_prod and id_distribuidora = ? ");
 		sql.append("       LEFT JOIN marca ");
 		sql.append("              ON produtos.id_marca = marca.id_marca ");
-		sql.append("                 AND id_distribuidora = ? ");
-		sql.append("WHERE  ( produtos.flag_ativo = 'S' )");
+		sql.append("                  ");
+		sql.append(" WHERE  ( produtos.flag_ativo = 'S' )  ");
 
 		if (!flag_situacao.equalsIgnoreCase("")) {
 			sql.append("  and  Coalesce(produtos_distribuidora.flag_ativo,'N')  = ? ");
@@ -591,7 +591,6 @@ public class Parametros_ajax {
 			obj.put("flag_tele_entrega", rs.getString("flag_tele_entrega"));
 			obj.put("flag_retirada", rs.getString("flag_retirada"));
 			
-			
 			ret.add(obj);
 
 		}
@@ -627,19 +626,14 @@ public class Parametros_ajax {
 		String flag_tele_entrega = request.getParameter("flag_tele_entrega") == null ? "" : request.getParameter("flag_tele_entrega"); //
 		String flag_retirada = request.getParameter("flag_retirada") == null ? "" : request.getParameter("flag_retirada"); //
 		
-		
-		
-		
 		if (!(flag_agendamento.equalsIgnoreCase("S")) && !(flag_agendamento.equalsIgnoreCase("N"))) {
 			throw new Exception("Dados inválidos, entre em contato com o suporte.");
 		}
 
-		
 		if (!(flag_tele_entrega.equalsIgnoreCase("S")) && !(flag_tele_entrega.equalsIgnoreCase("N"))) {
 			throw new Exception("Dados inválidos, entre em contato com o suporte.");
 		}
 
-		
 		if (!(flag_retirada.equalsIgnoreCase("S")) && !(flag_retirada.equalsIgnoreCase("N"))) {
 			throw new Exception("Dados inválidos, entre em contato com o suporte.");
 		}

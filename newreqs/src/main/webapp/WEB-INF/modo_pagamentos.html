@@ -1,0 +1,53 @@
+<html>
+<script type="text/javascript" src="JavaScript/modo_pagamentos.js"></script>
+<div class="x_title">
+	<div class="row">
+		<div class="col-xs-12 col-md-12 col-lg-12">
+			<div class="form-group">
+				<label style="font-size: 30px" for="">Modos de pagamentos</label>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="x_content">
+	<div style="width: 95%; height: 100%" class="container bs-docs-container">
+		<br>
+		<div class="row">
+			<div class="col-xs-12 col-md-12 col-lg-12">
+				<label for=""> Aqui você escolhe os modos de pagamento que sua loja aceita. Caso você não encontre um modo
+					que deseja, nos informe e adicionaremos a opção para você!</label>
+			</div>
+		</div>
+		<br>
+		<div class="row">
+			<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 " align="left">
+				<label for=""> Escolha os modos abaixo e clique em salvar.</label class="glyphicon glyphicon-question-sign" style="color: blue"></span></span>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 " align="left">
+				<table>
+					<tbody id="tab_modo_pagamento"></tbody>
+					<tfoot>
+						<tr>
+							<td>&nbsp;</td>
+						</tr>
+					</tfoot>
+				</table>
+			</div>
+			<div class="row">
+				<div class="col-xs-6 col-sm-6 col-md-6 col-lg-6 " align="left">
+					<button type="button" class="btn btn-primary" id="marca_modos">Marcar Todos</button>
+					<button type="button" class="btn btn-primary" id="desmarca_modos">Desmarcar Todos</button>
+				</div>
+				<div class="col-xs-6 col-sm-6 col-md-6 col-lg-6 " align="right">
+					<button type="button" class="btn btn-success" id="salvar_modos">Salvar</button>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<!-- Tab panes -->
+<br>
+<input id="sys_formatador" type="hidden">
+</html>

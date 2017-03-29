@@ -736,6 +736,7 @@ public class Pedidos_ajax {
 			st2.setInt(1, Integer.parseInt(id_pedido));
 			ResultSet rs2 = st2.executeQuery();
 			JSONArray prods = new JSONArray();
+			JSONArray produtos_semestq = new JSONArray();
 
 			while (rs2.next()) {
 				JSONObject obj = new JSONObject();
@@ -747,6 +748,14 @@ public class Pedidos_ajax {
 				obj.put("VAL_TOTAL", rs2.getDouble("val_total"));
 				obj.put("FLAG_RECUSADO", rs2.getString("flag_recusado"));
 				obj.put("RECUSADO_DISPONIVEL", rs2.getString("recusado_disponivel"));
+				obj.put("recusado_disponivel", rs2.getString("recusado_disponivel"));
+				obj.put("desc_abreviado", rs2.getString("desc_abreviado"));
+				
+				
+
+				if (rs2.getString("FLAG_RECUSADO") !=null && rs2.getString("FLAG_RECUSADO").equalsIgnoreCase("S")) {
+					produtos_semestq.add(obj);
+				}
 
 				prods.add(obj);
 
@@ -787,19 +796,10 @@ public class Pedidos_ajax {
 			}
 			if (status.equalsIgnoreCase("R")) {
 
-				st2 = conn.prepareStatement(" select * from pedido_motivos_recusa inner join motivos_recusa on motivos_recusa.cod_motivo = pedido_motivos_recusa.cod_motivo  where id_pedido =  ?");
-				st2.setInt(1, Integer.parseInt(id_pedido));
-				rs2 = st2.executeQuery();
-				JSONArray motivos = new JSONArray();
-				while (rs2.next()) {
-					JSONObject obj = new JSONObject();
-					obj.put("desc_motivo", rs2.getString("desc_motivo"));
-					obj.put("cod_motivo", rs2.getString("cod_motivo"));
+				Sys_parametros sys = new Sys_parametros(conn); 
+				objRetorno.put("motrecusa", Pedidos_ajax.retornaTextRecusado(conn, id_pedido, sys, produtos_semestq).replaceAll("\n","<br/>"));
 
-					motivos.add(obj);
-				}
-
-				objRetorno.put("motivos", motivos);
+				
 			}
 
 		}
@@ -1387,6 +1387,57 @@ public class Pedidos_ajax {
 		objRetorno.put("msg", "ok");
 		if (outprint)
 			out.print(objRetorno.toJSONString());
+
+	}
+
+	public static String retornaTextRecusado(Connection conn, String id_pedido, Sys_parametros sys, JSONArray produtos_semestq) throws Exception {
+
+		StringBuffer sql2 = new StringBuffer();
+		sql2.append("select  * from pedido_motivos_recusa ");
+		sql2.append("inner join motivos_recusa ");
+		sql2.append("on motivos_recusa.cod_motivo  = pedido_motivos_recusa.cod_motivo ");
+		sql2.append("where id_pedido = ? order by desc_motivo");
+
+		JSONArray motivos = new JSONArray();
+
+		PreparedStatement st2;
+		ResultSet rs2;
+
+		st2 = conn.prepareStatement(sql2.toString());
+		st2.setLong(1, Long.parseLong(id_pedido));
+		rs2 = st2.executeQuery();
+
+		String text_recusa = "";
+
+		while (rs2.next()) {
+			if (rs2.getInt("cod_motivo") != sys.getCod_recusa_estoque()) {
+				JSONObject mot = new JSONObject();
+				text_recusa = text_recusa + "" + rs2.getString("desc_motivo") + " \n";
+				mot.put("desc_motivo", rs2.getString("desc_motivo"));
+				motivos.add(mot);
+			}
+		}
+
+		if (produtos_semestq.size() != 0) {
+			text_recusa = text_recusa + "Produtos insuficientes ou em falta no estoque: \n";
+			for (int i = 0; i < produtos_semestq.size(); i++) {
+				JSONObject obj = (JSONObject) produtos_semestq.get(i);
+				try {
+					int qtddis = Integer.parseInt(obj.get("recusado_disponivel").toString());
+					if (qtddis != 0) {
+						text_recusa = text_recusa + "" + obj.get("desc_abreviado") + " está parcialmente falta. Qtd. disponível: " + qtddis + " \n";
+					} else {
+						text_recusa = text_recusa + "" + obj.get("desc_abreviado") + " está em falta. \n";
+					}
+				} catch (Exception e) {
+					text_recusa = text_recusa + "" + obj.get("desc_abreviado") + " está em falta. \n";
+				}
+
+			}
+
+		}
+
+		return text_recusa;
 
 	}
 

@@ -1,0 +1,73 @@
+<html>
+<script type="text/javascript" src="JavaScript/mobileusers.js"></script>
+<div class="x_title">
+	<div class="row">
+		<div class="col-xs-12 col-md-12 col-lg-12">
+			<div class="form-group">
+				<label style="font-size: 30px" for="">Configurações do Mobile</label>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="x_content">
+	<div style="width: 95%; height: 100%" class="container bs-docs-container">
+		<div class="row">
+			<div class=" col-xs-4 col-md-4 col-lg-4">
+				<div class="form-group">
+					<label>E-mail</label>
+				</div>
+			</div>
+			<div class=" col-xs-4 col-md-4 col-lg-4">
+				<div class="form-group">
+					<label for="">Permissão</label>
+				</div>
+			</div>
+			<div class=" col-xs-4 col-md-4 col-lg-4">
+				<div class="form-group">
+					<label for="">Observação</label>
+				</div>
+			</div>
+		</div>
+		<div id="dados_users"></div>
+		<div class="row rowpad">
+			<div class="col-xs-3 col-sm-3 col-md-3	col-lg-3" align="left">
+				<button type="button" id="add_user" style="margin-right: 0px;" class="btn btn-primary">Adicionar</button>
+			</div>
+			<div class="col-xs-6 col-sm-6 col-md-6	col-lg-6" align="right">
+			</div>
+			<div class="col-xs-3 col-sm-3 col-md-3	col-lg-3" align="right">
+				<button type="button" id="btn_salvar" style="margin-right: 0px;" class="btn btn-success">Salvar</button>
+			</div>
+		</div> 
+	</div>
+</div>
+<br>
+<div id="copy_html" style="display: none;">
+	<div class="row">
+		<div class=" col-xs-4 col-md-4 col-lg-4">
+			<div class="form-group">
+				<input type="email" class="form-control opc_mail" style="text-align: right" id="val_min_entrega" />
+			</div>
+		</div>
+		<div class=" col-xs-3 col-md-3 col-lg-3">
+			<div class="form-group" align="left">
+				<select class="form-control opc_flagperm ">
+					<option style="background-color: white !important" value=''>Escolha</option>
+					<option value='A'>Administração</option>
+					<option value='V'>Visualização</option>
+				</select>
+			</div>
+		</div>
+		<div class=" col-xs-4 col-md-4 col-lg-4">
+			<div class="form-group">
+				<textarea data-toggle="tooltip" rows="2" title="" id="" class="form-control opc_txtobs "></textarea>
+			</div>
+		</div>
+		<div class=" col-xs-1 col-md-1 col-lg-1">
+			<div class="form-group">
+				<a data-toggle="tooltip" tabindex="0" role="button" title="Remover este usuário" data-trigger="focus"
+					class="btn btn-default  btn_tabela " onclick="removerow(this);" data-container="body" data-placement="left"><i class="fa fa-trash-o"></i></a>
+			</div>
+		</div>
+		<input id="sys_formatador" type="hidden">
+</html>

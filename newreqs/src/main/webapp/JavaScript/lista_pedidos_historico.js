@@ -185,6 +185,9 @@ function visualizarPedidoHistorico(id) {
 		async : false,
 		dataType : 'json',
 		success : function(data) {
+			
+			$("#m_num_pedido").val(data.num_ped);
+			$("#row_marcar").hide();
 			$(".cancelamento").hide();
 			$("#table_enderaberto").hide();
 			if (data.tipo_servico == "T") {
@@ -250,61 +253,8 @@ function visualizarPedidoHistorico(id) {
 
 				$("#m_responder").hide();
 				$("#m_finalizar").hide();
-				// setar os valores
 
-				var html = "";
-				var html = [];
-
-				for (t = 0; t < data.motivos.length; t++) {
-					if ((motivo_estoque + "") == (data.motivos[t].cod_motivo + "")) {
-						html.push(" <tr> <td colspan='100%' style=\"padding-right: 10px;\"> ");
-						html.push("<div   class=\"checkbox\" style=\"margin-top: 0px; margin-bottom: 0px;\">");
-						html.push("<label>  " + (t + 1) + " - " + data.motivos[t].desc_motivo + "</label> </div> &nbsp; ");
-						html.push('<button data-toggle=\"tooltip\" style="margin-bottom: 0px;padding-bottom: 2px;padding-top: 1px;height: 21px;"  id=\"modal_prodsrecusa_btn_prods2\" type="button" class="btn btn-primary" title="Listar produtos"> <span class="glyphicon glyphicon-list-alt" aria-hidden="true"></span></button>');
-						html.push(" </tr>");
-					}
-
-				}
-
-				for (t = 0; t < data.motivos.length; t++) {
-
-					if ((motivo_estoque + "") == (data.motivos[t].cod_motivo + "")) {
-					} else {
-
-						html.push(" <tr> <td style=\"padding-right: 10px; width 40% \"> ");
-						html.push("<div class=\"checkbox\" style=\"margin-top: 0px; margin-bottom: 0px;\">");
-						html.push("<label>  " + (t + 1) + " - " + data.motivos[t].desc_motivo + "</label> </div> 	</td>");
-
-						if (data.motivos[t + 1] != undefined) {
-
-							if ((motivo_estoque + "") == (data.motivos[t + 1].cod_motivo + "")) {
-								t++;
-							}
-							if (data.motivos[t + 1] != undefined) {
-								html.push("<td style=\"padding-right: 10px; width 40%\"> ");
-								html.push("<div class=\"checkbox\" style=\"margin-top: 0px; margin-bottom: 0px;\">");
-								html.push("<label> " + (t + 2) + " - " + data.motivos[t + 1].desc_motivo + "</label> </div> 	</td>");
-								t++;
-							}
-						}
-
-						html.push(" </tr>");
-					}
-				}
-
-				setTimeout(function() {
-
-					$('[data-toggle="tooltip"]').tooltip();
-
-					$("#modal_prodsrecusa_btn_prods2").click(function() {
-
-						showProdsRecusaHist(id);
-
-					});
-
-				}, 700)
-
-				$("#desc_motivos2").html(html);
+				$("#desc_motivos2").html(data.motrecusa);
 
 				$("#m_resposta_motivos").show();
 

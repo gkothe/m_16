@@ -8,7 +8,7 @@
 <head>
 <meta charset="utf-8" />
 <meta content="width=device-width, initial-scale=1.0" name="viewport" />
-<link rel="shortcut icon" href="favicon.ico"/> 
+<link rel="shortcut icon" href="favicon.ico" />
 <title>TragoAqui</title>
 <script type="text/javascript" src="JavaScript/httpsredirect.js"></script>
 <link rel="shortcut icon" href="images/favicon.png" type="image/x-icon">
@@ -31,7 +31,6 @@
 <!-- Custom Theme Style -->
 <link href="gentelella-master/production/css/custom.css" rel="stylesheet">
 <link rel="stylesheet" type="text/css" href="css/tragoaqui.css" />
-
 <%
 	// 	Connection conn = null;
 	// 	Sys_parametros sys = null;
@@ -48,9 +47,7 @@
 
 	// 	}
 %>
-
 </head>
-
 <body class="nav-md">
 	<div class="container body">
 		<div class="main_container" id="main_cont" style="">
@@ -59,9 +56,7 @@
 					<div class="navbar nav_title" style="border: 0;">
 						<a style="height: 75px;" class="site_title"><image style="width: 200px" src="images/logomenu.png"></image> </a>
 					</div>
-
 					<div class="clearfix"></div>
-
 					<!-- menu profile quick info -->
 					<div class="profile">
 						<div class="profile_pic" style="padding-left: 15px; padding-top: 15px;">
@@ -75,13 +70,11 @@
 						</div>
 					</div>
 					<!-- /menu profile quick info -->
-
 					<br /> <br> <br>
 					<!-- sidebar menu -->
 					<div id="sidebar-menu" class="main_menu_side hidden-print main_menu">
 						<div class="menu_section">
 							<h3>Menu</h3>
-
 							<ul class="nav side-menu">
 								<li><a class="clickmenu2"><i class="fa fa-home clickmenu2"></i> Pedidos <span
 										class="fa fa-chevron-down clickmenu"></span></a>
@@ -110,30 +103,17 @@
 										<li><a linkmenu="dashpedidos" onMouseup="trocaPag(this,'N',event);" class="clickmenu">Dashboard
 												Pedidos</a></li>
 									</ul></li>
-
 							</ul>
 						</div>
-
-
-
 					</div>
 					<!-- /sidebar menu -->
-
-
 				</div>
 			</div>
-
 			<!-- top navigation -->
 			<div class="top_nav">
-
 				<div class="nav_menu">
-
 					<nav class="" role="navigation">
-
 						<ul class="nav navbar-nav navbar-right" style="width: 100%";>
-
-
-
 							<li class=""><div style="width: 10px"></div></li>
 							<li class=""><a href="javascript:;" class="user-profile dropdown-toggle" data-toggle="dropdown"
 								aria-expanded="false"><label style="font-weight: 900">Opções</label> <span class=" fa fa-angle-down"></span>
@@ -158,14 +138,11 @@
 							</a>
 								<ul id="menu_notification_agend" style="overflow: auto; max-height: 300px"
 									class="dropdown-menu list-unstyled msg_list" role="menu">
-
-
 								</ul></li>
 							<li class=""><div style="width: 10px">&nbsp;&nbsp;</div>
 							<li style="margin-top: 15px; width: 70%">
 								<table style="width: 100%">
 									<tr>
-
 										<td width="25%" align="left">
 											<div style="cursor: pointer;" id="msg_cancholder">
 												<a onclick="trocaPag(this,'N','','canc');" linkmenu="listaped"> <span class="label label-primary "
@@ -173,9 +150,7 @@
 												</a>
 											</div>
 										</td>
-
 										<td width="5%">&nbsp;</td>
-
 										<td align="right" class="table_header">
 											<div style="cursor: pointer; display: none;" id="msg_holder">
 												<a onclick="trocaPag(this,'N');" linkmenu="listaped"><span class="label label-danger aviso_pedido"
@@ -187,45 +162,32 @@
 											</div>
 										</td>
 									</tr>
-
 								</table>
-
-
 							</li>
-
 							<div class="nav toggle clickmenu2">
 								<a id="menu_toggle"><i class="fa fa-bars"></i></a>
 							</div>
-
-
 						</ul>
 					</nav>
 				</div>
-
 			</div>
 			<!-- /top navigation -->
-
-
 			<!-- page content -->
 			<div class="right_col" style="max-height: 100% !important; padding-left: 10px; padding-right: 10px;" role="main">
 				<div class="x_panel" id="mainpage" style="overflow: auto; padding-left: 5px; padding-right: 5px;"></div>
 			</div>
 			<!-- /page content -->
-
 			<!-- footer content -->
 			<footer style="padding-bottom: 0px !important">
 				<br>
 			</footer>
 			<!-- /footer content -->
-
-
 			<div id="modal_cancelamentos"></div>
 			<div id="modal_atrasados"></div>
 			<div class="modal fade bs-example-modal-lg" tabindex="-5" style="z-index: 2000" role="dialog" id="modal_erros"
 				aria-hidden="true">
 				<div class="modal-dialog modal-lg">
 					<div class="modal-content">
-
 						<div class="modal-header" align="center">
 							<button type="button" class="close" data-dismiss="modal">
 								<span aria-hidden="true">×</span>
@@ -235,28 +197,18 @@
 							</h4>
 						</div>
 						<div class="modal-body" style="max-height: 750px; overflow: auto;">
-
 							<div class="row">
-
 								<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 ">
 									<strong>Mensagem:</strong>&nbsp;<label id="msg_erro"></label>
 								</div>
-
-
 							</div>
-
 						</div>
 						<div class="modal-footer">
-
 							<div class="row">
-
 								<div class="col-xs-10 col-sm-10 col-md-10 col-lg-10 "></div>
-
-
 								<div class="col-xs-2 col-sm-2 col-md-2 col-lg-2 " align="right">
 									<button type="button" class="btn btn-primary" data-dismiss="modal">Fechar</button>
 								</div>
-
 							</div>
 						</div>
 					</div>
@@ -265,7 +217,6 @@
 			<div class="modal fade bs-example-modal-lg" tabindex="5" role="dialog" id="modal_prodsrecusa" aria-hidden="true">
 				<div class="modal-dialog modal-lg">
 					<div class="modal-content">
-
 						<div class="modal-header" align="center">
 							<button type="button" class="close" data-dismiss="modal">
 								<span aria-hidden="true">×</span>
@@ -280,17 +231,13 @@
 							<div style="max-height: 500px; overflow: auto" id="modal_prodsrecusa_div"></div>
 						</div>
 						<div class="modal-footer">
-
 							<div class="row">
 								<div class="col-xs-10 col-sm-10 col-md-10 col-lg-10 " align="left">
 									<button type="button" class="btn btn-primary" id="modal_prodsrecusa_btn_voltar" data-dismiss="modal">Cancelar</button>
 								</div>
-
-
 								<div class="col-xs-2 col-sm-2 col-md-2 col-lg-2 " align="right">
 									<button type="button" class="btn btn-primary" id="modal_prodsrecusa_btn_continuar" data-dismiss="modal">Continuar</button>
 								</div>
-
 							</div>
 						</div>
 					</div>
@@ -299,7 +246,6 @@
 			<div class="modal fade bs-example-modal-lg" tabindex="-5" role="dialog" id="modal_pedido" aria-hidden="true">
 				<div class="modal-dialog modal-lg">
 					<div class="modal-content">
-
 						<div class="modal-header" align="center">
 							<button type="button" class="close" data-dismiss="modal">
 								<span aria-hidden="true">×</span>
@@ -310,44 +256,25 @@
 							</h4>
 						</div>
 						<div class="modal-body" style="max-height: 800px">
-
-
-
 							<div class="row">
-
 								<div class="col-xs-7 col-sm-7 col-md-7 col-lg-7" align="left">
-
 									<table style="font-size: 120%">
-
 										<tr>
 											<td style="padding-right: 5px;"><label id="m_lbl_bairro" for="">Bairro: </label></td>
 											<td><label id="m_desc_bairro"> </label></td>
-
 										</tr>
-
 									</table>
-
 								</div>
-
-
-
 								<div class="col-xs-5 col-sm-5 col-md-5 col-lg-5" align="right">
-
 									<table style="font-size: 120%">
 										<tr>
 											<td style="padding-right: 5px;"><label for="">Data do pedido: </label></td>
 											<td><label id="m_data_pedido"></label></td>
-
 										</tr>
-
 									</table>
-
 								</div>
-
 							</div>
-
 							<div class="row">
-
 								<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12" align="">
 									<table id="m_table_produtos" data-toggle="table" class="table_boots" data-height="250" data-locale="pt-BR"
 										data-pagination="true" data-page-list="[4,10,25,50,100]" data-page-size="4" data-locale="pt-BR"
@@ -367,114 +294,71 @@
 										<tbody>
 										</tbody>
 									</table>
-
-
 								</div>
-
 							</div>
 							<br>
-
 							<div class="row">
-
 								<div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
-
-
 									<table>
 										<tr>
 											<td style="padding-right: 5px;"><label for="">Modo de pagamento: </label></td>
 											<td><label id=""> </label><label id="m_modo_pagamento"></label></td>
-
 										</tr>
 									</table>
-
-
 								</div>
-
 								<div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
-
-
 									<table id="table_enderaberto">
 										<tr>
 											<td style="padding-right: 5px;"><label for="">Endereço: </label></td>
 											<td><label id=""> </label><label id="desc_enderaberto"></label></td>
-
 										</tr>
 									</table>
-
-
 								</div>
-
 							</div>
-
-
 							<div class="row">
-
 								<div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
-
-
 									<table>
 										<tr>
 											<td style="padding-right: 5px;"><label for="">Valor total do produtos: </label></td>
 											<td><label id=""> </label><label id="m_total_produtos"></label></td>
-
 										</tr>
 									</table>
-
-
 								</div>
 								<div class="col-xs-6 col-sm-6 col-md-6 col-lg-6 m_enviado" align="left">
 									<table>
 										<tr>
 											<td style="padding-right: 5px;"><label for="">Data de resposta: </label></td>
 											<td><label id="m_data_resposta"></label></td>
-
 										</tr>
-
 									</table>
-
 								</div>
-
 							</div>
-
 							<div class="row">
-
 								<div class="col-xs-6 col-sm-6 col-md-6 col-lg-6" align="">
-
 									<table>
 										<tr>
 											<td style="padding-right: 5px;"><label for="">Valor de tele-entrega: </label></td>
 											<td><label id=""> </label><label id="m_total_tele"></label></td>
-
 										</tr>
-
 									</table>
-
 								</div>
 								<div id='m_tempo_entrega_div' class="col-xs-6 col-sm-6 col-md-6 col-lg-6" align="left">
 									<table>
 										<tr>
 											<td style="padding-right: 5px;"><label for="">Tempo estimado para entrega: </label></td>
 											<td><label id="m_tempo_entrega"></label></td>
-
 										</tr>
-
 									</table>
-
 								</div>
-
 							</div>
-
 							<div class="row">
 								<div class="col-xs-6 col-sm-6 col-md-6 col-lg-6" align="">
 									<table>
 										<tr>
 											<td style="padding-right: 5px;"><label for="">Total pedido: </label></td>
 											<td><label id=""> </label><label id="m_total_pedido"></label></td>
-
 										</tr>
-
 									</table>
-
 								</div>
 								<div id="m_tempomax_div" class="col-xs-6 col-sm-6 col-md-6 col-lg-6" align="">
 									<table>
@@ -482,28 +366,18 @@
 											<td style="padding-right: 5px;"><label id="m_tempo_max_lbl" for="">Tempo máximo desejado para a
 													entrega: </label></td>
 											<td><label id="m_tempo_max"></label></td>
-
 										</tr>
-
 									</table>
-
 								</div>
 								<div id="m_agendamento_div" class="col-xs-6 col-sm-6 col-md-6 col-lg-6" align="">
 									<table>
 										<tr>
 											<td style="padding-right: 5px;"><label for="">Horário requisitado para entrega: </label></td>
 											<td><label id="m_agendamento"></label></td>
-
 										</tr>
-
 									</table>
-
 								</div>
-
-
 							</div>
-
-
 							<div class="row" id="m_troco_para_div">
 								<div class="col-xs-6 col-sm-6 col-md-6 col-lg-6" align="">
 									<table>
@@ -514,37 +388,25 @@
 									</table>
 								</div>
 							</div>
-
 							<div class="row cancelamento">
-
 								<div class="col-xs-6 col-sm-6 col-md-6 col-lg-6 " align="">
 									<table>
 										<tr>
 											<td style="padding-right: 5px;"><label for="">Data de cancelamento: </label></td>
 											<td><label id=""> </label><label id="m_data_cancelamento"></label></td>
 										</tr>
-
 									</table>
-
 								</div>
-
-
 								<div class="col-xs-6 col-sm-6 col-md-6 col-lg-6 " align="">
 									<table>
 										<tr>
 											<td style="padding-right: 5px;"><label for="">Motivo: </label></td>
 											<td><label id=""> </label><label id="m_motivo"></label></td>
-
 										</tr>
-
 									</table>
-
 								</div>
-
 							</div>
-
 							<div class="row obsped cancelamento">
-
 								<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 " align="">
 									<table style="width: 90%">
 										<tr>
@@ -552,17 +414,10 @@
 											<td><label id=""> </label><label id="m_observ"></label></td>
 											<!-- 											<td  > <textarea rows="2" id="m_observ" readonly="readonly" style="width: 100%;  resize: none;" ></textarea></td> -->
 										</tr>
-
 									</table>
-
 								</div>
-
-
-
 							</div>
-
 							<DIV class="m_enviado">
-
 								<br>
 								<div class="row ">
 									<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 " align="">
@@ -570,7 +425,6 @@
 											<tr>
 												<td style="padding-right: 5px; padding-left: 5px;" colspan="100%"><label> Informações do
 														comprador. </label></td>
-
 											</tr>
 											<tr>
 												<td style="padding-right: 5px; padding-left: 5px;"><label> Nome: </label> &nbsp; <label
@@ -578,27 +432,18 @@
 												<td style="padding-right: 5px; padding-left: 5px;"><label> Telefone: </label> &nbsp; <label
 													id="envio_desc_telefone"> </label></td>
 											</tr>
-
 											<tr>
 												<td style="padding-right: 5px; padding-left: 5px;"><label>Endereço:</label> &nbsp; <label
 													id="envio_desc_endereco"></label></td>
 												<td style="padding-right: 5px; padding-left: 5px;"><label>Bairro:</label> &nbsp;<label
 													id="envio_desc_bairro"></label></td>
 											</tr>
-
 										</table>
-
 									</div>
 								</div>
-
 							</div>
-
-
 							<DIV ID="m_aberto">
-
-
 								<div class="row">
-
 									<div class="col-xs-3 col-sm-3 col-md-3 col-lg-3" align="">
 										<input type="hidden" id="m_id_pedido">
 										<input type="hidden" id="m_num_pedido">
@@ -608,7 +453,6 @@
 										<input type="radio" name="flag_aceita_recusa" value="A"> <LABEL id="lbl_aceitar"
 											style="font-size: 150%; color: green">Confirmar</LABEL>
 									</div>
-
 									<div class="col-xs-2 col-sm-2 col-md-2 col-lg-2" align="">
 										<input type="radio" name="flag_aceita_recusa" value="R"> <LABEL id="lbl_recusar"
 											style="font-size: 150%; color: red">Recusar</LABEL>
@@ -641,10 +485,7 @@
 													</div>
 												</td>
 											</tr>
-
 										</table>
-
-
 									</div>
 								</div>
 								<div class="row" id="m_motivos_recusa_box" style="margin-left: 0px; margin-right: 0px;">
@@ -652,10 +493,7 @@
 										<label>Motivo(s) de recusa do pedido</label>
 										<!-- Aqui carrega os motivo com checkbxo qdo carrega a tela -->
 										<table id="desc_motivos">
-
-
 										</table>
-
 									</div>
 								</div>
 							</div>
@@ -663,29 +501,17 @@
 								<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 well" align="">
 									<!-- Aqui carrega descrição dos motivo quando abre o pedido recusado-->
 									<label>Motivo(s) de recusa do pedido</label>
-
 									<table id="desc_motivos2" style="">
-
-
 									</table>
-
 								</div>
 							</div>
-
-
-							<DIV>
-
-
-								<div class="row">
-									<div id="flag_marcado_detail_div" class="col-xs-4 col-sm-4 col-md-4 col-lg-4" align="">
-										<input type="checkbox" id="flag_marcado_detail" style="color: black !important"> <strong>Marcar
-											pedido <strong>
-									</div>
+							<div class="row" id="row_marcar">
+								<div id="flag_marcado_detail_div" class="col-xs-4 col-sm-4 col-md-4 col-lg-4" align="">
+									<input type="checkbox" id="flag_marcado_detail" style="color: black !important"> <strong>Marcar
+										pedido <strong>
 								</div>
-
 							</div>
 							<div class="modal-footer">
-
 								<div class="row"">
 									<div class="col-xs-2 col-sm-2 col-md-2 col-lg-2 " align="left">
 										<button type="button" class="btn btn-primary" data-dismiss="modal">Fechar</button>
@@ -694,15 +520,11 @@
 									<div class="col-xs-1 col-sm-1 col-md-1 col-lg-1 "></div>
 									<div class="col-xs-1 col-sm-1 col-md-1 col-lg-1 "></div>
 									<div class="col-xs-1 col-sm-1 col-md-1 col-lg-1 ">
-									<button type="button" id="btn_pdf" class="btn btn-primary">PDF/Imprimir</button>
+										<button type="button" id="btn_pdf" class="btn btn-primary">PDF/Imprimir</button>
 									</div>
-									
 									<div class="col-xs-1 col-sm-1 col-md-1 col-lg-1 "></div>
 									<div class="col-xs-1 col-sm-1 col-md-1 col-lg-1 "></div>
 									<div class="col-xs-1 col-sm-1 col-md-1 col-lg-1 "></div>
-
-
-
 									<div class="col-xs-3 col-sm-3 col-md-3 col-lg-3 " align="right">
 										<div id="div_responder">
 											<button type="button" id="m_responder" class="btn btn-success">Responder</button>
@@ -710,14 +532,12 @@
 										<div id="div_finalizar">
 											<button type="button" id="m_finalizar" class="btn btn-danger">Mover para histórico</button>
 										</div>
-
 									</div>
 								</div>
 							</div>
 						</div>
 					</div>
 				</div>
-
 			</div>
 		</div>
 		<input type="hidden" id="extra_paramfield">
@@ -726,7 +546,6 @@
 		<!-- Bootstrap -->
 		<script src="gentelella-master/vendors/bootstrap/dist/js/bootstrap.min.js"></script>
 		<!-- Chart.js -->
-
 		<!-- Custom Theme Scripts  tem que ter-->
 		<!-- 	<script src="gentelella-master/production/js/custom.js"></script> -->
 		<script src="gentelella-master/build/js/custom.js"></script>
@@ -757,7 +576,6 @@
 		<script type="text/javascript" src="JavaScript/boostrap_multiselect/bootstrap-multiselect.js"></script>
 		<script type="text/javascript" src="JavaScript/bootstrap3-dialog-master/dist/js/bootstrap-dialog.js"></script>
 </body>
-
 <script>
 	var url = "";
 	var php = "";
@@ -778,14 +596,10 @@
 		menu = "m"
 		extraparam = "";
 <%}%>
-
-
 	$("#extra_paramfield").val(extraparam);
 		//	$('#mainpage').load('home?ac=listaped');
 
 	});
 </script>
-
-
 <script type="text/javascript" src="JavaScript/menu_index.js"></script>
 </html>

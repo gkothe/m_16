@@ -94,8 +94,6 @@ function sysMsg(text, tipo) {
 
 function trocaPag(pag, jsp, e, extraparam) {
 
-	 
-	
 	var link = $(pag).attr('linkmenu');
 	var men = "";
 	if ($BODY.hasClass('nav-md')) {
@@ -108,7 +106,6 @@ function trocaPag(pag, jsp, e, extraparam) {
 		extraparam = "";
 	}
 
-	
 	if (e && (e.which == 2 || e.button == 4)) {
 		window.open("home?link=" + link + "&jsp=" + jsp + "&m=" + men + "&extra=" + extraparam, '_blank');
 	} else {
@@ -171,7 +168,6 @@ function pdfPedido(id) {
 
 	var erro = false;
 
-	
 	var filtros = "";
 	
 	if (flag_opc != "") {
@@ -202,10 +198,7 @@ $(document).ready(function() {
 		marcarPedido_home( $("#m_id_pedido").val());
 	})
 	
-	
 	$("#flag_marcado_detail_div").click(function() {
-		
-		
 		
 		if ($("#flag_marcado_detail").is(":checked")) {
 			$("#flag_marcado_detail").prop('checked', false);
@@ -306,7 +299,6 @@ $(document).ready(function() {
 		
 
 	});	
-	
 	
 	$("#m_finalizar").click(function() {
 		finalizarPedido();
@@ -544,13 +536,6 @@ function checarPedidos() {
 
 			}
 			
-
-
-			
-			
-			
-			
-			
 			if (data.temagend == "true") {
 
 				var html = "";
@@ -561,7 +546,6 @@ function checarPedidos() {
 
 				$("#menu_notification_agend").html($("#menu_notification_agend").html() + html);
 
-				
 				for (t = 0; t < data.pedidosagend.length; t++) {
 					var html = "";
 					if(data.pedidosagend[t].passou==false){
@@ -569,7 +553,6 @@ function checarPedidos() {
 					}else{
 						html = html + (" <li> <a style='background-color: #E8F2FE !important' onClick=\"visualizarPedido(" + data.pedidosagend[t].id_pedido + ")\" >     ");
 					}
-					
 					
 					html = html + ("	<span class=\"message\">Número do pedido:  " + data.pedidosagend[t].num_ped + " <span class=\"time\">Hora: " + data.pedidosagend[t].horario + " </span> </span>    ");
 					html = html + ("	<span class=\"message\">Bairro: " + data.pedidosagend[t].desc_bairro + "  </span>    ");
@@ -586,18 +569,8 @@ function checarPedidos() {
 
 //				$(".not_numerico").autoNumeric('init', numerico);
 
-				
-
 			}
 			
-			
-			
-			
-			
-			
-			
-			
-
 			if (data.canc_vizu == true) {
 				$("#msg_cancholder").show();
 				playAudioPedidoCanc();
@@ -928,18 +901,16 @@ function visualizarPedido(id) {
 			$("#table_enderaberto").hide();
 			$(".cancelamento").hide();
 			$("#m_finalizar").show();
+			$("#row_marcar").show();
 			
 			$("#m_finalizar").removeClass("btn-grey");
 			$("#m_finalizar").addClass("btn-danger");
-			
 			
 			if (data.flag_marcado == 'S') {
 				$("#flag_marcado_detail").prop('checked', true);
 			} else {
 				$("#flag_marcado_detail").prop('checked', false);
 			}
-			
-			
 			
 			$("#m_finalizar").html("Mover para histórico");
 			$("#m_tempo_max_lbl").html("Tempo máximo desejado para a entrega");
@@ -953,13 +924,10 @@ function visualizarPedido(id) {
 				$(".obsped").show();
 			}
 			
-			
-			
 			if (data.tipo_servico == "T") {
 				$("#m_lbl_bairro").html("Bairro:");
 				$("#table_enderaberto").show();
 				$("#desc_enderaberto").html(data.DESC_ENDERECO);
-				
 				
 				if (data.flag_modoentrega == 'A') {
 					$("#m_tempomax_div").hide();
@@ -1062,7 +1030,6 @@ function visualizarPedido(id) {
 					$("#m_tempo_entrega_div").hide();
 				}
 
-				
 				$("#m_tempo_max_lbl").html("Tempo restante para realizar a entrega:");
 				
 			} else if (data.flag_status == "C") {

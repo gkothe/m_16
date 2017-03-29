@@ -1,0 +1,112 @@
+
+create table MODO_PAGAMENTO
+(
+   ID_MODO_PAGAMENTO    int not null,
+   DESC_MODO            text not null,
+   FLAG_TIPO            char(2) not null,
+   primary key (ID_MODO_PAGAMENTO)
+);
+
+
+create table DISTRIBUIDORA_PAGAMENTO
+(
+   ID_MODO_PAGAMENTO    int not null,
+   ID_DISTRIBUIDORA     INT4 not null,
+   primary key (ID_MODO_PAGAMENTO, ID_DISTRIBUIDORA)
+);
+
+alter table DISTRIBUIDORA_PAGAMENTO add constraint FK_REFERENCE_37 foreign key (ID_DISTRIBUIDORA)
+      references DISTRIBUIDORA (ID_DISTRIBUIDORA) on delete restrict on update restrict;
+
+alter table DISTRIBUIDORA_PAGAMENTO add constraint FK_REFERENCE_38 foreign key (ID_MODO_PAGAMENTO)
+      references MODO_PAGAMENTO (ID_MODO_PAGAMENTO) on delete restrict on update restrict;
+
+
+alter table PEDIDO	add ID_MODO_PAGAMENTO int;
+	  
+alter table PEDIDO add constraint FK_REFERENCE_39 foreign key (ID_MODO_PAGAMENTO)
+      references MODO_PAGAMENTO (ID_MODO_PAGAMENTO) on delete restrict on update restrict;
+
+	  
+flag_tipo      D - Dinheiro, CC - credito, CD - debito , V - vale aliementação , C - Cheque
+
+
+Nova tela - Modal com os tipos de pagamento.
+Carrinho - Carregar os tipo de pagamento da loja no carrinho.
+
+
+tela de inserir pedido retirada em local
+
+
+Utilitario.returnModoPagamento
+
+
+Na hora de criar o pedido - > Se flag_modopagamento vier com valor, fixar no código um id_modopagamento para setar. Validar o tipo de pagamento.
+Procurar no sitema onde tem filtro pelo tipo de pagamento.
+Rever relatórios
+Rever graficos.
+Mobile controlller-> Cancelmaneto de pedido, carregaPedidoUnico , criarPedido , detalheLoja (ver quais aceita)
+Parametros ajax -> loadDadosEmp , salvarConfigsEmp
+Pedidos_ajax -> carregaPedido_fechado , carregaPedido_AbertoEnvio
+
+
+  D:\phonegap_projects\m_16\m_16\src\main\webapp\JavaScript\lista_pedidos_historico.js (1 hit)
+	Line 221: 			$("#m_modo_pagamento").html(data.FLAG_MODOPAGAMENTO);
+  D:\phonegap_projects\m_16\m_16\src\main\webapp\JavaScript\menu_index.js (1 hit)
+	Line 984: 			$("#m_modo_pagamento").html(data.FLAG_MODOPAGAMENTO);
+
+
+
+Classe insere dados.
+
+
+
+
+
+
+
+
+
+="1">Em dinheiro
+="4">Pagamento online
+="6">Visa - Débito
+="7">MasterCard - Débito
+="8">Banricompras
+="9">Hipercard - Crédito
+="10">Elo - Débito
+="11">Amex - Crédito
+="13">Sodexo - Vale
+="14">Alelo - Alimentação
+="15">Refeisul - Vale
+="16">VR Smart - Vale
+="17">VeroCard - Vale
+="18">Diners - Crédito
+="19">Good Card - Crédito
+="20">Verde Card - Vale
+="21">BIQ - Alimentação
+="22">VR - Vale
+="23">Ticket - Vale
+="24">Visa - Crédito
+="25">Mastercard - Crédito
+="26">Elo - Crédito
+="27">Alelo - Refeição
+="28">Good Card - Vale
+="29">BIQ - Refeição
+="30">Elo - Alimentação
+="31">Elo - Refeição
+="32">Sodexo - Alimentação
+="33">Sodexo - Refeição
+="34">JCB - Crédito
+="35">Discover - Crédito
+="36">Aura - Crédito</option></select>
+
+
+
+
+
+
+
+
+
+
+
