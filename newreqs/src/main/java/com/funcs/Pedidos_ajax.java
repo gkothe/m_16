@@ -62,7 +62,7 @@ public class Pedidos_ajax {
 		JSONObject retorno = new JSONObject();
 		PrintWriter out = response.getWriter();
 		String prodsjson = request.getParameter("prodsjson") == null ? "" : request.getParameter("prodsjson"); //
-		String mod_pagamento = request.getParameter("mod_pagamento") == null ? "" : request.getParameter("mod_pagamento"); //
+		String id_modopagamento = request.getParameter("id_modopagamento") == null ? "" : request.getParameter("id_modopagamento"); //
 		JSONArray prods = (JSONArray) new JSONParser().parse(prodsjson);
 
 		JSONObject objRetorno = new JSONObject();
@@ -91,7 +91,7 @@ public class Pedidos_ajax {
 
 		JSONObject param = new JSONObject();
 
-		param.put("tipo_pagamento", mod_pagamento);
+		param.put("modo_pagamento", id_modopagamento);
 		param.put("desc_endereco", "");
 		param.put("desc_endereco_num", "");
 		param.put("desc_endereco_complemento", "");
@@ -365,6 +365,9 @@ public class Pedidos_ajax {
 			objRetorno.put("qtdprod", qtdprod);
 			objRetorno.put("data_formatada", new SimpleDateFormat("dd/MM/yyyy HH:mm").format(rs.getTimestamp("data_pedido")));
 			objRetorno.put("NUM_PED", rs.getString("NUM_PED"));
+			
+			
+			System.out.println(rs.getString("FLAG_STATUS"));
 			objRetorno.put("FLAG_STATUS", rs.getString("FLAG_STATUS"));
 
 			if (rs.getTimestamp("data_agenda_entrega") != null) {
@@ -377,7 +380,7 @@ public class Pedidos_ajax {
 
 			if (rs.getString("FLAG_PEDIDO_RET_ENTRE").equalsIgnoreCase("L")) {
 				objRetorno.put("DESC_BAIRRO", "Retirar no local");
-				objRetorno.put("FLAG_STATUS", rs.getString("flag_status").equalsIgnoreCase("E") ? "S" : rs.getString("flag_status"));
+				//objRetorno.put("FLAG_STATUS", rs.getString("flag_status").equalsIgnoreCase("E") ? "S" : rs.getString("flag_status"));
 			} else {
 
 				if (rs.getString("flag_modoentrega").equalsIgnoreCase("A")) {
@@ -423,6 +426,7 @@ public class Pedidos_ajax {
 		retorno.put("pedidos", pedidos);
 
 		if (segundaconsulta) {
+			System.out.println(retorno.toJSONString());
 			out.print(retorno.toJSONString());
 		} else {
 			carregaPedidosAbertos(request, response, conn, coddistr, true, retorno, pedidos);
@@ -713,8 +717,13 @@ public class Pedidos_ajax {
 			objRetorno.put("VAL_ENTREGA", rs.getString("val_entrega"));
 			objRetorno.put("ID_PEDIDO", rs.getString("id_pedido"));
 			objRetorno.put("num_ped", rs.getString("num_ped"));
-			objRetorno.put("FLAG_MODOPAGAMENTO", Utilitario.returnModoPagamento(rs.getString("flag_modopagamento")));
-
+			
+			if(rs.getString("ID_MODO_PAGAMENTO")!=null){
+				objRetorno.put("FLAG_MODOPAGAMENTO", Utilitario.returnDescPagamento(conn, Integer.parseInt(rs.getString("id_modo_pagamento"))));
+			}else{
+				objRetorno.put("FLAG_MODOPAGAMENTO", Utilitario.returnModoPagamento(rs.getString("flag_modopagamento")));
+			}
+			
 			if (rs.getDouble("NUM_TROCOPARA") != 0.0) {
 				objRetorno.put("num_trocopara", "R$ " + df2.format(rs.getDouble("num_trocopara")));
 			}
@@ -889,7 +898,15 @@ public class Pedidos_ajax {
 			objRetorno.put("num_ped", rs.getString("num_ped"));
 			objRetorno.put("flag_marcado", rs.getString("flag_marcado"));
 			objRetorno.put("ID_PEDIDO", rs.getString("id_pedido"));
-			objRetorno.put("FLAG_MODOPAGAMENTO", Utilitario.returnModoPagamento(rs.getString("flag_modopagamento")));
+			
+			
+			if(rs.getString("ID_MODO_PAGAMENTO")!=null){
+				objRetorno.put("FLAG_MODOPAGAMENTO", Utilitario.returnDescPagamento(conn, Integer.parseInt(rs.getString("id_modo_pagamento"))));
+			}else{
+				objRetorno.put("FLAG_MODOPAGAMENTO",Utilitario.returnModoPagamento(rs.getString("flag_modopagamento")));
+			}
+			
+			
 			objRetorno.put("m_observ", rs.getString("desc_observacao"));
 			if (rs.getTimestamp("data_agenda_entrega") != null) {
 				objRetorno.put("data_agenda_entrega", new SimpleDateFormat("dd/MM/yyyy HH:mm").format(rs.getTimestamp("data_agenda_entrega")));

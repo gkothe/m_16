@@ -999,11 +999,8 @@ function visualizarPedido(id) {
 			} else if (data.flag_status == "E") {
 				$("#m_lbl_titulo").css("color", "green");
 
-				if (data.tipo_servico == "T") {
-					$("#m_lbl_titulo").html("Em envio - Número: " + num_ped);
-				} else {
-					$("#m_lbl_titulo").html("Em espera - Número: " + num_ped);
-				}
+
+					$("#m_lbl_titulo").html("Aceito - Número: " + num_ped);
 
 				$("#m_responder").hide();
 				// setar os dados se estiver em envio

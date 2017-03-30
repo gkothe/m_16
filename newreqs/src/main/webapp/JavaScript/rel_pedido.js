@@ -36,9 +36,38 @@ $(document).ready(function() {
 
 	trazData();
 	carregaBairros();
+	
+	loadModosPagamentos();
 
 });
 
+function loadModosPagamentos() {
+
+	$.ajax({
+		type : 'POST',
+		url : "home?ac=ajax",
+		data : {
+			cmd : "listaModosPagamento"
+		},
+		async : true,
+		dataType : 'json',
+		success : function(data) {
+
+			var html = "";
+			html = html + "<option value=''  > Todos  </option>  ";
+			for (t = 0; t < data.length; t++) {
+				html = html + "<option value='" + data[t].id_modo_pagamento + "'  > " + data[t].desc_modo + "  </option>  ";
+			}
+
+			$("#id_modopagamento").html(html);
+
+		},
+		error : function(data) {
+
+		}
+	});
+
+}
 function carregaBairros() {
 
 	$.blockUI({
@@ -83,7 +112,7 @@ function gerarRel() {
 	var datafim = $("#rel_data_fim").val();
 	var cod_bairro = $("#cod_bairro").val();
 	var flag_situacao = $("#flag_situacao").val();
-	var flag_pagamento = $("#flag_pagamento").val();
+	var id_modopagamento = $("#id_modopagamento").val();
 	var flag_opc = $("#flag_opc").val();
 	var flag_servico = $("#flag_servico").val();
 
@@ -113,8 +142,8 @@ function gerarRel() {
 		filtros = filtros + "&flag_situacao=" + flag_situacao;
 	}
 
-	if (flag_pagamento != "") {
-		filtros = filtros + "&flag_pagamento=" + flag_pagamento;
+	if (id_modopagamento != "") {
+		filtros = filtros + "&id_modopagamento=" + id_modopagamento;
 	}
 
 	if (flag_servico != "") {

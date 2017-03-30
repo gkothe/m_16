@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="rel_gradehorario" pageWidth="842" pageHeight="595" orientation="Landscape" whenNoDataType="AllSectionsNoDetail" columnWidth="802" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="4e56c072-32bc-4521-b4c2-2f64501d11e8">
 	<property name="ireport.zoom" value="1.9487171000000165"/>
-	<property name="ireport.x" value="598"/>
-	<property name="ireport.y" value="405"/>
+	<property name="ireport.x" value="424"/>
+	<property name="ireport.y" value="165"/>
 	<subDataset name="PRODUTOS" uuid="8915ee26-d983-4741-84f8-37606df93cd9">
 		<property name="id_pedido" value="$F{id_pedido}"/>
 		<queryString language="SQL">
@@ -101,7 +101,7 @@ FROM   pedido
 	<field name="num_ped" class="java.lang.Long">
 		<fieldDescription><![CDATA[]]></fieldDescription>
 	</field>
-	<field name="flag_modopagamento" class="java.lang.String">
+	<field name="desc_modopagamento" class="java.lang.String">
 		<fieldDescription><![CDATA[]]></fieldDescription>
 	</field>
 	<field name="flag_pedido_ret_entre" class="java.lang.String">
@@ -193,7 +193,7 @@ FROM   pedido
 					<textElement textAlignment="Center">
 						<font size="8"/>
 					</textElement>
-					<textFieldExpression><![CDATA[$F{flag_modopagamento}.equalsIgnoreCase("C") ? "C. Crédito" : "Dinheiro"]]></textFieldExpression>
+					<textFieldExpression><![CDATA[$F{desc_modopagamento}]]></textFieldExpression>
 				</textField>
 				<textField isBlankWhenNull="true">
 					<reportElement x="0" y="0" width="52" height="15" uuid="e7d98b41-9efd-43d0-bb96-d97aef078a4b"/>
@@ -500,7 +500,7 @@ FROM   pedido
 					<textElement textAlignment="Center">
 						<font size="8"/>
 					</textElement>
-					<textFieldExpression><![CDATA[$F{flag_modopagamento}.equalsIgnoreCase("C") ? "C. Crédito" : "Dinheiro"]]></textFieldExpression>
+					<textFieldExpression><![CDATA[$F{desc_modopagamento}]]></textFieldExpression>
 				</textField>
 				<staticText>
 					<reportElement mode="Opaque" x="488" y="0" width="72" height="15" forecolor="#FFFFFF" backcolor="#CCCCCC" uuid="36d948a0-aad6-488a-9880-1f0332daf58a"/>

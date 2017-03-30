@@ -221,7 +221,9 @@ public class HomeController extends javax.servlet.http.HttpServlet {
 			} else if (cmd.equalsIgnoreCase("salvarConfigsHorariosBairros")) {
 				Parametros_ajax.salvarConfigsHorariosBairrosNovo(request, response, conn, coddistr);
 			} else if (cmd.equalsIgnoreCase("listaModosPagamento")) {
-				Parametros_ajax.listaModosPagamento(request, response, conn, coddistr);
+				Parametros_ajax.listaModosPagamento(request, response, conn, coddistr,false);
+			} else if (cmd.equalsIgnoreCase("listaModosPagamentoLoja")) {
+				Parametros_ajax.listaModosPagamento(request, response, conn, coddistr,true);
 			}  else if (cmd.equalsIgnoreCase("salvarModosPagamento")) {
 				Parametros_ajax.salvarModosPagamento(request, response, conn, coddistr);
 			} else if (cmd.equalsIgnoreCase("dashServico")) {

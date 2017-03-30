@@ -200,9 +200,9 @@ function statusFormater(value, row, index) {
 		html = html + "<label style='color:red'>Aberto<label>";
 
 	} else if (value == "E") {
-		html = html + "<label style='color:green'>Em Envio<label>";
+		html = html + "<label style='color:green'>Aceito<label>";
 	} else if (value == "S") {
-		html = html + "<label style='color:green'>Em Espera<label>";
+		html = html + "<label style='color:green'>Aceito<label>";
 	} else if (value == "C") {
 		html = html + "<label style='color:red'>Cancelado<label>";
 	}

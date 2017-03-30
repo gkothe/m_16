@@ -225,7 +225,7 @@ public class Parametros_ajax {
 
 	}
 
-	public static void listaModosPagamento(HttpServletRequest request, HttpServletResponse response, Connection conn, int coddistr) throws Exception {
+	public static void listaModosPagamento(HttpServletRequest request, HttpServletResponse response, Connection conn, int coddistr, boolean somenteaceitos) throws Exception {
 		PrintWriter out = response.getWriter();
 		JSONArray cate = new JSONArray();
 
@@ -233,7 +233,11 @@ public class Parametros_ajax {
 
 		sql.append(" SELECT * ");
 		sql.append(" FROM modo_pagamento ");
-		sql.append(" left join distribuidora_pagamento  ");
+		if(somenteaceitos)
+			sql.append(" inner join distribuidora_pagamento  ");
+		else
+			sql.append(" left join distribuidora_pagamento  ");
+		
 		sql.append(" on distribuidora_pagamento.id_modo_pagamento  = modo_pagamento.id_modo_pagamento and id_distribuidora = ? ");
 		sql.append(" order by desc_modo ");
 
@@ -610,7 +614,7 @@ public class Parametros_ajax {
 		PrintWriter out = response.getWriter();
 		JSONArray ret = new JSONArray();
 
-		String sql = " select cod_bairro,desc_loja, txt_obs_hora, date_format(tempo_minimo_entrega, '%H:%i') as tempo_minimo_entrega, id_distribuidora, cod_cidade,desc_razao_social,desc_nome_abrev,val_entrega_min,desc_telefone,desc_endereco,num_enderec,desc_complemento,val_tele_entrega,flag_custom, desc_mail, coalesce(flag_ativo,'N') as flag_ativo,flag_modopagamento,flag_agendamento,flag_tele_entrega,flag_retirada from distribuidora  where	 id_distribuidora = ? ";
+		String sql = " select cod_bairro,desc_loja, txt_obs_hora, date_format(tempo_minimo_entrega, '%H:%i') as tempo_minimo_entrega, id_distribuidora, cod_cidade,desc_razao_social,desc_nome_abrev,val_entrega_min,desc_telefone,desc_endereco,num_enderec,desc_complemento,val_tele_entrega,flag_custom, desc_mail, coalesce(flag_ativo,'N') as flag_ativo,flag_agendamento,flag_tele_entrega,flag_retirada from distribuidora  where	 id_distribuidora = ? ";
 
 		PreparedStatement st = conn.prepareStatement(sql);
 		st.setInt(1, coddistr);
@@ -644,7 +648,6 @@ public class Parametros_ajax {
 			obj.put("tempo_minimo_entrega", rs.getString("tempo_minimo_entrega"));
 			obj.put("desc_mail", rs.getString("desc_mail"));
 			obj.put("flag_ativo", rs.getString("flag_ativo").equalsIgnoreCase("F") ? "S" : rs.getString("flag_ativo"));
-			obj.put("flag_modopag", rs.getString("flag_modopagamento"));
 			obj.put("txt_obs_hora", rs.getString("txt_obs_hora"));
 
 			obj.put("flag_agendamento", rs.getString("flag_agendamento"));
@@ -675,7 +678,6 @@ public class Parametros_ajax {
 		String flag_online = request.getParameter("flag_online") == null ? "" : request.getParameter("flag_online"); //
 		String bairrosjson = request.getParameter("bairros") == null ? "" : request.getParameter("bairros"); //
 		String desc_mail = request.getParameter("desc_mail") == null ? "" : request.getParameter("desc_mail"); //
-		String flag_modopag = request.getParameter("flag_modopag") == null ? "" : request.getParameter("flag_modopag"); //
 		String flag_entre_ret = request.getParameter("flag_entre_ret") == null ? "" : request.getParameter("flag_entre_ret"); //
 		String txt_obs_hora = request.getParameter("txt_obs_hora") == null ? "" : request.getParameter("txt_obs_hora"); //
 		String cod_bairro_distr = request.getParameter("cod_bairro_distr") == null ? "" : request.getParameter("cod_bairro_distr"); //
@@ -712,34 +714,91 @@ public class Parametros_ajax {
 
 		JSONArray bairros = (JSONArray) new JSONParser().parse(bairrosjson);
 
-		String sql = " UPDATE distribuidora SET `COD_CIDADE` = ?, `DESC_RAZAO_SOCIAL` = ?, `DESC_NOME_ABREV` = ?, `VAL_ENTREGA_MIN` = ?, `DESC_TELEFONE` = ?, `DESC_ENDERECO` = ?, `NUM_ENDEREC` = ?, `DESC_COMPLEMENTO` = ?, `VAL_TELE_ENTREGA` = ? , flag_custom = ? , flag_ativo = ?, desc_mail =?, FLAG_MODOPAGAMENTO = ? ,  txt_obs_hora = ?, COD_BAIRRO = ?, desc_loja = ? , tempo_minimo_entrega = ?, flag_agendamento = ? , flag_tele_entrega = ? , flag_retirada = ?  WHERE `ID_DISTRIBUIDORA` = ? ";
+		StringBuffer  sqlbff = new StringBuffer();
+		sqlbff.append("UPDATE distribuidora ");
+		sqlbff.append("SET    cod_cidade = ?, ");
+		sqlbff.append("       desc_razao_social = ?, ");
+		sqlbff.append("       desc_nome_abrev = ?, ");
+		sqlbff.append("       val_entrega_min = ?, ");
+		sqlbff.append("       desc_telefone = ?, ");
+		sqlbff.append("       desc_endereco = ?, ");
+		sqlbff.append("       num_enderec = ?, ");
+		sqlbff.append("       desc_complemento = ?, ");
+		sqlbff.append("       val_tele_entrega = ? , ");
+		sqlbff.append("       flag_custom = ? , ");
+		sqlbff.append("       flag_ativo = ?, ");
+		sqlbff.append("       desc_mail =?, ");
+		sqlbff.append("       txt_obs_hora = ?, ");
+		sqlbff.append("       cod_bairro = ?, ");
+		sqlbff.append("       desc_loja = ? , ");
+		sqlbff.append("       tempo_minimo_entrega = ?, ");
+		sqlbff.append("       flag_tele_entrega = ? , ");
+		sqlbff.append("       flag_retirada = ? ");
+		sqlbff.append("WHERE  id_distribuidora = ?");
 
-		PreparedStatement st = conn.prepareStatement(sql);
-		st.setInt(1, Integer.parseInt(cod_cidade));
-		st.setString(2, desc_razaosocial);
-		st.setString(3, desc_fantasia);
-		st.setDouble(4, Double.parseDouble(val_min_entrega));
-		st.setString(5, num_telefone);
-		st.setString(6, desc_endereco);
-		st.setString(7, desc_num);
-		st.setString(8, desc_complemento);
-		st.setDouble(9, Double.parseDouble(val_padrao_tele));
-		st.setString(10, flag_custom);
-		st.setString(11, flag_online);
-		st.setString(12, desc_mail);
-		st.setString(13, flag_modopag);
-		st.setString(14, txt_obs_hora);
-		st.setString(15, cod_bairro_distr);
-		st.setString(16, desc_loja);
-		st.setString(17, tempo_minimo_entrega);
-		st.setString(18, flag_agendamento);
-		st.setString(19, flag_tele_entrega);
-		st.setString(20, flag_retirada);
-		st.setInt(21, coddistr);
+		PreparedStatement st = conn.prepareStatement(sqlbff.toString());
+		int contparam = 1;
+		
+		st.setInt(contparam, Integer.parseInt(cod_cidade));
+		contparam++;
+		
+		st.setString(contparam, desc_razaosocial);
+		contparam++;
+		
+		st.setString(contparam, desc_fantasia);
+		contparam++;
+		
+		st.setDouble(contparam, Double.parseDouble(val_min_entrega));
+		contparam++;
+		
+		st.setString(contparam, num_telefone);
+		contparam++;
+		
+		st.setString(contparam, desc_endereco);
+		contparam++;
+		
+		st.setString(contparam, desc_num);
+		contparam++;
+		
+		st.setString(contparam, desc_complemento);
+		contparam++;
+		
+		st.setDouble(contparam, Double.parseDouble(val_padrao_tele));
+		contparam++;
+		
+		st.setString(contparam, flag_custom);
+		contparam++;
+		
+		st.setString(contparam, flag_online);
+		contparam++;
+		
+		st.setString(contparam, desc_mail);
+		contparam++;
+		
+		st.setString(contparam, txt_obs_hora);
+		contparam++;
+		
+		st.setString(contparam, cod_bairro_distr);
+		contparam++;
+		
+		st.setString(contparam, desc_loja);
+		contparam++;
+		
+		st.setString(contparam, tempo_minimo_entrega);
+		contparam++;
+		
+		st.setString(contparam, flag_tele_entrega);
+		contparam++;
+		
+		st.setString(contparam, flag_retirada);
+		contparam++;
+		
+		st.setInt(contparam, coddistr);
+		contparam++;
 
 		st.executeUpdate();
 
-		sql = " delete from distribuidora_horario_dia_entre where id_distribuidora = ? ";
+		String sql = " delete from distribuidora_horario_dia_entre where id_distribuidora = ? ";
 
 		st = conn.prepareStatement(sql);
 		st.setInt(1, coddistr);

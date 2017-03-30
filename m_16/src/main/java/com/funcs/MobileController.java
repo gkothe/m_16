@@ -4004,6 +4004,23 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 						}
 					}
 
+					StringBuffer sql2 = new StringBuffer();
+					sql2.append(" select * from distribuidora ");
+					sql2.append("  where distribuidora. ID_DISTRIBUIDORA = ?  ");
+					st2 = conn.prepareStatement(sql2.toString());
+					st2.setInt(1, rs.getInt("id_distribuidora"));
+					rs2 = st2.executeQuery();
+					if (rs2.next()) {
+						if (rs2.getString("FLAG_MODOPAGAMENTO").equalsIgnoreCase("A")) {
+
+						} else if (rs2.getString("FLAG_MODOPAGAMENTO").equalsIgnoreCase("C") && tipo_pagamento.equalsIgnoreCase("D")) {
+							throw new Exception("Loja não aceita este modo de pagamento!");
+						} else if (rs2.getString("FLAG_MODOPAGAMENTO").equalsIgnoreCase("D") && tipo_pagamento.equalsIgnoreCase("C")) {
+							throw new Exception("Loja não aceita este modo de pagamento!");
+						}
+
+					}
+
 					if (tipo_pagamento.equalsIgnoreCase("D")) {
 
 						if (!trocopara.equalsIgnoreCase("")) {

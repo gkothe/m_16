@@ -31,33 +31,14 @@ alter table PEDIDO add constraint FK_REFERENCE_39 foreign key (ID_MODO_PAGAMENTO
 flag_tipo      D - Dinheiro, CC - credito, CD - debito , V - vale aliementação , C - Cheque
 
 
-Nova tela - Modal com os tipos de pagamento.
-Carrinho - Carregar os tipo de pagamento da loja no carrinho.
-
-
-tela de inserir pedido retirada em local
-
-
-Utilitario.returnModoPagamento
-
-
-Na hora de criar o pedido - > Se flag_modopagamento vier com valor, fixar no código um id_modopagamento para setar. Validar o tipo de pagamento.
-Procurar no sitema onde tem filtro pelo tipo de pagamento.
-Rever relatórios
-Rever graficos.
-Mobile controlller-> Cancelmaneto de pedido, carregaPedidoUnico , criarPedido , detalheLoja (ver quais aceita)
-Parametros ajax -> loadDadosEmp , salvarConfigsEmp
-Pedidos_ajax -> carregaPedido_fechado , carregaPedido_AbertoEnvio
-
-
-  D:\phonegap_projects\m_16\m_16\src\main\webapp\JavaScript\lista_pedidos_historico.js (1 hit)
-	Line 221: 			$("#m_modo_pagamento").html(data.FLAG_MODOPAGAMENTO);
-  D:\phonegap_projects\m_16\m_16\src\main\webapp\JavaScript\menu_index.js (1 hit)
-	Line 984: 			$("#m_modo_pagamento").html(data.FLAG_MODOPAGAMENTO);
 
 
 
-Classe insere dados.
+
+
+
+
+
 
 
 
@@ -99,6 +80,41 @@ Classe insere dados.
 ="34">JCB - Crédito
 ="35">Discover - Crédito
 ="36">Aura - Crédito</option></select>
+
+
+
+
+
+
+
+coisas feitas :
+Tela na loja, configura os tipos. Ok
+No mobile: Carrega os pagamentos de acordo com a loja, e caso mande um valor que nao existe, da erro. Ok
+Remover da tela de empresas o modo pagamento. Ok
+No mobilecontroller, ajeitar a numeração do setparameter (usar um contador). Ok
+Pedidos_ajax.carregaPedido_AbertoEnvio(); ok
+Pedidos_ajax.carregaPedido_fechado(); ok
+Parametros_ajax.loadDadosEmp(), ok 
+Parametros_ajax.salvarConfigsEmp(), ok
+Parametros ajax->procurar por flag_modopag. Ok.
+Mobilecontrolller.cancelaPedido() ok.        Usava para testar se era cartão ou dinheiro, mas de fato nao fazia nada, porque decidimos que o dinheiro não passa por nós.
+Mobilecontrolller.carregaPedidoUnico() ok - Não usava o flag.
+Mobilecontrolller.criarPedido(); - Ok. Se precisar futuramente, dar um jeito para ficar compativel com a versão antiga.   Validar o tipo de pagamento. Ok.
+Mobile controlller.detalheLoja (ver quais aceita).ok.
+Tela de inserir pedido retirada em local(). Ok.
+Relatorio de pedidos - Ok.
+Relatorio de prodtuos. Ok - nao tinha nada.
+Modificar em envio para aceito. Ok (ficar de olho se aparece em algum lugar)
+No detalhes do pedido(mobile e loja), mostar o tipo de pagamento corretamente. Ok
+Deletar flag_modopagamento do pedidos.(para testar somente, quem sabe tirar da quente 
+depois) . Feito na minha teste local.
+Rever grafico - Pendente.
+Classe insere dados - Pendente, randomizar uns.
+
+
+Carregar serviços de acordo com os serviços disponibilizados pela loja no carrinho.
+Mostrar horario do agendamento de acordo com o horario minimo da loja.
+No carrinho, arrumar os campos que aparecem qdo é dinheiro e etcs.
 
 
 

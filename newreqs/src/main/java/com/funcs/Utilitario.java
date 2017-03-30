@@ -80,7 +80,7 @@ public class Utilitario {
 	public static JSONArray FlagEntreRet() {
 		JSONArray payids = new JSONArray();
 		JSONObject obj = new JSONObject();
-		
+
 		obj = new JSONObject();
 		obj.put("flag_entre_ret", "L");
 		obj.put("desc", "Retirada no local");
@@ -90,7 +90,7 @@ public class Utilitario {
 		obj.put("flag_entre_ret", "T");
 		obj.put("desc", "Tele-entrega");
 		payids.add(obj);
-		
+
 		obj = new JSONObject();
 		obj.put("flag_entre_ret", "A");
 		obj.put("desc", "Agendamento");
@@ -139,7 +139,8 @@ public class Utilitario {
 	public static String returnStatusPedidoFlag(String flag, String serv) {
 
 		if (flag.equalsIgnoreCase("E") && serv.equalsIgnoreCase("T")) {
-			return "Em envio";
+			return "Aceito";
+			//return "Em envio";
 		} else if (flag.equalsIgnoreCase("R")) {
 			return "Recusado";
 		} else if (flag.equalsIgnoreCase("O")) {
@@ -147,7 +148,9 @@ public class Utilitario {
 		} else if (flag.equalsIgnoreCase("A")) {
 			return "Aberto";
 		} else if (flag.equalsIgnoreCase("E") && serv.equalsIgnoreCase("L")) {
-			return "Em espera";
+	
+			return "Aceito";
+//			return "Em espera";
 		} else if (flag.equalsIgnoreCase("C")) {
 			return "Cancelado";
 		} else if (flag.equalsIgnoreCase("")) {
@@ -252,7 +255,7 @@ public class Utilitario {
 		} else if (flag.equalsIgnoreCase("T")) {
 			// return "Somente tele-entrega";
 			return "Tele-entrega";
-		}else if (flag.equalsIgnoreCase("A")) {
+		} else if (flag.equalsIgnoreCase("A")) {
 			return "Agendamento";
 		} else if (flag.equalsIgnoreCase("")) {
 			return "Todos";
@@ -280,19 +283,15 @@ public class Utilitario {
 		retornoarray.add(obj);
 
 		obj = new JSONObject();
+		obj.put("id", "E");
+		obj.put("desc", "Aceito");
+		retornoarray.add(obj);
+
+		obj = new JSONObject();
 		obj.put("id", "F");
 		obj.put("desc", "Finalizado");
 		retornoarray.add(obj);
 
-		obj = new JSONObject();
-		obj.put("id", "E");
-		obj.put("desc", "Em envio/Em espera");
-		retornoarray.add(obj);
-
-		// obj = new JSONObject();
-		// obj.put("id", "S");
-		// obj.put("desc", "Em espera");
-		// retornoarray.add(obj);
 
 		obj = new JSONObject();
 		obj.put("id", "R");
@@ -301,7 +300,8 @@ public class Utilitario {
 
 		return retornoarray;
 	}
-
+	
+	@Deprecated
 	public static String returnModoPagamento(String flag) {
 
 		if (flag.equalsIgnoreCase("D")) {
@@ -314,9 +314,57 @@ public class Utilitario {
 			return "Todos";
 		} else if (flag.equalsIgnoreCase("DC")) { // esse valor é pra display soh no mobile, nao existe de fato no sistema
 			return "Dinheiro e Cartão Cred.";
+
 		}
 
 		return "";
+
+	}
+
+	public static String returnDescPagamento(Connection conn, int id_modopagamento) throws Exception {
+
+		StringBuffer sql2 = new StringBuffer();
+		sql2.append(" select * from modo_pagamento   ");
+		sql2.append(" where modo_pagamento.id_modo_pagamento = ? ");
+
+		PreparedStatement st2 = conn.prepareStatement(sql2.toString());
+		st2.setInt(1, id_modopagamento);
+
+		ResultSet rs2 = st2.executeQuery();
+		String desc = "";
+		if (rs2.next()) {
+			return rs2.getString("desc_modo");
+		} else
+			return desc;
+	}
+
+	public static String returnModoPagamentoDisponiveis(int loja, Connection conn, int id_modopagamento) throws Exception {
+
+		StringBuffer sql2 = new StringBuffer();
+		sql2.append(" select * from distribuidora_pagamento   ");
+		sql2.append(" inner join modo_pagamento  ");
+		sql2.append(" on distribuidora_pagamento.ID_MODO_PAGAMENTO  =   modo_pagamento.ID_MODO_PAGAMENTO ");
+		sql2.append(" where distribuidora_pagamento. id_distribuidora = ?");
+
+		if (id_modopagamento != 0) {
+			sql2.append(" and modo_pagamento.id_modo_pagamento = ? ");
+		}
+
+		PreparedStatement st2 = conn.prepareStatement(sql2.toString());
+		st2.setInt(1, loja);
+		if (id_modopagamento != 0) {
+			st2.setInt(2, id_modopagamento);
+		}
+
+		ResultSet rs2 = st2.executeQuery();
+		String desc = "";
+		while (rs2.next()) {
+			desc = desc + ", " + rs2.getString("desc_modo") + " \n";
+		}
+
+		desc = desc.replaceAll(",", "");
+
+		return desc;
 	}
 
 	public static int retornaIdinsert(String tabela, String coluna, Connection conn) throws Exception {
@@ -732,7 +780,7 @@ public class Utilitario {
 				g.drawImage(originalImage, 0, 0, IMG_WIDTH.intValue(), IMG_HEIGHT.intValue(), null);
 				g.dispose();
 
-				//ImageIO.write(resizedImage, "jpg", new File("D:\\Program Files\\Mydocs\\Visual Studio 2015\\Projects\\chamaTrago\\chamaTrago\\www\\img\\prodsmin\\" + cod + "_min.jpg"));
+				// ImageIO.write(resizedImage, "jpg", new File("D:\\Program Files\\Mydocs\\Visual Studio 2015\\Projects\\chamaTrago\\chamaTrago\\www\\img\\prodsmin\\" + cod + "_min.jpg"));
 				ImageIO.write(resizedImage, "jpg", new File("D:\\phonegap_projects\\m_16\\m_16\\src\\main\\webapp\\images\\prodsmin\\" + cod + "_min.jpg"));
 
 			}
@@ -856,7 +904,6 @@ public class Utilitario {
 
 		// File (or directory) with old name
 
-
 	}
 
 	public static void renamefiles3() throws IOException {
@@ -866,7 +913,7 @@ public class Utilitario {
 		if (dir.isDirectory()) { // make sure it's a directory
 			for (final File f : dir.listFiles()) {
 				try {
-					File newfile = new File("C:/Users/gkothe/Desktop/img_fit/img_fit/"+f.getName().toLowerCase());
+					File newfile = new File("C:/Users/gkothe/Desktop/img_fit/img_fit/" + f.getName().toLowerCase());
 
 					if (f.renameTo(newfile)) {
 						System.out.println("Rename succesful");
@@ -914,12 +961,12 @@ public class Utilitario {
 		System.out.println(new Date());
 
 		try {
-//			conn = Conexao.getConexao();
-//			Sys_parametros sys = new Sys_parametros(conn);
+			// conn = Conexao.getConexao();
+			// Sys_parametros sys = new Sys_parametros(conn);
 
 			resizeAllimage();
 
-		//	oneSginal(sys, "g.kothe@hotmail.com", "aaaa", new JSONObject());
+			// oneSginal(sys, "g.kothe@hotmail.com", "aaaa", new JSONObject());
 			// oneSginal(sys, "morratu@hotmail.com", "aaaa", new JSONObject());
 		} catch (Exception e) {
 			System.out.println(e);

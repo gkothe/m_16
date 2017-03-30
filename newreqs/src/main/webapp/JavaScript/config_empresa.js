@@ -78,10 +78,6 @@ $(document).ready(function() {
 		ativaWarningSalvar();
 	});
 
-	$("#flag_modopag").change(function() {
-		ativaWarningSalvar();
-	});
-
 	
 	$("#txt_obs_hora").change(function() {
 		ativaWarningSalvar();
@@ -308,7 +304,7 @@ function salvarTela() {
 	var desc_complemento = $("#desc_complemento").val();
 	var val_min_entrega = $("#val_min_entrega").autoNumeric('get');
 	var val_padrao_tele = $("#val_padrao_tele").autoNumeric('get');
-	var flag_modopag = $("#flag_modopag").val();
+	
 	
 	var txt_obs_hora = $("#txt_obs_hora").val();
 	var cod_bairro_distr = $("#cod_bairro_distr").val();
@@ -367,7 +363,7 @@ function salvarTela() {
 			flag_custom : flag_custom,
 			bairros : bairros,
 			desc_mail : desc_mail,
-			flag_modopag : flag_modopag,
+			
 			txt_obs_hora : txt_obs_hora,
 			cod_bairro_distr : cod_bairro_distr,
 			desc_loja:desc_loja,
@@ -597,7 +593,7 @@ function loadDados() {
 			$("#desc_complemento").val(data[0].DESC_COMPLEMENTO);
 			$("#flag_online").val(data[0].flag_ativo);
 			$("#desc_mail").val(data[0].desc_mail);
-			$("#flag_modopag").val(data[0].flag_modopag);
+			
 			$("#emp_logo").attr("src", data[0].nome_img);
 			
 			$("#cod_bairro_distr").val(data[0].cod_bairro);
