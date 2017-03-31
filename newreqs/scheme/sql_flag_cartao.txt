@@ -108,13 +108,12 @@ Modificar em envio para aceito. Ok (ficar de olho se aparece em algum lugar)
 No detalhes do pedido(mobile e loja), mostar o tipo de pagamento corretamente. Ok
 Deletar flag_modopagamento do pedidos.(para testar somente, quem sabe tirar da quente 
 depois) . Feito na minha teste local.
-Rever grafico - Pendente.
-Classe insere dados - Pendente, randomizar uns.
+No carrinho, arrumar os campos que aparecem qdo é dinheiro e etcs.. ok
+Rever grafico - ok.
+Classe insere dados - ok
 
 
-Carregar serviços de acordo com os serviços disponibilizados pela loja no carrinho.
-Mostrar horario do agendamento de acordo com o horario minimo da loja.
-No carrinho, arrumar os campos que aparecem qdo é dinheiro e etcs.
+
 
 
 

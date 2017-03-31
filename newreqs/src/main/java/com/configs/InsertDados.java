@@ -327,7 +327,7 @@ public class InsertDados {
 				varname1.append("             desc_endereco_num_entrega, ");
 				varname1.append("             desc_endereco_complemento_entrega, ");
 				varname1.append("             flag_vizualizado, ");
-				varname1.append("             flag_modopagamento, ");
+				varname1.append("             id_modo_pagamento, ");
 				varname1.append("             desc_cartao, ");
 				varname1.append("             nome_pessoa, ");
 				varname1.append("             pag_token, ");
@@ -356,7 +356,12 @@ public class InsertDados {
 				varname1.append("             '715', ");
 				varname1.append("             'Sobrado', ");
 				varname1.append("             'S', ");//vizualizado
-				varname1.append("             '" + (Math.random() < 0.5 ? "D" : "C") + "', "); //pagamento
+				
+				
+				int pag = ThreadLocalRandom.current().nextInt(1, 6 + 1);
+				
+				
+				varname1.append("             '"+pag+"', "); //pagamento
 				varname1.append("             '', ");//nome
 				varname1.append("             'Gabriel Dalcin Kothe', ");
 				varname1.append("             '', ");
@@ -512,7 +517,7 @@ public class InsertDados {
 				varname1.append("             desc_endereco_num_entrega, ");
 				varname1.append("             desc_endereco_complemento_entrega, ");
 				varname1.append("             flag_vizualizado, ");
-				varname1.append("             flag_modopagamento, ");
+				varname1.append("             id_modo_pagamento, ");
 				varname1.append("             desc_cartao, ");
 				varname1.append("             nome_pessoa, ");
 				varname1.append("             pag_token, ");
@@ -541,7 +546,9 @@ public class InsertDados {
 				varname1.append("             '715', ");
 				varname1.append("             'Sobrado', ");
 				varname1.append("             'S', ");//vizualizado
-				varname1.append("             '" + (Math.random() < 0.5 ? "D" : "C") + "', "); //pagamento
+				int pag = ThreadLocalRandom.current().nextInt(1, 6 + 1);
+				
+				varname1.append("             '"+pag+"', "); //pagamento
 				varname1.append("             '', ");//nome
 				varname1.append("             'Gabriel Dalcin Kothe', ");
 				varname1.append("             '', ");
@@ -633,7 +640,7 @@ public class InsertDados {
 //		readProds();
 //		randomValuesProds(1);
 		// insertRandomPeds(1, 17, "2016-01-01 00:00:00", "2016-10-31 23:59:59", 500);
-		 insertRandomPeds(1, 1, "2015-01-01 00:00:00", "2016-10-31 23:59:59", 50);
+		 insertRandomPeds(1, 1, "2015-01-01 00:00:00", "2017-3-30 23:59:59", 150);
 		 //insertRandomPeds(1, 1, "2015-01-01 00:00:00", "2016-10-31 23:59:59", 500);
 //		 insertRandomPeds(1, 27, "2015-01-01 00:00:00", "2016-10-31 23:59:59", 500);
 //		 insertRandomPeds(1, 27, "2016-01-01 00:00:00", "2016-10-31 23:59:59", 500);

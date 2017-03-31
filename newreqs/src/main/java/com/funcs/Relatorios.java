@@ -245,13 +245,20 @@ public class Relatorios {
 		String flag_servico = request.getParameter("flag_servico") == null ? "" : request.getParameter("flag_servico");
 		String dias_semana = request.getParameter("dias_semana") == null ? "" : request.getParameter("dias_semana");
 
-		String sql = "select distinct flag_modopagamento, count(flag_modopagamento) as qtd,sum(val_totalprod) as val_totalprod from pedido  where id_distribuidora = ?  and flag_status = 'O' ";
+		StringBuffer  sql = new StringBuffer();
+		sql.append("SELECT DISTINCT flag_tipo, ");
+		sql.append("                Count(flag_tipo)   AS qtd, ");
+		sql.append("                Sum(val_totalprod) AS val_totalprod ");
+		sql.append("FROM   pedido ");
+		sql.append("       INNER JOIN modo_pagamento ");
+		sql.append("               ON modo_pagamento.id_modo_pagamento = pedido.id_modo_pagamento ");
+		sql.append(" WHERE id_distribuidora = ? AND   flag_status = 'O' ");
+		
+		sql = new StringBuffer(parametrosDash(sql.toString(),hora_inicial, hora_final, dias_semana, cod_bairro, data_pedido_ini, data_pedido_fim, flag_servico));
+		
+		sql.append(" group by flag_tipo ;");
 
-		sql = parametrosDash(sql, hora_inicial, hora_final, dias_semana, cod_bairro, data_pedido_ini, data_pedido_fim, flag_servico);
-
-		sql = sql + " group by flag_modopagamento ;";
-
-		PreparedStatement st = conn.prepareStatement(sql);
+		PreparedStatement st = conn.prepareStatement(sql.toString());
 		st.setInt(1, coddistr);
 		int contparam = 2;
 
@@ -260,7 +267,7 @@ public class Relatorios {
 		ResultSet rs = st.executeQuery();
 		while (rs.next()) {
 			JSONObject obj = new JSONObject();
-			obj.put("desc", rs.getString("flag_modopagamento").equalsIgnoreCase("C") ? "Cartão Créd." : "Dinheiro");
+			obj.put("desc",Utilitario. returnTipoPagamentoFlag (rs.getString("flag_tipo")));
 			obj.put("qtd", rs.getInt("qtd"));
 			obj.put("qtddf", df.format(rs.getInt("qtd")));
 			obj.put("val_totalprod", "R$ " + df2.format(rs.getDouble("val_totalprod")));
@@ -555,7 +562,7 @@ public class Relatorios {
 
 		sql.append("select  sum(qtd_prod) as qtd, ");
 		sql.append("       coalesce(pedido.cod_bairro, 0)           as cod_bairro, ");
-		sql.append("       coalesce(desc_bairro, '* distribuidora') as desc_bairro, ");
+		sql.append("       coalesce(desc_bairro, '* Loja') as desc_bairro, ");
 		sql.append("       sum(qtd_prod * val_unit ) as valtotal ");
 		sql.append("from   pedido ");
 		sql.append("       inner join pedido_item ");

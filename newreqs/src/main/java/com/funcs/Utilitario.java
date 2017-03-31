@@ -321,6 +321,26 @@ public class Utilitario {
 
 	}
 
+	public static String returnTipoPagamentoFlag(String flag) {
+
+		if (flag.equalsIgnoreCase("D")) {
+			return "Dinheiro";
+		} else if (flag.equalsIgnoreCase("CC")) {
+			return "Cartão Créd.";
+		} else if (flag.equalsIgnoreCase("CD")) {
+			return "Cartão Débito";
+		} else if (flag.equalsIgnoreCase("V")) {
+			return "Vale alimentação";
+		} else if (flag.equalsIgnoreCase("C")) { // esse valor é pra display soh no mobile, nao existe de fato no sistema
+			return "Cheque";
+
+		}
+
+		return "";
+
+	}
+
+	
 	public static String returnDescPagamento(Connection conn, int id_modopagamento) throws Exception {
 
 		StringBuffer sql2 = new StringBuffer();

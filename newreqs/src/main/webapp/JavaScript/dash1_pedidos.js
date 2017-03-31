@@ -1197,17 +1197,37 @@ function dashModo() {
 				html = html + "<tr class='linha_add_dash'>";
 				html = html + "	<td style=\"height: 30px; !important \">";
 				html = html + "		<p>";
-
+				
 				if (t == 0) {
 					html = html + "			<i class=\"fa fa-square blue\"></i>&nbsp;&nbsp;" + data[t].desc;
 					backgroundColor[backgroundColor.length] = "#3498DB";
-					hoverBackgroundColor[hoverBackgroundColor.length] = "#49A9EA";
-				} else {
+					hoverBackgroundColor[hoverBackgroundColor.lenght] = "#36CAAB";
+				} else if (t == 1) {
+					html = html + "			<i class=\"fa fa-square purple\"></i>&nbsp;&nbsp;" + data[t].desc;
+					backgroundColor[backgroundColor.length] = "#9B59B6";
+					hoverBackgroundColor[hoverBackgroundColor.lenght] = "#36CAAB";
+
+				} else if (t == 2) {
 					html = html + "			<i class=\"fa fa-square green\"></i>&nbsp;&nbsp;" + data[t].desc;
 					backgroundColor[backgroundColor.length] = "#26B99A";
-					hoverBackgroundColor[hoverBackgroundColor.length] = "#36CAAB";
+					hoverBackgroundColor[hoverBackgroundColor.lenght] = "#36CAAB";
+
+				}else if (t == 3) {
+					html = html + "			<i class=\"fa fa-square \" style='color:#55FF00'></i>&nbsp;&nbsp;" + data[t].desc;
+					backgroundColor[backgroundColor.length] = "#55FF00";
+					hoverBackgroundColor[hoverBackgroundColor.lenght] = "#36CAAB";
+
+				}else if (t == 4) {
+					html = html + "			<i class=\"fa fa-square \" style='color:#F54747'  ></i>&nbsp;&nbsp;" + data[t].desc;
+					backgroundColor[backgroundColor.length] = "#F54747";
+					hoverBackgroundColor[hoverBackgroundColor.lenght] = "#36CAAB";
 
 				}
+				
+				
+				
+				
+				
 
 				html = html + "		</p>";
 				html = html + "	</td>";
