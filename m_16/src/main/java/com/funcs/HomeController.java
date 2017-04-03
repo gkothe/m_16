@@ -51,13 +51,13 @@ public class HomeController extends javax.servlet.http.HttpServlet {
 
 	public void processaRequisicoes(HttpServletRequest request, HttpServletResponse response) {
 
-//		 System.out.println("--------entro home");
-//		 Map map = request.getParameterMap();
-//		 for (Iterator iterator = map.keySet().iterator(); iterator.hasNext();) {
-//		 String type = (String) iterator.next();
-//		 System.out.println(type + " : " + request.getParameter(type));
-//		 }
-//			System.out.println( request.getParameter("cmd")+" - " + new Date());
+//		System.out.println("--------entro home");
+//		Map map = request.getParameterMap();
+//		for (Iterator iterator = map.keySet().iterator(); iterator.hasNext();) {
+//			String type = (String) iterator.next();
+//			System.out.println(type + " : " + request.getParameter(type));
+//		}
+		// System.out.println( request.getParameter("cmd")+" - " + new Date());
 
 		try {
 
@@ -85,7 +85,10 @@ public class HomeController extends javax.servlet.http.HttpServlet {
 					listaprod(request, response);
 				} else if (strTipo.equalsIgnoreCase("listaconfigemp")) {
 					listaconfigemp(request, response);
-				} else if (strTipo.equalsIgnoreCase("wizardhorarios")) {
+				} else if (strTipo.equalsIgnoreCase("listapagmods")) {
+					listapagmods(request, response);
+				}
+				else if (strTipo.equalsIgnoreCase("wizardhorarios")) {
 					wizardhorarios(request, response);
 				} else if (strTipo.equalsIgnoreCase("mobileusers")) {
 					mobileusers(request, response);
@@ -115,7 +118,7 @@ public class HomeController extends javax.servlet.http.HttpServlet {
 					ajax(request, response);
 				}
 			}
-//			System.out.println( request.getParameter("cmd")+ "-fim "+" - " + new Date());
+			// System.out.println( request.getParameter("cmd")+ "-fim "+" - " + new Date());
 		} catch (Exception ex) {
 			ex.printStackTrace();
 			try {
@@ -217,6 +220,12 @@ public class HomeController extends javax.servlet.http.HttpServlet {
 				Parametros_ajax.loadBairrosWizard(request, response, conn, coddistr);
 			} else if (cmd.equalsIgnoreCase("salvarConfigsHorariosBairros")) {
 				Parametros_ajax.salvarConfigsHorariosBairrosNovo(request, response, conn, coddistr);
+			} else if (cmd.equalsIgnoreCase("listaModosPagamento")) {
+				Parametros_ajax.listaModosPagamento(request, response, conn, coddistr,false);
+			} else if (cmd.equalsIgnoreCase("listaModosPagamentoLoja")) {
+				Parametros_ajax.listaModosPagamento(request, response, conn, coddistr,true);
+			}  else if (cmd.equalsIgnoreCase("salvarModosPagamento")) {
+				Parametros_ajax.salvarModosPagamento(request, response, conn, coddistr);
 			} else if (cmd.equalsIgnoreCase("dashServico")) {
 				Relatorios.dashServico(request, response, conn, coddistr);
 			} else if (cmd.equalsIgnoreCase("dashPagamento")) {
@@ -250,13 +259,13 @@ public class HomeController extends javax.servlet.http.HttpServlet {
 			} else if (cmd.equalsIgnoreCase("listaCategorias")) {
 				Parametros_ajax.listaCategorias(request, response, conn,coddistr,true);
 			} else if (cmd.equalsIgnoreCase("listaMarcas")) {
-				Parametros_ajax.listaMarcas(request, response, conn,coddistr,true);
+				Parametros_ajax.listaMarcas(request, response, conn, coddistr,true);
 			} else if (cmd.equalsIgnoreCase("savelojamobileusers")) {
 				Parametros_ajax.saveLojaMobileUsers(request, response, conn, coddistr);
 			} else if (cmd.equalsIgnoreCase("loadlojamobileusers")) {
 				Parametros_ajax.loadLojaMobileUsers(request, response, conn, coddistr);
-			}  
-
+			}
+			
 			
 			
 			
@@ -373,6 +382,17 @@ public class HomeController extends javax.servlet.http.HttpServlet {
 		}
 	}
 
+	private void listapagmods(HttpServletRequest request, HttpServletResponse response) throws Exception {
+		try {
+			request.getRequestDispatcher("/WEB-INF/modo_pagamentos.html").forward(request, response);
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw e;
+		} finally {
+		}
+	}
+
+	
 	private void listaped(HttpServletRequest request, HttpServletResponse response) throws Exception {
 		try {
 			request.getRequestDispatcher("/WEB-INF/lista_pedidos_aberto.html").forward(request, response);

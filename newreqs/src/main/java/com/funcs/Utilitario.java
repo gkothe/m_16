@@ -140,7 +140,7 @@ public class Utilitario {
 
 		if (flag.equalsIgnoreCase("E") && serv.equalsIgnoreCase("T")) {
 			return "Aceito";
-			//return "Em envio";
+			// return "Em envio";
 		} else if (flag.equalsIgnoreCase("R")) {
 			return "Recusado";
 		} else if (flag.equalsIgnoreCase("O")) {
@@ -148,9 +148,9 @@ public class Utilitario {
 		} else if (flag.equalsIgnoreCase("A")) {
 			return "Aberto";
 		} else if (flag.equalsIgnoreCase("E") && serv.equalsIgnoreCase("L")) {
-	
+
 			return "Aceito";
-//			return "Em espera";
+			// return "Em espera";
 		} else if (flag.equalsIgnoreCase("C")) {
 			return "Cancelado";
 		} else if (flag.equalsIgnoreCase("")) {
@@ -292,7 +292,6 @@ public class Utilitario {
 		obj.put("desc", "Finalizado");
 		retornoarray.add(obj);
 
-
 		obj = new JSONObject();
 		obj.put("id", "R");
 		obj.put("desc", "Recusado");
@@ -300,7 +299,7 @@ public class Utilitario {
 
 		return retornoarray;
 	}
-	
+
 	@Deprecated
 	public static String returnModoPagamento(String flag) {
 
@@ -340,7 +339,6 @@ public class Utilitario {
 
 	}
 
-	
 	public static String returnDescPagamento(Connection conn, int id_modopagamento) throws Exception {
 
 		StringBuffer sql2 = new StringBuffer();
@@ -379,7 +377,23 @@ public class Utilitario {
 		ResultSet rs2 = st2.executeQuery();
 		String desc = "";
 		while (rs2.next()) {
-			desc = desc + ", " + rs2.getString("desc_modo") + " \n";
+			desc = desc + ", " + rs2.getString("desc_modo") + " -> ";
+			boolean tem = false;
+			if (rs2.getString("flag_entrega").equalsIgnoreCase("S")) {
+				tem = true;
+				desc = desc + "Entrega";
+			}
+
+			if (rs2.getString("flag_retiradalocal").equalsIgnoreCase("S")) {
+				if (tem)
+					desc = desc + " e ";
+
+				desc = desc + "Retirada";
+
+			}
+			
+			desc = desc + " \n ";
+
 		}
 
 		desc = desc.replaceAll(",", "");

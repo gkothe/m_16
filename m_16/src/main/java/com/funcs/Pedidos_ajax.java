@@ -62,7 +62,7 @@ public class Pedidos_ajax {
 		JSONObject retorno = new JSONObject();
 		PrintWriter out = response.getWriter();
 		String prodsjson = request.getParameter("prodsjson") == null ? "" : request.getParameter("prodsjson"); //
-		String mod_pagamento = request.getParameter("mod_pagamento") == null ? "" : request.getParameter("mod_pagamento"); //
+		String id_modopagamento = request.getParameter("id_modopagamento") == null ? "" : request.getParameter("id_modopagamento"); //
 		JSONArray prods = (JSONArray) new JSONParser().parse(prodsjson);
 
 		JSONObject objRetorno = new JSONObject();
@@ -91,7 +91,7 @@ public class Pedidos_ajax {
 
 		JSONObject param = new JSONObject();
 
-		param.put("tipo_pagamento", mod_pagamento);
+		param.put("modo_pagamento", id_modopagamento);
 		param.put("desc_endereco", "");
 		param.put("desc_endereco_num", "");
 		param.put("desc_endereco_complemento", "");
@@ -365,6 +365,9 @@ public class Pedidos_ajax {
 			objRetorno.put("qtdprod", qtdprod);
 			objRetorno.put("data_formatada", new SimpleDateFormat("dd/MM/yyyy HH:mm").format(rs.getTimestamp("data_pedido")));
 			objRetorno.put("NUM_PED", rs.getString("NUM_PED"));
+			
+			
+	
 			objRetorno.put("FLAG_STATUS", rs.getString("FLAG_STATUS"));
 
 			if (rs.getTimestamp("data_agenda_entrega") != null) {
@@ -377,7 +380,7 @@ public class Pedidos_ajax {
 
 			if (rs.getString("FLAG_PEDIDO_RET_ENTRE").equalsIgnoreCase("L")) {
 				objRetorno.put("DESC_BAIRRO", "Retirar no local");
-				objRetorno.put("FLAG_STATUS", rs.getString("flag_status").equalsIgnoreCase("E") ? "S" : rs.getString("flag_status"));
+				//objRetorno.put("FLAG_STATUS", rs.getString("flag_status").equalsIgnoreCase("E") ? "S" : rs.getString("flag_status"));
 			} else {
 
 				if (rs.getString("flag_modoentrega").equalsIgnoreCase("A")) {
@@ -414,6 +417,7 @@ public class Pedidos_ajax {
 			} else {
 				objRetorno.put("descflag_visu", rs.getString("flag_vizualizado").equalsIgnoreCase("S") ? "Visualizado" : "Não visualizado");
 				objRetorno.put("flag_visu", rs.getString("flag_vizualizado"));
+
 			}
 
 			pedidos.add(objRetorno);
@@ -422,6 +426,7 @@ public class Pedidos_ajax {
 		retorno.put("pedidos", pedidos);
 
 		if (segundaconsulta) {
+			
 			out.print(retorno.toJSONString());
 		} else {
 			carregaPedidosAbertos(request, response, conn, coddistr, true, retorno, pedidos);
@@ -712,8 +717,13 @@ public class Pedidos_ajax {
 			objRetorno.put("VAL_ENTREGA", rs.getString("val_entrega"));
 			objRetorno.put("ID_PEDIDO", rs.getString("id_pedido"));
 			objRetorno.put("num_ped", rs.getString("num_ped"));
-			objRetorno.put("FLAG_MODOPAGAMENTO", Utilitario.returnModoPagamento(rs.getString("flag_modopagamento")));
-
+			
+			if(rs.getString("ID_MODO_PAGAMENTO")!=null){
+				objRetorno.put("FLAG_MODOPAGAMENTO", Utilitario.returnDescPagamento(conn, Integer.parseInt(rs.getString("id_modo_pagamento"))));
+			}else{
+				objRetorno.put("FLAG_MODOPAGAMENTO", Utilitario.returnModoPagamento(rs.getString("flag_modopagamento")));
+			}
+			
 			if (rs.getDouble("NUM_TROCOPARA") != 0.0) {
 				objRetorno.put("num_trocopara", "R$ " + df2.format(rs.getDouble("num_trocopara")));
 			}
@@ -736,7 +746,7 @@ public class Pedidos_ajax {
 			ResultSet rs2 = st2.executeQuery();
 			JSONArray prods = new JSONArray();
 			JSONArray produtos_semestq = new JSONArray();
-			
+
 			while (rs2.next()) {
 				JSONObject obj = new JSONObject();
 
@@ -755,7 +765,7 @@ public class Pedidos_ajax {
 				if (rs2.getString("FLAG_RECUSADO") !=null && rs2.getString("FLAG_RECUSADO").equalsIgnoreCase("S")) {
 					produtos_semestq.add(obj);
 				}
-				
+
 				prods.add(obj);
 
 			}
@@ -794,7 +804,7 @@ public class Pedidos_ajax {
 				}
 			}
 			if (status.equalsIgnoreCase("R")) {
-		
+
 				Sys_parametros sys = new Sys_parametros(conn); 
 				objRetorno.put("motrecusa", Pedidos_ajax.retornaTextRecusado(conn, id_pedido, sys, produtos_semestq).replaceAll("\n","<br/>"));
 
@@ -878,17 +888,25 @@ public class Pedidos_ajax {
 			objRetorno.put("val_totalped", "R$ " + df2.format(rs.getDouble("val_totalprod") + rs.getDouble("val_entrega")));
 			objRetorno.put("val_totalprod_mob", "R$ " + df2.format(rs.getDouble("val_totalprod")));
 			objRetorno.put("val_entrega_mob", "R$ " + df2.format(rs.getDouble("val_entrega")));
-			if (rs.getTimestamp("data_proxnot") != null)
+			if(rs.getTimestamp("data_proxnot")!=null)
 				objRetorno.put("datanot", new SimpleDateFormat("dd/MM/yyyy HH:mm").format(rs.getTimestamp("data_proxnot")));
 			else
 				objRetorno.put("datanot", "");
-
+			
 			objRetorno.put("VAL_TOTALPROD", rs.getString("val_totalprod"));
 			objRetorno.put("VAL_ENTREGA", rs.getString("val_entrega"));
 			objRetorno.put("num_ped", rs.getString("num_ped"));
 			objRetorno.put("flag_marcado", rs.getString("flag_marcado"));
 			objRetorno.put("ID_PEDIDO", rs.getString("id_pedido"));
-			objRetorno.put("FLAG_MODOPAGAMENTO", Utilitario.returnModoPagamento(rs.getString("flag_modopagamento")));
+			
+			
+			if(rs.getString("ID_MODO_PAGAMENTO")!=null){
+				objRetorno.put("FLAG_MODOPAGAMENTO", Utilitario.returnDescPagamento(conn, Integer.parseInt(rs.getString("id_modo_pagamento"))));
+			}else{
+				objRetorno.put("FLAG_MODOPAGAMENTO",Utilitario.returnModoPagamento(rs.getString("flag_modopagamento")));
+			}
+			
+			
 			objRetorno.put("m_observ", rs.getString("desc_observacao"));
 			if (rs.getTimestamp("data_agenda_entrega") != null) {
 				objRetorno.put("data_agenda_entrega", new SimpleDateFormat("dd/MM/yyyy HH:mm").format(rs.getTimestamp("data_agenda_entrega")));
@@ -1187,13 +1205,13 @@ public class Pedidos_ajax {
 		String sql = " ";
 
 		StringBuffer varname1 = new StringBuffer();
-		varname1.append("SELECT *, ");
+		varname1.append(" SELECT *, ");
 		varname1.append("       timestampdiff(second, now(), addtime (coalesce(data_agenda_entrega, data_pedido), tempo_estimado_desejado))                   as secs, ");
 		varname1.append("       case when flag_modoentrega = 'T' then sec_to_time( abs(timestampdiff(second,now(),addtime (coalesce(data_agenda_entrega,data_pedido),tempo_estimado_desejado)))) else '00:00:00' end as timedif ");
-		varname1.append("from   pedido ");
+		varname1.append(" from   pedido ");
 		varname1.append("       inner join usuario ");
 		varname1.append("               on usuario.id_usuario = pedido.id_usuario ");
-		varname1.append("WHERE  id_distribuidora = ? ");
+		varname1.append(" WHERE  id_distribuidora = ? ");
 		varname1.append("       AND id_pedido = ? ");
 		varname1.append("       AND flag_status = 'A'");
 

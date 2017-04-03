@@ -367,7 +367,7 @@ public class Pedidos_ajax {
 			objRetorno.put("NUM_PED", rs.getString("NUM_PED"));
 			
 			
-			System.out.println(rs.getString("FLAG_STATUS"));
+	
 			objRetorno.put("FLAG_STATUS", rs.getString("FLAG_STATUS"));
 
 			if (rs.getTimestamp("data_agenda_entrega") != null) {

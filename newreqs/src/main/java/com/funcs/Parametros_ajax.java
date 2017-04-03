@@ -21,6 +21,7 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.httpclient.util.ParameterParser;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -230,15 +231,32 @@ public class Parametros_ajax {
 		JSONArray cate = new JSONArray();
 
 		StringBuffer sql = new StringBuffer();
+		
+		
+		String choiceserv = request.getParameter("choiceserv") == null ? "" : request.getParameter("choiceserv"); //
+
+		
 
 		sql.append(" SELECT * ");
 		sql.append(" FROM modo_pagamento ");
-		if(somenteaceitos)
+		if (somenteaceitos)
 			sql.append(" inner join distribuidora_pagamento  ");
 		else
 			sql.append(" left join distribuidora_pagamento  ");
-		
+
 		sql.append(" on distribuidora_pagamento.id_modo_pagamento  = modo_pagamento.id_modo_pagamento and id_distribuidora = ? ");
+		
+		
+		if (choiceserv.equalsIgnoreCase("T") || choiceserv.equalsIgnoreCase("A")) {
+
+			sql.append(" and flag_entrega = 'S' ");
+			
+		} else if (choiceserv.equalsIgnoreCase("L")) {
+
+			sql.append(" and flag_retiradalocal = 'S' ");
+		}
+
+		
 		sql.append(" order by desc_modo ");
 
 		PreparedStatement st = conn.prepareStatement(sql.toString());
@@ -252,7 +270,12 @@ public class Parametros_ajax {
 
 			obj.put("id_modo_pagamento", rs.getString("id_modo_pagamento"));
 			obj.put("desc_modo", rs.getString("desc_modo"));
-			obj.put("checked", rs.getString("id_distribuidora") == null ? false : true);
+			
+			if(rs.getString("flag_entrega")!=null){
+				obj.put("flag_entrega", rs.getString("flag_entrega").equalsIgnoreCase("S") ? true : false);
+				obj.put("flag_retiradalocal", rs.getString("flag_retiradalocal").equalsIgnoreCase("S") ? true : false);
+			}
+			
 
 			cate.add(obj);
 
@@ -265,15 +288,9 @@ public class Parametros_ajax {
 		PrintWriter out = response.getWriter();
 		JSONObject ret = new JSONObject();
 
-		String modopagbox = request.getParameter("modopag") == null ? "" : request.getParameter("modopag"); //
+		String modopagjson = request.getParameter("modopagjson") == null ? "" : request.getParameter("modopagjson"); //
 
-		String[] modopag = modopagbox.split(",");
-
-		for (int i = 0; i < modopag.length; i++) {
-			if (!Utilitario.isNumeric(modopag[i])) {
-				throw new Exception("Modo de pagamento inválido.");
-			}
-		}
+		JSONArray modopag = (JSONArray) new JSONParser().parse(modopagjson);
 
 		PreparedStatement st = null;
 
@@ -281,13 +298,26 @@ public class Parametros_ajax {
 		st.setInt(1, coddistr);
 		st.executeUpdate();
 
-		for (int i = 0; i < modopag.length; i++) {
+		for (int i = 0; i < modopag.size(); i++) {
 
-			String sql = "insert into distribuidora_pagamento  ( id_modo_pagamento, id_distribuidora ) VALUES   (?, ? );   ";
-			PreparedStatement st3 = conn.prepareStatement(sql);
-			st3.setInt(1, Integer.parseInt(modopag[i]));
-			st3.setInt(2, coddistr);
-			st3.executeUpdate();
+			JSONObject pag = (JSONObject) modopag.get(i);
+
+			boolean entrega = Boolean.parseBoolean(pag.get("entrega").toString());
+			boolean retirada = Boolean.parseBoolean(pag.get("retirada").toString());
+
+			if (entrega == true || retirada == true) {
+
+				String sql = "insert into distribuidora_pagamento  ( id_modo_pagamento, id_distribuidora,flag_entrega,flag_retiradalocal ) VALUES   (?,?,?,? );   ";
+				PreparedStatement st3 = conn.prepareStatement(sql);
+				st3.setInt(1, Integer.parseInt(pag.get("id").toString()));
+				st3.setInt(2, coddistr);
+				st3.setString(3, entrega ? "S" : "N");
+				st3.setString(4, retirada ? "S" : "N");
+
+				st3.executeUpdate();
+
+			}
+
 		}
 
 		ret.put("msg", "ok");
@@ -585,7 +615,7 @@ public class Parametros_ajax {
 
 		}
 
-		System.out.println(ret.toJSONString());
+		
 		out.print(ret.toJSONString());
 	}
 
@@ -714,7 +744,7 @@ public class Parametros_ajax {
 
 		JSONArray bairros = (JSONArray) new JSONParser().parse(bairrosjson);
 
-		StringBuffer  sqlbff = new StringBuffer();
+		StringBuffer sqlbff = new StringBuffer();
 		sqlbff.append("UPDATE distribuidora ");
 		sqlbff.append("SET    cod_cidade = ?, ");
 		sqlbff.append("       desc_razao_social = ?, ");
@@ -738,61 +768,61 @@ public class Parametros_ajax {
 
 		PreparedStatement st = conn.prepareStatement(sqlbff.toString());
 		int contparam = 1;
-		
+
 		st.setInt(contparam, Integer.parseInt(cod_cidade));
 		contparam++;
-		
+
 		st.setString(contparam, desc_razaosocial);
 		contparam++;
-		
+
 		st.setString(contparam, desc_fantasia);
 		contparam++;
-		
+
 		st.setDouble(contparam, Double.parseDouble(val_min_entrega));
 		contparam++;
-		
+
 		st.setString(contparam, num_telefone);
 		contparam++;
-		
+
 		st.setString(contparam, desc_endereco);
 		contparam++;
-		
+
 		st.setString(contparam, desc_num);
 		contparam++;
-		
+
 		st.setString(contparam, desc_complemento);
 		contparam++;
-		
+
 		st.setDouble(contparam, Double.parseDouble(val_padrao_tele));
 		contparam++;
-		
+
 		st.setString(contparam, flag_custom);
 		contparam++;
-		
+
 		st.setString(contparam, flag_online);
 		contparam++;
-		
+
 		st.setString(contparam, desc_mail);
 		contparam++;
-		
+
 		st.setString(contparam, txt_obs_hora);
 		contparam++;
-		
+
 		st.setString(contparam, cod_bairro_distr);
 		contparam++;
-		
+
 		st.setString(contparam, desc_loja);
 		contparam++;
-		
+
 		st.setString(contparam, tempo_minimo_entrega);
 		contparam++;
-		
+
 		st.setString(contparam, flag_tele_entrega);
 		contparam++;
-		
+
 		st.setString(contparam, flag_retirada);
 		contparam++;
-		
+
 		st.setInt(contparam, coddistr);
 		contparam++;
 

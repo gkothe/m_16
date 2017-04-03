@@ -1,41 +1,74 @@
 
-create table MODO_PAGAMENTO
+alter table pedido	add id_modo_pagamento int;
+
+create table modo_pagamento
 (
-   ID_MODO_PAGAMENTO    int not null,
-   DESC_MODO            text not null,
-   FLAG_TIPO            char(2) not null,
-   primary key (ID_MODO_PAGAMENTO)
+   id_modo_pagamento    int not null,
+   desc_modo            text not null,
+   flag_tipo            char(2) not null,
+   primary key (id_modo_pagamento)
 );
 
 
-create table DISTRIBUIDORA_PAGAMENTO
+create table distribuidora_pagamento
 (
-   ID_MODO_PAGAMENTO    int not null,
-   ID_DISTRIBUIDORA     INT4 not null,
-   primary key (ID_MODO_PAGAMENTO, ID_DISTRIBUIDORA)
+   id_modo_pagamento    int not null,
+   id_distribuidora     int4 not null,
+   primary key (id_modo_pagamento, id_distribuidora)
 );
 
-alter table DISTRIBUIDORA_PAGAMENTO add constraint FK_REFERENCE_37 foreign key (ID_DISTRIBUIDORA)
-      references DISTRIBUIDORA (ID_DISTRIBUIDORA) on delete restrict on update restrict;
+alter table distribuidora_pagamento add constraint fk_reference_37 foreign key (id_distribuidora)
+      references distribuidora (id_distribuidora) on delete restrict on update restrict;
 
-alter table DISTRIBUIDORA_PAGAMENTO add constraint FK_REFERENCE_38 foreign key (ID_MODO_PAGAMENTO)
-      references MODO_PAGAMENTO (ID_MODO_PAGAMENTO) on delete restrict on update restrict;
+alter table distribuidora_pagamento add constraint fk_reference_38 foreign key (id_modo_pagamento)
+      references modo_pagamento (id_modo_pagamento) on delete restrict on update restrict;
 
-
-alter table PEDIDO	add ID_MODO_PAGAMENTO int;
 	  
-alter table PEDIDO add constraint FK_REFERENCE_39 foreign key (ID_MODO_PAGAMENTO)
-      references MODO_PAGAMENTO (ID_MODO_PAGAMENTO) on delete restrict on update restrict;
+alter table pedido add constraint fk_reference_39 foreign key (id_modo_pagamento)
+      references modo_pagamento (id_modo_pagamento) on delete restrict on update restrict;
 
+   alter table distribuidora_pagamento add flag_entrega         char(1);
+   alter table distribuidora_pagamento add flag_retiradalocal   char(1);
+	  
+
+flag_retiradalocal - S , N
+flag_entrega -  S , N
 	  
 flag_tipo      D - Dinheiro, CC - credito, CD - debito , V - vale aliementação , C - Cheque
 
 
+INSERT INTO modo_pagamento (`ID_MODO_PAGAMENTO`,`DESC_MODO`,`FLAG_TIPO`) VALUES (1,'Dinheiro','D');
+INSERT INTO modo_pagamento (`ID_MODO_PAGAMENTO`,`DESC_MODO`,`FLAG_TIPO`) VALUES (2,'Cheque','C');
+INSERT INTO modo_pagamento (`ID_MODO_PAGAMENTO`,`DESC_MODO`,`FLAG_TIPO`) VALUES (3,'Visa - Crédito','CC');
+INSERT INTO modo_pagamento (`ID_MODO_PAGAMENTO`,`DESC_MODO`,`FLAG_TIPO`) VALUES (4,'Visa - Débito','CD');
+INSERT INTO modo_pagamento (`ID_MODO_PAGAMENTO`,`DESC_MODO`,`FLAG_TIPO`) VALUES (5,'Vale Alimentação','V');
+INSERT INTO modo_pagamento (`ID_MODO_PAGAMENTO`,`DESC_MODO`,`FLAG_TIPO`) VALUES (6,'MasterCard - Débito','CD');
+INSERT INTO modo_pagamento (`ID_MODO_PAGAMENTO`,`DESC_MODO`,`FLAG_TIPO`) VALUES (7,'MasterCard - Crédito','CC');
 
 
 
 
-
+ home.jsp
+ config_empresa.js 
+ dash1_pedidos.js 
+ inserir_pedido.js 
+ lista_pedidos_aberto.js 
+ menu_index.js 
+ modo_pagamentos.js 
+ rel_pedido.js 
+ rel_pedidos.jrxml 
+ InsertDados.java 
+ HomeController.java 
+ MobileController.java 
+ Parametros_ajax.java 
+ Pedidos_ajax.java 
+ Relatorios.java 
+ Utilitario.java 
+ config_empresa.html 
+ inserir_pedido.html 
+ lista_pedidos_aberto.html 
+ modo_pagamentos.html 
+ rel_pedidos.html
 
 
 
@@ -83,10 +116,6 @@ flag_tipo      D - Dinheiro, CC - credito, CD - debito , V - vale aliementação
 
 
 
-
-
-
-
 coisas feitas :
 Tela na loja, configura os tipos. Ok
 No mobile: Carrega os pagamentos de acordo com a loja, e caso mande um valor que nao existe, da erro. Ok
@@ -111,16 +140,19 @@ depois) . Feito na minha teste local.
 No carrinho, arrumar os campos que aparecem qdo é dinheiro e etcs.. ok
 Rever grafico - ok.
 Classe insere dados - ok
+Revar na criação do pedido. Usar o choiceserv e testar. Tanto na hora de criar quanto na hora de puxar os tipos de pagamento valido. ok 
+Detalhe da loja, mostrar os tipo de pagamento sendo é retirada ou entrega ou ambos. ok 
+inserrir pedido sistema. Mostrar somente os retidada em local.  ok
 
 
 
 
 
 
+.
 
 
-
-
+998666674
 
 
 

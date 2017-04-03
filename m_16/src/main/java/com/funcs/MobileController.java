@@ -89,11 +89,14 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 	public void processaRequisicoes(HttpServletRequest request, HttpServletResponse response) {
 
 		try {
-			/*
-			 * System.out.println("----------entro mob");
-			 * 
-			 * Map map = request.getParameterMap(); for (Iterator iterator = map.keySet().iterator(); iterator.hasNext();) { String type = (String) iterator.next(); System.out.println(type + " : " + request.getParameter(type)); }
-			 */
+
+			System.out.println("----------entro mob");
+
+			Map map = request.getParameterMap();
+			for (Iterator iterator = map.keySet().iterator(); iterator.hasNext();) {
+				String type = (String) iterator.next();
+				System.out.println(type + " : " + request.getParameter(type));
+			}
 
 			String strTipo = request.getParameter("ac"); // acho que aqui soh vai ter ajax, mas vo dexa assim por enqto.
 			if (strTipo == null) {
@@ -213,7 +216,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 				} else if (cmd.equalsIgnoreCase("servicoCarrinho")) {
 					servicoCarrinho(request, response, conn, cod_usuario, sys);
 				} else if (cmd.equalsIgnoreCase("carregaCategorias")) {
-					Parametros_ajax.listaCategorias(request, response, conn, 0,false);
+					Parametros_ajax.listaCategorias(request, response, conn, 0, false);
 				} else if (cmd.equalsIgnoreCase("carregaMarcas")) {
 					Parametros_ajax.listaMarcas(request, response, conn, 0, false);
 				} else if (cmd.equalsIgnoreCase("listaLojas")) {
@@ -299,6 +302,8 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 					checkPedidos(request, response, conn, cod_usuario, sys);
 				} else if (cmd.equalsIgnoreCase("agendarnot")) {
 					agendarNot(request, response, conn, cod_usuario, sys);
+				} else if (cmd.equalsIgnoreCase("carraga_pagamentoscarrinho")) {
+					carragaPagamentosCarrinho(request, response, conn, cod_usuario);
 				}
 
 				else {
@@ -690,38 +695,38 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 
 	public static String txtHoraAtendConsulta(HttpServletRequest request, HttpServletResponse response, Connection conn, long cod_usuario, Sys_parametros sys, String codbairro, String datayar, int idloja, String msg, boolean tipohtml) throws Exception {
 
-			StringBuffer varname11 = new StringBuffer();
-			varname11.append("select date_format(horario_ini, '%H:%i') as horario_ini,date_format(horario_fim, '%H:%i') as horario_fim from distribuidora_bairro_entrega ");
-			varname11.append("  ");
-			varname11.append("inner join distribuidora_horario_dia_entre ");
-			varname11.append("on distribuidora_horario_dia_entre.id_distr_bairro = distribuidora_bairro_entrega.id_distr_bairro ");
-			varname11.append(" ");
-			varname11.append("where cod_bairro = ? and distribuidora_bairro_entrega.id_distribuidora = ? and cod_dia = ?  order by HORARIO_INI ");
-			varname11.append(" ");
+		StringBuffer varname11 = new StringBuffer();
+		varname11.append("select date_format(horario_ini, '%H:%i') as horario_ini,date_format(horario_fim, '%H:%i') as horario_fim from distribuidora_bairro_entrega ");
+		varname11.append("  ");
+		varname11.append("inner join distribuidora_horario_dia_entre ");
+		varname11.append("on distribuidora_horario_dia_entre.id_distr_bairro = distribuidora_bairro_entrega.id_distr_bairro ");
+		varname11.append(" ");
+		varname11.append("where cod_bairro = ? and distribuidora_bairro_entrega.id_distribuidora = ? and cod_dia = ?  order by HORARIO_INI ");
+		varname11.append(" ");
 
-			int dayOfWeek = Utilitario.diaDasemanaFromDate(datayar);
+		int dayOfWeek = Utilitario.diaDasemanaFromDate(datayar);
 
-			if (codbairro.equalsIgnoreCase("")) {
-				throw new Exception("Nenhum bairro selecionado.");
-			}
+		if (codbairro.equalsIgnoreCase("")) {
+			throw new Exception("Nenhum bairro selecionado.");
+		}
 
 		PreparedStatement st = conn.prepareStatement(varname11.toString());
-			st.setLong(1, Integer.parseInt(codbairro));
+		st.setLong(1, Integer.parseInt(codbairro));
 		st.setLong(2, idloja);
-			st.setLong(3, dayOfWeek);
-			ResultSet rs2 = st.executeQuery();
+		st.setLong(3, dayOfWeek);
+		ResultSet rs2 = st.executeQuery();
 		String text = msg;
-			boolean temhora = false;
-			while (rs2.next()) {
-				temhora = true;
+		boolean temhora = false;
+		while (rs2.next()) {
+			temhora = true;
 			if (tipohtml)
 				text = text + "" + rs2.getString("horario_ini") + " - " + rs2.getString("horario_fim") + " <br> ";
 			else
-				text = text + "" + rs2.getString("horario_ini") + " - " + rs2.getString("horario_fim") + " \n";
-			}
-			if (!temhora) {
-				text = "Sem horários de atendimento para o dia escolhido.";
-			}
+				text = text + "" + rs2.getString("horario_ini") + " - " + rs2.getString("horario_fim") + " \n ";
+		}
+		if (!temhora) {
+			text = "Sem horários de atendimento para o dia escolhido.";
+		}
 
 		return text;
 	}
@@ -1267,9 +1272,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 	public static JSONObject cancelaPedido(HttpServletRequest request, HttpServletResponse response, Connection conn, long cod_usuario, Sys_parametros sys, String id_pedido, String descobs, String motivo, boolean outprint) throws Exception {
 
 		JSONObject objRetorno = new JSONObject();
-		// if (cod_usuario.equalsIgnoreCase("") || cod_usuario == null || cod_usuario.equalsIgnoreCase("0")) {
-		// throw new Exception("Usuário inválido.");
-		// } else
+
 		{
 
 			if (id_pedido.equalsIgnoreCase("")) {
@@ -1352,50 +1355,25 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 
 				}
 
-				if (statuspedido.equalsIgnoreCase("E")) {
-					// || statuspedido.equalsIgnoreCase("S")) {//"S" a principio nao esta sendo usado. para espera é "E" + e tipo de serviço "L" local
+				if (statuspedido.equalsIgnoreCase("E")) { // em envio/ em espera
 
-					if (rs.getString("FLAG_MODOPAGAMENTO").equalsIgnoreCase("D")) {// cancelamento em pagamento por dinhero. só cancelar e avisar a distribuidora.
+					sql = new StringBuffer();
+					sql.append(" INSERT INTO pedido_motivo_cancelamento ");
+					sql.append("  (`ID_PEDIDO`, `COD_MOTIVO`, `DESC_OBS`, `DATA_CANCELAMENTO`,FLAG_CONFIRMADO_DISTRIBUIDORA,FLAG_POPUPINICIAL,FLAG_VIZUALIZADO_CANC) ");
+					sql.append(" VALUES ");
+					sql.append("  (?,?,?,now(),'N','N','N')");
 
-						sql = new StringBuffer();
-						sql.append("INSERT INTO pedido_motivo_cancelamento ");
-						sql.append("  (`ID_PEDIDO`, `COD_MOTIVO`, `DESC_OBS`, `DATA_CANCELAMENTO`,FLAG_CONFIRMADO_DISTRIBUIDORA,FLAG_POPUPINICIAL,FLAG_VIZUALIZADO_CANC) ");
-						sql.append("VALUES ");
-						sql.append("  (?,?,?,now(),'N','N','N')");
-
-						st = conn.prepareStatement(sql.toString());
-						st.setLong(1, Long.parseLong(id_pedido));
-						st.setLong(2, Long.parseLong(motivo));
-						st.setString(3, descobs);
-						st.executeUpdate();
-
-					}
-
-					if (rs.getString("FLAG_MODOPAGAMENTO").equalsIgnoreCase("C")) {// cancelamento em pagamento por cartao. poreqnto mesma coisa q o dinheiro. dia q sistema fazer pagamento de cartao , vai ser diferente
-
-						sql = new StringBuffer();
-						sql.append(" INSERT INTO pedido_motivo_cancelamento ");
-						sql.append("  (`ID_PEDIDO`, `COD_MOTIVO`, `DESC_OBS`, `DATA_CANCELAMENTO`,FLAG_CONFIRMADO_DISTRIBUIDORA,FLAG_POPUPINICIAL,FLAG_VIZUALIZADO_CANC) ");
-						sql.append(" VALUES ");
-						sql.append("  (?,?,?,now(),'N','N','N')");
-
-						st = conn.prepareStatement(sql.toString());
-						st.setLong(1, Long.parseLong(id_pedido));
-						st.setLong(2, Long.parseLong(motivo));
-						st.setString(3, descobs);
-						st.executeUpdate();
-
-					}
+					st = conn.prepareStatement(sql.toString());
+					st.setLong(1, Long.parseLong(id_pedido));
+					st.setLong(2, Long.parseLong(motivo));
+					st.setString(3, descobs);
+					st.executeUpdate();
 
 					try {
-
 						msgLojasMobile(conn, sys, Long.parseLong(id_pedido), 1);
-
 					} catch (Exception e) {
 						System.out.println("Falha no envio de email cancela pedido " + id_pedido + " " + new Date());
 					}
-
-					// mandar one sginal e memail
 
 				}
 
@@ -1447,8 +1425,8 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 				html = "Atenção! O cliente informou que o pedido  Nº " + rs2.getString("num_ped") + " ainda não foi entregue!";
 				title = sys.getSys_fromdesc() + " - O pedido  Nº " + rs2.getString("num_ped") + " ainda não foi entregue!";
 			} else if (codtipomsg == 4) {// pedido atrasado
-				html = "Olá, este é um lembrete que você requisitou em relação ao pedido Nº "+rs2.getString("num_ped")+". Ele ainda está em aberto. <br> Por favor clique <a href='" + sys.getUrl_system() + "'> AQUI </a> para acessar nosso sistema e responde-lo.";
-				title = sys.getSys_fromdesc() + " - Lembrete do pedido Nº "+rs2.getString("num_ped")+" !";
+				html = "Olá, este é um lembrete que você requisitou em relação ao pedido Nº " + rs2.getString("num_ped") + ". Ele ainda está em aberto. <br> Por favor clique <a href='" + sys.getUrl_system() + "'> AQUI </a> para acessar nosso sistema e responde-lo.";
+				title = sys.getSys_fromdesc() + " - Lembrete do pedido Nº " + rs2.getString("num_ped") + " !";
 			}
 
 			Utilitario.sendEmail(rs2.getString("emaildis"), html, title, conn);
@@ -1527,6 +1505,60 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 
 		retorno.put("codbairro", codbairro);
 		retorno.put("codcidade", codcidade);
+
+		out.print(retorno.toJSONString());
+	}
+
+	private static void carragaPagamentosCarrinho(HttpServletRequest request, HttpServletResponse response, Connection conn, long cod_usuario) throws Exception {
+		JSONArray retorno = new JSONArray();
+		PrintWriter out = response.getWriter();
+
+		String choiceserv = request.getParameter("choiceserv") == null ? "" : request.getParameter("choiceserv");
+
+		StringBuffer sql = new StringBuffer();
+		sql.append("select distribuidora_pagamento.id_modo_pagamento, desc_modo, flag_tipo from distribuidora_pagamento ");
+		sql.append(" ");
+		sql.append("inner join modo_pagamento ");
+		sql.append("on distribuidora_pagamento.id_modo_pagamento  =   modo_pagamento.id_modo_pagamento ");
+		sql.append(" ");
+		sql.append(" ");
+		sql.append(" where id_distribuidora in ( ");
+		sql.append(" ");
+		sql.append("select id_distribuidora from carrinho ");
+		sql.append("  ");
+		sql.append("inner join carrinho_item ");
+		sql.append("on carrinho_item.id_carrinho = carrinho.id_carrinho ");
+		sql.append("  ");
+		sql.append("inner join produtos_distribuidora ");
+		sql.append("on produtos_distribuidora.ID_PROD_DIST = carrinho_item.ID_PROD_DIST ");
+		sql.append(" ");
+		sql.append("where id_usuario = ? group by id_distribuidora ");
+		sql.append(" ");
+		sql.append(")");
+
+		if (choiceserv.equalsIgnoreCase("T") || choiceserv.equalsIgnoreCase("A")) {
+
+			sql.append(" and flag_entrega = 'S' ");
+			
+		} else if (choiceserv.equalsIgnoreCase("L")) {
+
+			sql.append(" and flag_retiradalocal = 'S' ");
+		}
+
+		sql.append(" order by desc_modo");
+
+		PreparedStatement st = conn.prepareStatement(sql.toString());
+		st.setLong(1, cod_usuario);
+		ResultSet rs = st.executeQuery();
+		JSONObject pagamentos = new JSONObject();
+		while (rs.next()) {
+			pagamentos = new JSONObject();
+			pagamentos.put("id_modo_pagamento", rs.getString("id_modo_pagamento"));
+			pagamentos.put("desc_modo", rs.getString("desc_modo"));
+			pagamentos.put("flag_tipo", rs.getString("flag_tipo"));
+
+			retorno.add(pagamentos);
+		}
 
 		out.print(retorno.toJSONString());
 	}
@@ -1945,7 +1977,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 			sql.append("AND        ( ");
 			sql.append("                      distribuidora.flag_ativo = 'S' ");
 			sql.append("                                 || distribuidora.flag_ativo = 'F') ");
-			sql.append("AND        distribuidora_bairro_entrega.cod_bairro = ? ");
+			sql.append("AND        distribuidora_bairro_entrega.cod_bairro = ?  ");
 			sql.append("and ((cod_dia = ? and distribuidora.flag_custom = 'N') or (cod_dia = 8 and distribuidora.flag_custom = 'S')) ");
 
 			if (!horaagend.equalsIgnoreCase("")) {
@@ -1984,6 +2016,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 				for (int i = 0; i < keys.length; i++) {
 					sql.append(" and (tab.desc_abreviado  like ?  or tab.desc_categoria like ? or tab.desc_key_words like ? or tab.desc_marca like ? )");
 				}
+
 			}
 
 		} else {
@@ -2522,7 +2555,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 		sql.append("       data_pedido, ");
 		sql.append("       data_pedido_resposta, ");
 		sql.append("       tempo_estimado_entrega, ");
-		sql.append("       desc_nome_abrev, flag_pedido_ret_entre,tempo_estimado_desejado,flag_pedido_ret_entre,pedido.flag_modopagamento,");
+		sql.append("       desc_nome_abrev, flag_pedido_ret_entre,tempo_estimado_desejado,flag_pedido_ret_entre,");
 		sql.append("       flag_status,id_pedido,bairros.desc_bairro ,desc_endereco_num_entrega,desc_endereco_complemento_entrega,  addtime (data_pedido_resposta, tempo_estimado_entrega) as hora_entrega ");
 		sql.append(" from   pedido ");
 		sql.append("       inner join distribuidora ");
@@ -2554,7 +2587,6 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 			ped.put("flag_status2", (rs.getString("flag_status")));
 			ped.put("flag_serv", (rs.getString("flag_pedido_ret_entre")));
 			ped.put("flag_modoentrega", (rs.getString("flag_modoentrega")));
-			
 
 			ped.put("tempo_entrega_max", rs.getTimestamp("tempo_estimado_desejado") == null ? "" : new SimpleDateFormat("HH:mm").format(rs.getTimestamp("tempo_estimado_desejado")));
 			ped.put("desc_serv", Utilitario.returnDistrTiposPedido(rs.getString("flag_pedido_ret_entre"), rs.getString("flag_modoentrega")));
@@ -2580,10 +2612,10 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 
 			if (rs.getTimestamp("data_agenda_entrega") != null) {
 				ped.put("data_agenda_entrega", new SimpleDateFormat("dd/MM/yyyy HH:mm").format(rs.getTimestamp("data_agenda_entrega")));
-			}else{
+			} else {
 				ped.put("data_agenda_entrega", "");
 			}
-			
+
 			StringBuffer sql2 = new StringBuffer();
 			sql2.append("select id_prod_dist, recusado_disponivel,flag_recusado,  desc_prod, val_unit, qtd_prod, qtd_prod * val_unit   as total, desc_abreviado, produtos.id_prod from pedido_item ");
 			sql2.append("inner join produtos ");
@@ -2689,18 +2721,18 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 			sql2.append(" on produtos.id_prod  = pedido_item.id_prod ");
 			sql2.append(" inner join produtos_distribuidora ");
 			sql2.append(" on produtos_distribuidora.id_prod  = produtos.id_prod and produtos_distribuidora.id_distribuidora = " + rs.getString("id_distribuidora"));
-			sql2.append(" where id_pedido = ?  order by desc_prod ");
+			sql2.append(" where id_pedido = ?  order by desc_prod");
 
 			st2 = conn.prepareStatement(sql2.toString());
 			st2.setLong(1, Long.parseLong(id_pedido));
 			rs2 = st2.executeQuery();
-			
+
 			String choiceserv = "";
-			if(rs.getString("flag_pedido_ret_entre").equalsIgnoreCase("L")){
+			if (rs.getString("flag_pedido_ret_entre").equalsIgnoreCase("L")) {
 				choiceserv = "L";
-			}else if(rs.getString("flag_pedido_ret_entre").equalsIgnoreCase("T") && rs.getString("flag_modoentrega").equalsIgnoreCase("T")){
+			} else if (rs.getString("flag_pedido_ret_entre").equalsIgnoreCase("T") && rs.getString("flag_modoentrega").equalsIgnoreCase("T")) {
 				choiceserv = "T";
-			}else if(rs.getString("flag_pedido_ret_entre").equalsIgnoreCase("T") && rs.getString("flag_modoentrega").equalsIgnoreCase("A")){
+			} else if (rs.getString("flag_pedido_ret_entre").equalsIgnoreCase("T") && rs.getString("flag_modoentrega").equalsIgnoreCase("A")) {
 				choiceserv = "A";
 			}
 
@@ -2715,7 +2747,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 							prods_notadded = true;
 						}
 					} else {
-						addCarrinho(request, response, conn, cod_usuario, rs2.getString("id_prod_dist"), rs2.getString("qtd_prod"), rs.getString("cod_bairro"),choiceserv, false);
+						addCarrinho(request, response, conn, cod_usuario, rs2.getString("id_prod_dist"), rs2.getString("qtd_prod"), rs.getString("cod_bairro"), choiceserv, false);
 					}
 				} else {
 					prods = prods + rs2.getString("DESC_ABREVIADO") + " \n";
@@ -3661,7 +3693,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 
 	private static void criarPedido(HttpServletRequest request, HttpServletResponse response, Connection conn, long cod_usuario) throws Exception {
 
-		String tipo_pagamento = request.getParameter("tipo_pagamento") == null ? "" : request.getParameter("tipo_pagamento");
+		String modo_pagamento = request.getParameter("modo_pagamento") == null ? "" : request.getParameter("modo_pagamento");
 		String desc_endereco = request.getParameter("desc_endereco") == null ? "" : request.getParameter("desc_endereco");
 		String desc_endereco_num = request.getParameter("desc_endereco_num") == null ? "" : request.getParameter("desc_endereco_num");
 		String desc_endereco_complemento = request.getParameter("desc_endereco_complemento") == null ? "" : request.getParameter("desc_endereco_complemento");
@@ -3676,7 +3708,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 
 		JSONObject param = new JSONObject();
 
-		param.put("tipo_pagamento", tipo_pagamento);
+		param.put("modo_pagamento", modo_pagamento);
 		param.put("desc_endereco", desc_endereco);
 		param.put("desc_endereco_num", desc_endereco_num);
 		param.put("desc_endereco_complemento", desc_endereco_complemento);
@@ -3699,7 +3731,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 
 		Sys_parametros sys = new Sys_parametros(conn);
 
-		String tipo_pagamento = param.get("tipo_pagamento").toString();
+		String modo_pagamento = param.get("modo_pagamento").toString();
 		String desc_endereco = param.get("desc_endereco").toString();
 		String desc_endereco_num = param.get("desc_endereco_num").toString();
 		String desc_endereco_complemento = param.get("desc_endereco_complemento").toString();
@@ -3714,10 +3746,6 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 
 		if (!choiceserv.equals("T") && !choiceserv.equals("L") && !choiceserv.equals("A")) {
 			throw new Exception("Tipo de serviço inválido.");
-		}
-
-		if (!tipo_pagamento.equalsIgnoreCase("D") && !tipo_pagamento.equalsIgnoreCase("C")) {
-			throw new Exception("Tipo de pagamento inválido.");
 		}
 
 		if (choiceserv.equalsIgnoreCase("T") || choiceserv.equalsIgnoreCase("A")) {
@@ -3829,61 +3857,139 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 
 				sql = new StringBuffer();
 				sql.append("INSERT INTO pedido ");
-				sql.append("  (`ID_PEDIDO`, `ID_DISTRIBUIDORA`, `ID_USUARIO`, `DATA_PEDIDO`, `FLAG_STATUS`, `VAL_TOTALPROD`, `VAL_ENTREGA`,  `NUM_PED`, `COD_BAIRRO`, `NUM_TELEFONECONTATO_CLIENTE`,  `DESC_ENDERECO_ENTREGA`, `DESC_ENDERECO_NUM_ENTREGA`, `DESC_ENDERECO_COMPLEMENTO_ENTREGA`, flag_vizualizado,FLAG_MODOPAGAMENTO,NOME_PESSOA,FLAG_PEDIDO_RET_ENTRE,TEMPO_ESTIMADO_DESEJADO,flag_modoentrega,DATA_AGENDA_ENTREGA,DESC_OBSERVACAO) ");
+				sql.append("            (id_pedido, ");
+				sql.append("             id_distribuidora, ");
+				sql.append("             id_usuario, ");
+				sql.append("             data_pedido, ");
+				sql.append("             flag_status, ");
+				sql.append("             val_totalprod, ");
+				sql.append("             val_entrega, ");
+				sql.append("             num_ped, ");
+				sql.append("             cod_bairro, ");
+				sql.append("             num_telefonecontato_cliente, ");
+				sql.append("             desc_endereco_entrega, ");
+				sql.append("             desc_endereco_num_entrega, ");
+				sql.append("             desc_endereco_complemento_entrega, ");
+				sql.append("             flag_vizualizado, ");
+				// sql.append(" flag_modopagamento, ");
+				sql.append("             nome_pessoa, ");
+				sql.append("             flag_pedido_ret_entre, ");
+				sql.append("             tempo_estimado_desejado, ");
+				sql.append("             flag_modoentrega, ");
+				sql.append("             data_agenda_entrega, ");
+				sql.append("             desc_observacao, ");
+				sql.append("             id_modo_pagamento) ");
 				sql.append("VALUES ");
 				sql.append("  (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?,?,?,?,?,?,?);");
 
 				st = conn.prepareStatement(sql.toString());
 
 				idped = Utilitario.retornaIdinsertLong("pedido", "id_pedido", conn);
-				st.setLong(1, idped);
-				st.setLong(2, rs.getInt("id_distribuidora"));
-				st.setLong(3, cod_usuario);
-				st.setTimestamp(4, Utilitario.getTimeStamp(new Date()));
-				st.setString(5, "A");
-				st.setDouble(6, rs.getDouble("val_prod"));
+
+				int contparam = 1;
+				st.setLong(contparam, idped);
+				contparam++;
+
+				st.setLong(contparam, rs.getInt("id_distribuidora"));
+				contparam++;
+
+				st.setLong(contparam, cod_usuario);
+				contparam++;
+
+				st.setTimestamp(contparam, Utilitario.getTimeStamp(new Date()));
+				contparam++;
+
+				st.setString(contparam, "A");
+				contparam++;
+
+				st.setDouble(contparam, rs.getDouble("val_prod"));
+				contparam++;
+
 				if (choiceserv.equalsIgnoreCase("T")) {
-					st.setDouble(7, rs.getDouble("val_tele_entrega"));
+					st.setDouble(contparam, rs.getDouble("val_tele_entrega"));
+					contparam++;
+
 				} else {
-					st.setDouble(7, 0.0);
+					st.setDouble(contparam, 0.0);
+					contparam++;
 				}
 
 				long numpad = Utilitario.getNextNumpad(conn, rs.getInt("id_distribuidora"));
-				st.setLong(8, numpad);
+				st.setLong(contparam, numpad);
+				contparam++;
 
-				st.setString(10, rs.getString("desc_telefone"));
 				if (choiceserv.equalsIgnoreCase("T") || choiceserv.equalsIgnoreCase("A")) {
 					validacaoDisBairroHora(request, response, conn, rs.getInt("cod_bairro"), rs.getInt("id_distribuidora"), choiceserv);
-					st.setInt(9, rs.getInt("cod_bairro"));
-					st.setString(11, desc_endereco);
-					st.setString(12, desc_endereco_num);
-					st.setString(13, desc_endereco_complemento);
+					st.setInt(contparam, rs.getInt("cod_bairro"));
+					contparam++;
+
+					st.setString(contparam, rs.getString("desc_telefone"));
+					contparam++;
+
+					st.setString(contparam, desc_endereco);
+					contparam++;
+
+					st.setString(contparam, desc_endereco_num);
+					contparam++;
+
+					st.setString(contparam, desc_endereco_complemento);
+					contparam++;
+
 				} else {
-					st.setNull(9, java.sql.Types.INTEGER);
-					st.setString(11, "");
-					st.setString(12, "");
-					st.setString(13, "");
+					st.setNull(contparam, java.sql.Types.INTEGER);
+					contparam++;
+
+					st.setString(contparam, rs.getString("desc_telefone"));
+					contparam++;
+
+					st.setString(contparam, "");
+					contparam++;
+
+					st.setString(contparam, "");
+					contparam++;
+
+					st.setString(contparam, "");
+					contparam++;
 				}
-				st.setString(14, "N");
-				st.setString(15, tipo_pagamento);
-				st.setString(16, rs.getString("DESC_NOME"));
-				st.setString(17, choiceserv.equalsIgnoreCase("A") ? "T" : choiceserv);// agendamentos no pedido são modelados asism: FLAG_PEDIDO_RET_ENTRE = 'T' e flag_modoentrega ='A'
+				st.setString(contparam, "N");
+				contparam++;
+
+				// st.setString(contparam, "");
+				// contparam++;
+
+				st.setString(contparam, rs.getString("DESC_NOME"));
+				contparam++;
+
+				st.setString(contparam, choiceserv.equalsIgnoreCase("A") ? "T" : choiceserv);// agendamentos no pedido são modelados asism: FLAG_PEDIDO_RET_ENTRE = 'T' e flag_modoentrega ='A'
+				contparam++;
+
 				if (choiceserv.equalsIgnoreCase("A")) {
-					st.setString(18, "00:00");
+					st.setString(contparam, "00:00");
+					contparam++;
+
 					// st.setString(18, "00:30");
 				} else if (choiceserv.equalsIgnoreCase("T")) {
 
-					st.setString(18, tempomax.substring(0, 2) + ":" + tempomax.substring(2, 4));
+					st.setString(contparam, tempomax.substring(0, 2) + ":" + tempomax.substring(2, 4));
+					contparam++;
+
 				} else {
-					st.setString(18, "00:00");
+					st.setString(contparam, "00:00");
+					contparam++;
+
 				}
 
 				if (choiceserv.equalsIgnoreCase("T")) {
-					st.setString(19, "T");
+					st.setString(contparam, "T");
+					contparam++;
+
 				} else if (choiceserv.equalsIgnoreCase("A")) {
-					st.setString(19, "A");
+					st.setString(contparam, "A");
+					contparam++;
+
 				} else {
-					st.setNull(19, java.sql.Types.VARCHAR);
+					st.setNull(contparam, java.sql.Types.VARCHAR);
+					contparam++;
 				}
 
 				if (choiceserv.equalsIgnoreCase("A")) {// agendamento
@@ -3920,13 +4026,20 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 						throw new Exception("A loja não atende neste horário.");
 					}
 
-					st.setTimestamp(20, Utilitario.getTimeStamp(new SimpleDateFormat("dd/MM/yyyyHHmm").parse(dataagendamento + dataagendamentohora)));
+					st.setTimestamp(contparam, Utilitario.getTimeStamp(new SimpleDateFormat("dd/MM/yyyyHHmm").parse(dataagendamento + dataagendamentohora)));
+					contparam++;
 
 				} else {
-					st.setNull(20, java.sql.Types.TIMESTAMP);
+					st.setNull(contparam, java.sql.Types.TIMESTAMP);
+					contparam++;
+
 				}
 
-				st.setString(21, obsinfo);
+				st.setString(contparam, obsinfo);
+				contparam++;
+
+				st.setString(contparam, modo_pagamento);
+				contparam++;
 
 				email = rs.getString("DESC_EMAIL");
 
@@ -4005,47 +4118,60 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 					}
 
 					StringBuffer sql2 = new StringBuffer();
-					sql2.append(" select * from distribuidora ");
-					sql2.append("  where distribuidora. ID_DISTRIBUIDORA = ?  ");
+					sql2.append(" select * from distribuidora_pagamento   ");
+					sql2.append("  	inner join modo_pagamento  ");
+					sql2.append("  	on distribuidora_pagamento.ID_MODO_PAGAMENTO  =   modo_pagamento.ID_MODO_PAGAMENTO ");
+					sql2.append("  where distribuidora_pagamento. id_distribuidora = ? and modo_pagamento.id_modo_pagamento = ?");
+
 					st2 = conn.prepareStatement(sql2.toString());
 					st2.setInt(1, rs.getInt("id_distribuidora"));
+					st2.setInt(2, Integer.parseInt(modo_pagamento));
 					rs2 = st2.executeQuery();
 					if (rs2.next()) {
-						if (rs2.getString("FLAG_MODOPAGAMENTO").equalsIgnoreCase("A")) {
 
-						} else if (rs2.getString("FLAG_MODOPAGAMENTO").equalsIgnoreCase("C") && tipo_pagamento.equalsIgnoreCase("D")) {
-							throw new Exception("Loja não aceita este modo de pagamento!");
-						} else if (rs2.getString("FLAG_MODOPAGAMENTO").equalsIgnoreCase("D") && tipo_pagamento.equalsIgnoreCase("C")) {
-							throw new Exception("Loja não aceita este modo de pagamento!");
+						if (choiceserv.equalsIgnoreCase("A") || choiceserv.equalsIgnoreCase("T")) {
+							if (rs2.getString("flag_entrega").equalsIgnoreCase("N")) {
+								throw new Exception("Modo de pagamento não aceito para entregas!");
+							}
+							;
+
+						} else if (choiceserv.equalsIgnoreCase("L")) {
+							if (rs2.getString("flag_retiradalocal").equalsIgnoreCase("N")) {
+								throw new Exception("Modo de pagamento não aceito para retirada em local.");
+							}
+							;
+
 						}
 
-					}
+						if (rs2.getString("flag_tipo").equalsIgnoreCase("D")) {
 
-					if (tipo_pagamento.equalsIgnoreCase("D")) {
+							if (!trocopara.equalsIgnoreCase("")) {
 
-						if (!trocopara.equalsIgnoreCase("")) {
+								try {
+									Double.parseDouble(trocopara);
+								} catch (Exception e) {
+									throw new Exception("Troco inválido!");
+								}
 
-							try {
-								Double.parseDouble(trocopara);
-							} catch (Exception e) {
-								throw new Exception("Troco inválido!");
+								if (rs.getDouble("val_prod") > Double.parseDouble(trocopara) && Double.parseDouble(trocopara) != 0) {
+									throw new Exception("O valor de 'troco para' deve ser maior que o valor do pedido.");
+								}
+
+								sql = new StringBuffer();
+								sql.append("UPDATE pedido ");
+								sql.append("   SET `NUM_TROCOPARA` = ?  ");
+								sql.append("WHERE  `ID_PEDIDO` = ? ");
+
+								st = conn.prepareStatement(sql.toString());
+								st.setDouble(1, Double.parseDouble(trocopara));
+								st.setLong(2, idped);
+
+								st.executeUpdate();
 							}
-
-							if (rs.getDouble("val_prod") > Double.parseDouble(trocopara) && Double.parseDouble(trocopara) != 0) {
-								throw new Exception("O valor de 'troco para' deve ser maior que o valor do pedido.");
-							}
-
-							sql = new StringBuffer();
-							sql.append("UPDATE pedido ");
-							sql.append("   SET `NUM_TROCOPARA` = ?  ");
-							sql.append("WHERE  `ID_PEDIDO` = ? ");
-
-							st = conn.prepareStatement(sql.toString());
-							st.setDouble(1, Double.parseDouble(trocopara));
-							st.setLong(2, idped);
-
-							st.executeUpdate();
 						}
+
+					} else {
+						throw new Exception("Modo de pagamento não aceito pela loja!");
 					}
 
 					if (!c_telefone.equalsIgnoreCase("")) {
@@ -4063,8 +4189,6 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 						st.executeUpdate();
 
 					}
-
-					// payment(request, response, conn, cod_usuario,email);
 
 					{
 						sql = new StringBuffer();// deleta item do carrinho se ele exister exite no carrinho, add depois
@@ -4276,7 +4400,6 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 		sql.append("       flag_custom, ");
 		sql.append("       desc_mail, ");
 		sql.append("       COALESCE(flag_ativo, 'N') AS flag_ativo, ");
-		sql.append("       flag_modopagamento, ");
 		sql.append("       flag_agendamento,flag_tele_entrega,flag_retirada ");
 		sql.append(" FROM   distribuidora ");
 		sql.append(" inner join cidade ");
@@ -4335,7 +4458,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 			ret.put("flag_custom", (rs.getString("flag_custom")));
 			ret.put("text_perso", "Esta loja está temporariamente com o 'Modo de período personalizado' ativado.\nO horário abaixo é válido para todos os dias da semana. ");
 			ret.put("txt_obs_hora", rs.getString("txt_obs_hora"));
-			ret.put("flag_modopagamento", Utilitario.returnModoPagamento(rs.getString("flag_modopagamento").equalsIgnoreCase("A") ? "DC" : rs.getString("flag_modopagamento")));// TODO se mudar os modos de pagamento
+			ret.put("desc_modopagamento", Utilitario.returnModoPagamentoDisponiveis(rs.getInt("id_distribuidora"), conn, 0));//
 
 		}
 

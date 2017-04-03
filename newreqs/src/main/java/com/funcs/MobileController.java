@@ -1513,7 +1513,7 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 		JSONArray retorno = new JSONArray();
 		PrintWriter out = response.getWriter();
 
-		String firstopt = request.getParameter("firstopt") == null ? "" : request.getParameter("firstopt");
+		String choiceserv = request.getParameter("choiceserv") == null ? "" : request.getParameter("choiceserv");
 
 		StringBuffer sql = new StringBuffer();
 		sql.append("select distribuidora_pagamento.id_modo_pagamento, desc_modo, flag_tipo from distribuidora_pagamento ");
@@ -1535,6 +1535,16 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 		sql.append("where id_usuario = ? group by id_distribuidora ");
 		sql.append(" ");
 		sql.append(")");
+
+		if (choiceserv.equalsIgnoreCase("T") || choiceserv.equalsIgnoreCase("A")) {
+
+			sql.append(" and flag_entrega = 'S' ");
+			
+		} else if (choiceserv.equalsIgnoreCase("L")) {
+
+			sql.append(" and flag_retiradalocal = 'S' ");
+		}
+
 		sql.append(" order by desc_modo");
 
 		PreparedStatement st = conn.prepareStatement(sql.toString());
@@ -3944,8 +3954,8 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 				st.setString(contparam, "N");
 				contparam++;
 
-//				 st.setString(contparam, "");
-//				 contparam++;
+				// st.setString(contparam, "");
+				// contparam++;
 
 				st.setString(contparam, rs.getString("DESC_NOME"));
 				contparam++;
@@ -4118,6 +4128,20 @@ public class MobileController extends javax.servlet.http.HttpServlet {
 					st2.setInt(2, Integer.parseInt(modo_pagamento));
 					rs2 = st2.executeQuery();
 					if (rs2.next()) {
+
+						if (choiceserv.equalsIgnoreCase("A") || choiceserv.equalsIgnoreCase("T")) {
+							if (rs2.getString("flag_entrega").equalsIgnoreCase("N")) {
+								throw new Exception("Modo de pagamento não aceito para entregas!");
+							}
+							;
+
+						} else if (choiceserv.equalsIgnoreCase("L")) {
+							if (rs2.getString("flag_retiradalocal").equalsIgnoreCase("N")) {
+								throw new Exception("Modo de pagamento não aceito para retirada em local.");
+							}
+							;
+
+						}
 
 						if (rs2.getString("flag_tipo").equalsIgnoreCase("D")) {
 

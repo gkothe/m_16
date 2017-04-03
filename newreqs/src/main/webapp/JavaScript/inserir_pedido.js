@@ -77,7 +77,8 @@ function loadModosPagamentos() {
 		type : 'POST',
 		url : "home?ac=ajax",
 		data : {
-			cmd : "listaModosPagamentoLoja"
+			cmd : "listaModosPagamentoLoja",
+			choiceserv: 'L'
 		},
 		async : true,
 		dataType : 'json',
